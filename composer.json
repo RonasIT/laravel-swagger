@@ -1,0 +1,23 @@
+{
+  "name": "ronasit/laravel-swagger",
+  "version" : "0.0.0",
+  "description": "Provided middleware for generating of swagger-documentation file by run testing of RESTful API.",
+  "keywords": ["laravel", "swagger", "testing", "auto-documentation", "rest-api"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Roman Dubrovin",
+      "email": "rdubrovin@ronasit.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.7",
+    "laravel/framework": "~5.2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "RonasIT\\Support\\AutoDoc\\": "src/"
+    }
+  },
+  "minimum-stability": "stable"
+}
