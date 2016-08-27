@@ -7,5 +7,29 @@
  */
 
 return [
-
+    'enabled' => env('AUTODOC_ENABLED'),
+    'files' => [
+        'production' => env('SWAGGER_FILEPATH_PRODUCTION'),
+        'temporary' => env('SWAGGER_FILEPATH_TEMP'),
+    ],
+    'route' => '/',
+    'info' => [
+        'description' => 'Description of your application',
+        'version' => '0.0.0',
+        'title' => 'Name of Your Application',
+        'termsOfService' => '',
+        'contacts' => [
+            'email' => 'your@email.com'
+        ],
+        'license' => [
+            'name' => '',
+            'url' => ''
+        ]
+    ],
+    'swagger' => [
+        'version' => '2.0'
+    ],
+    'basePath' => '/',
+    'schemes' => [],
+    'definitions' => []
 ];
