@@ -28,7 +28,7 @@ class AutoDocMiddleware
     {
         $response = $next($request);
 
-        if ((env('APP_ENV') == 'testing') == config('auto-doc.enabled')) {
+        if ((env('APP_ENV') == 'testing') && config('auto-doc.enabled')) {
             $this->service->addData($request, $response);
         }
 
