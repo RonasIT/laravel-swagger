@@ -7,7 +7,7 @@
  * Time: 14:16
  */
 
-namespace RonasIT\Support\AutoDoc\Requests;
+namespace RonasIT\Support\AutoDoc\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

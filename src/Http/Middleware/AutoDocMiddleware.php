@@ -7,7 +7,7 @@
  * Time: 11:49
  */
 
-namespace RonasIT\Support\AutoDoc\Middleware;
+namespace RonasIT\Support\AutoDoc\Http\Middleware;
 
 use Closure;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
@@ -28,7 +28,7 @@ class AutoDocMiddleware
     {
         $response = $next($request);
 
-        if (!config('auto-doc.enabled')) {
+        if ((env('APP_ENV') != 'testing') || !config('auto-doc.enabled')) {
             return $response;
         }
 

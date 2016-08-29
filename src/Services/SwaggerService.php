@@ -104,9 +104,8 @@ class SwaggerService
         if (!in_array($code, $responses)) {
             $this->item['responses'][$code] = [
                 'description' => $this->getResponseDescription($code),
-                'schema' => 'example',
-                'examples' => [
-                    $produce => $this->response->getContent() // TODO: this is temporary solution
+                'schema' => [
+                    'example' => json_decode($this->response->getContent(), true)
                 ]
             ];
         }

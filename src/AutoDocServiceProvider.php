@@ -17,6 +17,12 @@ class AutoDocServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/auto-doc.php' => config_path('auto-doc.php'),
         ], 'config');
+
+        if (! $this->app->routesAreCached()) {
+            require __DIR__.'/Http/routes.php';
+        }
+
+        $this->loadViewsFrom(__DIR__.'/Views', 'auto-doc');
     }
 
     public function register()

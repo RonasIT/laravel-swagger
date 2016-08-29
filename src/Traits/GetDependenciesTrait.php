@@ -9,15 +9,12 @@
 
 namespace RonasIT\Support\AutoDoc\Traits;
 
-use Illuminate\Routing\RouteDependencyResolverTrait as BaseTrait;
 use ReflectionMethod;
 use ReflectionFunctionAbstract;
 use ReflectionParameter;
 
 trait GetDependenciesTrait
 {
-    use BaseTrait;
-
     protected function resolveClassMethodDependencies(array $parameters, $instance, $method)
     {
         if (! method_exists($instance, $method)) {
