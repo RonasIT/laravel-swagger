@@ -11,13 +11,12 @@
     <link href='http://petstore.swagger.io/css/reset.css' media='print' rel='stylesheet' type='text/css'/>
     <link href='http://petstore.swagger.io/css/print.css' media='print' rel='stylesheet' type='text/css'/>
 
-    {{--<script src='http://petstore.swagger.io/lib/object-assign-pollyfill.js' type='text/javascript'></script>--}}
+    <script src="http://petstore.swagger.io/lib/object-assign-pollyfill.js" type="text/javascript"></script>
     <script src="http://petstore.swagger.io/lib/jquery-1.8.0.min.js" type="text/javascript"></script>
     <script src="http://petstore.swagger.io/lib/jquery.slideto.min.js" type="text/javascript"></script>
     <script src="http://petstore.swagger.io/lib/jquery.wiggle.min.js" type="text/javascript"></script>
     <script src="http://petstore.swagger.io/lib/jquery.ba-bbq.min.js" type="text/javascript"></script>
-    <script src="http://petstore.swagger.io/lib/handlebars-2.0.0.js" type="text/javascript"></script>
-    <script src="http://petstore.swagger.io/lib/js-yaml.min.js" type="text/javascript"></script>
+    <script src="http://petstore.swagger.io/lib/handlebars-4.0.5.js" type="text/javascript"></script>
     <script src="http://petstore.swagger.io/lib/lodash.min.js" type="text/javascript"></script>
     <script src="http://petstore.swagger.io/lib/backbone-min.js" type="text/javascript"></script>
     <script src="http://petstore.swagger.io/swagger-ui.js" type="text/javascript"></script>
