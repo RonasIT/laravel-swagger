@@ -66,7 +66,7 @@ class SwaggerService
     }
 
     protected function prepareItem() {
-        $this->uri = $this->request->route()->uri();
+        $this->uri = $this->getUri();
         $this->method = strtolower($this->request->getMethod());
 
         if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}"))) {
@@ -81,6 +81,14 @@ class SwaggerService
         }
 
         $this->item = &$this->data['paths'][$this->uri][$this->method];
+    }
+
+    protected function getUri() {
+        $uri = $this->request->route()->uri();
+        $basePath = preg_replace("/^\//", '', config('auto-doc.basePath'));
+        $preparedUri = preg_replace("/^{$basePath}/", '', $uri);
+
+        return preg_replace("/^\//", '', $preparedUri);
     }
 
     protected function parseRequest() {
