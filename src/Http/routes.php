@@ -10,4 +10,4 @@ use RonasIT\Support\AutoDoc\Http\Controllers\AutoDocController;
 
 
 Route::get('/auto-doc/documentation', ['uses' => AutoDocController::class.'@documentation']);
-Route::get(config('auto-doc.basePath'), ['uses' => AutoDocController::class.'@index']);
+Route::get(config('auto-doc.route'), ['uses' => AutoDocController::class.'@index']);
