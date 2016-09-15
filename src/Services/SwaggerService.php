@@ -79,7 +79,7 @@ class SwaggerService
                 'tags' => [],
                 'consumes' => [],
                 'produces' => [],
-                'parameters' => [],
+                'parameters' => $this->getPathParams(),
                 'responses' => [],
                 'security' => []
             ];
@@ -94,6 +94,30 @@ class SwaggerService
         $preparedUri = preg_replace("/^{$basePath}/", '', $uri);
 
         return preg_replace("/^\//", '', $preparedUri);
+    }
+
+    protected function getPathParams() {
+        $params = [];
+
+        preg_match_all('/{.*?}/', $this->uri, $params);
+
+        $params = array_collapse($params);
+
+        $result = [];
+
+        foreach ($params as $param) {
+            $key = preg_replace('/[{}]/', '', $param);
+
+            $result[] = [
+                'in' => 'path',
+                'name' => $key,
+                'description' => '',
+                'required' => true,
+                'type' => 'string'
+            ];
+        }
+
+        return $result;
     }
 
     protected function parseRequest() {
@@ -181,7 +205,7 @@ class SwaggerService
         $consumeList = $this->data['paths'][$this->uri][$this->method]['consumes'];
         $consume = $this->request->header('Content-Type');
 
-        if (!in_array($consume, $consumeList)) {
+        if (!empty($consume) && !in_array($consume, $consumeList)) {
             $this->item['consumes'][] = $consume;
         }
     }
