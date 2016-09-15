@@ -197,6 +197,10 @@ class SwaggerService
     public function saveDescription() {
         $request = $this->getConcreteRequest();
 
+        if (empty($request)) {
+            return;
+        }
+
         $this->item['summary'] = $this->getSummary($request);
 
         $description = $this->getDescription($request);
