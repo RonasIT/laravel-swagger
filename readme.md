@@ -35,7 +35,7 @@ to display the generated documentation for a config.
  summary and description of this request. Plugin will take validation rules from your request and use it as description 
  of input parameter. 
   
- ### Example
+### Example
  ````
  namespace App\Http\Requests;  
    
