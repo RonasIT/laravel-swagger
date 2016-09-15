@@ -12,7 +12,8 @@
   ],
   "require": {
     "php": ">=5.3.7",
-    "laravel/framework": "~5.2.0"
+    "laravel/framework": "~5.2.0",
+    "jan-swiecki/simple-annotations": "~0.3.1"
   },
   "autoload": {
     "psr-4": {
