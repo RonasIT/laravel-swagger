@@ -1,7 +1,9 @@
 <?php
 
-function elseChain(...$values) {
-    foreach ($values as $value) {
+function elseChain(...$callbacks) {
+    foreach ($callbacks as $callback) {
+        $value = $callback();
+
         if (!empty($value)) {
             return $value;
         }

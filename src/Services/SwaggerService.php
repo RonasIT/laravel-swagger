@@ -197,13 +197,31 @@ class SwaggerService
     public function saveDescription() {
         $request = $this->getConcreteRequest();
 
-        $this->item['summary'] = $this->parseRequestName($request);
+        $this->item['summary'] = $this->getSummary($request);
 
-        $description = $this->getRequestDescription($request);
+        $description = $this->getDescription($request);
 
         if (!empty($description)) {
             $this->item['description'] = $description;
         }
+    }
+
+    protected function getSummary($request) {
+        $annotations = $this->annotationReader->getClassAnnotations($request);
+
+        $summary = $annotations->get('summary');
+
+        if (empty($summary)) {
+            $this->parseRequestName($request);
+        }
+
+        return $summary;
+    }
+
+    protected function getDescription($request) {
+        $annotations = $this->annotationReader->getClassAnnotations($request);
+
+        return $annotations->get('description');
     }
 
     protected function parseRequestName($request) {
@@ -215,20 +233,22 @@ class SwaggerService
          return preg_replace('/[_]/', ' ', $underscoreRequestName);
     }
 
-    protected function getRequestDescription($request) {
-        $annotations = $this->annotationReader->getClassAnnotations($request);
-
-        return $annotations->get('description');
-    }
-
     protected function getResponseDescription($code) {
         $request = $this->getConcreteRequest();
 
         return elseChain(
-            empty($request) ? Response::$statusTexts[$code] : null,
-            $this->annotationReader->getClassAnnotations($request)->get($code),
-            config("auto-doc.defaults.code_descriptions.{$code}"),
-            Response::$statusTexts[$code]
+            function() use ($request, $code) {
+                return empty($request) ? Response::$statusTexts[$code] : null;
+            },
+            function() use ($request, $code) {
+                return $this->annotationReader->getClassAnnotations($request)->get("_{$code}");
+            },
+            function() use ($code) {
+                return config("auto-doc.defaults.code_descriptions.{$code}");
+            },
+            function() use ($code) {
+                return Response::$statusTexts[$code];
+            }
         );
     }
 
