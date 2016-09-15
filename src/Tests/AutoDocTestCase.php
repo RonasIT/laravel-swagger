@@ -23,7 +23,9 @@ class AutoDocTestCase extends TestCase
         $this->docService = app(SwaggerService::class);
     }
 
-    public function createApplication(){}
+    public function createApplication() {
+        parent::createApplication();
+    }
 
     public function tearDown()
     {
