@@ -248,7 +248,7 @@ class SwaggerService
                 return $this->annotationReader->getClassAnnotations($request)->get("_{$code}");
             },
             function() use ($code) {
-                return config("auto-doc.defaults.code_descriptions.{$code}");
+                return config("auto-doc.defaults.code-descriptions.{$code}");
             },
             function() use ($code) {
                 return Response::$statusTexts[$code];
