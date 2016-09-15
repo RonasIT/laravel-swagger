@@ -11,14 +11,17 @@
     }
   ],
   "require": {
-    "php": ">=5.3.7",
+    "php": ">=5.6",
     "laravel/framework": "~5.2.0",
-    "jan-swiecki/simple-annotations": "~0.3.1"
+    "minime/annotations": "2.3.1"
   },
   "autoload": {
     "psr-4": {
       "RonasIT\\Support\\AutoDoc\\": "src/"
-    }
+    },
+    "files": [
+      "src/helpers.php"
+    ]
   },
   "minimum-stability": "stable"
 }

@@ -31,5 +31,12 @@ return [
     ],
     'basePath' => '/',
     'schemes' => [],
-    'definitions' => []
+    'definitions' => [],
+    'defaults' => [
+        'code_descriptions' => [
+            '200' => 'Operation successfully done',
+            '204' => 'Operation successfully done',
+            '404' => 'This entity not found'
+        ]
+    ]
 ];

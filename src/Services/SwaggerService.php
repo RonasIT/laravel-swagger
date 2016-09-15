@@ -9,9 +9,10 @@
 
 namespace RonasIT\Support\AutoDoc\Services;
 
-use App\Http\Requests\Request;
 use Illuminate\Container\Container;
-use Illuminate\Http\Exception\HttpResponseException;
+use Minime\Annotations\Reader as AnnotationReader;
+use Minime\Annotations\Parser;
+use Minime\Annotations\Cache\ArrayCache;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\CannotFindTemporaryFileException;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
 class SwaggerService
 {
     use GetDependenciesTrait;
+
+    protected $annotationReader;
 
     protected $data;
     protected $container;
@@ -31,6 +34,8 @@ class SwaggerService
     public function __construct(Container $container)
     {
         $this->container = $container;
+
+        $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
 
         $file = config('auto-doc.files.temporary');
 
@@ -192,32 +197,39 @@ class SwaggerService
     public function saveDescription() {
         $request = $this->getConcreteRequest();
 
+        $this->item['summary'] = $this->parseRequestName($request);
+
+        $description = $this->getRequestDescription($request);
+
+        if (!empty($description)) {
+            $this->item['description'] = $description;
+        }
+    }
+
+    protected function parseRequestName($request) {
         $explodedRequest = explode('\\', $request);
         $requestName = array_pop($explodedRequest);
 
         $underscoreRequestName = $this->camelCaseToUnderScore($requestName);
 
-        $this->item['summary'] = preg_replace('/[_]/', ' ', $underscoreRequestName);
+         return preg_replace('/[_]/', ' ', $underscoreRequestName);
+    }
 
-        if (!empty($request)) {
-            $this->item['description'] = $request::getDescription();
-        }
+    protected function getRequestDescription($request) {
+        $annotations = $this->annotationReader->getClassAnnotations($request);
+
+        return $annotations->get('description');
     }
 
     protected function getResponseDescription($code) {
         $request = $this->getConcreteRequest();
 
-        if (empty($request)) {
-            return Response::$statusTexts[$code];
-        }
-
-        $description = $request::getDescriptionOfResponse($code);
-
-        if (empty($description)) {
-            return Response::$statusTexts[$code];
-        }
-
-        return $description;
+        return elseChain(
+            empty($request) ? Response::$statusTexts[$code] : null,
+            $this->annotationReader->getClassAnnotations($request)->get($code),
+            config("auto-doc.defaults.code_descriptions.{$code}"),
+            Response::$statusTexts[$code]
+        );
     }
 
     protected function saveTempData() {
