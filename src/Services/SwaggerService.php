@@ -155,7 +155,7 @@ class SwaggerService
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
-            $existedParameter = array_first($this->item['parameters'], function ($key, $existedParameter) use ($parameter) {
+            $existedParameter = array_first($this->item['parameters'], function ($existedParameter, $key) use ($parameter) {
                 return $existedParameter['name'] == $parameter;
             });
 
@@ -197,7 +197,7 @@ class SwaggerService
         );
 
         return array_first($parameters, function ($key, $parameter) {
-            return preg_match('/Request/', $parameter);
+            return preg_match('/Request/', $key);
         });
     }
 
@@ -240,7 +240,7 @@ class SwaggerService
         $summary = $annotations->get('summary');
 
         if (empty($summary)) {
-            $this->parseRequestName($request);
+            $summary = $this->parseRequestName($request);
         }
 
         return $summary;
