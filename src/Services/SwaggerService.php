@@ -43,6 +43,8 @@ class SwaggerService
             $this->data = json_decode(file_get_contents($file), true);
         } else {
             $this->data = $this->generateEmptyData();
+
+            file_put_contents($file, json_encode($this->data));
         }
     }
 
