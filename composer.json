@@ -12,7 +12,7 @@
   ],
   "require": {
     "php": ">=5.6",
-    "laravel/framework": ">=5.2.0",
+    "laravel/framework": ">=5.3.0",
     "minime/annotations": "2.3.1"
   },
   "autoload": {

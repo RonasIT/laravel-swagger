@@ -184,6 +184,10 @@ class SwaggerService
     public function getConcreteRequest() {
         $controller = $this->request->route()->getActionName();
 
+        if ($controller == 'Closure') {
+            return null;
+        }
+
         $explodedController = explode('@', $controller);
 
         $class = $explodedController[0];
@@ -258,7 +262,7 @@ class SwaggerService
 
         $underscoreRequestName = $this->camelCaseToUnderScore($requestName);
 
-         return preg_replace('/[_]/', ' ', $underscoreRequestName);
+        return preg_replace('/[_]/', ' ', $underscoreRequestName);
     }
 
     protected function getResponseDescription($code) {
