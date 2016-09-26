@@ -33,18 +33,20 @@ class SwaggerService
 
     public function __construct(Container $container)
     {
-        $this->container = $container;
+        if (config('auto-doc.enabled')) {
+            $this->container = $container;
 
-        $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
+            $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
 
-        $file = config('auto-doc.files.temporary');
+            $file = config('auto-doc.files.temporary');
 
-        if (file_exists($file)) {
-            $this->data = json_decode(file_get_contents($file), true);
-        } else {
-            $this->data = $this->generateEmptyData();
+            if (file_exists($file)) {
+                $this->data = json_decode(file_get_contents($file), true);
+            } else {
+                $this->data = $this->generateEmptyData();
 
-            file_put_contents($file, json_encode($this->data));
+                file_put_contents($file, json_encode($this->data));
+            }
         }
     }
 
