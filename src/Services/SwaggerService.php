@@ -153,11 +153,21 @@ class SwaggerService
     }
 
     protected function saveParameters() {
-        $rules = $this->getValidationRules();
+        $request = $this->getConcreteRequest();
+
+        if (empty($request)) {
+            return;
+        }
+
+        $annotations = $this->annotationReader->getClassAnnotations($request);
+        $rules = $request::getRules();
+
         $bodyMethods = ['post', 'put'];
 
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
+
+            $description = $annotations->get($parameter, implode(', ', $validation));
 
             $existedParameter = array_first($this->item['parameters'], function ($existedParameter, $key) use ($parameter) {
                 return $existedParameter['name'] == $parameter;
@@ -167,7 +177,7 @@ class SwaggerService
                 $this->item['parameters'][] = [
                     'in' => in_array($this->method, $bodyMethods) ? 'body' : 'query',
                     'name' => $parameter,
-                    'description' => implode(', ', $validation),
+                    'description' => $description,
                     'required' => in_array('required', $validation),
                     'type' => implode(', ', $validation)
                 ];
