@@ -13,15 +13,13 @@
   "require": {
     "php": ">=5.6",
     "laravel/framework": ">=5.3.0",
-    "minime/annotations": "2.3.1"
+    "minime/annotations": "2.3.1",
+    "ronasit/laravel-helpers": "dev-master"
   },
   "autoload": {
     "psr-4": {
       "RonasIT\\Support\\AutoDoc\\": "src/"
-    },
-    "files": [
-      "src/helpers.php"
-    ]
+    }
   },
   "minimum-stability": "stable"
 }
