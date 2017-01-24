@@ -10,6 +10,7 @@
 namespace RonasIT\Support\AutoDoc\Services;
 
 use Illuminate\Container\Container;
+use Illuminate\Support\Str;
 use Minime\Annotations\Reader as AnnotationReader;
 use Minime\Annotations\Parser;
 use Minime\Annotations\Cache\ArrayCache;
@@ -161,7 +162,7 @@ class SwaggerService
 
         $annotations = $this->annotationReader->getClassAnnotations($request);
         $rules = $request::getRules();
-        $actionName = preg_replace('[\/]','',$this->uri);
+        $actionName = $this->getActionName($this->uri);
         $requestParametersCount = count($this->request->all());
 
         if($this->method != "GET") {
@@ -194,7 +195,6 @@ class SwaggerService
     }
 
     protected function savePostRequestParameters($actionName, $requestParametersCount, $rules) {
-
         if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}.parameters"))) {
             $this->item['parameters'][] = [
                 'in' => 'body',
@@ -380,6 +380,12 @@ class SwaggerService
                 return Response::$statusTexts[$code];
             }
         );
+    }
+
+    protected function getActionName($uri) {
+        $action = preg_replace('[\/]','',$uri);
+
+        return Str::camel($action);
     }
 
     protected function saveTempData() {
