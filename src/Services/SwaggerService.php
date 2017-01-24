@@ -75,7 +75,7 @@ class SwaggerService
     }
 
     protected function prepareItem() {
-        $this->uri = $this->getUri();
+        $this->uri = "/".$this->getUri();
         $this->method = strtolower($this->request->getMethod());
 
         if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}"))) {
@@ -159,32 +159,100 @@ class SwaggerService
             return;
         }
 
+        $requestMethod = $this->request->method();
         $annotations = $this->annotationReader->getClassAnnotations($request);
         $rules = $request::getRules();
-
         $bodyMethods = ['post', 'put'];
+        $actionName = preg_replace('[\/]','',$this->uri);
+        $requestParametersCount = count($this->request->all());
 
-        foreach ($rules as $parameter => $rule) {
-            $validation = explode('|', $rule);
-
-            $description = $annotations->get($parameter, implode(', ', $validation));
-
-            $existedParameter = array_first($this->item['parameters'], function ($existedParameter, $key) use ($parameter) {
-                return $existedParameter['name'] == $parameter;
-            });
-
-            if (empty($existedParameter)) {
+        if($requestMethod != "GET"){
+            if(empty(array_get($this->data, "paths.{$this->uri}.{$this->method}.parameters"))){
                 $this->item['parameters'][] = [
                     'in' => in_array($this->method, $bodyMethods) ? 'body' : 'query',
-                    'name' => $parameter,
-                    'description' => $description,
-                    'required' => in_array('required', $validation),
-                    'type' => implode(', ', $validation)
+                    'name' => /*"$actionName",*/"body",
+                    'description' => "",
+                    'required' => true,
+                    'schema' => [
+                        "\$ref" => "#/definitions/$actionName"."Object"
+                    ]
                 ];
+            }
+
+            if(isset($this->data['definitions'][$actionName."Object"]['properties']))
+                $objectParametersCount = $this->data['definitions'][$actionName."Object"]['properties'];
+            else
+                $objectParametersCount = 0;
+
+            if( $requestParametersCount > $objectParametersCount){
+                $this->saveDefinitions($actionName,$rules);
+            }
+        }
+        else {
+            foreach ($rules as $parameter => $rule) {
+                $validation = explode('|', $rule);
+
+                $description = $annotations->get($parameter, implode(', ', $validation));
+
+                $existedParameter = array_first($this->item['parameters'], function ($existedParameter, $key) use ($parameter) {
+                    return $existedParameter['name'] == $parameter;
+                });
+
+                if (empty($existedParameter)) {
+                    $this->item['parameters'][] = [
+                        'in' => in_array($this->method, $bodyMethods) ? 'body' : 'query',
+                        'name' => $parameter,
+                        'description' => $description,
+                        'required' => in_array('required', $validation),
+                        'type' => implode(', ', $validation)
+                    ];
+                }
             }
         }
     }
+    protected function saveDefinitions($objectName, $rules){
+        $data = [
+            'type' => 'object',
+            'required' => [],
+            'properties' => [],
+            'example' => []
+        ];
 
+        $validationRules =  [
+            'array' => 'object',
+            'boolean' => 'boolean',
+            'date' => 'date',
+            'digits' => 'integer',
+            'email' => 'string',
+            'integer' => 'integer',
+            'numeric' => 'double',
+            'string' => 'string'
+        ];
+
+        foreach($rules as $parameter => $rule){
+            $data['properties'][$parameter] = [
+                'type' => 'string',
+            ];
+
+            $rulesArray = explode('|', $rule);
+
+            foreach($rulesArray as $item){
+                if(in_array($item, array_keys($validationRules))){
+                    $data['properties'][$parameter] = [
+                        'type' => $validationRules[$item],
+                    ];
+                }
+            }
+
+            if(!empty($this->request->input($parameter)))
+                $data['example'][$parameter] = $this->request->input($parameter);
+
+            if($rule == 'required')
+                array_push($data['required'], $parameter);
+        }
+
+        $this->data['definitions'][$objectName."Object"] = $data;
+    }
     protected function getValidationRules() {
         $request = $this->getConcreteRequest();
 
@@ -231,7 +299,7 @@ class SwaggerService
     public function saveTags() {
         $explodedUri = explode('/', $this->uri);
 
-        $tag = array_get($explodedUri, 0);
+        $tag = array_get($explodedUri, 1);
 
         $this->item['tags'] = [$tag];
     }
