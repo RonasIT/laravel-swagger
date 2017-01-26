@@ -315,9 +315,11 @@ class SwaggerService
     }
 
     public function saveTags() {
+        $tagIndex = 1;
+
         $explodedUri = explode('/', $this->uri);
 
-        $tag = array_get($explodedUri, 1);
+        $tag = array_get($explodedUri, $tagIndex);
 
         $this->item['tags'] = [$tag];
     }
