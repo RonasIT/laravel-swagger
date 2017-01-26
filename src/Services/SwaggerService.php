@@ -255,7 +255,7 @@ class SwaggerService
             }
         }
 
-        $data['properties'][$parameter]['description'] = implode(',',$rulesArray);
+        $data['properties'][$parameter]['description'] = implode(', ',$rulesArray);
     }
 
     protected function requestHasMoreProperties($actionName) {
