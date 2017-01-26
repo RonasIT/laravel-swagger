@@ -163,16 +163,15 @@ class SwaggerService
         $annotations = $this->annotationReader->getClassAnnotations($request);
         $rules = $request::getRules();
         $actionName = $this->getActionName($this->uri);
-        $requestParametersCount = count($this->request->all());
 
         if($this->method != "GET") {
-            $this->savePostRequestParameters($actionName, $requestParametersCount, $rules);
+            $this->savePostRequestParameters($actionName, $rules);
         }
         else {
             $this->saveGetRequestParameters($rules, $annotations);
         }
     }
-    protected function saveGetRequestParameters($rules,$annotations) {
+    protected function saveGetRequestParameters($rules, $annotations) {
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
@@ -194,7 +193,7 @@ class SwaggerService
         }
     }
 
-    protected function savePostRequestParameters($actionName, $requestParametersCount, $rules) {
+    protected function savePostRequestParameters($actionName, $rules) {
         if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}.parameters"))) {
             $this->item['parameters'][] = [
                 'in' => 'body',
@@ -207,14 +206,7 @@ class SwaggerService
             ];
         }
 
-        if (isset($this->data['definitions'][$actionName."Object"]['properties'])) {
-            $objectParametersCount = $this->data['definitions'][$actionName."Object"]['properties'];
-        }
-        else {
-            $objectParametersCount = 0;
-        }
-
-        if ($requestParametersCount > $objectParametersCount) {
+        if ($this->requestHasMoreProperties($actionName)) {
             $this->saveDefinitions($actionName, $rules);
         }
     }
@@ -224,16 +216,10 @@ class SwaggerService
             'type' => 'object',
             'required' => [],
             'properties' => [],
-            'example' => []
+            'example' => $this->request->all()
         ];
-
         foreach ($rules as $parameter => $rule) {
-
             $this->saveParameterType($data, $parameter, $rule);
-
-            if (!empty($this->request->input($parameter))) {
-                $data['example'][$parameter] = $this->request->input($parameter);
-            }
 
             if($rule == 'required') {
                 array_push($data['required'], $parameter);
@@ -268,7 +254,23 @@ class SwaggerService
                 ];
             }
         }
+
+        $data['properties'][$parameter]['description'] = implode(',',$rulesArray);
     }
+
+    protected function requestHasMoreProperties($actionName) {
+        $requestParametersCount = count($this->request->all());
+
+        if (isset($this->data['definitions'][$actionName."Object"]['properties'])) {
+            $objectParametersCount = count($this->data['definitions'][$actionName."Object"]['properties']);
+        }
+        else {
+            $objectParametersCount = 0;
+        }
+
+        return $requestParametersCount > $objectParametersCount;
+    }
+
     protected function getValidationRules() {
         $request = $this->getConcreteRequest();
 
