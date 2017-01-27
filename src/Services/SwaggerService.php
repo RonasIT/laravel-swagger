@@ -164,7 +164,7 @@ class SwaggerService
         $rules = $request::getRules();
         $actionName = $this->getActionName($this->uri);
 
-        if($this->method != "GET") {
+        if (!in_array($this->method, ["get", "delete"])) {
             $this->savePostRequestParameters($actionName, $rules);
         }
         else {
@@ -194,19 +194,23 @@ class SwaggerService
     }
 
     protected function savePostRequestParameters($actionName, $rules) {
-        if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}.parameters"))) {
-            $this->item['parameters'][] = [
-                'in' => 'body',
-                'name' => "body",
-                'description' => "",
-                'required' => true,
-                'schema' => [
-                    "\$ref" => "#/definitions/$actionName"."Object"
-                ]
-            ];
-        }
+        $bodyParamExisted = array_where($this->data["paths"][$this->uri][$this->method]['parameters'], function($value, $key) {
+            return $value['name'] == 'body';
+        });
 
         if ($this->requestHasMoreProperties($actionName)) {
+            if (empty($bodyParamExisted)) {
+                $this->item['parameters'][] = [
+                    'in' => 'body',
+                    'name' => "body",
+                    'description' => "",
+                    'required' => true,
+                    'schema' => [
+                        "\$ref" => "#/definitions/$actionName"."Object"
+                    ]
+                ];
+            }
+
             $this->saveDefinitions($actionName, $rules);
         }
     }
@@ -216,7 +220,7 @@ class SwaggerService
             'type' => 'object',
             'required' => [],
             'properties' => [],
-            'example' => $this->request->all()
+            'example' => $this->parseNullValues()
         ];
         foreach ($rules as $parameter => $rule) {
             $this->saveParameterType($data, $parameter, $rule);
@@ -229,8 +233,8 @@ class SwaggerService
         $this->data['definitions'][$objectName."Object"] = $data;
     }
 
-    protected function saveParameterType($data, $parameter, $rule) {
-        $validationRules =  [
+    protected function saveParameterType(&$data, $parameter, $rule) {
+        $validationRules = [
             'array' => 'object',
             'boolean' => 'boolean',
             'date' => 'date',
@@ -269,6 +273,22 @@ class SwaggerService
         }
 
         return $requestParametersCount > $objectParametersCount;
+    }
+
+    protected function parseNullValues() {
+        $requestParams = $this->request->all();
+
+        if ($requestParams == null) {
+           return "";
+        }
+
+        foreach ($requestParams as $param => $value) {
+            if (gettype($value) == "NULL") {
+                $requestParams[$param] = 0;
+            }
+        }
+
+        return $requestParams;
     }
 
     protected function getValidationRules() {
