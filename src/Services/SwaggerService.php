@@ -59,7 +59,7 @@ class SwaggerService
             'basePath' => config('auto-doc.basePath'),
             'schemes' => config('auto-doc.schemes'),
             'paths' => [],
-            'definitions' => config('auto-doc.definitions'),
+            'definitions' => config('auto-doc.definitions')
         ];
     }
 
@@ -86,7 +86,8 @@ class SwaggerService
                 'produces' => [],
                 'parameters' => $this->getPathParams(),
                 'responses' => [],
-                'security' => []
+                'security' => [],
+                'description' => ''
             ];
         }
 
@@ -164,11 +165,11 @@ class SwaggerService
         $rules = $request::getRules();
         $actionName = $this->getActionName($this->uri);
 
-        if (!in_array($this->method, ["get", "delete"])) {
-            $this->savePostRequestParameters($actionName, $rules);
+        if (in_array($this->method, ["get", "delete"])) {
+            $this->saveGetRequestParameters($rules, $annotations);
         }
         else {
-            $this->saveGetRequestParameters($rules, $annotations);
+            $this->savePostRequestParameters($actionName, $rules);
         }
     }
     protected function saveGetRequestParameters($rules, $annotations) {
@@ -194,7 +195,8 @@ class SwaggerService
     }
 
     protected function savePostRequestParameters($actionName, $rules) {
-        $bodyParamExisted = array_where($this->data["paths"][$this->uri][$this->method]['parameters'], function($value, $key) {
+        $parameters = $this->data["paths"][$this->uri][$this->method]['parameters'];
+        $bodyParamExisted = array_where($parameters, function($value, $key) {
             return $value['name'] == 'body';
         });
 
@@ -346,6 +348,7 @@ class SwaggerService
 
     public function saveDescription() {
         $request = $this->getConcreteRequest();
+        $this->item['description'] = '';
 
         if (empty($request)) {
             return;
