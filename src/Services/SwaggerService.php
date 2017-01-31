@@ -172,6 +172,7 @@ class SwaggerService
             $this->savePostRequestParameters($actionName, $rules);
         }
     }
+
     protected function saveGetRequestParameters($rules, $annotations) {
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
@@ -195,13 +196,8 @@ class SwaggerService
     }
 
     protected function savePostRequestParameters($actionName, $rules) {
-        $parameters = $this->data["paths"][$this->uri][$this->method]['parameters'];
-        $bodyParamExisted = array_where($parameters, function($value, $key) {
-            return $value['name'] == 'body';
-        });
-
         if ($this->requestHasMoreProperties($actionName)) {
-            if (empty($bodyParamExisted)) {
+            if ($this->requestBodyParameterEmpty()) {
                 $this->item['parameters'][] = [
                     'in' => 'body',
                     'name' => "body",
@@ -222,7 +218,7 @@ class SwaggerService
             'type' => 'object',
             'required' => [],
             'properties' => [],
-            'example' => $this->parseNullValues()
+            'example' => $this->request->all()
         ];
         foreach ($rules as $parameter => $rule) {
             $this->saveParameterType($data, $parameter, $rule);
@@ -277,20 +273,14 @@ class SwaggerService
         return $requestParametersCount > $objectParametersCount;
     }
 
-    protected function parseNullValues() {
-        $requestParams = $this->request->all();
+    protected function requestBodyParameterEmpty() {
+        $parameters = $this->data["paths"][$this->uri][$this->method]['parameters'];
 
-        if ($requestParams == null) {
-           return "";
-        }
+        $bodyParamExisted = array_where($parameters, function($value, $key) {
+            return $value['name'] == 'body';
+        });
 
-        foreach ($requestParams as $param => $value) {
-            if (gettype($value) == "NULL") {
-                $requestParams[$param] = 0;
-            }
-        }
-
-        return $requestParams;
+        return empty($bodyParamExisted);
     }
 
     protected function getValidationRules() {
