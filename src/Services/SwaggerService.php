@@ -264,8 +264,7 @@ class SwaggerService
 
         if (isset($this->data['definitions'][$actionName."Object"]['properties'])) {
             $objectParametersCount = count($this->data['definitions'][$actionName."Object"]['properties']);
-        }
-        else {
+        } else {
             $objectParametersCount = 0;
         }
 
