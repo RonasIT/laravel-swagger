@@ -10,6 +10,7 @@
 namespace RonasIT\Support\AutoDoc\Services;
 
 use Illuminate\Container\Container;
+use Illuminate\Support\Str;
 use Minime\Annotations\Reader as AnnotationReader;
 use Minime\Annotations\Parser;
 use Minime\Annotations\Cache\ArrayCache;
@@ -58,7 +59,14 @@ class SwaggerService
             'basePath' => config('auto-doc.basePath'),
             'schemes' => config('auto-doc.schemes'),
             'paths' => [],
-            'definitions' => config('auto-doc.definitions'),
+            'securityDefinitions' => [
+                "jwt_auth" => [
+                    "type" => "apiKey",
+                    "name" => "authorization",
+                    "in" => "header"
+                ]
+            ],
+            'definitions' => config('auto-doc.definitions')
         ];
     }
 
@@ -75,7 +83,7 @@ class SwaggerService
     }
 
     protected function prepareItem() {
-        $this->uri = $this->getUri();
+        $this->uri = "/{$this->getUri()}";
         $this->method = strtolower($this->request->getMethod());
 
         if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}"))) {
@@ -85,7 +93,8 @@ class SwaggerService
                 'produces' => [],
                 'parameters' => $this->getPathParams(),
                 'responses' => [],
-                'security' => []
+                'security' => [],
+                'description' => ''
             ];
         }
 
@@ -129,6 +138,7 @@ class SwaggerService
         $this->saveTags();
         $this->saveParameters();
         $this->saveDescription();
+        $this->saveSecurity();
     }
 
     protected function parseResponse() {
@@ -161,9 +171,16 @@ class SwaggerService
 
         $annotations = $this->annotationReader->getClassAnnotations($request);
         $rules = $request::getRules();
+        $actionName = $this->getActionName($this->uri);
 
-        $bodyMethods = ['post', 'put'];
-
+        if (in_array($this->method, ["get", "delete"])) {
+            $this->saveGetRequestParameters($rules, $annotations);
+        }
+        else {
+            $this->savePostRequestParameters($actionName, $rules);
+        }
+    }
+    protected function saveGetRequestParameters($rules, $annotations) {
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
@@ -175,7 +192,7 @@ class SwaggerService
 
             if (empty($existedParameter)) {
                 $this->item['parameters'][] = [
-                    'in' => in_array($this->method, $bodyMethods) ? 'body' : 'query',
+                    'in' => 'query',
                     'name' => $parameter,
                     'description' => $description,
                     'required' => in_array('required', $validation),
@@ -183,6 +200,105 @@ class SwaggerService
                 ];
             }
         }
+    }
+
+    protected function savePostRequestParameters($actionName, $rules) {
+        $parameters = $this->data["paths"][$this->uri][$this->method]['parameters'];
+        $bodyParamExisted = array_where($parameters, function($value, $key) {
+            return $value['name'] == 'body';
+        });
+
+        if ($this->requestHasMoreProperties($actionName)) {
+            if (empty($bodyParamExisted)) {
+                $this->item['parameters'][] = [
+                    'in' => 'body',
+                    'name' => "body",
+                    'description' => "",
+                    'required' => true,
+                    'schema' => [
+                        "\$ref" => "#/definitions/$actionName"."Object"
+                    ]
+                ];
+            }
+
+            $this->saveDefinitions($actionName, $rules);
+        }
+    }
+
+    protected function saveDefinitions($objectName, $rules) {
+        $data = [
+            'type' => 'object',
+            'required' => [],
+            'properties' => [],
+            'example' => $this->parseNullValues()
+        ];
+        foreach ($rules as $parameter => $rule) {
+            $this->saveParameterType($data, $parameter, $rule);
+
+            if($rule == 'required') {
+                array_push($data['required'], $parameter);
+            }
+        }
+
+        $this->data['definitions'][$objectName."Object"] = $data;
+    }
+
+    protected function saveParameterType(&$data, $parameter, $rule) {
+        $validationRules = [
+            'array' => 'object',
+            'boolean' => 'boolean',
+            'date' => 'date',
+            'digits' => 'integer',
+            'email' => 'string',
+            'integer' => 'integer',
+            'numeric' => 'double',
+            'string' => 'string'
+        ];
+
+        $data['properties'][$parameter] = [
+            'type' => 'string',
+        ];
+
+        $rulesArray = explode('|', $rule);
+
+        foreach ($rulesArray as $item) {
+            if (in_array($item, array_keys($validationRules))) {
+                $data['properties'][$parameter] = [
+                    'type' => $validationRules[$item],
+                ];
+            }
+        }
+
+        $data['properties'][$parameter]['description'] = implode(', ',$rulesArray);
+    }
+
+    protected function requestHasMoreProperties($actionName) {
+        $requestParametersCount = count($this->request->all());
+
+        if (isset($this->data['definitions'][$actionName."Object"]['properties'])) {
+            $objectParametersCount = count($this->data['definitions'][$actionName."Object"]['properties']);
+        }
+        else {
+            $objectParametersCount = 0;
+        }
+
+        return $requestParametersCount > $objectParametersCount;
+    }
+
+    protected function parseNullValues() {
+        $requestParams = $this->request->all();
+
+        if ($requestParams == null) {
+           return "";
+        }
+
+        foreach ($requestParams as $param => $value) {
+            if (gettype($value) == "NULL") {
+                $requestParams[$param] = 0;
+            }
+        }
+
+        return $requestParams;
     }
 
     protected function getValidationRules() {
@@ -229,15 +345,18 @@ class SwaggerService
     }
 
     public function saveTags() {
+        $tagIndex = 1;
+
         $explodedUri = explode('/', $this->uri);
 
-        $tag = array_get($explodedUri, 0);
+        $tag = array_get($explodedUri, $tagIndex);
 
         $this->item['tags'] = [$tag];
     }
 
     public function saveDescription() {
         $request = $this->getConcreteRequest();
+        $this->item['description'] = '';
 
         if (empty($request)) {
             return;
@@ -247,8 +366,29 @@ class SwaggerService
 
         $description = $this->getDescription($request);
 
+        $authSummary = $this->getAuthSummary();
+
         if (!empty($description)) {
             $this->item['description'] = $description;
+        }
+
+        if (!empty($authSummary)) {
+            $this->item['description'].= " You can login for this method! Login token: {$authSummary}";
+        }
+    }
+
+    protected function saveSecurity() {
+        if (!empty($this->getAuthSummary())) {
+            $this->addSecurityToOperation();
+        }
+    }
+
+    protected function addSecurityToOperation() {
+        $array = array_first($this->data['paths'][$this->uri][$this->method]['security']);
+        if (empty($this->data['paths'][$this->uri][$this->method]['security'])) {
+            $this->data['paths'][$this->uri][$this->method]['security'][] = [
+                'jwt_auth'=>[]
+            ];
         }
     }
 
@@ -268,6 +408,13 @@ class SwaggerService
         $annotations = $this->annotationReader->getClassAnnotations($request);
 
         return $annotations->get('description');
+    }
+
+    protected function getAuthSummary() {
+        $header = $this->request->header('authorization');
+
+        return empty($header) ? "" : $header;
+
     }
 
     protected function parseRequestName($request) {
@@ -296,6 +443,12 @@ class SwaggerService
                 return Response::$statusTexts[$code];
             }
         );
+    }
+
+    protected function getActionName($uri) {
+        $action = preg_replace('[\/]','',$uri);
+
+        return Str::camel($action);
     }
 
     protected function saveTempData() {
