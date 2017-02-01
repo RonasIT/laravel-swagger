@@ -167,8 +167,7 @@ class SwaggerService
 
         if (in_array($this->method, ["get", "delete"])) {
             $this->saveGetRequestParameters($rules, $annotations);
-        }
-        else {
+        } else {
             $this->savePostRequestParameters($actionName, $rules);
         }
     }
@@ -197,7 +196,7 @@ class SwaggerService
 
     protected function savePostRequestParameters($actionName, $rules) {
         if ($this->requestHasMoreProperties($actionName)) {
-            if ($this->requestBodyParameterEmpty()) {
+            if ($this->requestHasBody()) {
                 $this->item['parameters'][] = [
                     'in' => 'body',
                     'name' => "body",
@@ -273,7 +272,7 @@ class SwaggerService
         return $requestParametersCount > $objectParametersCount;
     }
 
-    protected function requestBodyParameterEmpty() {
+    protected function requestHasBody() {
         $parameters = $this->data["paths"][$this->uri][$this->method]['parameters'];
 
         $bodyParamExisted = array_where($parameters, function($value, $key) {
