@@ -168,7 +168,7 @@ class SwaggerService
         if (in_array($this->method, ["get", "delete"])) {
             $this->saveGetRequestParameters($rules, $annotations);
         } else {
-            $this->savePostRequestParameters($actionName, $rules);
+            $this->savePostRequestParameters($actionName, $rules, $annotations);
         }
     }
 
@@ -194,7 +194,7 @@ class SwaggerService
         }
     }
 
-    protected function savePostRequestParameters($actionName, $rules) {
+    protected function savePostRequestParameters($actionName, $rules, $annotations) {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
                 $this->item['parameters'][] = [
@@ -208,18 +208,18 @@ class SwaggerService
                 ];
             }
 
-            $this->saveDefinitions($actionName, $rules);
+            $this->saveDefinitions($actionName, $rules, $annotations);
         }
     }
 
-    protected function saveDefinitions($objectName, $rules) {
+    protected function saveDefinitions($objectName, $rules, $annotations) {
         $data = [
             'type' => 'object',
             'required' => [],
             'properties' => []
         ];
         foreach ($rules as $parameter => $rule) {
-            $this->saveParameterType($data, $parameter, $rule);
+            $this->saveParameterType($data, $parameter, $rule, $annotations);
 
             if($rule == 'required') {
                 array_push($data['required'], $parameter);
@@ -230,7 +230,7 @@ class SwaggerService
         $this->data['definitions'][$objectName."Object"] = $data;
     }
 
-    protected function saveParameterType(&$data, $parameter, $rule) {
+    protected function saveParameterType(&$data, $parameter, $rule, $annotations) {
         $validationRules = [
             'array' => 'object',
             'boolean' => 'boolean',
@@ -255,8 +255,8 @@ class SwaggerService
                 ];
             }
         }
-
-        $data['properties'][$parameter]['description'] = implode(', ',$rulesArray);
+        $description = $annotations->get($parameter, implode(', ', $rulesArray));
+        $data['properties'][$parameter]['description'] = $description;
     }
 
     protected function requestHasMoreProperties($actionName) {
