@@ -216,8 +216,7 @@ class SwaggerService
         $data = [
             'type' => 'object',
             'required' => [],
-            'properties' => [],
-            'example' => $this->request->all()
+            'properties' => []
         ];
         foreach ($rules as $parameter => $rule) {
             $this->saveParameterType($data, $parameter, $rule);
@@ -227,6 +226,7 @@ class SwaggerService
             }
         }
 
+        $data['example'] = $this->generateExample($data['properties']);
         $this->data['definitions'][$objectName."Object"] = $data;
     }
 
@@ -428,5 +428,45 @@ class SwaggerService
             $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
         }
         return implode('_', $ret);
+    }
+
+    protected function generateExample($properties){
+        $parameters = $this->request->all();
+        $example = [];
+
+        $this->replaceNullValues($parameters, $properties, $example);
+
+        return $example;
+    }
+
+    /**
+     * All functions below are temporary solution for
+     * this issue: https://github.com/OAI/OpenAPI-Specification/issues/229
+     * We hope swagger developers will resolve this problem in next release of Swagger OpenAPI
+     * */
+
+    private function replaceNullValues($parameters, $types, &$example) {
+        foreach ($parameters as $parameter => $value) {
+            if (gettype($value) == "NULL") {
+                $example[$parameter] = $this->getDefaultValueByType($types[$parameter]['type']);
+            } elseif (gettype($value) == "array") {
+                $this->replaceNullValues($value, $types, $example[$parameter]);
+            } else {
+                $example[$parameter] = $value;
+            }
+        }
+    }
+
+    private function getDefaultValueByType($type) {
+        $values = [
+            'object' => 'null',
+            'boolean' => false,
+            'date' => "0000-00-00",
+            'integer' => 0,
+            'string' => "",
+            'double' => 0
+        ];
+
+        return $values[$type];
     }
 }
