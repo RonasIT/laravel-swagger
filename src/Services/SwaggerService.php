@@ -31,6 +31,7 @@ class SwaggerService
     private $request;
     private $response;
     private $item;
+    private $security;
 
     public function __construct(Container $container)
     {
@@ -40,6 +41,8 @@ class SwaggerService
             $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
 
             $file = config('auto-doc.files.temporary');
+
+            $this->security = config('auto-doc.security');
 
             if (file_exists($file)) {
                 $this->data = json_decode(file_get_contents($file), true);
@@ -59,15 +62,40 @@ class SwaggerService
             'basePath' => config('auto-doc.basePath'),
             'schemes' => config('auto-doc.schemes'),
             'paths' => [],
-            'securityDefinitions' => [
-                "jwt_auth" => [
+            'securityDefinitions' => $this->generateSecurityDefinition(),
+            'definitions' => config('auto-doc.definitions')
+        ];
+    }
+
+    protected function generateSecurityDefinition() {
+        $availableTypes = $this->security;
+
+        if (empty($availableTypes)) {
+            return [];
+        }
+
+        $securityDefinitions = [];
+        foreach ($availableTypes as $type) {
+            $securityDefinitions[$type] = $this->generateSecurityDefinitionObject($type);
+        }
+
+        return $securityDefinitions;
+    }
+
+    /**
+     * Note: In future there will be added structures for
+     * OAuth2 and Laravel native authentications.
+     * */
+
+    protected function generateSecurityDefinitionObject($type) {
+        switch ($type) {
+            case 'jwt':
+                return [
                     "type" => "apiKey",
                     "name" => "authorization",
                     "in" => "header"
-                ]
-            ],
-            'definitions' => config('auto-doc.definitions')
-        ];
+                ];
+        }
     }
 
     public function addData($request, $response) {
@@ -366,28 +394,22 @@ class SwaggerService
 
         $description = $this->getDescription($request);
 
-        $authSummary = $this->getAuthSummary();
-
         if (!empty($description)) {
             $this->item['description'] = $description;
-        }
-
-        if (!empty($authSummary)) {
-            $this->item['description'].= " You can login for this method! Login token: {$authSummary}";
         }
     }
 
     protected function saveSecurity() {
-        if (!empty($this->getAuthSummary())) {
+        if (!empty($this->requestSupportAuth())) {
             $this->addSecurityToOperation();
         }
     }
 
     protected function addSecurityToOperation() {
-        $array = array_first($this->data['paths'][$this->uri][$this->method]['security']);
-        if (empty($this->data['paths'][$this->uri][$this->method]['security'])) {
+        $security = array_first($this->data['paths'][$this->uri][$this->method]['security']);
+        if (empty($security)) {
             $this->data['paths'][$this->uri][$this->method]['security'][] = [
-                'jwt_auth'=>[]
+                'jwt'=>[]
             ];
         }
     }
@@ -410,10 +432,10 @@ class SwaggerService
         return $annotations->get('description');
     }
 
-    protected function getAuthSummary() {
+    protected function requestSupportAuth() {
         $header = $this->request->header('authorization');
 
-        return empty($header) ? "" : $header;
+        return empty($header) ? false : true;
 
     }
 
