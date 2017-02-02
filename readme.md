@@ -36,7 +36,10 @@ to display the generated documentation for a config.
  of input parameter. 
   
 ### Example
- ````
+
+ ```php
+ <?php
+ 
  namespace App\Http\Requests;  
    
  use Illuminate\Contracts\Auth\Guard;  
@@ -76,7 +79,7 @@ to display the generated documentation for a config.
      }
  }
 
- ````
+ ```
  
  - **@summary** - short description of request
  - **@description** - Implementation Notes
