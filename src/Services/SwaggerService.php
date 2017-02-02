@@ -10,6 +10,7 @@
 namespace RonasIT\Support\AutoDoc\Services;
 
 use Illuminate\Container\Container;
+use Illuminate\Support\Str;
 use Minime\Annotations\Reader as AnnotationReader;
 use Minime\Annotations\Parser;
 use Minime\Annotations\Cache\ArrayCache;
@@ -58,7 +59,7 @@ class SwaggerService
             'basePath' => config('auto-doc.basePath'),
             'schemes' => config('auto-doc.schemes'),
             'paths' => [],
-            'definitions' => config('auto-doc.definitions'),
+            'definitions' => config('auto-doc.definitions')
         ];
     }
 
@@ -75,7 +76,7 @@ class SwaggerService
     }
 
     protected function prepareItem() {
-        $this->uri = $this->getUri();
+        $this->uri = "/{$this->getUri()}";
         $this->method = strtolower($this->request->getMethod());
 
         if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}"))) {
@@ -85,7 +86,8 @@ class SwaggerService
                 'produces' => [],
                 'parameters' => $this->getPathParams(),
                 'responses' => [],
-                'security' => []
+                'security' => [],
+                'description' => ''
             ];
         }
 
@@ -161,9 +163,16 @@ class SwaggerService
 
         $annotations = $this->annotationReader->getClassAnnotations($request);
         $rules = $request::getRules();
+        $actionName = $this->getActionName($this->uri);
 
-        $bodyMethods = ['post', 'put'];
+        if (in_array($this->method, ["get", "delete"])) {
+            $this->saveGetRequestParameters($rules, $annotations);
+        } else {
+            $this->savePostRequestParameters($actionName, $rules, $annotations);
+        }
+    }
 
+    protected function saveGetRequestParameters($rules, $annotations) {
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
@@ -175,7 +184,7 @@ class SwaggerService
 
             if (empty($existedParameter)) {
                 $this->item['parameters'][] = [
-                    'in' => in_array($this->method, $bodyMethods) ? 'body' : 'query',
+                    'in' => 'query',
                     'name' => $parameter,
                     'description' => $description,
                     'required' => in_array('required', $validation),
@@ -183,6 +192,93 @@ class SwaggerService
                 ];
             }
         }
+    }
+
+    protected function savePostRequestParameters($actionName, $rules, $annotations) {
+        if ($this->requestHasMoreProperties($actionName)) {
+            if ($this->requestHasBody()) {
+                $this->item['parameters'][] = [
+                    'in' => 'body',
+                    'name' => "body",
+                    'description' => "",
+                    'required' => true,
+                    'schema' => [
+                        "\$ref" => "#/definitions/$actionName"."Object"
+                    ]
+                ];
+            }
+
+            $this->saveDefinitions($actionName, $rules, $annotations);
+        }
+    }
+
+    protected function saveDefinitions($objectName, $rules, $annotations) {
+        $data = [
+            'type' => 'object',
+            'required' => [],
+            'properties' => []
+        ];
+        foreach ($rules as $parameter => $rule) {
+            $this->saveParameterType($data, $parameter, $rule, $annotations);
+
+            if($rule == 'required') {
+                array_push($data['required'], $parameter);
+            }
+        }
+
+        $data['example'] = $this->generateExample($data['properties']);
+        $this->data['definitions'][$objectName."Object"] = $data;
+    }
+
+    protected function saveParameterType(&$data, $parameter, $rule, $annotations) {
+        $validationRules = [
+            'array' => 'object',
+            'boolean' => 'boolean',
+            'date' => 'date',
+            'digits' => 'integer',
+            'email' => 'string',
+            'integer' => 'integer',
+            'numeric' => 'double',
+            'string' => 'string'
+        ];
+
+        $data['properties'][$parameter] = [
+            'type' => 'string',
+        ];
+
+        $rulesArray = explode('|', $rule);
+
+        foreach ($rulesArray as $item) {
+            if (in_array($item, array_keys($validationRules))) {
+                $data['properties'][$parameter] = [
+                    'type' => $validationRules[$item],
+                ];
+            }
+        }
+        $description = $annotations->get($parameter, implode(', ', $rulesArray));
+        $data['properties'][$parameter]['description'] = $description;
+    }
+
+    protected function requestHasMoreProperties($actionName) {
+        $requestParametersCount = count($this->request->all());
+
+        if (isset($this->data['definitions'][$actionName."Object"]['properties'])) {
+            $objectParametersCount = count($this->data['definitions'][$actionName."Object"]['properties']);
+        } else {
+            $objectParametersCount = 0;
+        }
+
+        return $requestParametersCount > $objectParametersCount;
+    }
+
+    protected function requestHasBody() {
+        $parameters = $this->data["paths"][$this->uri][$this->method]['parameters'];
+
+        $bodyParamExisted = array_where($parameters, function($value, $key) {
+            return $value['name'] == 'body';
+        });
+
+        return empty($bodyParamExisted);
     }
 
     protected function getValidationRules() {
@@ -229,15 +325,18 @@ class SwaggerService
     }
 
     public function saveTags() {
+        $tagIndex = 1;
+
         $explodedUri = explode('/', $this->uri);
 
-        $tag = array_get($explodedUri, 0);
+        $tag = array_get($explodedUri, $tagIndex);
 
         $this->item['tags'] = [$tag];
     }
 
     public function saveDescription() {
         $request = $this->getConcreteRequest();
+        $this->item['description'] = '';
 
         if (empty($request)) {
             return;
@@ -298,6 +397,12 @@ class SwaggerService
         );
     }
 
+    protected function getActionName($uri) {
+        $action = preg_replace('[\/]','',$uri);
+
+        return Str::camel($action);
+    }
+
     protected function saveTempData() {
         $exportFile = config('auto-doc.files.temporary');
         $data = json_encode($this->data);
@@ -323,5 +428,45 @@ class SwaggerService
             $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
         }
         return implode('_', $ret);
+    }
+
+    protected function generateExample($properties){
+        $parameters = $this->request->all();
+        $example = [];
+
+        $this->replaceNullValues($parameters, $properties, $example);
+
+        return $example;
+    }
+
+    /**
+     * NOTE: All functions below are temporary solution for
+     * this issue: https://github.com/OAI/OpenAPI-Specification/issues/229
+     * We hope swagger developers will resolve this problem in next release of Swagger OpenAPI
+     * */
+
+    private function replaceNullValues($parameters, $types, &$example) {
+        foreach ($parameters as $parameter => $value) {
+            if (is_null($value)) {
+                $example[$parameter] = $this->getDefaultValueByType($types[$parameter]['type']);
+            } elseif (is_array($value)) {
+                $this->replaceNullValues($value, $types, $example[$parameter]);
+            } else {
+                $example[$parameter] = $value;
+            }
+        }
+    }
+
+    private function getDefaultValueByType($type) {
+        $values = [
+            'object' => 'null',
+            'boolean' => false,
+            'date' => "0000-00-00",
+            'integer' => 0,
+            'string' => "",
+            'double' => 0
+        ];
+
+        return $values[$type];
     }
 }
