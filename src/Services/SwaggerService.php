@@ -440,16 +440,16 @@ class SwaggerService
     }
 
     /**
-     * All functions below are temporary solution for
+     * NOTE: All functions below are temporary solution for
      * this issue: https://github.com/OAI/OpenAPI-Specification/issues/229
      * We hope swagger developers will resolve this problem in next release of Swagger OpenAPI
      * */
 
     private function replaceNullValues($parameters, $types, &$example) {
         foreach ($parameters as $parameter => $value) {
-            if (gettype($value) == "NULL") {
+            if (is_null($value)) {
                 $example[$parameter] = $this->getDefaultValueByType($types[$parameter]['type']);
-            } elseif (gettype($value) == "array") {
+            } elseif (is_array($value)) {
                 $this->replaceNullValues($value, $types, $example[$parameter]);
             } else {
                 $example[$parameter] = $value;
