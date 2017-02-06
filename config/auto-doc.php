@@ -32,7 +32,7 @@ return [
     'basePath' => '/',
     'schemes' => [],
     'definitions' => [],
-    'security' => [], //possible values : jwt, laravel, oauth
+    'security' => '', //possible values : jwt, laravel, oauth
     'defaults' => [
         'code-descriptions' => [
             '200' => 'Operation successfully done',

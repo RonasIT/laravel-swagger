@@ -68,16 +68,19 @@ class SwaggerService
     }
 
     protected function generateSecurityDefinition() {
-        $availableTypes = $this->security;
+        $availableTypes = ['jwt', 'laravel', 'oauth'];
+        $security = $this->security;
 
-        if (empty($availableTypes)) {
+        if (empty($security)) {
             return [];
         }
 
-        $securityDefinitions = [];
-        foreach ($availableTypes as $type) {
-            $securityDefinitions[$type] = $this->generateSecurityDefinitionObject($type);
+        if (!in_array($security, $availableTypes)) {
+           return [];
         }
+
+        $securityDefinitions[$security] = $this->generateSecurityDefinitionObject($security);
+
 
         return $securityDefinitions;
     }
@@ -388,7 +391,7 @@ class SwaggerService
     }
 
     protected function saveSecurity() {
-        if (!empty($this->requestSupportAuth())) {
+        if (!empty($this->requestSupportAuth($this->security))) {
             $this->addSecurityToOperation();
         }
     }
@@ -397,7 +400,7 @@ class SwaggerService
         $security = array_first($this->data['paths'][$this->uri][$this->method]['security']);
         if (empty($security)) {
             $this->data['paths'][$this->uri][$this->method]['security'][] = [
-                'jwt'=>[]
+                "{$this->security}" => []
             ];
         }
     }
@@ -420,8 +423,21 @@ class SwaggerService
         return $annotations->get('description');
     }
 
-    protected function requestSupportAuth() {
-        $header = $this->request->header('authorization');
+    protected function requestSupportAuth($type) {
+        switch ($type) {
+            case 'jwt' :
+                $header = $this->request->header('authorization');
+                break;
+            case 'laravel' :
+                $header = $this->request->cookie('user');
+                break;
+            case 'oauth' :
+                $header = $this->request->header('oauth_token');
+                break;
+            default :
+                $header = '';
+                break;
+        }
 
         return empty($header) ? false : true;
 
