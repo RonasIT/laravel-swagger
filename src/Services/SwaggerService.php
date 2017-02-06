@@ -429,7 +429,7 @@ class SwaggerService
                 $header = $this->request->header('authorization');
                 break;
             case 'laravel' :
-                $header = $this->request->cookie('user');
+                $header = $this->request->cookie('__ym_uid');
                 break;
             case 'oauth' :
                 $header = $this->request->header('oauth_token');
