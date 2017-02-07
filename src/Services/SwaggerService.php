@@ -16,6 +16,8 @@ use Minime\Annotations\Parser;
 use Minime\Annotations\Cache\ArrayCache;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\CannotFindTemporaryFileException;
+use RonasIT\Support\AutoDoc\Exceptions\EmptySecurityConfigException;
+use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use Symfony\Component\HttpFoundation\Response;
 
 class SwaggerService
@@ -68,15 +70,15 @@ class SwaggerService
     }
 
     protected function generateSecurityDefinition() {
-        $availableTypes = ['jwt', 'laravel', 'oauth'];
+        $availableTypes = ['jwt', 'laravel', 'null'];
         $security = $this->security;
 
         if (empty($security)) {
-            return [];
+            throw new EmptySecurityConfigException();
         }
 
         if (!in_array($security, $availableTypes)) {
-           return [];
+           throw new WrongSecurityConfigException();
         }
 
         $securityDefinitions[$security] = $this->generateSecurityDefinitionObject($security);
@@ -85,17 +87,19 @@ class SwaggerService
         return $securityDefinitions;
     }
 
-    /**
-     * Note: In future there will be added structures for
-     * OAuth2 and Laravel native authentications.
-     * */
-
     protected function generateSecurityDefinitionObject($type) {
         switch ($type) {
             case 'jwt':
                 return [
                     "type" => "apiKey",
                     "name" => "authorization",
+                    "in" => "header"
+                ];
+
+            case 'laravel':
+                return [
+                    "type" => "apiKey",
+                    "name" => "Cookie",
                     "in" => "header"
                 ];
         }
@@ -430,9 +434,6 @@ class SwaggerService
                 break;
             case 'laravel' :
                 $header = $this->request->cookie('__ym_uid');
-                break;
-            case 'oauth' :
-                $header = $this->request->header('oauth_token');
                 break;
             default :
                 $header = '';
