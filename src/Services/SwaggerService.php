@@ -81,6 +81,10 @@ class SwaggerService
            throw new WrongSecurityConfigException();
         }
 
+        if ($security == 'null') {
+            return '';
+        }
+
         $securityDefinitions[$security] = $this->generateSecurityDefinitionObject($security);
 
 
