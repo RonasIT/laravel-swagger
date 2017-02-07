@@ -70,19 +70,15 @@ class SwaggerService
     }
 
     protected function generateSecurityDefinition() {
-        $availableTypes = ['jwt', 'laravel', 'null'];
+        $availableTypes = ['jwt', 'laravel'];
         $security = $this->security;
 
         if (empty($security)) {
-            throw new EmptySecurityConfigException();
+            return '';
         }
 
         if (!in_array($security, $availableTypes)) {
            throw new WrongSecurityConfigException();
-        }
-
-        if ($security == 'null') {
-            return '';
         }
 
         $securityDefinitions[$security] = $this->generateSecurityDefinitionObject($security);
@@ -405,9 +401,9 @@ class SwaggerService
     }
 
     protected function addSecurityToOperation() {
-        $security = array_first($this->data['paths'][$this->uri][$this->method]['security']);
+        $security = &$this->data['paths'][$this->uri][$this->method]['security'];
         if (empty($security)) {
-            $this->data['paths'][$this->uri][$this->method]['security'][] = [
+            $security[] = [
                 "{$this->security}" => []
             ];
         }
