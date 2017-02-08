@@ -83,7 +83,6 @@ class SwaggerService
 
         $securityDefinitions[$security] = $this->generateSecurityDefinitionObject($security);
 
-
         return $securityDefinitions;
     }
 
@@ -395,7 +394,7 @@ class SwaggerService
     }
 
     protected function saveSecurity() {
-        if (!empty($this->requestSupportAuth($this->security))) {
+        if ($this->requestSupportAuth()) {
             $this->addSecurityToOperation();
         }
     }
@@ -427,20 +426,17 @@ class SwaggerService
         return $annotations->get('description');
     }
 
-    protected function requestSupportAuth($type) {
-        switch ($type) {
+    protected function requestSupportAuth() {
+        switch ($this->security) {
             case 'jwt' :
                 $header = $this->request->header('authorization');
                 break;
             case 'laravel' :
                 $header = $this->request->cookie('__ym_uid');
                 break;
-            default :
-                $header = '';
-                break;
         }
 
-        return empty($header) ? false : true;
+        return !empty($header);
 
     }
 
