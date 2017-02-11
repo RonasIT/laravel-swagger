@@ -16,7 +16,6 @@ use Minime\Annotations\Parser;
 use Minime\Annotations\Cache\ArrayCache;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\CannotFindTemporaryFileException;
-use RonasIT\Support\AutoDoc\Exceptions\EmptySecurityConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -81,9 +80,9 @@ class SwaggerService
            throw new WrongSecurityConfigException();
         }
 
-        $securityDefinitions[$security] = $this->generateSecurityDefinitionObject($security);
-
-        return $securityDefinitions;
+        return [
+            $security => $this->generateSecurityDefinitionObject($security)
+        ];
     }
 
     protected function generateSecurityDefinitionObject($type) {
