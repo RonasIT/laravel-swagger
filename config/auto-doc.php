@@ -32,6 +32,7 @@ return [
     'basePath' => '/',
     'schemes' => [],
     'definitions' => [],
+    'security' => '', //possible values : jwt, laravel or null if your project dont need auth
     'defaults' => [
         'code-descriptions' => [
             '200' => 'Operation successfully done',

@@ -16,6 +16,7 @@ use Minime\Annotations\Parser;
 use Minime\Annotations\Cache\ArrayCache;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\CannotFindTemporaryFileException;
+use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use Symfony\Component\HttpFoundation\Response;
 
 class SwaggerService
@@ -31,6 +32,7 @@ class SwaggerService
     private $request;
     private $response;
     private $item;
+    private $security;
 
     public function __construct(Container $container)
     {
@@ -40,6 +42,8 @@ class SwaggerService
             $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
 
             $file = config('auto-doc.files.temporary');
+
+            $this->security = config('auto-doc.security');
 
             if (file_exists($file)) {
                 $this->data = json_decode(file_get_contents($file), true);
@@ -59,8 +63,44 @@ class SwaggerService
             'basePath' => config('auto-doc.basePath'),
             'schemes' => config('auto-doc.schemes'),
             'paths' => [],
+            'securityDefinitions' => $this->generateSecurityDefinition(),
             'definitions' => config('auto-doc.definitions')
         ];
+    }
+
+    protected function generateSecurityDefinition() {
+        $availableTypes = ['jwt', 'laravel'];
+        $security = $this->security;
+
+        if (empty($security)) {
+            return '';
+        }
+
+        if (!in_array($security, $availableTypes)) {
+           throw new WrongSecurityConfigException();
+        }
+
+        return [
+            $security => $this->generateSecurityDefinitionObject($security)
+        ];
+    }
+
+    protected function generateSecurityDefinitionObject($type) {
+        switch ($type) {
+            case 'jwt':
+                return [
+                    "type" => "apiKey",
+                    "name" => "authorization",
+                    "in" => "header"
+                ];
+
+            case 'laravel':
+                return [
+                    "type" => "apiKey",
+                    "name" => "Cookie",
+                    "in" => "header"
+                ];
+        }
     }
 
     public function addData($request, $response) {
@@ -131,6 +171,7 @@ class SwaggerService
         $this->saveTags();
         $this->saveParameters();
         $this->saveDescription();
+        $this->saveSecurity();
     }
 
     protected function parseResponse() {
@@ -351,6 +392,21 @@ class SwaggerService
         }
     }
 
+    protected function saveSecurity() {
+        if ($this->requestSupportAuth()) {
+            $this->addSecurityToOperation();
+        }
+    }
+
+    protected function addSecurityToOperation() {
+        $security = &$this->data['paths'][$this->uri][$this->method]['security'];
+        if (empty($security)) {
+            $security[] = [
+                "{$this->security}" => []
+            ];
+        }
+    }
+
     protected function getSummary($request) {
         $annotations = $this->annotationReader->getClassAnnotations($request);
 
@@ -367,6 +423,20 @@ class SwaggerService
         $annotations = $this->annotationReader->getClassAnnotations($request);
 
         return $annotations->get('description');
+    }
+
+    protected function requestSupportAuth() {
+        switch ($this->security) {
+            case 'jwt' :
+                $header = $this->request->header('authorization');
+                break;
+            case 'laravel' :
+                $header = $this->request->cookie('__ym_uid');
+                break;
+        }
+
+        return !empty($header);
+
     }
 
     protected function parseRequestName($request) {
