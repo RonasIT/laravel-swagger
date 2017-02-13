@@ -59,13 +59,19 @@ class SwaggerService
         return [
             'swagger' => config('auto-doc.swagger.version'),
             'info' => config('auto-doc.info'),
-            'host' => config('app.url'),
+            'host' => $this->getAppUrl(),
             'basePath' => config('auto-doc.basePath'),
             'schemes' => config('auto-doc.schemes'),
             'paths' => [],
             'securityDefinitions' => $this->generateSecurityDefinition(),
             'definitions' => config('auto-doc.definitions')
         ];
+    }
+
+    protected function getAppUrl() {
+        $url = config('app.url');
+
+        return str_replace(['http://', 'https://', '/'], '', $url);
     }
 
     protected function generateSecurityDefinition() {
