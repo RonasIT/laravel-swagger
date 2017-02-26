@@ -39,5 +39,6 @@ return [
             '204' => 'Operation successfully done',
             '404' => 'This entity not found'
         ]
-    ]
+    ],
+    'dataCollectorService' => 'your-data-collector-service-class-name-here' //by default you can use localDataCollectorService
 ];
