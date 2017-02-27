@@ -18,7 +18,6 @@ use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\CannotFindTemporaryFileException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
-use RonasIT\Support\AutoDoc\Exceptions\EmptyDataCollectorClassException;
 use Symfony\Component\HttpFoundation\Response;
 
 class SwaggerService
@@ -59,7 +58,7 @@ class SwaggerService
             $dataCollectorClass = config('auto-doc.dataCollectorClass');
 
             if (empty($dataCollectorClass)) {
-                throw new EmptyDataCollectorClassException();
+                $this->dataCollector = new LocalDataCollectorService();
             } elseif (!class_exists($dataCollectorClass)) {
                 throw new DataCollectorClassNotFoundException();
             } else {

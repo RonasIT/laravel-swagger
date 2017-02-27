@@ -40,5 +40,7 @@ return [
             '404' => 'This entity not found'
         ]
     ],
-    'dataCollectorService' => 'your-data-collector-service-class-name-here' //by default you can use localDataCollectorService
+    //by default localDataCollectorService are used. You can use your own DataCollector service, just write here path to your class,
+    //e.g. RonasIT\Support\AutoDoc\Services\RemoteDataCollectorService
+    'dataCollectorService' => ''
 ];
