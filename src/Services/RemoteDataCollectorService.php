@@ -21,9 +21,8 @@ class RemoteDataCollectorService
     public function __construct()
     {
         $this->tempfilePath = config('auto-doc.files.temporary');
-        $this->remoteUrl = "http://docs.ronasit.com/{$this->key}";
-
-        $this->createKeyFromTitle();
+        $this->key = Str::camel(config('auto-doc.info.title'));
+        $this->remoteUrl = "http://localhost:8000/documentations/{$this->key}";
 
         if (empty($this->tempfilePath)) {
             throw new CannotFindTemporaryFileException();
@@ -37,7 +36,9 @@ class RemoteDataCollectorService
     }
 
     public function getFileContent() {
-        return file_get_contents($this->remoteUrl);
+        $content = json_decode(file_get_contents($this->remoteUrl), true);
+
+        return json_decode($content['document']);
     }
 
     protected function makeRequest() {
@@ -46,23 +47,18 @@ class RemoteDataCollectorService
         curl_setopt_array($curl, [
             CURLOPT_URL => $this->remoteUrl,
             CURLOPT_POST => 1,
+            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POSTFIELDS => [
-                'document' => $this->tempfilePath,
+                'document' => file_get_contents($this->tempfilePath),
             ]
         ]);
 
-        curl_exec($curl);
+        $response = curl_exec($curl);
 
         if (curl_error($curl)) {
             throw new CurlRequestErrorException();
         } else {
             curl_close($curl);
         }
-    }
-
-    protected function createKeyFromTitle() {
-        $appTitle = strtolower(config('auto-doc.info.title'));
-
-        $this->key = str_replace(' ', '_', $appTitle);
     }
 }
