@@ -8,10 +8,6 @@
 
 return [
     'enabled' => env('AUTODOC_ENABLED'),
-    'files' => [
-        'production' => env('SWAGGER_FILEPATH_PRODUCTION'),
-        'temporary' => env('SWAGGER_FILEPATH_TEMP'),
-    ],
     'route' => '/',
     'info' => [
         'description' => 'Description of your application',
@@ -39,8 +35,5 @@ return [
             '204' => 'Operation successfully done',
             '404' => 'This entity not found'
         ]
-    ],
-    //by default localDataCollectorService are used. You can use your own DataCollector service, just write here path to your class,
-    //e.g. RonasIT\Support\AutoDoc\Services\RemoteDataCollectorService
-    'dataCollectorService' => ''
+    ]
 ];

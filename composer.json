@@ -14,7 +14,8 @@
     "php": ">=5.6",
     "laravel/framework": ">=5.3.0",
     "minime/annotations": "2.3.1",
-    "ronasit/laravel-helpers": "dev-master"
+    "ronasit/laravel-helpers": "dev-master",
+    "ronasit/laravel-data-collector": "dev-master"
   },
   "autoload": {
     "psr-4": {

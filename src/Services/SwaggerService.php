@@ -18,6 +18,7 @@ use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\CannotFindTemporaryFileException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
+use RonasIT\Support\LocalDataCollector\LocalDataCollectorService;
 use Symfony\Component\HttpFoundation\Response;
 
 class SwaggerService
@@ -43,17 +44,7 @@ class SwaggerService
 
             $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
 
-            $file = config('auto-doc.files.temporary');
-
             $this->security = config('auto-doc.security');
-
-            if (file_exists($file)) {
-                $this->data = json_decode(file_get_contents($file), true);
-            } else {
-                $this->data = $this->generateEmptyData();
-
-                file_put_contents($file, json_encode($this->data));
-            }
 
             $dataCollectorClass = config('auto-doc.dataCollectorClass');
 
@@ -63,6 +54,16 @@ class SwaggerService
                 throw new DataCollectorClassNotFoundException();
             } else {
                 $this->dataCollector = new $dataCollectorClass();
+            }
+
+            $file = $this->dataCollector->tempFilePath;
+
+            if (file_exists($file)) {
+                $this->data = json_decode(file_get_contents($file), true);
+            } else {
+                $this->data = $this->generateEmptyData();
+
+                file_put_contents($file, json_encode($this->data));
             }
         }
     }
