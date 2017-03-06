@@ -46,14 +46,14 @@ class SwaggerService
 
             $this->security = config('auto-doc.security');
 
-            $dataCollectorClass = config('auto-doc.dataCollectorClass');
+            $dataCollectorClass = config('auto-doc.data_collector');
 
             if (empty($dataCollectorClass)) {
-                $this->dataCollector = new LocalDataCollectorService();
+                $this->dataCollector = app(LocalDataCollectorService::class);
             } elseif (!class_exists($dataCollectorClass)) {
                 throw new DataCollectorClassNotFoundException();
             } else {
-                $this->dataCollector = new $dataCollectorClass();
+                $this->dataCollector = app($dataCollectorClass);
             }
 
             $file = $this->dataCollector->tempFilePath;
