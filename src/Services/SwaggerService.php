@@ -46,15 +46,7 @@ class SwaggerService
 
             $this->security = config('auto-doc.security');
 
-            $dataCollectorClass = config('auto-doc.data_collector');
-
-            if (empty($dataCollectorClass)) {
-                $this->dataCollector = app(LocalDataCollectorService::class);
-            } elseif (!class_exists($dataCollectorClass)) {
-                throw new DataCollectorClassNotFoundException();
-            } else {
-                $this->dataCollector = app($dataCollectorClass);
-            }
+            $this->setDataCollector();
 
             $file = $this->dataCollector->tempFilePath;
 
@@ -65,6 +57,18 @@ class SwaggerService
 
                 file_put_contents($file, json_encode($this->data));
             }
+        }
+    }
+
+    protected function setDataCollector() {
+        $dataCollectorClass = config('auto-doc.data_collector');
+
+        if (empty($dataCollectorClass)) {
+            $this->dataCollector = app(LocalDataCollectorService::class);
+        } elseif (!class_exists($dataCollectorClass)) {
+            throw new DataCollectorClassNotFoundException();
+        } else {
+            $this->dataCollector = app($dataCollectorClass);
         }
     }
 
