@@ -10,23 +10,22 @@
 namespace RonasIT\Support\AutoDoc\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
+use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
 class AutoDocController extends BaseController
 {
+    protected $service;
+
+    public function __construct()
+    {
+        $this->service = app(SwaggerService::class);
+    }
+
     public function documentation() {
-        $documentationPath = config('auto-doc.files.production');
 
-        if (!file_exists($documentationPath)) {
-            return response()->json([
-                'message' => 'Documentation not exists'
-            ]);
-        }
+        $documentation = $this->service->getDocFileContent();
 
-        $documentation = file_get_contents($documentationPath);
-
-        return response()->json(
-            json_decode($documentation, true)
-        );
+        return response()->json($documentation);
     }
 
     public function index() {

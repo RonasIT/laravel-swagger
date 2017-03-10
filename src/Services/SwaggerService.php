@@ -17,6 +17,8 @@ use Minime\Annotations\Cache\ArrayCache;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\CannotFindTemporaryFileException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
+use RonasIT\Support\LocalDataCollector\LocalDataCollectorService;
 use Symfony\Component\HttpFoundation\Response;
 
 class SwaggerService
@@ -24,6 +26,7 @@ class SwaggerService
     use GetDependenciesTrait;
 
     protected $annotationReader;
+    protected $dataCollector;
 
     protected $data;
     protected $container;
@@ -41,9 +44,11 @@ class SwaggerService
 
             $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
 
-            $file = config('auto-doc.files.temporary');
-
             $this->security = config('auto-doc.security');
+
+            $this->setDataCollector();
+
+            $file = $this->dataCollector->tempFilePath;
 
             if (file_exists($file)) {
                 $this->data = json_decode(file_get_contents($file), true);
@@ -52,6 +57,18 @@ class SwaggerService
 
                 file_put_contents($file, json_encode($this->data));
             }
+        }
+    }
+
+    protected function setDataCollector() {
+        $dataCollectorClass = config('auto-doc.data_collector');
+
+        if (empty($dataCollectorClass)) {
+            $this->dataCollector = app(LocalDataCollectorService::class);
+        } elseif (!class_exists($dataCollectorClass)) {
+            throw new DataCollectorClassNotFoundException();
+        } else {
+            $this->dataCollector = app($dataCollectorClass);
         }
     }
 
@@ -494,7 +511,13 @@ class SwaggerService
             throw new CannotFindTemporaryFileException();
         }
 
-        rename($tempFile, $prodFile);
+        $this->dataCollector->saveData($tempFile);
+    }
+
+    public function getDocFileContent() {
+        $data = $this->dataCollector->getFileContent();
+
+        return $data;
     }
 
     private function camelCaseToUnderScore($input) {

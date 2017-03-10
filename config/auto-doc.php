@@ -8,10 +8,6 @@
 
 return [
     'enabled' => env('AUTODOC_ENABLED'),
-    'files' => [
-        'production' => env('SWAGGER_FILEPATH_PRODUCTION'),
-        'temporary' => env('SWAGGER_FILEPATH_TEMP'),
-    ],
     'route' => '/',
     'info' => [
         'description' => 'Description of your application',
@@ -39,5 +35,8 @@ return [
             '204' => 'Operation successfully done',
             '404' => 'This entity not found'
         ]
-    ]
+    ],
+    // you can use your own data collector class, just write it way below,
+    // e.g App\Path-to-your-data-collector-class
+    'data_collector' => ''
 ];
