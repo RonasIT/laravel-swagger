@@ -9,11 +9,15 @@
 namespace RonasIT\Support\AutoDoc\Interfaces;
 
 
-class DataCollectorInterface
+interface DataCollectorInterface
 {
-    public function saveData($tempData) {}
+    public function saveTmpData($data);
 
-    public function getFileContent() {}
+    public function getTmpData();
+
+    public function saveData($data);
+
+    public function getFileContent();
 }
 
 

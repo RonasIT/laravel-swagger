@@ -14,13 +14,16 @@ use Illuminate\Support\Str;
 use Minime\Annotations\Reader as AnnotationReader;
 use Minime\Annotations\Parser;
 use Minime\Annotations\Cache\ArrayCache;
+use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
-use RonasIT\Support\AutoDoc\Exceptions\CannotFindTemporaryFileException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
-use RonasIT\Support\LocalDataCollector\LocalDataCollectorService;
+use RonasIT\Support\DataCollectors\LocalDataCollector;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @property DataCollectorInterface $dataCollector
+*/
 class SwaggerService
 {
     use GetDependenciesTrait;
@@ -48,14 +51,12 @@ class SwaggerService
 
             $this->setDataCollector();
 
-            $file = $this->dataCollector->tempFilePath;
+            $this->data = $this->dataCollector->getTmpData();
 
-            if (file_exists($file)) {
-                $this->data = json_decode(file_get_contents($file), true);
-            } else {
+            if (empty($this->data)) {
                 $this->data = $this->generateEmptyData();
 
-                file_put_contents($file, json_encode($this->data));
+                $this->dataCollector->saveTmpData($this->data);
             }
         }
     }
@@ -64,7 +65,7 @@ class SwaggerService
         $dataCollectorClass = config('auto-doc.data_collector');
 
         if (empty($dataCollectorClass)) {
-            $this->dataCollector = app(LocalDataCollectorService::class);
+            $this->dataCollector = app(LocalDataCollector::class);
         } elseif (!class_exists($dataCollectorClass)) {
             throw new DataCollectorClassNotFoundException();
         } else {
@@ -135,7 +136,7 @@ class SwaggerService
         $this->parseRequest();
         $this->parseResponse();
 
-        $this->saveTempData();
+        $this->dataCollector->saveTmpData($this->data);
     }
 
     protected function prepareItem() {
@@ -504,14 +505,7 @@ class SwaggerService
     }
 
     public function saveProductionData() {
-        $tempFile = config('auto-doc.files.temporary');
-        $prodFile = config('auto-doc.files.production');
-
-        if (!file_exists($tempFile)) {
-            throw new CannotFindTemporaryFileException();
-        }
-
-        $this->dataCollector->saveData($tempFile);
+        $this->dataCollector->saveData($this->data);
     }
 
     public function getDocFileContent() {
