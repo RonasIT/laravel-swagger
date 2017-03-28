@@ -74,7 +74,7 @@ class SwaggerService
     }
 
     protected function generateEmptyData() {
-        return [
+        $data = [
             'swagger' => config('auto-doc.swagger.version'),
             'info' => config('auto-doc.info'),
             'host' => $this->getAppUrl(),
@@ -84,6 +84,10 @@ class SwaggerService
             'securityDefinitions' => $this->generateSecurityDefinition(),
             'definitions' => config('auto-doc.definitions')
         ];
+
+        $data['info']['description'] = view($data['info']['description'])->render();
+
+        return $data;
     }
 
     protected function getAppUrl() {
