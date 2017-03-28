@@ -11,10 +11,13 @@ to display the generated documentation for a config.
 
 ### Composer
  1. Add to required `"ronasit/laravel-swagger": "master-dev"`
+ 1. Add to required `"ronasit/laravel-helpers": "master-dev"`
+ 1. Add to required `"ronasit/local-data-collector": "master-dev"`
  1. Run `composer update`
 
 ### Laravel
  1. Add **AutoDocServiceProvider::class** to providers in *config/app.php*
+ 1. Add **LocalDataCollectorServiceProvider::class** to providers in *config/app.php*
  1. Run `php artisan vendor:publish`
  
 ### Plugin
@@ -22,11 +25,11 @@ to display the generated documentation for a config.
  1. Add **AutoDocRequestTrait** to your parent Request in *Http/Requests/Request.php*
  1. Set **AutoDocTestCase** as parent of your TestCase in *tests/TestCase.php*
  1. In *config/auto-doc.php* you can specify enabling of plugin, info of your project, 
- some defaults descriptions and route for rendering of documentation.
+ some defaults descriptions and route for rendering of documentation. Please note that you should enter a name of view in description field
  1. In *.env* file you should add following lines
     `
-    SWAGGER_FILEPATH_PRODUCTION=/example-folder/documentation.json  
-    SWAGGER_FILEPATH_TEMP=/tmp/documentation.json
+    LOCAL_DATA_COLLECTOR_PROD_PATH=/example-folder/documentation.json  
+    LOCAL_DATA_COLLECTOR_TEMP_PATH=/tmp/documentation.json
     `
 
 ## Usages
@@ -99,6 +102,8 @@ to display the generated documentation for a config.
   Note about configs:  
  - *auto-doc.route* - it's a route where will be located generated documentation  
  - *auto-doc.basePath* - it's a route where located root of your api
+ 
+Also you can specify way to collect documentation by creating your custom data collector class.
  
 ## License
 

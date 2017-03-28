@@ -10,7 +10,7 @@ return [
     'enabled' => env('AUTODOC_ENABLED'),
     'route' => '/',
     'info' => [
-        'description' => 'Description of your application',
+        'description' => 'swagger-description', // Name of view
         'version' => '0.0.0',
         'title' => 'Name of Your Application',
         'termsOfService' => '',
