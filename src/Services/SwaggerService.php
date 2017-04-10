@@ -513,7 +513,7 @@ class SwaggerService
     }
 
     public function getDocFileContent() {
-        $data = $this->dataCollector->getFileContent();
+        $data = $this->dataCollector->getDocumentation();
 
         return $data;
     }

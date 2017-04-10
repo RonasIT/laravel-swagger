@@ -17,7 +17,7 @@ interface DataCollectorInterface
 
     public function saveData($data);
 
-    public function getFileContent();
+    public function getDocumentation();
 }
 
 
