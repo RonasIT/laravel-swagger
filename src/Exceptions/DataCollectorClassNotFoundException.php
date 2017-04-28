@@ -14,7 +14,7 @@ class DataCollectorClassNotFoundException extends Exception
 {
     public function __construct($message = "", $code = 0, Exception $previous = null)
     {
-        if (strlen($message)<1) {
+        if (empty($message)) {
             $message = "DataCollectorClass was not found. Please check configuration file";
         }
         
