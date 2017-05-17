@@ -135,6 +135,10 @@ class SwaggerService
         $this->request = $request;
         $this->response = $response;
 
+        if (empty($this->request->route())) {
+            return;
+        }
+
         $this->prepareItem();
 
         $this->parseRequest();
