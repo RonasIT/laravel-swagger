@@ -36,7 +36,6 @@ class SwaggerService
     private $uri;
     private $method;
     private $request;
-    private $response;
     private $item;
     private $security;
 
@@ -105,7 +104,7 @@ class SwaggerService
         }
 
         if (!in_array($security, $availableTypes)) {
-           throw new WrongSecurityConfigException();
+            throw new WrongSecurityConfigException();
         }
 
         return [
@@ -133,7 +132,6 @@ class SwaggerService
 
     public function addData($request, $response) {
         $this->request = $request;
-        $this->response = $response;
 
         if (empty($this->request->route())) {
             return;
@@ -142,7 +140,7 @@ class SwaggerService
         $this->prepareItem();
 
         $this->parseRequest();
-        $this->parseResponse();
+        $this->parseResponse($response);
 
         $this->dataCollector->saveTmpData($this->data);
     }
@@ -206,25 +204,43 @@ class SwaggerService
         $this->saveSecurity();
     }
 
-    protected function parseResponse() {
+    protected function parseResponse($response) {
         $produceList = $this->data['paths'][$this->uri][$this->method]['produces'];
-        $produce = 'application/json'; // TODO: this is temporary solution
+
+        $produce = $response->headers->get('Content-type');
+        if (is_null($produce)) {
+            $produce = 'text/plain';
+        }
 
         if (!in_array($produce, $produceList)) {
             $this->item['produces'][] = $produce;
         }
 
         $responses = $this->item['responses'];
-        $code = $this->response->getStatusCode();
+        $code = $response->getStatusCode();
 
         if (!in_array($code, $responses)) {
-            $this->item['responses'][$code] = [
-                'description' => $this->getResponseDescription($code),
-                'schema' => [
-                    'example' => json_decode($this->response->getContent(), true)
-                ]
-            ];
+            $description = $this->getResponseDescription($code);
+            $responseExample = $this->makeResponseExample($response->getContent(), $produce, $description);
+            $this->item['responses'][$code] = $responseExample;
         }
+    }
+
+    protected function makeResponseExample($content, $mimeType, $description = '')
+    {
+        $responseExample = [
+            'description' => $description
+        ];
+
+        if ($mimeType === 'application/json') {
+            $responseExample['schema'] = [
+                'example' => json_decode($content, true),
+            ];
+        } else {
+            $responseExample['examples']['example'] = $content;
+        }
+
+        return $responseExample;
     }
 
     protected function saveParameters() {
