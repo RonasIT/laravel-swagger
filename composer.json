@@ -1,6 +1,6 @@
 {
   "name": "ronasit/laravel-swagger",
-  "version" : "1.1.6",
+  "version" : "1.1.7",
   "description": "Provided middleware for generating of swagger-documentation file by run testing of RESTful API.",
   "keywords": ["laravel", "swagger", "testing", "auto-documentation", "rest-api"],
   "license": "MIT",

@@ -25,10 +25,8 @@ interface DataCollectorInterface
 
     /**
      * Save production data
-     *
-     * @param array $data
      */
-    public function saveData($data);
+    public function saveData();
 
     /**
      * Get production documentation

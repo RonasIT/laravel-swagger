@@ -220,9 +220,26 @@ class SwaggerService
         $code = $response->getStatusCode();
 
         if (!in_array($code, $responses)) {
-            $description = $this->getResponseDescription($code);
-            $responseExample = $this->makeResponseExample($response->getContent(), $produce, $description);
-            $this->item['responses'][$code] = $responseExample;
+            $this->saveExample(
+                $response->getStatusCode(),
+                $response->getContent(),
+                $produce
+            );
+        }
+    }
+
+    protected function saveExample($code, $content, $produce) {
+        $description = $this->getResponseDescription($code);
+        $availableContentTypes = [
+            'application',
+            'text'
+        ];
+        $explodedContentType = explode('/', $produce);
+
+        if (in_array($explodedContentType[0], $availableContentTypes)) {
+            $this->item['responses'][$code] = $this->makeResponseExample($content, $produce, $description);
+        } else {
+            $this->item['responses'][$code] = '*Unavailable for preview*';
         }
     }
 
@@ -529,7 +546,7 @@ class SwaggerService
     }
 
     public function saveProductionData() {
-        $this->dataCollector->saveData($this->data);
+        $this->dataCollector->saveData();
     }
 
     public function getDocFileContent() {
