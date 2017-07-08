@@ -32,7 +32,7 @@ class AutoDocTestCase extends TestCase
         $currentTestCount = $this->getTestResultObject()->count();
         $allTestCount = $this->getTestResultObject()->topTestSuite()->count();
 
-        if (config('auto-doc.enabled') && ($currentTestCount == $allTestCount) && (!$this->hasFailed())) {
+        if (($currentTestCount == $allTestCount) && (!$this->hasFailed())) {
             $this->docService->saveProductionData();
         }
 

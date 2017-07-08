@@ -41,14 +41,14 @@ class SwaggerService
 
     public function __construct(Container $container)
     {
-        if (config('auto-doc.enabled')) {
+        $this->setDataCollector();
+
+        if (config('app.env')) {
             $this->container = $container;
 
             $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
 
             $this->security = config('auto-doc.security');
-
-            $this->setDataCollector();
 
             $this->data = $this->dataCollector->getTmpData();
 

@@ -7,7 +7,6 @@
  */
 
 return [
-    'enabled' => env('AUTODOC_ENABLED'),
     'route' => '/',
     'info' => [
         'description' => 'swagger-description', // Name of view
