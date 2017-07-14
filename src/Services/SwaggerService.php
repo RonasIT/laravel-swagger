@@ -43,7 +43,7 @@ class SwaggerService
     {
         $this->setDataCollector();
 
-        if (config('app.env')) {
+        if (config('app.env') == 'testing') {
             $this->container = $container;
 
             $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
