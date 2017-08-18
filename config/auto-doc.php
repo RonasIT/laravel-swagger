@@ -13,7 +13,7 @@ return [
         'version' => '0.0.0',
         'title' => 'Name of Your Application',
         'termsOfService' => '',
-        'contacts' => [
+        'contact' => [
             'email' => 'your@email.com'
         ],
         'license' => [
