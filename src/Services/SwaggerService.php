@@ -75,14 +75,22 @@ class SwaggerService
     protected function generateEmptyData() {
         $data = [
             'swagger' => config('auto-doc.swagger.version'),
-            'info' => config('auto-doc.info'),
             'host' => $this->getAppUrl(),
             'basePath' => config('auto-doc.basePath'),
             'schemes' => config('auto-doc.schemes'),
             'paths' => [],
-            'securityDefinitions' => $this->generateSecurityDefinition(),
             'definitions' => config('auto-doc.definitions')
         ];
+
+        $info = $this->prepareInfo(config('auto-doc.info'));
+        if (!empty($info)) {
+            $data['info'] = $info;
+        }
+
+        $securityDefinitions = $this->generateSecurityDefinition();
+        if (!empty($securityDefinitions)) {
+            $data['securityDefinitions'] = $securityDefinitions;
+        }
 
         $data['info']['description'] = view($data['info']['description'])->render();
 
@@ -116,16 +124,16 @@ class SwaggerService
         switch ($type) {
             case 'jwt':
                 return [
-                    "type" => "apiKey",
-                    "name" => "authorization",
-                    "in" => "header"
+                    'type' => 'apiKey',
+                    'name' => 'authorization',
+                    'in' => 'header'
                 ];
 
             case 'laravel':
                 return [
-                    "type" => "apiKey",
-                    "name" => "Cookie",
-                    "in" => "header"
+                    'type' => 'apiKey',
+                    'name' => 'Cookie',
+                    'in' => 'header'
                 ];
         }
     }
@@ -271,7 +279,7 @@ class SwaggerService
         $rules = $request::getRules();
         $actionName = $this->getActionName($this->uri);
 
-        if (in_array($this->method, ["get", "delete"])) {
+        if (in_array($this->method, ['get', 'delete'])) {
             $this->saveGetRequestParameters($rules, $annotations);
         } else {
             $this->savePostRequestParameters($actionName, $rules, $annotations);
@@ -289,13 +297,17 @@ class SwaggerService
             });
 
             if (empty($existedParameter)) {
-                $this->item['parameters'][] = [
+                $parameterDefinition = [
                     'in' => 'query',
                     'name' => $parameter,
                     'description' => $description,
-                    'required' => in_array('required', $validation),
-                    'type' => implode(', ', $validation)
+                    'type' => $this->getParameterType($validation)
                 ];
+                if (in_array('required', $validation)) {
+                    $parameterDefinition['required'] = true;
+                }
+
+                $this->item['parameters'][] = $parameterDefinition;
             }
         }
     }
@@ -305,11 +317,11 @@ class SwaggerService
             if ($this->requestHasBody()) {
                 $this->item['parameters'][] = [
                     'in' => 'body',
-                    'name' => "body",
-                    'description' => "",
+                    'name' => 'body',
+                    'description' => '',
                     'required' => true,
                     'schema' => [
-                        "\$ref" => "#/definitions/$actionName"."Object"
+                        "\$ref" => "#/definitions/{$actionName}Object"
                     ]
                 ];
             }
@@ -321,22 +333,24 @@ class SwaggerService
     protected function saveDefinitions($objectName, $rules, $annotations) {
         $data = [
             'type' => 'object',
-            'required' => [],
             'properties' => []
         ];
         foreach ($rules as $parameter => $rule) {
-            $this->saveParameterType($data, $parameter, $rule, $annotations);
+            $rulesArray = explode('|', $rule);
+            $parameterType = $this->getParameterType($rulesArray);
+            $this->saveParameterType($data, $parameter, $parameterType);
+            $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
 
-            if($rule == 'required') {
-                array_push($data['required'], $parameter);
+            if (in_array('required', $rulesArray)) {
+                $data['required'][] = $parameter;
             }
         }
 
         $data['example'] = $this->generateExample($data['properties']);
-        $this->data['definitions'][$objectName."Object"] = $data;
+        $this->data['definitions'][$objectName . 'Object'] = $data;
     }
 
-    protected function saveParameterType(&$data, $parameter, $rule, $annotations) {
+    protected function getParameterType(array $validation) {
         $validationRules = [
             'array' => 'object',
             'boolean' => 'boolean',
@@ -348,19 +362,25 @@ class SwaggerService
             'string' => 'string'
         ];
 
-        $data['properties'][$parameter] = [
-            'type' => 'string',
-        ];
+        $parameterType = 'string';
 
-        $rulesArray = explode('|', $rule);
-
-        foreach ($rulesArray as $item) {
+        foreach ($validation as $item) {
             if (in_array($item, array_keys($validationRules))) {
-                $data['properties'][$parameter] = [
-                    'type' => $validationRules[$item],
-                ];
+                $parameterType = $validationRules[$item];
+                break;
             }
         }
+
+        return $parameterType;
+    }
+
+    protected function saveParameterType(&$data, $parameter, $parameterType) {
+        $data['properties'][$parameter] = [
+            'type' => $parameterType,
+        ];
+    }
+
+    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, $annotations) {
         $description = $annotations->get($parameter, implode(', ', $rulesArray));
         $data['properties'][$parameter]['description'] = $description;
     }
@@ -368,8 +388,8 @@ class SwaggerService
     protected function requestHasMoreProperties($actionName) {
         $requestParametersCount = count($this->request->all());
 
-        if (isset($this->data['definitions'][$actionName."Object"]['properties'])) {
-            $objectParametersCount = count($this->data['definitions'][$actionName."Object"]['properties']);
+        if (isset($this->data['definitions'][$actionName . 'Object']['properties'])) {
+            $objectParametersCount = count($this->data['definitions'][$actionName . 'Object']['properties']);
         } else {
             $objectParametersCount = 0;
         }
@@ -378,7 +398,7 @@ class SwaggerService
     }
 
     protected function requestHasBody() {
-        $parameters = $this->data["paths"][$this->uri][$this->method]['parameters'];
+        $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
 
         $bodyParamExisted = array_where($parameters, function($value, $key) {
             return $value['name'] == 'body';
@@ -597,10 +617,32 @@ class SwaggerService
             'boolean' => false,
             'date' => "0000-00-00",
             'integer' => 0,
-            'string' => "",
+            'string' => '',
             'double' => 0
         ];
 
         return $values[$type];
+    }
+
+    /**
+     * @param $info
+     * @return mixed
+     */
+    protected function prepareInfo($info)
+    {
+        if (empty($info)) {
+            return $info;
+        }
+
+        foreach ($info['license'] as $key => $value) {
+            if (empty($value)) {
+                unset($info['license'][$key]);
+            }
+        }
+        if (empty($info['license'])) {
+            unset($info['license']);
+        }
+
+        return $info;
     }
 }
