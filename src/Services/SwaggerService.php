@@ -10,11 +10,14 @@
 namespace RonasIT\Support\AutoDoc\Services;
 
 use Illuminate\Container\Container;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Minime\Annotations\Interfaces\AnnotationsBagInterface;
 use Minime\Annotations\Reader as AnnotationReader;
 use Minime\Annotations\Parser;
 use Minime\Annotations\Cache\ArrayCache;
 use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
+use RonasIT\Support\AutoDoc\Traits\AutoDocRequestTrait;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
@@ -35,6 +38,9 @@ class SwaggerService
     protected $container;
     private $uri;
     private $method;
+    /**
+     * @var \Illuminate\Http\Request
+     */
     private $request;
     private $item;
     private $security;
@@ -138,16 +144,16 @@ class SwaggerService
         }
     }
 
-    public function addData($request, $response) {
+    public function addData(Request $request, $response) {
         $this->request = $request;
-
-        if (empty($this->request->route())) {
+        $concreteRequest = $this->getConcreteRequest();
+        if (!$this->isClassUsingTrait($concreteRequest, AutoDocRequestTrait::class) || empty($request->route())) {
             return;
         }
 
         $this->prepareItem();
 
-        $this->parseRequest();
+        $this->parseRequest($concreteRequest);
         $this->parseResponse($response);
 
         $this->dataCollector->saveTmpData($this->data);
@@ -204,11 +210,12 @@ class SwaggerService
         return $result;
     }
 
-    protected function parseRequest() {
+    protected function parseRequest($request) {
+        $annotations = $this->annotationReader->getClassAnnotations($request);
         $this->saveConsume();
         $this->saveTags();
-        $this->saveParameters();
-        $this->saveDescription();
+        $this->saveParameters($request, $annotations);
+        $this->saveDescription($request, $annotations);
         $this->saveSecurity();
     }
 
@@ -268,14 +275,11 @@ class SwaggerService
         return $responseExample;
     }
 
-    protected function saveParameters() {
-        $request = $this->getConcreteRequest();
-
+    protected function saveParameters($request, AnnotationsBagInterface $annotations) {
         if (empty($request)) {
             return;
         }
 
-        $annotations = $this->annotationReader->getClassAnnotations($request);
         $rules = $request::getRules();
         $actionName = $this->getActionName($this->uri);
 
@@ -286,7 +290,7 @@ class SwaggerService
         }
     }
 
-    protected function saveGetRequestParameters($rules, $annotations) {
+    protected function saveGetRequestParameters($rules, AnnotationsBagInterface $annotations) {
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
@@ -312,7 +316,7 @@ class SwaggerService
         }
     }
 
-    protected function savePostRequestParameters($actionName, $rules, $annotations) {
+    protected function savePostRequestParameters($actionName, $rules, AnnotationsBagInterface $annotations) {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
                 $this->item['parameters'][] = [
@@ -380,7 +384,7 @@ class SwaggerService
         ];
     }
 
-    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, $annotations) {
+    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, AnnotationsBagInterface $annotations) {
         $description = $annotations->get($parameter, implode(', ', $rulesArray));
         $data['properties'][$parameter]['description'] = $description;
     }
@@ -405,16 +409,6 @@ class SwaggerService
         });
 
         return empty($bodyParamExisted);
-    }
-
-    protected function getValidationRules() {
-        $request = $this->getConcreteRequest();
-
-        if (empty($request)) {
-            return [];
-        }
-
-        return $request::getRules();
     }
 
     public function getConcreteRequest() {
@@ -460,17 +454,16 @@ class SwaggerService
         $this->item['tags'] = [$tag];
     }
 
-    public function saveDescription() {
-        $request = $this->getConcreteRequest();
+    public function saveDescription($request, AnnotationsBagInterface $annotations) {
         $this->item['description'] = '';
 
         if (empty($request)) {
             return;
         }
 
-        $this->item['summary'] = $this->getSummary($request);
+        $this->item['summary'] = $this->getSummary($request, $annotations);
 
-        $description = $this->getDescription($request);
+        $description = $annotations->get('description');
 
         if (!empty($description)) {
             $this->item['description'] = $description;
@@ -492,9 +485,7 @@ class SwaggerService
         }
     }
 
-    protected function getSummary($request) {
-        $annotations = $this->annotationReader->getClassAnnotations($request);
-
+    protected function getSummary($request, AnnotationsBagInterface $annotations) {
         $summary = $annotations->get('summary');
 
         if (empty($summary)) {
@@ -502,12 +493,6 @@ class SwaggerService
         }
 
         return $summary;
-    }
-
-    protected function getDescription($request) {
-        $annotations = $this->annotationReader->getClassAnnotations($request);
-
-        return $annotations->get('description');
     }
 
     protected function requestSupportAuth() {
@@ -644,5 +629,10 @@ class SwaggerService
         }
 
         return $info;
+    }
+
+    private function isClassUsingTrait($request, $needleTrait)
+    {
+        return (in_array($needleTrait, class_uses_recursive($request)));
     }
 }
