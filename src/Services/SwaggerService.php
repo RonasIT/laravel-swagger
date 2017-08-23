@@ -146,14 +146,10 @@ class SwaggerService
 
     public function addData(Request $request, $response) {
         $this->request = $request;
-        $concreteRequest = $this->getConcreteRequest();
-        if (!$this->isClassUsingTrait($concreteRequest, AutoDocRequestTrait::class) || empty($request->route())) {
-            $this->throwTraitMissingException();
-        }
 
         $this->prepareItem();
 
-        $this->parseRequest($concreteRequest);
+        $this->parseRequest($request);
         $this->parseResponse($response);
 
         $this->dataCollector->saveTmpData($this->data);
@@ -211,12 +207,26 @@ class SwaggerService
     }
 
     protected function parseRequest($request) {
-        $annotations = $this->annotationReader->getClassAnnotations($request);
         $this->saveConsume();
         $this->saveTags();
-        $this->saveParameters($request, $annotations);
-        $this->saveDescription($request, $annotations);
         $this->saveSecurity();
+
+        $concreteRequest = $this->getConcreteRequest();
+
+        if (empty($concreteRequest)) {
+            $this->item['description'] = '';
+
+            return;
+        }
+
+        if (!$this->checkTrait($concreteRequest) || empty($request->route())) {
+            $this->throwTraitMissingException();
+        }
+
+        $annotations = $this->annotationReader->getClassAnnotations($concreteRequest);
+
+        $this->saveParameters($concreteRequest, $annotations);
+        $this->saveDescription($concreteRequest, $annotations);
     }
 
     protected function parseResponse($response) {
@@ -276,10 +286,6 @@ class SwaggerService
     }
 
     protected function saveParameters($request, AnnotationsBagInterface $annotations) {
-        if (empty($request)) {
-            return;
-        }
-
         $rules = $request::getRules();
         $actionName = $this->getActionName($this->uri);
 
@@ -455,12 +461,6 @@ class SwaggerService
     }
 
     public function saveDescription($request, AnnotationsBagInterface $annotations) {
-        $this->item['description'] = '';
-
-        if (empty($request)) {
-            return;
-        }
-
         $this->item['summary'] = $this->getSummary($request, $annotations);
 
         $description = $annotations->get('description');
@@ -631,9 +631,12 @@ class SwaggerService
         return $info;
     }
 
-    private function isClassUsingTrait($request, $needleTrait)
+    private function checkTrait($request)
     {
-        return (in_array($needleTrait, class_uses_recursive($request)));
+        return in_array(
+            AutoDocRequestTrait::class,
+            class_uses_recursive($request)
+        );
     }
 
     protected function throwTraitMissingException()
