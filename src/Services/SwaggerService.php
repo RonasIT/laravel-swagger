@@ -148,7 +148,7 @@ class SwaggerService
         $this->request = $request;
         $concreteRequest = $this->getConcreteRequest();
         if (!$this->isClassUsingTrait($concreteRequest, AutoDocRequestTrait::class) || empty($request->route())) {
-            return;
+            $this->throwTraitMissingException();
         }
 
         $this->prepareItem();
@@ -634,5 +634,17 @@ class SwaggerService
     private function isClassUsingTrait($request, $needleTrait)
     {
         return (in_array($needleTrait, class_uses_recursive($request)));
+    }
+
+    protected function throwTraitMissingException()
+    {
+        $message = "ERROR:\n".
+            "It looks like you did not add AutoDocRequestTrait to your requester. \n" .
+            "Please add it or mark in the test that you do not want to collect the \n" .
+            "documentation for this case using the skipDocumentationCollecting() method\n";
+
+        fwrite(STDERR, print_r($message, TRUE));
+
+        die;
     }
 }
