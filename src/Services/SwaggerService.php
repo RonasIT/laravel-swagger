@@ -282,7 +282,7 @@ class SwaggerService
     }
 
     protected function saveParameters($request, AnnotationsBagInterface $annotations) {
-        $rules = app($request)->rules();
+        $rules = (new $request)->rules();
         $actionName = $this->getActionName($this->uri);
 
         if (in_array($this->method, ['get', 'delete'])) {
