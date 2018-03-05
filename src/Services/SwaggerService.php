@@ -219,10 +219,6 @@ class SwaggerService
             return;
         }
 
-        if (!$this->checkTrait($concreteRequest) || empty($request->route())) {
-            $this->throwTraitMissingException();
-        }
-
         $annotations = $this->annotationReader->getClassAnnotations($concreteRequest);
 
         $this->saveParameters($concreteRequest, $annotations);
@@ -286,7 +282,7 @@ class SwaggerService
     }
 
     protected function saveParameters($request, AnnotationsBagInterface $annotations) {
-        $rules = $request::getRules();
+        $rules = app($request)->rules();
         $actionName = $this->getActionName($this->uri);
 
         if (in_array($this->method, ['get', 'delete'])) {
@@ -629,14 +625,6 @@ class SwaggerService
         }
 
         return $info;
-    }
-
-    private function checkTrait($request)
-    {
-        return in_array(
-            AutoDocRequestTrait::class,
-            class_uses_recursive($request)
-        );
     }
 
     protected function throwTraitMissingException()
