@@ -22,7 +22,6 @@ to display the generated documentation for a config.
  
 ### Plugin
  1. Add middleware **AutoDocMiddleware::class** to *Http/Kernel.php*.
- 1. Add **AutoDocRequestTrait** to your parent Request in *Http/Requests/Request.php*
  1. Set **AutoDocTestCase** as parent of your TestCase in *tests/TestCase.php*
  1. In *config/auto-doc.php* you can specify enabling of plugin, info of your project, 
  some defaults descriptions and route for rendering of documentation. Please note that you should enter a name of view in description field
