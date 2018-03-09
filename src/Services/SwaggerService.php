@@ -566,7 +566,7 @@ class SwaggerService
     }
 
     protected function generateExample($properties) {
-        $parameters = $this->replaceObjectValues(array_dot($this->request->all()));
+        $parameters = $this->replaceObjectValues($this->request->all());
         $example = [];
 
         $this->replaceNullValues($parameters, $properties, $example);
@@ -579,6 +579,7 @@ class SwaggerService
             'Illuminate\Http\Testing\File' => '[uploaded_file]',
         ];
 
+        $parameters = array_dot($parameters);
         $returnParameters = [];
 
         foreach ($parameters as $parameter => $value) {
