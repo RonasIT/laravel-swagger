@@ -565,13 +565,30 @@ class SwaggerService
         return implode('_', $ret);
     }
 
-    protected function generateExample($properties){
-        $parameters = $this->request->all();
+    protected function generateExample($properties) {
+        $parameters = $this->replaceObjectValues(array_dot($this->request->all()));
         $example = [];
 
         $this->replaceNullValues($parameters, $properties, $example);
 
         return $example;
+    }
+
+    protected function replaceObjectValues($parameters) {
+        $classNamesValues = [
+            'Illuminate\Http\Testing\File' => '[uploaded_file]',
+        ];
+
+        $returnParameters = [];
+
+        foreach ($parameters as $parameter => $value) {
+            if (is_object($value)) {
+                $value = $classNamesValues[get_class($value)];
+            }
+            array_set($returnParameters, $parameter, $value);
+        }
+
+        return $returnParameters;
     }
 
     /**
