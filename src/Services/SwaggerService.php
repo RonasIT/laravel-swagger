@@ -23,6 +23,7 @@ use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
 use RonasIT\Support\DataCollectors\LocalDataCollector;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Testing\File;
 
 /**
  * @property DataCollectorInterface $dataCollector
@@ -576,7 +577,7 @@ class SwaggerService
 
     protected function replaceObjectValues($parameters) {
         $classNamesValues = [
-            'Illuminate\Http\Testing\File' => '[uploaded_file]',
+            File::class => '[uploaded_file]',
         ];
 
         $parameters = array_dot($parameters);
@@ -584,8 +585,11 @@ class SwaggerService
 
         foreach ($parameters as $parameter => $value) {
             if (is_object($value)) {
-                $value = $classNamesValues[get_class($value)];
+                $class = get_class($value);
+
+                $value = array_get($classNamesValues, $class, $class);
             }
+
             array_set($returnParameters, $parameter, $value);
         }
 
