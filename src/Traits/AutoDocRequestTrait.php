@@ -2,6 +2,9 @@
 
 namespace RonasIT\Support\AutoDoc\Traits;
 
+/**
+ * @deprecated
+*/
 trait AutoDocRequestTrait {
 
     static public function getRules() {
