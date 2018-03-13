@@ -10,21 +10,16 @@ to display the generated documentation for a config.
 ## Instalation
 
 ### Composer
- 1. Add to required `"ronasit/laravel-swagger": "master-dev"`
- 1. Add to required `"ronasit/laravel-helpers": "master-dev"`
- 1. Add to required `"ronasit/local-data-collector": "master-dev"`
- 1. Run `composer update`
+ 1. `composer require ronasit/laravel-swagger`
 
 ### Laravel
- 1. Add **AutoDocServiceProvider::class** to providers in *config/app.php*
- 1. Add **LocalDataCollectorServiceProvider::class** to providers in *config/app.php*
- 1. Run `php artisan vendor:publish`
+ 1. `php artisan vendor:publish`
  
 ### Plugin
  1. Add middleware **AutoDocMiddleware::class** to *Http/Kernel.php*.
  1. Set **AutoDocTestCase** as parent of your TestCase in *tests/TestCase.php*
  1. In *config/auto-doc.php* you can specify enabling of plugin, info of your project, 
- some defaults descriptions and route for rendering of documentation. Please note that you should enter a name of view in description field
+ some defaults descriptions and route for rendering of documentation. 
  1. In *.env* file you should add following lines
     `
     LOCAL_DATA_COLLECTOR_PROD_PATH=/example-folder/documentation.json  
@@ -32,7 +27,7 @@ to display the generated documentation for a config.
     `
 
 ## Usages
- For correcting work of plugin you have to dispose all the validation rules in the rules() method of class YourRequest, 
+ For correct working of plugin you have to dispose all the validation rules in the rules() method of class YourRequest, 
  which must be connected to the controller via DependencyInjection. In annotation of custom request you can specify 
  summary and description of this request. Plugin will take validation rules from your request and use it as description 
  of input parameter. 
@@ -43,9 +38,9 @@ to display the generated documentation for a config.
  <?php
  
  namespace App\Http\Requests;  
-   
- use Illuminate\Contracts\Auth\Guard;  
-   
+ 
+ use Illuminate\Foundation\Http\FormRequest;
+ 
  /**
   * @summary Updating of user
   *
@@ -55,16 +50,16 @@ to display the generated documentation for a config.
   *
   * @_204 Successful MF!
   */
- class UpdateUserDataRequest extends Request
+ class UpdateUserDataRequest extends FormRequest
  {
      /**
       * Determine if the user is authorized to make this request.
       *
       * @return bool
       */
-     public function authorize(Guard $guard)
+     public function authorize()
      {
-         return $guard->check();
+         return true;
      }  
    
      /**
@@ -85,7 +80,7 @@ to display the generated documentation for a config.
  
  - **@summary** - short description of request
  - **@description** - Implementation Notes
- - **@_204** - Custom description of code of response. You can specify any code if you wish.
+ - **@_204** - Custom description of code of response. You can specify any code as you want.
  
  If you do not create a class Request, the summary, Implementation Notes and parameters will be empty. 
  Plugin will collect codes and examples of responses only.
@@ -104,6 +99,3 @@ to display the generated documentation for a config.
  
 Also you can specify way to collect documentation by creating your custom data collector class.
  
-## License
-
-Auto-doc plugin is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).

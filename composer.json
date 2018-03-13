@@ -21,5 +21,13 @@
       "RonasIT\\Support\\AutoDoc\\": "src/"
     }
   },
-  "minimum-stability": "stable"
+  "minimum-stability": "stable",
+  "extra": {
+    "laravel": {
+      "providers": [
+        "RonasIT\\Support\\AutoDoc\\AutoDocServiceProvider",
+        "RonasIT\\Support\\DataCollectors\\LocalDataCollectorServiceProvider"
+      ]
+    }
+  }
 }
