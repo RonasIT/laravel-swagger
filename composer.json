@@ -13,15 +13,15 @@
     "php": ">=5.6",
     "laravel/framework": ">=5.3.0",
     "minime/annotations": "2.3.1",
-    "ronasit/laravel-helpers": "1.0.*",
-    "ronasit/local-data-collector": "~1.0.0"
+    "ronasit/laravel-helpers": "1.1.*",
+    "ronasit/local-data-collector": "1.1.0-beta"
   },
   "autoload": {
     "psr-4": {
       "RonasIT\\Support\\AutoDoc\\": "src/"
     }
   },
-  "minimum-stability": "stable",
+  "minimum-stability": "beta",
   "extra": {
     "laravel": {
       "providers": [
