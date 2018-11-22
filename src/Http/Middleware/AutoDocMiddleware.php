@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: roman
- * Date: 26.08.16
- * Time: 11:49
- */
-
 namespace RonasIT\Support\AutoDoc\Http\Middleware;
 
 use Closure;
