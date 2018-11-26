@@ -45,6 +45,16 @@ return [
     'swagger' => [
         'version' => '2.0'
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Base API path
+    |--------------------------------------------------------------------------
+    |
+    | Base path for API routes. If config is set, all routes which starts from
+    | this value will be grouped.
+    */
+
     'basePath' => '/',
     'schemes' => [],
     'definitions' => [],
@@ -63,7 +73,7 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Descriptions of code statuses
+        | Default descriptions of code statuses
         |--------------------------------------------------------------------------
         */
 
@@ -80,10 +90,14 @@ return [
     |--------------------------------------------------------------------------
     |
     | Class of data collector, which will collect and save documentation
-    | It can be your own data collector, or our data collectors from next libraries:
+    | It can be your own data collector class which should be inherited from
+    | RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface interface,
+    | or our data collectors from next packages:
     |
     | ronasit/local-data-collector
     | ronasit/laravel-remote-data-collector
+    |
+    | If config not set, will be using ronasit/local-data-collector
     */
 
     'data_collector' => ''
