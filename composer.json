@@ -14,7 +14,7 @@
     "laravel/framework": ">=5.3.0",
     "minime/annotations": "2.3.1",
     "ronasit/laravel-helpers": "1.1.*@beta",
-    "ronasit/local-data-collector": "~1.0.0"
+    "ronasit/local-data-collector": "1.1.*@beta"
   },
   "autoload": {
     "psr-4": {
