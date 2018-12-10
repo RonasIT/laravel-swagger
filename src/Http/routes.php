@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: roman
- * Date: 29.08.16
- * Time: 11:37
- */
 
 use RonasIT\Support\AutoDoc\Http\Controllers\AutoDocController;
 

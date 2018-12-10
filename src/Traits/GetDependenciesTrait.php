@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: roman
- * Date: 27.08.16
- * Time: 13:51
- */
-
 namespace RonasIT\Support\AutoDoc\Traits;
 
 use ReflectionMethod;
