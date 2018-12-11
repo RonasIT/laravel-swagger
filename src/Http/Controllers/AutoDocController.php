@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: roman
- * Date: 29.08.16
- * Time: 11:29
- */
-
 namespace RonasIT\Support\AutoDoc\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
