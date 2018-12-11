@@ -276,12 +276,13 @@ class SwaggerService
 
     protected function saveParameters($request, AnnotationsBagInterface $annotations) {
         $rules = (new $request)->rules();
+        $attributes = (new $request)->attributes();
         $actionName = $this->getActionName($this->uri);
 
         if (in_array($this->method, ['get', 'delete'])) {
             $this->saveGetRequestParameters($rules, $annotations);
         } else {
-            $this->savePostRequestParameters($actionName, $rules, $annotations);
+            $this->savePostRequestParameters($actionName, $rules, $attributes, $annotations);
         }
     }
 
@@ -311,7 +312,7 @@ class SwaggerService
         }
     }
 
-    protected function savePostRequestParameters($actionName, $rules, AnnotationsBagInterface $annotations) {
+    protected function savePostRequestParameters($actionName, $rules, $attributes, AnnotationsBagInterface $annotations) {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
                 $this->item['parameters'][] = [
@@ -325,11 +326,11 @@ class SwaggerService
                 ];
             }
 
-            $this->saveDefinitions($actionName, $rules, $annotations);
+            $this->saveDefinitions($actionName, $rules, $attributes, $annotations);
         }
     }
 
-    protected function saveDefinitions($objectName, $rules, $annotations) {
+    protected function saveDefinitions($objectName, $rules, $attributes, $annotations) {
         $data = [
             'type' => 'object',
             'properties' => []
@@ -338,7 +339,7 @@ class SwaggerService
             $rulesArray = explode('|', $rule);
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
-            $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
+            $this->saveParameterDescription($data, $parameter, $rulesArray, $attributes, $annotations);
 
             if (in_array('required', $rulesArray)) {
                 $data['required'][] = $parameter;
@@ -379,8 +380,14 @@ class SwaggerService
         ];
     }
 
-    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, AnnotationsBagInterface $annotations) {
-        $description = $annotations->get($parameter, implode(', ', $rulesArray));
+    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, $attributes, AnnotationsBagInterface $annotations) {
+
+        $description = array_get($attributes, $parameter);
+
+        if (!$description) {
+            $description = $annotations->get($parameter, implode(', ', $rulesArray));
+        }
+
         $data['properties'][$parameter]['description'] = $description;
     }
 
