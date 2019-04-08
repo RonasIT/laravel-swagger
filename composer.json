@@ -13,7 +13,7 @@
     "php": ">=5.6",
     "laravel/framework": ">=5.3.0",
     "minime/annotations": "2.3.1",
-    "ronasit/laravel-helpers": "1.1.*@beta",
+    "ronasit/laravel-helpers": "1.2.*",
     "ronasit/local-data-collector": "1.1.*@beta"
   },
   "autoload": {
