@@ -13,7 +13,8 @@ to display the generated documentation for a config.
  1. `composer require ronasit/laravel-swagger`
 
 ### Laravel
- 1. `php artisan vendor:publish`
+ 1. add `RonasIT\Support\AutoDoc\AutoDocServiceProvider::class,` to providers in `config/app.php`
+ 1. run `php artisan vendor:publish`
  
 ### Plugin
  1. Add middleware **\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class** to *Http/Kernel.php*.
