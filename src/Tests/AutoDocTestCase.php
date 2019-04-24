@@ -10,7 +10,7 @@ class AutoDocTestCase extends TestCase
 {
     protected $docService;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -22,7 +22,7 @@ class AutoDocTestCase extends TestCase
         parent::createApplication();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $currentTestCount = $this->getTestResultObject()->count();
         $allTestCount = $this->getTestResultObject()->topTestSuite()->count();
