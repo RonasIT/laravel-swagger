@@ -283,7 +283,11 @@ class SwaggerService
     }
 
     protected function saveParameters($request, AnnotationsBagInterface $annotations) {
-        $rules = (new $request)->rules();
+        $formRequest = new $request;
+        $formRequest->setUserResolver($this->request->getUserResolver());
+        $formRequest->setRouteResolver($this->request->getRouteResolver());
+        $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
+
         $actionName = $this->getActionName($this->uri);
 
         if (in_array($this->method, ['get', 'delete'])) {
@@ -295,7 +299,7 @@ class SwaggerService
 
     protected function saveGetRequestParameters($rules, AnnotationsBagInterface $annotations) {
         foreach ($rules as $parameter => $rule) {
-            $validation = explode('|', $rule);
+            $validation = is_array($rule) ? $rule : explode('|', $rule);
 
             $description = $annotations->get($parameter, implode(', ', $validation));
 
@@ -343,7 +347,7 @@ class SwaggerService
             'properties' => []
         ];
         foreach ($rules as $parameter => $rule) {
-            $rulesArray = explode('|', $rule);
+            $rulesArray = is_array($rule) ? $rule : explode('|', $rule);
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
             $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
