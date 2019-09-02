@@ -7,7 +7,7 @@
  * Time: 17:56
  */
 
-namespace RonasIT\Support\AutoDoc\Exceptions;
+namespace Gluck1986\Support\AutoDoc\Exceptions;
 
 use Exception;
 

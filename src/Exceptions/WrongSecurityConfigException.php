@@ -6,11 +6,11 @@
  * Time: 16:40
  */
 
-namespace RonasIT\Support\AutoDoc\Exceptions;
+namespace Gluck1986\Support\AutoDoc\Exceptions;
 
 use Exception;
 
 class WrongSecurityConfigException extends Exception
 {
-    
+
 }

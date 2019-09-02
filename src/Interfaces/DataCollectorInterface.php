@@ -6,8 +6,7 @@
  * Time: 22:19
  */
 
-namespace RonasIT\Support\AutoDoc\Interfaces;
-
+namespace Gluck1986\Support\AutoDoc\Interfaces;
 
 interface DataCollectorInterface
 {
@@ -33,5 +32,3 @@ interface DataCollectorInterface
      */
     public function getDocumentation();
 }
-
-

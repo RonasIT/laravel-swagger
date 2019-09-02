@@ -6,8 +6,7 @@
  * Time: 11:37
  */
 
-use RonasIT\Support\AutoDoc\Http\Controllers\AutoDocController;
-
+use Gluck1986\Support\AutoDoc\Http\Controllers\AutoDocController;
 
 Route::get('/auto-doc/documentation', ['uses' => AutoDocController::class.'@documentation']);
 Route::get('/auto-doc/{file}', ['uses' => AutoDocController::class.'@getFile']);

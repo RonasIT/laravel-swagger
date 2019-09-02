@@ -6,7 +6,7 @@
  * Time: 15:01
  */
 
-namespace RonasIT\Support\AutoDoc\Exceptions;
+namespace Gluck1986\Support\AutoDoc\Exceptions;
 
 use Exception;
 
@@ -17,7 +17,7 @@ class DataCollectorClassNotFoundException extends Exception
         if (empty($message)) {
             $message = "DataCollectorClass was not found. Please check configuration file";
         }
-        
+
         parent::__construct($message, $code, $previous);
     }
 }

@@ -1,14 +1,15 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Traits;
+namespace Gluck1986\Support\AutoDoc\Traits;
 
 /**
  * @deprecated
 */
-trait AutoDocRequestTrait {
+trait AutoDocRequestTrait
+{
 
-    static public function getRules() {
+    public static function getRules()
+    {
         return (new static)->rules();
     }
-
 }

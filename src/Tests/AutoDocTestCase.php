@@ -1,10 +1,10 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Tests;
+namespace Gluck1986\Support\AutoDoc\Tests;
 
+use Gluck1986\Support\AutoDoc\Http\Middleware\AutoDocMiddleware;
+use Gluck1986\Support\AutoDoc\Services\SwaggerService;
 use Illuminate\Foundation\Testing\TestCase;
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
-use RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware;
 
 class AutoDocTestCase extends TestCase
 {

@@ -7,10 +7,10 @@
  * Time: 13:51
  */
 
-namespace RonasIT\Support\AutoDoc\Traits;
+namespace Gluck1986\Support\AutoDoc\Traits;
 
-use ReflectionMethod;
 use ReflectionFunctionAbstract;
+use ReflectionMethod;
 use ReflectionParameter;
 
 trait GetDependenciesTrait
@@ -26,13 +26,15 @@ trait GetDependenciesTrait
         );
     }
 
-    public function getDependencies(ReflectionFunctionAbstract $reflector) {
+    public function getDependencies(ReflectionFunctionAbstract $reflector)
+    {
         return array_map(function ($parameter) {
             return $this->transformDependency($parameter);
         }, $reflector->getParameters());
     }
 
-    protected function transformDependency(ReflectionParameter $parameter) {
+    protected function transformDependency(ReflectionParameter $parameter)
+    {
         $class = $parameter->getClass();
 
         if (empty($class)) {

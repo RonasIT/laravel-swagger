@@ -10,15 +10,15 @@ to display the generated documentation for a config.
 ## Instalation
 
 ### Composer
- 1. `composer require ronasit/laravel-swagger`
+ 1. `composer require gluck1986/laravel-swagger`
 
 ### Laravel
- 1. add `RonasIT\Support\AutoDoc\AutoDocServiceProvider::class,` to providers in `config/app.php`
+ 1. add `Gluck1986\Support\AutoDoc\AutoDocServiceProvider::class,` to providers in `config/app.php`
  1. run `php artisan vendor:publish`
  
 ### Plugin
- 1. Add middleware **\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class** to *Http/Kernel.php*.
- 1. Set **\RonasIT\Support\AutoDoc\Tests\AutoDocTestCase** as parent of your TestCase in *tests/TestCase.php*
+ 1. Add middleware **\Gluck1986\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class** to *Http/Kernel.php*.
+ 1. Set **\Gluck1986\Support\AutoDoc\Tests\AutoDocTestCase** as parent of your TestCase in *tests/TestCase.php*
  1. In *config/auto-doc.php* you can specify enabling of plugin, info of your project, 
  some defaults descriptions and route for rendering of documentation. 
  1. In *.env* file you should add following lines

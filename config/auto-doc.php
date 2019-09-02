@@ -68,7 +68,7 @@ return [
     | Available values: "jwt", "laravel", "null"
     */
 
-    'security' => '',
+    'security' => env('AUTO_DOK_SECURITY', null),
     'defaults' => [
 
         /*
@@ -91,7 +91,7 @@ return [
     |
     | Class of data collector, which will collect and save documentation
     | It can be your own data collector class which should be inherited from
-    | RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface interface,
+    | Gluck1986\Support\AutoDoc\Interfaces\DataCollectorInterface interface,
     | or our data collectors from next packages:
     |
     | ronasit/local-data-collector
