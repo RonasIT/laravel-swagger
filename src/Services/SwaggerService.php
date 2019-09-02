@@ -13,7 +13,6 @@ use Gluck1986\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
 use Gluck1986\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use Gluck1986\Support\AutoDoc\Interfaces\DataCollectorInterface;
 use Gluck1986\Support\AutoDoc\Traits\GetDependenciesTrait;
-use Gluck1986\Support\AutoDock\Services\LocalDataCollector;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
