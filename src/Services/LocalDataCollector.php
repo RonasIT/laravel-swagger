@@ -1,6 +1,6 @@
 <?php
 
-namespace Gluck1986\Support\AutoDock\Services;
+namespace Gluck1986\Support\AutoDoc\Services;
 
 use Gluck1986\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
