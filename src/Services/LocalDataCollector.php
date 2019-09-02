@@ -2,7 +2,7 @@
 
 namespace Gluck1986\Support\AutoDock\Services;
 
-use Gluck1986\Support\DataCollectors\Exceptions\MissedProductionFilePathException;
+use Gluck1986\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class LocalDataCollector

@@ -1,6 +1,6 @@
 <?php
 
-namespace Gluck1986\Support\DataCollectors\Exceptions;
+namespace Gluck1986\Support\AutoDoc\Exceptions;
 
 use Exception;
 
