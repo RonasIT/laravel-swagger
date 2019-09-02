@@ -388,9 +388,15 @@ class SwaggerService
     protected function saveGetRequestParameters($rules, AnnotationsBagInterface $annotations)
     {
         foreach ($rules as $parameter => $rule) {
-            $validation = explode('|', $rule);
+            if (is_array($rule)) {
+                $rulesArray = $rule;
+            } elseif (is_string($rule)) {
+                $rulesArray = explode('|', $rule);
+            } else {
+                $rulesArray = [$rule];
+            }
 
-            $description = $annotations->get($parameter, implode(', ', $validation));
+            $description = $annotations->get($parameter, implode(', ', $rulesArray));
 
             $existedParameter = array_first(
                 $this->item['parameters'],
@@ -404,9 +410,9 @@ class SwaggerService
                     'in' => 'query',
                     'name' => $parameter,
                     'description' => $description,
-                    'type' => $this->getParameterType($validation)
+                    'type' => $this->getParameterType($rulesArray)
                 ];
-                if (in_array('required', $validation)) {
+                if (in_array('required', $rulesArray)) {
                     $parameterDefinition['required'] = true;
                 }
 
