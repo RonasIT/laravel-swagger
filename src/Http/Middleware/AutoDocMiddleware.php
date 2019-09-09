@@ -24,6 +24,9 @@ class AutoDocMiddleware
         $response = $next($request);
 
         if ((config('app.env') == 'testing') && !self::$skipped) {
+            if (!$request->route()) {
+                return $response;
+            }
             $this->service->addData($request, $response);
         }
 
