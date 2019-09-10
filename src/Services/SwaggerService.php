@@ -13,15 +13,18 @@ use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Minime\Annotations\Cache\ArrayCache;
 use Minime\Annotations\Interfaces\AnnotationsBagInterface;
 use Minime\Annotations\Parser;
 use Minime\Annotations\Reader as AnnotationReader;
-use RonasIT\Support\DataCollectors\LocalDataCollector;
-use phpDocumentor\Reflection\Types\Callable_;
 use ReflectionClass;
+use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
+use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
+use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
+use RonasIT\Support\DataCollectors\LocalDataCollector;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -189,7 +192,7 @@ class SwaggerService
         $this->uri = "/{$this->getUri()}";
         $this->method = strtolower($this->request->getMethod());
 
-        if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}"))) {
+        if (empty(Arr::get($this->data, "paths.{$this->uri}.{$this->method}"))) {
             $this->data['paths'][$this->uri][$this->method] = [
                 'tags' => [],
                 'consumes' => [],
@@ -219,7 +222,7 @@ class SwaggerService
 
         preg_match_all('/{.*?}/', $this->uri, $params);
 
-        $params = array_collapse($params);
+        $params = Arr::collapse($params);
 
         $result = [];
 
@@ -334,7 +337,7 @@ class SwaggerService
             $method
         );
 
-        return array_first($parameters, function ($key, $parameter) {
+        return Arr::first($parameters, function ($key, $_) {
             $rClass = new ReflectionClass($key);
 
             return $rClass->isSubclassOf(SymfonyRequest::class);
@@ -380,9 +383,9 @@ class SwaggerService
 
             $description = $annotations->get($parameter, implode(', ', $rulesArray));
 
-            $existedParameter = array_first(
+            $existedParameter = Arr::first(
                 $this->item['parameters'],
-                function ($existedParameter, $key) use ($parameter) {
+                function ($existedParameter, $_) use ($parameter) {
                     return $existedParameter['name'] == $parameter;
                 }
             );
@@ -464,7 +467,7 @@ class SwaggerService
     {
         $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
 
-        $bodyParamExisted = array_where($parameters, function ($value, $key) {
+        $bodyParamExisted = Arr::where($parameters, function ($value, $_) {
             return $value['name'] == 'body';
         });
 
@@ -548,17 +551,17 @@ class SwaggerService
             File::class => '[uploaded_file]',
         ];
 
-        $parameters = array_dot($parameters);
+        $parameters = Arr::dot($parameters);
         $returnParameters = [];
 
         foreach ($parameters as $parameter => $value) {
             if (is_object($value)) {
                 $class = get_class($value);
 
-                $value = array_get($classNamesValues, $class, $class);
+                $value = Arr::get($classNamesValues, $class, $class);
             }
 
-            array_set($returnParameters, $parameter, $value);
+            Arr::set($returnParameters, $parameter, $value);
         }
 
         return $returnParameters;
