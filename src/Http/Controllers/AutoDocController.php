@@ -9,9 +9,10 @@
 
 namespace RonasIT\Support\AutoDoc\Http\Controllers;
 
+use finfo;
 use Illuminate\Routing\Controller as BaseController;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
-use Illuminate\Support\Facades\File;
+use SplFileObject;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AutoDocController extends BaseController
@@ -44,7 +45,7 @@ class AutoDocController extends BaseController
         if (!file_exists($filePath)) {
             throw new NotFoundHttpException();
         }
-        $file = new \SplFileObject($filePath);
+        $file = new SplFileObject($filePath);
         $info = $file->getFileInfo();
         $len = $info->getSize();
         $content = $file->fread($len);
@@ -61,7 +62,7 @@ class AutoDocController extends BaseController
         } elseif (strtolower($ext) === 'js') {
             return 'application/x-javascript';
         }
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
 
         return $finfo->file($fileName);
     }
