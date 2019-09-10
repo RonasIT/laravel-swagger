@@ -2,7 +2,6 @@
 
 namespace Gluck1986\Support\AutoDoc\Http\Middleware;
 
-use App\Http\Requests\ApplicationRequest;
 use Closure;
 use Gluck1986\Support\AutoDoc\Services\SwaggerService;
 
