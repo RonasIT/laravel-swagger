@@ -68,7 +68,7 @@ return [
     | Available values: "jwt", "laravel", "null"
     */
 
-    'security' => '',
+    'security' =>  env('AUTO_DOK_SECURITY', null),
     'defaults' => [
 
         /*

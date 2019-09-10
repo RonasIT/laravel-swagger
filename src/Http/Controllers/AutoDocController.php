@@ -11,6 +11,7 @@ namespace RonasIT\Support\AutoDoc\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use Illuminate\Support\Facades\File;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AutoDocController extends BaseController
@@ -36,14 +37,32 @@ class AutoDocController extends BaseController
 
     public function getFile($file)
     {
-        $filePath = base_path("vendor/ronasit/laravel-swagger/src/Views/swagger/{$file}");
+        $dir = dirname(dirname(__DIR__));
+        $pathParts = [$dir, 'Views', 'swagger', $file];
+        $filePath = implode(DIRECTORY_SEPARATOR, $pathParts);
 
         if (!file_exists($filePath)) {
             throw new NotFoundHttpException();
         }
+        $file = new \SplFileObject($filePath);
+        $info = $file->getFileInfo();
+        $len = $info->getSize();
+        $content = $file->fread($len);
+        $mime_type = $this->getMIME($filePath);
 
-        $content = file_get_contents($filePath);
+        return response($content)->withHeaders(['content-type' => $mime_type, 'Content-Length' => $len]);
+    }
 
-        return response($content);
+    private function getMIME($fileName): string
+    {
+        $ext = strtolower(pathinfo($fileName)['extension'] ?? '');
+        if (strtolower($ext) === 'css') {
+            return 'text/css';
+        } elseif (strtolower($ext) === 'js') {
+            return 'application/x-javascript';
+        }
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        return $finfo->file($fileName);
     }
 }
