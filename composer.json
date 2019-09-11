@@ -19,15 +19,9 @@
   "autoload": {
     "psr-4": {
       "RonasIT\\Support\\AutoDoc\\": "src/"
-    }
-  },
-  "minimum-stability": "stable",
-  "extra": {
-    "laravel": {
-      "providers": [
-        "RonasIT\\Support\\AutoDoc\\AutoDocServiceProvider",
-        "RonasIT\\Support\\DataCollectors\\LocalDataCollectorServiceProvider"
-      ]
-    }
+    },
+    "exclude-from-classmap": [
+      "src/Tests/"
+    ]
   }
 }
