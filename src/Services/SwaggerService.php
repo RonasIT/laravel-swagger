@@ -116,28 +116,6 @@ class SwaggerService
         return str_replace(['http://', 'https://', '/'], '', $url);
     }
 
-    /**
-     * @param $info
-     * @return mixed
-     */
-    protected function prepareInfo($info)
-    {
-        if (empty($info)) {
-            return $info;
-        }
-
-        foreach ($info['license'] as $key => $value) {
-            if (empty($value)) {
-                unset($info['license'][$key]);
-            }
-        }
-        if (empty($info['license'])) {
-            unset($info['license']);
-        }
-
-        return $info;
-    }
-
     protected function generateSecurityDefinition()
     {
         $availableTypes = ['jwt', 'laravel'];
@@ -261,87 +239,56 @@ class SwaggerService
         $this->saveDescription($concreteRequest, $annotations);
     }
 
-    public function saveConsume()
+    protected function parseResponse($response)
     {
-        $consumeList = $this->data['paths'][$this->uri][$this->method]['consumes'];
-        $consume = $this->request->header('Content-Type');
+        $produceList = $this->data['paths'][$this->uri][$this->method]['produces'];
 
-        if (!empty($consume) && !in_array($consume, $consumeList)) {
-            $this->item['consumes'][] = $consume;
+        $produce = $response->headers->get('Content-type');
+        if (is_null($produce)) {
+            $produce = 'text/plain';
+        }
+
+        if (!in_array($produce, $produceList)) {
+            $this->item['produces'][] = $produce;
+        }
+
+        $responses = $this->item['responses'];
+        $code = $response->getStatusCode();
+
+        if (!in_array($code, $responses)) {
+            $this->saveExample(
+                $response->getStatusCode(),
+                $response->getContent(),
+                $produce
+            );
         }
     }
 
-    public function saveTags($request)
+    protected function saveExample($code, $content, $produce)
     {
-        $route = $request->route();
-
-        $prefix = $route->getPrefix();
-
-        $this->item['tags'] = [$prefix];
+        $description = $this->getResponseDescription($code);
+        $this->item['responses'][$code] = $this->makeResponseExample($content, $produce, $description);
     }
 
-    protected function saveSecurity()
+    protected function makeResponseExample($content, $mimeType, $description = '')
     {
-        if ($this->requestSupportAuth()) {
-            $this->addSecurityToOperation();
-        }
-    }
+        $responseExample = [
+            'description' => $description
+        ];
 
-    protected function requestSupportAuth()
-    {
-        switch ($this->security) {
-            case 'jwt':
-                $header = $this->request->header('authorization');
-                break;
-            case 'laravel':
-                $header = $this->request->cookie('__ym_uid');
-                break;
-        }
-
-        return !empty($header);
-    }
-
-    protected function addSecurityToOperation()
-    {
-        $security = &$this->data['paths'][$this->uri][$this->method]['security'];
-        if (empty($security)) {
-            $security[] = [
-                "{$this->security}" => []
+        if ($mimeType === 'application/json') {
+            $responseExample['examples'] = [
+                'application/json' => json_decode($content, true),
             ];
-        }
-    }
-
-    public function getConcreteRequest()
-    {
-        $controller = $this->request->route()->getActionName();
-
-        if ($controller == 'Closure') {
-            return null;
-        }
-
-        $explodedController = explode('@', $controller);
-        if (count($explodedController) === 1) {
-            $class = $explodedController[0];
-            $method = '__invoke';
+        } elseif (preg_match('/image./', $mimeType) !== false) {
+            $responseExample['schema'] = [
+                'type' => 'file',
+            ];
         } else {
-            $class = $explodedController[0];
-            $method = $explodedController[1];
+            $responseExample['examples'][$mimeType] = $content;
         }
 
-        $instance = app($class);
-        $route = $this->request->route();
-
-        $parameters = $this->resolveClassMethodDependencies(
-            $route->parametersWithoutNulls(),
-            $instance,
-            $method
-        );
-
-        return Arr::first($parameters, function ($key, $_) {
-            $rClass = new ReflectionClass($key);
-
-            return $rClass->isSubclassOf(SymfonyRequest::class);
-        });
+        return $responseExample;
     }
 
     protected function saveParameters($request, AnnotationsBagInterface $annotations)
@@ -359,15 +306,6 @@ class SwaggerService
         } else {
             $this->savePostRequestParameters($actionName, $rules, $annotations);
         }
-    }
-
-    protected function getActionName($uri)
-    {
-        $action = preg_replace('[\/]', '', $uri);
-        $action = preg_replace('[{]', "_", $action);
-        $action = preg_replace('[}]', "_", $action);
-
-        return Str::camel($action);
     }
 
     protected function saveGetRequestParameters($rules, AnnotationsBagInterface $annotations)
@@ -406,31 +344,6 @@ class SwaggerService
         }
     }
 
-    protected function getParameterType(array $validation)
-    {
-        $validationRules = [
-            'array' => 'object',
-            'boolean' => 'boolean',
-            'date' => 'date',
-            'digits' => 'integer',
-            'email' => 'string',
-            'integer' => 'integer',
-            'numeric' => 'number',
-            'string' => 'string'
-        ];
-
-        $parameterType = 'string';
-
-        foreach ($validation as $rule) {
-            if (in_array($rule, array_keys($validationRules))) {
-                $parameterType = $validationRules[$rule];
-                break;
-            }
-        }
-
-        return $parameterType;
-    }
-
     protected function savePostRequestParameters($actionName, $rules, AnnotationsBagInterface $annotations)
     {
         if ($this->requestHasMoreProperties($actionName)) {
@@ -448,30 +361,6 @@ class SwaggerService
 
             $this->saveDefinitions($actionName, $rules, $annotations);
         }
-    }
-
-    protected function requestHasMoreProperties($actionName)
-    {
-        $requestParametersCount = count($this->request->all());
-
-        if (isset($this->data['definitions'][$actionName . 'Object']['properties'])) {
-            $objectParametersCount = count($this->data['definitions'][$actionName . 'Object']['properties']);
-        } else {
-            $objectParametersCount = 0;
-        }
-
-        return $requestParametersCount > $objectParametersCount;
-    }
-
-    protected function requestHasBody()
-    {
-        $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
-
-        $bodyParamExisted = Arr::where($parameters, function ($value, $_) {
-            return $value['name'] == 'body';
-        });
-
-        return empty($bodyParamExisted);
     }
 
     protected function saveDefinitions($objectName, $rules, $annotations)
@@ -500,6 +389,31 @@ class SwaggerService
 
         $data['example'] = $this->generateExample($data['properties']);
         $this->data['definitions'][$objectName . 'Object'] = $data;
+    }
+
+    protected function getParameterType(array $validation)
+    {
+        $validationRules = [
+            'array' => 'object',
+            'boolean' => 'boolean',
+            'date' => 'date',
+            'digits' => 'integer',
+            'email' => 'string',
+            'integer' => 'integer',
+            'numeric' => 'number',
+            'string' => 'string'
+        ];
+
+        $parameterType = 'string';
+
+        foreach ($validation as $rule) {
+            if (in_array($rule, array_keys($validationRules))) {
+                $parameterType = $validationRules[$rule];
+                break;
+            }
+        }
+
+        return $parameterType;
     }
 
     protected function saveParameterType(&$data, $parameter, $parameterType)
@@ -533,6 +447,199 @@ class SwaggerService
         );
         $description = $annotations->get($parameter, implode(', ', $normalisedRulesArray));
         $data['properties'][$parameter]['description'] = $description;
+    }
+
+    protected function requestHasMoreProperties($actionName)
+    {
+        $requestParametersCount = count($this->request->all());
+
+        if (isset($this->data['definitions'][$actionName . 'Object']['properties'])) {
+            $objectParametersCount = count($this->data['definitions'][$actionName . 'Object']['properties']);
+        } else {
+            $objectParametersCount = 0;
+        }
+
+        return $requestParametersCount > $objectParametersCount;
+    }
+
+    protected function requestHasBody()
+    {
+        $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
+
+        $bodyParamExisted = Arr::where($parameters, function ($value, $_) {
+            return $value['name'] == 'body';
+        });
+
+        return empty($bodyParamExisted);
+    }
+
+    public function getConcreteRequest()
+    {
+        $controller = $this->request->route()->getActionName();
+
+        if ($controller == 'Closure') {
+            return null;
+        }
+
+        $explodedController = explode('@', $controller);
+        if (count($explodedController) === 1) {
+            $class = $explodedController[0];
+            $method = '__invoke';
+        } else {
+            $class = $explodedController[0];
+            $method = $explodedController[1];
+        }
+
+        $instance = app($class);
+        $route = $this->request->route();
+
+        $parameters = $this->resolveClassMethodDependencies(
+            $route->parametersWithoutNulls(),
+            $instance,
+            $method
+        );
+
+        return Arr::first($parameters, function ($key, $_) {
+            $rClass = new ReflectionClass($key);
+
+            return $rClass->isSubclassOf(SymfonyRequest::class);
+        });
+    }
+
+    public function saveConsume()
+    {
+        $consumeList = $this->data['paths'][$this->uri][$this->method]['consumes'];
+        $consume = $this->request->header('Content-Type');
+
+        if (!empty($consume) && !in_array($consume, $consumeList)) {
+            $this->item['consumes'][] = $consume;
+        }
+    }
+
+    public function saveTags($request)
+    {
+        $route = $request->route();
+
+        $prefix = $route->getPrefix();
+
+        $this->item['tags'] = [$prefix];
+    }
+
+    public function saveDescription($request, AnnotationsBagInterface $annotations)
+    {
+        $this->item['summary'] = $this->getSummary($request, $annotations);
+
+        $description = $annotations->get('description');
+
+        if (!empty($description)) {
+            $this->item['description'] = $description;
+        } else {
+            $this->item['description'] = '';
+        }
+    }
+
+    protected function saveSecurity()
+    {
+        if ($this->requestSupportAuth()) {
+            $this->addSecurityToOperation();
+        }
+    }
+
+    protected function addSecurityToOperation()
+    {
+        $security = &$this->data['paths'][$this->uri][$this->method]['security'];
+        if (empty($security)) {
+            $security[] = [
+                "{$this->security}" => []
+            ];
+        }
+    }
+
+    protected function getSummary($request, AnnotationsBagInterface $annotations)
+    {
+        $summary = $annotations->get('summary');
+
+        if (empty($summary)) {
+            $summary = $this->parseRequestName($request);
+        }
+
+        return $summary;
+    }
+
+    protected function requestSupportAuth()
+    {
+        switch ($this->security) {
+            case 'jwt':
+                $header = $this->request->header('authorization');
+                break;
+            case 'laravel':
+                $header = $this->request->cookie('__ym_uid');
+                break;
+        }
+
+        return !empty($header);
+    }
+
+    protected function parseRequestName($request)
+    {
+        $explodedRequest = explode('\\', $request);
+        $requestName = array_pop($explodedRequest);
+
+        $underscoreRequestName = $this->camelCaseToUnderScore($requestName);
+
+        return preg_replace('/[_]/', ' ', $underscoreRequestName);
+    }
+
+    protected function getResponseDescription($code)
+    {
+        $request = $this->getConcreteRequest();
+
+        ($result = empty($request) ? Response::$statusTexts[$code] : false)
+        || ($result = $this->annotationReader->getClassAnnotations($request)->get("_{$code}"))
+        || ($result = config("auto-doc.defaults.code-descriptions.{$code}"))
+        || ($result = Response::$statusTexts[$code])
+        || ($result = '');
+
+        return $result;
+    }
+
+    protected function getActionName($uri)
+    {
+        $action = preg_replace('[\/]', '', $uri);
+        $action = preg_replace('[{]', "_", $action);
+        $action = preg_replace('[}]', "_", $action);
+
+        return Str::camel($action);
+    }
+
+    protected function saveTempData()
+    {
+        $exportFile = config('auto-doc.files.temporary');
+        $data = json_encode($this->data);
+
+        file_put_contents($exportFile, $data);
+    }
+
+    public function saveProductionData()
+    {
+        $this->dataCollector->saveData();
+    }
+
+    public function getDocFileContent()
+    {
+        $data = $this->dataCollector->getDocumentation();
+
+        return $data;
+    }
+
+    private function camelCaseToUnderScore($input)
+    {
+        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+        $ret = $matches[0];
+        foreach ($ret as &$match) {
+            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+        }
+        return implode('_', $ret);
     }
 
     protected function generateExample($properties)
@@ -600,133 +707,22 @@ class SwaggerService
         return $values[$type];
     }
 
-    public function saveDescription($request, AnnotationsBagInterface $annotations)
+    protected function prepareInfo($info)
     {
-        $this->item['summary'] = $this->getSummary($request, $annotations);
-
-        $description = $annotations->get('description');
-
-        if (!empty($description)) {
-            $this->item['description'] = $description;
-        } else {
-            $this->item['description'] = '';
-        }
-    }
-
-    protected function getSummary($request, AnnotationsBagInterface $annotations)
-    {
-        $summary = $annotations->get('summary');
-
-        if (empty($summary)) {
-            $summary = $this->parseRequestName($request);
+        if (empty($info)) {
+            return $info;
         }
 
-        return $summary;
-    }
-
-    protected function parseRequestName($request)
-    {
-        $explodedRequest = explode('\\', $request);
-        $requestName = array_pop($explodedRequest);
-
-        $underscoreRequestName = $this->camelCaseToUnderScore($requestName);
-
-        return preg_replace('/[_]/', ' ', $underscoreRequestName);
-    }
-
-    private function camelCaseToUnderScore($input)
-    {
-        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
-        $ret = $matches[0];
-        foreach ($ret as &$match) {
-            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+        foreach ($info['license'] as $key => $value) {
+            if (empty($value)) {
+                unset($info['license'][$key]);
+            }
         }
-        return implode('_', $ret);
-    }
-
-    protected function parseResponse($response)
-    {
-        $produceList = $this->data['paths'][$this->uri][$this->method]['produces'];
-
-        $produce = $response->headers->get('Content-type');
-        if (is_null($produce)) {
-            $produce = 'text/plain';
+        if (empty($info['license'])) {
+            unset($info['license']);
         }
 
-        if (!in_array($produce, $produceList)) {
-            $this->item['produces'][] = $produce;
-        }
-
-        $responses = $this->item['responses'];
-        $code = $response->getStatusCode();
-
-        if (!in_array($code, $responses)) {
-            $this->saveExample(
-                $response->getStatusCode(),
-                $response->getContent(),
-                $produce
-            );
-        }
-    }
-
-    protected function saveExample($code, $content, $produce)
-    {
-        $description = $this->getResponseDescription($code);
-        $this->item['responses'][$code] = $this->makeResponseExample($content, $produce, $description);
-    }
-
-    protected function getResponseDescription($code)
-    {
-        $request = $this->getConcreteRequest();
-
-        ($result = empty($request) ? Response::$statusTexts[$code] : false)
-        || ($result = $this->annotationReader->getClassAnnotations($request)->get("_{$code}"))
-        || ($result = config("auto-doc.defaults.code-descriptions.{$code}"))
-        || ($result = Response::$statusTexts[$code])
-        || ($result = '');
-
-        return $result;
-    }
-
-    protected function makeResponseExample($content, $mimeType, $description = '')
-    {
-        $responseExample = [
-            'description' => $description
-        ];
-
-        if ($mimeType === 'application/json') {
-            $responseExample['examples'] = [
-                'application/json' => json_decode($content, true),
-            ];
-        } elseif (preg_match('/image./', $mimeType) !== false) {
-            $responseExample['schema'] = [
-                'type' => 'file',
-            ];
-        } else {
-            $responseExample['examples'][$mimeType] = $content;
-        }
-
-        return $responseExample;
-    }
-
-    public function saveProductionData()
-    {
-        $this->dataCollector->saveData();
-    }
-
-    public function getDocFileContent()
-    {
-        $data = $this->dataCollector->getDocumentation();
-
-        return $data;
-    }
-
-    protected function saveTempData()
-    {
-        $exportFile = config('auto-doc.files.temporary');
-        $data = json_encode($this->data);
-
-        file_put_contents($exportFile, $data);
+        return $info;
     }
 
     protected function throwTraitMissingException()
