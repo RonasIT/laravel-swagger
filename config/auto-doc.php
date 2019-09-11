@@ -100,5 +100,6 @@ return [
     | If config not set, will be using ronasit/local-data-collector
     */
 
-    'data_collector' => ''
+    'data_collector' => '',
+    'production_path' => env('LOCAL_DATA_COLLECTOR_PROD_PATH')
 ];
