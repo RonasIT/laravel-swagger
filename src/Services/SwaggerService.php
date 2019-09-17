@@ -14,6 +14,7 @@ use Gluck1986\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use Gluck1986\Support\AutoDoc\Interfaces\DataCollectorInterface;
 use Gluck1986\Support\AutoDoc\Traits\GetDependenciesTrait;
 use Illuminate\Container\Container;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Route;
@@ -106,11 +107,18 @@ class SwaggerService
             $method
         );
 
-        return array_first($parameters, function ($key, $parameter) {
-            $rClass = new \ReflectionClass($key);
+        $result = array_first($parameters, function ($key, $parameter) {
+            if (class_exists($key)) {
+                $rClass = new \ReflectionClass($key);
 
-            return $rClass->isSubclassOf(SymfonyRequest::class);
+                return $rClass->isSubclassOf(SymfonyRequest::class);
+            }
+            return false;
         });
+        if (is_null($result)) {
+            return SymfonyRequest::class;
+        }
+        return $result;
     }
 
     public function saveConsume()
@@ -369,7 +377,14 @@ class SwaggerService
 
     protected function saveParameters($request, AnnotationsBagInterface $annotations)
     {
-        $requestObj = app($request);
+        $generalRequest = app('request');
+        $requestObj = new $request();
+        if ($requestObj instanceof FormRequest) {
+            $requestObj = $request::createFrom($generalRequest);
+        } else {
+            $requestObj = $generalRequest;
+        }
+
         if (method_exists($requestObj, 'rules')) {
             $rules = $requestObj->rules();
         } else {
