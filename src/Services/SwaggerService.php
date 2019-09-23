@@ -410,7 +410,24 @@ class SwaggerService
                 $rulesArray = [$rule];
             }
 
-            $description = $annotations->get($parameter, implode(', ', $rulesArray));
+            $normalisedRulesArray = array_map(
+                function ($rule) {
+                    /** @var \Closure $rule */
+                    if (is_callable($rule)) {
+                        return 'fn()';
+                    }
+                    if (is_object($rule)) {
+                        $descr = $this->annotationReader->getClassAnnotations($rule)
+                            ->get('description', $rule->__toString());
+
+                        return $descr;
+                    }
+                    return $rule;
+                },
+                $rulesArray
+            );
+
+            $description = $annotations->get($parameter, implode(', ', $normalisedRulesArray));
 
             $existedParameter = array_first(
                 $this->item['parameters'],
