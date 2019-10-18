@@ -10,6 +10,9 @@ class AutoDocServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/auto-doc.php' => config_path('auto-doc.php'),
         ], 'config');
+        $this->publishes([
+            __DIR__.'/../config/local-data-collector.php' => config_path('local-data-collector.php'),
+        ], 'config');
 
         $this->publishes([
             __DIR__.'/Views/swagger-description.blade.php' => resource_path('views/swagger-description.blade.php'),
