@@ -7,7 +7,7 @@ use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
 /**
  * @property SwaggerService $service
-*/
+ */
 class AutoDocMiddleware
 {
     protected $service;

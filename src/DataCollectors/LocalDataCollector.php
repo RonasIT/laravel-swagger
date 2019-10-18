@@ -1,6 +1,6 @@
 <?php
 
-namespace  RonasIT\Support\AutoDoc\DataCollectors;
+namespace RonasIT\Support\AutoDoc\DataCollectors;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
@@ -22,15 +22,18 @@ class LocalDataCollector implements DataCollectorInterface
         }
     }
 
-    public function saveTmpData($tempData) {
+    public function saveTmpData($tempData)
+    {
         self::$data = $tempData;
     }
 
-    public function getTmpData() {
+    public function getTmpData()
+    {
         return self::$data;
     }
 
-    public function saveData(){
+    public function saveData()
+    {
         $content = json_encode(self::$data);
 
         file_put_contents($this->prodFilePath, $content);
@@ -38,7 +41,8 @@ class LocalDataCollector implements DataCollectorInterface
         self::$data = [];
     }
 
-    public function getDocumentation() {
+    public function getDocumentation()
+    {
         if (!file_exists($this->prodFilePath)) {
             throw new FileNotFoundException();
         }
