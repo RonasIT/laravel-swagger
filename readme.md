@@ -7,7 +7,7 @@ to collect information that after the successful completion of all tests
 generated Swagger-file. In addition this plug-in is able to draw Swagger-template 
 to display the generated documentation for a config.
 
-## Instalation
+## Installation
 
 ### Composer
  1. `composer require ronasit/laravel-swagger`
