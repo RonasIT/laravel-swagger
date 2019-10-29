@@ -4,6 +4,7 @@ namespace RonasIT\Support\AutoDoc\Services;
 
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Minime\Annotations\Interfaces\AnnotationsBagInterface;
 use Minime\Annotations\Reader as AnnotationReader;
@@ -159,7 +160,7 @@ class SwaggerService
         $this->uri = "/{$this->getUri()}";
         $this->method = strtolower($this->request->getMethod());
 
-        if (empty(array_get($this->data, "paths.{$this->uri}.{$this->method}"))) {
+        if (empty(Arr::get($this->data, "paths.{$this->uri}.{$this->method}"))) {
             $this->data['paths'][$this->uri][$this->method] = [
                 'tags' => [],
                 'consumes' => [],
@@ -189,7 +190,7 @@ class SwaggerService
 
         preg_match_all('/{.*?}/', $this->uri, $params);
 
-        $params = array_collapse($params);
+        $params = Arr::collapse($params);
 
         $result = [];
 
@@ -309,7 +310,7 @@ class SwaggerService
 
             $description = $annotations->get($parameter, implode(', ', $validation));
 
-            $existedParameter = array_first($this->item['parameters'], function ($existedParameter, $key) use ($parameter) {
+            $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter, $key) use ($parameter) {
                 return $existedParameter['name'] == $parameter;
             });
 
@@ -424,7 +425,7 @@ class SwaggerService
     {
         $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
 
-        $bodyParamExisted = array_where($parameters, function ($value, $key) {
+        $bodyParamExisted = Arr::where($parameters, function ($value, $key) {
             return $value['name'] == 'body';
         });
 
@@ -451,7 +452,7 @@ class SwaggerService
             $route->parametersWithoutNulls(), $instance, $method
         );
 
-        return array_first($parameters, function ($key, $parameter) {
+        return Arr::first($parameters, function ($key, $parameter) {
             return preg_match('/Request/', $key);
         });
     }
@@ -472,7 +473,7 @@ class SwaggerService
 
         $explodedUri = explode('/', $this->uri);
 
-        $tag = array_get($explodedUri, $tagIndex);
+        $tag = Arr::get($explodedUri, $tagIndex);
 
         $this->item['tags'] = [$tag];
     }
@@ -614,17 +615,17 @@ class SwaggerService
             File::class => '[uploaded_file]',
         ];
 
-        $parameters = array_dot($parameters);
+        $parameters = Arr::dot($parameters);
         $returnParameters = [];
 
         foreach ($parameters as $parameter => $value) {
             if (is_object($value)) {
                 $class = get_class($value);
 
-                $value = array_get($classNamesValues, $class, $class);
+                $value = Arr::get($classNamesValues, $class, $class);
             }
 
-            array_set($returnParameters, $parameter, $value);
+            Arr::set($returnParameters, $parameter, $value);
         }
 
         return $returnParameters;
