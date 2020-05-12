@@ -10,24 +10,26 @@ use RonasIT\Support\AutoDoc\Services\SwaggerService;
  */
 class AutoDocMiddleware
 {
-    protected $service;
-    public static $skipped = false;
+	public static $skipped = false;
 
-    public function __construct()
-    {
-        $this->service = app(SwaggerService::class);
-    }
+	protected $service;
 
-    public function handle($request, Closure $next)
-    {
-        $response = $next($request);
+	public function __construct()
+	{
+		$this->service = app(SwaggerService::class);
+	}
 
-        if ((config('app.env') == 'testing') && !self::$skipped) {
-            $this->service->addData($request, $response);
-        }
+	public function handle($request, Closure $next)
+	{
+		$response = $next($request);
+		$allowedEnv = config('auto-doc.allowedEnv');
 
-        self::$skipped = false;
+		if (in_array(config('app.env'), $allowedEnv) && !self::$skipped) {
+			$this->service->addData($request, $response);
+		}
 
-        return $response;
-    }
+		self::$skipped = false;
+
+		return $response;
+	}
 }
