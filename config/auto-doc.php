@@ -101,5 +101,5 @@ return [
 	| If config not set, will be using ronasit/local-data-collector
 	*/
 
-	'data_collector' => \RonasIT\Support\DataCollectors\LocalDataCollector::class,
+	'data_collector' => \KWXS\Support\AutoDoc\DataCollectors\LocalDataCollector::class,
 ];

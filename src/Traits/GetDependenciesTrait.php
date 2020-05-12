@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Traits;
+namespace KWXS\Support\AutoDoc\Traits;
 
 use ReflectionMethod;
 use ReflectionFunctionAbstract;

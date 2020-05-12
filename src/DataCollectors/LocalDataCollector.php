@@ -1,10 +1,10 @@
 <?php
 
-namespace RonasIT\Support\DataCollectors;
+namespace KWXS\Support\AutoDoc\DataCollectors;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
-use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
+use KWXS\Support\AutoDoc\Interfaces\DataCollectorInterface;
+use KWXS\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDataCollector implements DataCollectorInterface
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Tests;
+namespace KWXS\Support\AutoDoc\Tests;
 
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
-use RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware;
+use KWXS\Support\AutoDoc\Services\SwaggerService;
+use KWXS\Support\AutoDoc\Http\Middleware\AutoDocMiddleware;
 
 trait AutoDocTestCaseTrait
 {

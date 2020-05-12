@@ -22,7 +22,7 @@
   },
   "autoload": {
     "psr-4": {
-      "RonasIT\\Support\\AutoDoc\\": "src/"
+      "KWXS\\Support\\AutoDoc\\": "src/"
     },
     "exclude-from-classmap": [
       "src/Tests/"

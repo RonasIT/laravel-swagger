@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Services;
+namespace KWXS\Support\AutoDoc\Services;
 
 use Exception;
 use Illuminate\Container\Container;
@@ -12,11 +12,11 @@ use Minime\Annotations\Cache\ArrayCache;
 use Minime\Annotations\Interfaces\AnnotationsBagInterface;
 use Minime\Annotations\Parser;
 use Minime\Annotations\Reader as AnnotationReader;
-use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
-use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
-use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
-use RonasIT\Support\DataCollectors\LocalDataCollector;
+use KWXS\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
+use KWXS\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
+use KWXS\Support\AutoDoc\Interfaces\DataCollectorInterface;
+use KWXS\Support\AutoDoc\Traits\GetDependenciesTrait;
+use KWXS\Support\AutoDoc\DataCollectors\LocalDataCollector;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 

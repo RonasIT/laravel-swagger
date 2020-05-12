@@ -1,6 +1,6 @@
 <?php
 
-use RonasIT\Support\AutoDoc\Http\Controllers\AutoDocController;
+use KWXS\Support\AutoDoc\Http\Controllers\AutoDocController;
 
 
 Route::get('/auto-doc/documentation', ['uses' => AutoDocController::class . '@documentation']);
