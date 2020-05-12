@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\DataCollectors;
+namespace RonasIT\Support\DataCollectors;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
