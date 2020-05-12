@@ -16,11 +16,6 @@ trait AutoDocTestCaseTrait
         $this->docService = app(SwaggerService::class);
     }
 
-    public function createApplication()
-    {
-        parent::createApplication();
-    }
-
     public function tearDown(): void
     {
         $currentTestCount = $this->getTestResultObject()->count();
