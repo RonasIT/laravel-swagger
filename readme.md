@@ -10,7 +10,7 @@ to display the generated documentation for a config.
 ## Installation
 
 ### Composer
- 1. `composer require ronasit/laravel-swagger`
+ 1. `composer require tenantcloud/laravel-auto-generate-swagger`
 
 ### Laravel
  1. add `RonasIT\Support\AutoDoc\AutoDocServiceProvider::class,` to providers in `config/app.php`
