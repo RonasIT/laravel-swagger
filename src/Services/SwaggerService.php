@@ -140,9 +140,9 @@ class SwaggerService
 		}
 	}
 
-	public function saveProductionData()
+	public function saveProductionData(string $filePath = null)
 	{
-		$this->dataCollector->saveData();
+		$this->dataCollector->saveData($filePath);
 	}
 
 	public function getDocFileContent()

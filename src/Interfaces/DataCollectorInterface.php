@@ -16,10 +16,11 @@ interface DataCollectorInterface
      */
     public function getTmpData();
 
-    /**
-     * Save production data
-     */
-    public function saveData();
+	/**
+	 * Save production data
+	 * @param string|null $filePath
+	 */
+    public function saveData(string $filePath = null);
 
     /**
      * Get production documentation
