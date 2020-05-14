@@ -43,7 +43,7 @@ class LocalDataCollector implements DataCollectorInterface
 
 		$content = json_encode(self::$data);
 
-		file_put_contents($this->prodFilePath, $content);
+		file_put_contents($filePath, $content);
 
 		self::$data = [];
 	}
