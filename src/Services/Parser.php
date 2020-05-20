@@ -2,8 +2,6 @@
 
 namespace KWXS\Support\AutoDoc\Services;
 
-use Minime\Annotations\DynamicParser;
-
 /**
  * An Annotations parser
  *
@@ -67,7 +65,7 @@ class Parser extends DynamicParser
     protected function parseValue($value, $key = null)
     {
         $value = trim($value);
-        $type = 'KWXS\\Support\\AutoDoc\\Services\\DynamicParser';
+        $type = '\Minime\\Annotations\\Types\\Dynamic';
         if (preg_match($this->typesPattern, $value, $found)) { // strong typed
             $type = $found[1];
             $value = trim(substr($value, strlen($type)));
