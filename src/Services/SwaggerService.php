@@ -10,7 +10,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Minime\Annotations\Cache\ArrayCache;
 use Minime\Annotations\Interfaces\AnnotationsBagInterface;
-use Minime\Annotations\Parser;
 use Minime\Annotations\Reader as AnnotationReader;
 use KWXS\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
 use KWXS\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
@@ -108,6 +107,22 @@ class SwaggerService
 		});
 	}
 
+	public function getMethodAnnotation()
+	{
+		$controller = $this->request->route()->getActionName();
+
+		if ($controller == 'Closure') {
+			return null;
+		}
+
+		$explodedController = explode('@', $controller);
+
+		$class = $explodedController[0];
+		$method = $explodedController[1];
+
+		return $this->annotationReader->getMethodAnnotations($class, $method);
+	}
+
 	public function saveConsume()
 	{
 		$consumeList = $this->data['paths'][$this->uri][$this->method]['consumes'];
@@ -132,12 +147,7 @@ class SwaggerService
 	public function saveDescription($request, AnnotationsBagInterface $annotations)
 	{
 		$this->item['summary'] = $this->getSummary($request, $annotations);
-
-		$description = $annotations->get('description');
-
-		if (!empty($description)) {
-			$this->item['description'] = $description;
-		}
+		$this->item['description'] = $annotations->get('description', '');
 	}
 
 	public function saveProductionData(string $filePath = null)
@@ -296,9 +306,10 @@ class SwaggerService
 		$this->saveSecurity();
 
 		$concreteRequest = $this->getConcreteRequest();
+		$descriptionAnnotation = $this->getMethodAnnotation();
 
 		if (empty($concreteRequest)) {
-			$this->item['description'] = '';
+			$this->item['description'] = $descriptionAnnotation->get('description', '');
 
 			return;
 		}
@@ -306,7 +317,7 @@ class SwaggerService
 		$annotations = $this->annotationReader->getClassAnnotations($concreteRequest);
 
 		$this->saveParameters($concreteRequest, $annotations);
-		$this->saveDescription($concreteRequest, $annotations);
+		$this->saveDescription($concreteRequest, $descriptionAnnotation);
 	}
 
 	protected function parseResponse($response)
