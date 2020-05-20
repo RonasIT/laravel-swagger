@@ -326,10 +326,20 @@ class SwaggerService
 		$responses = $this->item['responses'];
 		$code = $response->getStatusCode();
 
+		// Remove debug trace from response
+		$content = json_decode($response->getContent(), true);
+		Arr::forget($content, [
+			'code',
+			'exception',
+			'file',
+			'line',
+			'trace'
+		]);
+
 		if (!in_array($code, $responses)) {
 			$this->saveExample(
 				$response->getStatusCode(),
-				$response->getContent(),
+				json_encode($content),
 				$produce
 			);
 		}
@@ -490,7 +500,10 @@ class SwaggerService
 	protected function saveParameterDescription(&$data, $parameter, array $rulesArray, AnnotationsBagInterface $annotations)
 	{
 		try {
-			$description = $annotations->get($parameter, implode(', ', $rulesArray));
+			$rules = array_filter($rulesArray, function ($rule) {
+				return is_string($rule);
+			});
+			$description = $annotations->get($parameter, implode(', ', $rules));
 			$data['properties'][$parameter]['description'] = $description;
 		} catch (Throwable $e) {
 			return;
