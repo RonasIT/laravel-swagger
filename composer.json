@@ -18,8 +18,7 @@
   "require": {
     "php": ">=7.1.0",
     "laravel/framework": ">=5.3.0",
-    "minime/annotations": "2.3.1",
-    "ronasit/laravel-helpers": "^1.4"
+    "minime/annotations": "~3.0"
   },
   "autoload": {
     "psr-4": {
