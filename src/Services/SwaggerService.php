@@ -604,7 +604,7 @@ class SwaggerService
 	{
 		$request = $this->getConcreteRequest();
 
-		return elseChain(
+		return $this->elseChain(
 			function () use ($request, $code) {
 				return empty($request) ? Response::$statusTexts[$code] : null;
 			},
@@ -749,5 +749,20 @@ class SwaggerService
 		];
 
 		return $values[$type];
+	}
+
+	private function elseChain(...$callbacks)
+	{
+		$value = null;
+
+		foreach ($callbacks as $callback) {
+			$value = $callback();
+
+			if (!empty($value)) {
+				return $value;
+			}
+		}
+
+		return $value;
 	}
 }
