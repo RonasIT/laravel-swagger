@@ -589,7 +589,7 @@ class SwaggerService
         return $data;
     }
 
-    private function camelCaseToUnderScore($input)
+    protected function camelCaseToUnderScore($input)
     {
         preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
         $ret = $matches[0];
@@ -637,7 +637,7 @@ class SwaggerService
      * We hope swagger developers will resolve this problem in next release of Swagger OpenAPI
      * */
 
-    private function replaceNullValues($parameters, $types, &$example)
+    protected function replaceNullValues($parameters, $types, &$example)
     {
         foreach ($parameters as $parameter => $value) {
             if (is_null($value) && in_array($parameter, $types)) {
@@ -650,7 +650,7 @@ class SwaggerService
         }
     }
 
-    private function getDefaultValueByType($type)
+    protected function getDefaultValueByType($type)
     {
         $values = [
             'object' => 'null',
