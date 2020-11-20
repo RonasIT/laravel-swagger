@@ -536,8 +536,9 @@ class SwaggerService
     {
         $explodedRequest = explode('\\', $request);
         $requestName = array_pop($explodedRequest);
+        $summaryName = str_replace('Request', '', $requestName);
 
-        $underscoreRequestName = $this->camelCaseToUnderScore($requestName);
+        $underscoreRequestName = $this->camelCaseToUnderScore($summaryName);
 
         return preg_replace('/[_]/', ' ', $underscoreRequestName);
     }
