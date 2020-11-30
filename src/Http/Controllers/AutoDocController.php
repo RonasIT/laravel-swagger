@@ -2,6 +2,7 @@
 
 namespace RonasIT\Support\AutoDoc\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -27,7 +28,7 @@ class AutoDocController extends BaseController
         return view('auto-doc::documentation');
     }
 
-    public function getFile($file)
+    public function getFile(Request $request, $file)
     {
         $filePath = base_path("vendor/ronasit/laravel-swagger/src/Views/swagger/{$file}");
 
@@ -37,6 +38,6 @@ class AutoDocController extends BaseController
 
         $content = file_get_contents($filePath);
 
-        return response($content);
+        return response($content)->header('Content-Type', $request->getAcceptableContentTypes());
     }
 }
