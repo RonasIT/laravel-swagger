@@ -7,19 +7,7 @@ use RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware;
 
 trait AutoDocTestCaseTrait
 {
-    protected $docService;
-
-    public function init()
-    {
-        $this->docService = app(SwaggerService::class);
-    }
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->init();
-    }
+    public $docService;
 
     public function createApplication()
     {
@@ -28,18 +16,19 @@ trait AutoDocTestCaseTrait
 
     public function tearDown(): void
     {
-        $this->startDocumentationCollecting();
+        $this->saveDocumentation();
 
         parent::tearDown();
     }
 
-    public function startDocumentationCollecting()
+    public function saveDocumentation()
     {
         $currentTestCount = $this->getTestResultObject()->count();
         $allTestCount = $this->getTestResultObject()->topTestSuite()->count();
 
         if (($currentTestCount == $allTestCount) && (!$this->hasFailed())) {
-            $this->docService->saveProductionData();
+            $docService = $this->docService ??  app(SwaggerService::class);
+            $docService->saveProductionData();
         }
     }
 
