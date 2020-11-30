@@ -9,11 +9,16 @@ trait AutoDocTestCaseTrait
 {
     protected $docService;
 
+    public function init()
+    {
+        $this->docService = app(SwaggerService::class);
+    }
+
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->docService = app(SwaggerService::class);
+        $this->init();
     }
 
     public function createApplication()
@@ -23,14 +28,19 @@ trait AutoDocTestCaseTrait
 
     public function tearDown(): void
     {
+        $this->startDocumentationCollecting();
+
+        parent::tearDown();
+    }
+
+    public function startDocumentationCollecting()
+    {
         $currentTestCount = $this->getTestResultObject()->count();
         $allTestCount = $this->getTestResultObject()->topTestSuite()->count();
 
         if (($currentTestCount == $allTestCount) && (!$this->hasFailed())) {
             $this->docService->saveProductionData();
         }
-
-        parent::tearDown();
     }
 
     /**
