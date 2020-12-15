@@ -147,6 +147,10 @@ class SwaggerService
     {
         $this->request = $request;
 
+        if (empty($this->request->route())) {
+            return $response->setContent('Route does not exist');
+        }
+
         $this->prepareItem();
 
         $this->parseRequest($request);
