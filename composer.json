@@ -10,9 +10,9 @@
     }
   ],
   "require": {
-    "php": ">=7.1.0",
+    "php": ">=7.1.0,<8.0",
     "ext-fileinfo": "*",
-    "laravel/framework": ">=5.3.0",
+    "laravel/framework": "<6.0",
     "minime/annotations": "2.3.1"
   },
   "autoload": {
