@@ -1,6 +1,6 @@
 {
-  "name": "ronasit/laravel-swagger",
-  "description": "Provided middleware for generating of swagger-documentation file by run testing of RESTful API.",
+  "name": "shirokovnv/laravel-swagger",
+  "description": "The fork of the ronasit/laravel-swagger repo. Provided middleware for generating of swagger-documentation file by run testing of RESTful API.",
   "keywords": [
     "laravel",
     "swagger",
@@ -11,8 +11,8 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Roman Dubrovin",
-      "email": "rdubrovin@ronasit.com"
+      "name": "Nickolai Shirokov",
+      "email": "shirokovnv@gmail.com"
     }
   ],
   "require": {
