@@ -43,7 +43,7 @@ class SwaggerService
     {
         $this->setDataCollector();
 
-        if (config('app.env') == 'testing') {
+        if (config('app.env') == config('auto-doc.testing_env')) {
             $this->container = $container;
 
             $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
