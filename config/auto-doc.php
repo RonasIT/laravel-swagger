@@ -27,7 +27,7 @@ return [
     | Testable namespaces
     |--------------------------------------------------------------------------
     |
-    | The list of namespaces of your autodoc tests 
+    | The list of the namespaces of your autodoc tests 
     */
     
     'testable_namespaces' => [
