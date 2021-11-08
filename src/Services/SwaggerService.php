@@ -356,7 +356,12 @@ class SwaggerService
             'properties' => []
         ];
         foreach ($rules as $parameter => $rule) {
-            $rulesArray = explode('|', $rule);
+            $rulesArray = $rule;
+
+            if (!is_array($rule)) {
+                $rulesArray = explode('|', $rule);
+            }
+
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
             $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
