@@ -26,6 +26,7 @@ to display the generated documentation for a config.
 ### Plugin
  1. Add middleware **\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class** to *Http/Kernel.php*.
  1. Use **\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait** in your TestCase in *tests/TestCase.php*
+ 1. Call `saveDocumentation` method in the `TearDown` method of your base TestCase class
  1. In *config/auto-doc.php* you can specify enabling of plugin, info of your project, 
  some defaults descriptions and route for rendering of documentation. 
  1. In *.env* file you should add following lines
