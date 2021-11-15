@@ -101,5 +101,8 @@ return [
     */
 
     'data_collector' => \RonasIT\Support\AutoDoc\DataCollectors\LocalDataCollector::class,
-    'autoDocOnProductionDisabled' => env('AUTO_DOC_ON_PRODUCTION_DISABLED', true),
+    'display_environments' => [
+        'local',
+        'development',
+    ],
 ];

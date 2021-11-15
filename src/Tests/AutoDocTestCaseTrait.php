@@ -23,10 +23,6 @@ trait AutoDocTestCaseTrait
 
     public function saveDocumentation()
     {
-        if (config('app.env') === 'production' && config('auto-doc.autoDocOnProductionDisabled')) {
-            return;
-        }
-
         $currentTestCount = $this->getTestResultObject()->count();
         $allTestCount = $this->getTestResultObject()->topTestSuite()->count();
 
