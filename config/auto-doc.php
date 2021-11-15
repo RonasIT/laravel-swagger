@@ -100,5 +100,6 @@ return [
     | If config not set, will be using ronasit/local-data-collector
     */
 
-    'data_collector' => \RonasIT\Support\AutoDoc\DataCollectors\LocalDataCollector::class
+    'data_collector' => \RonasIT\Support\AutoDoc\DataCollectors\LocalDataCollector::class,
+    'autoDocOnProductionDisabled' => env('AUTO_DOC_ON_PRODUCTION_DISABLED', true),
 ];
