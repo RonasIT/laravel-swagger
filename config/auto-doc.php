@@ -101,6 +101,10 @@ return [
     */
 
     'data_collector' => \RonasIT\Support\AutoDoc\DataCollectors\LocalDataCollector::class,
+
+    /*
+     | Swagger documentation visibility whitelist
+     */
     'display_environments' => [
         'local',
         'development',
