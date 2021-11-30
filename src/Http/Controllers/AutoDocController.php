@@ -25,7 +25,13 @@ class AutoDocController extends BaseController
 
     public function index()
     {
-        return view('auto-doc::documentation');
+        $currentEnvironment = config('app.env');
+
+        if (in_array($currentEnvironment, config('auto-doc.display_environments'))) {
+            return view('auto-doc::documentation');
+        }
+
+        return response('Forbidden.', 403);
     }
 
     public function getFile(Request $request, $file)
