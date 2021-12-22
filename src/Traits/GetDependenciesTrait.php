@@ -34,6 +34,6 @@ trait GetDependenciesTrait
             return null;
         }
 
-        return $class->name;
+        return interface_exists($class->name) ? get_class(app($class->name)) : $class->name;
     }
 }
