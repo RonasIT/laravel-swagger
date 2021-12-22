@@ -27,7 +27,7 @@ trait AutoDocTestCaseTrait
         $allTestCount = $this->getTestResultObject()->topTestSuite()->count();
 
         if (($currentTestCount == $allTestCount) && (!$this->hasFailed())) {
-            $docService = $this->docService ??  app(SwaggerService::class);
+            $docService = $this->docService ?? app(SwaggerService::class);
             $docService->saveProductionData();
         }
     }

@@ -27,5 +27,12 @@
     "exclude-from-classmap": [
       "src/Tests/"
     ]
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "RonasIT\\Support\\AutoDoc\\AutoDocServiceProvider"
+      ]
+    }
   }
 }

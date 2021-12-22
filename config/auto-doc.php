@@ -100,5 +100,17 @@ return [
     | If config not set, will be using ronasit/local-data-collector
     */
 
-    'data_collector' => \RonasIT\Support\AutoDoc\DataCollectors\LocalDataCollector::class
+    'data_collector' => \RonasIT\Support\AutoDoc\DataCollectors\LocalDataCollector::class,
+
+     /*
+     |--------------------------------------------------------------------------
+     | Swagger documentation visibility environments list
+     |-------------------------------------------------------------------------- 
+     |
+     | The list of environments in which auto documentation will be displaying
+     */
+    'display_environments' => [
+        'local',
+        'development',
+    ],
 ];

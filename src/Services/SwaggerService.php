@@ -280,6 +280,10 @@ class SwaggerService
             $responseExample['schema'] = [
                 'example' => json_decode($content, true),
             ];
+        } elseif ($mimeType === 'application/pdf') {
+            $responseExample['schema'] = [
+                'example' => base64_encode($content),
+            ];
         } else {
             $responseExample['examples']['example'] = $content;
         }
@@ -356,7 +360,12 @@ class SwaggerService
             'properties' => []
         ];
         foreach ($rules as $parameter => $rule) {
-            $rulesArray = explode('|', $rule);
+            $rulesArray = $rule;
+
+            if (!is_array($rule)) {
+                $rulesArray = explode('|', $rule);
+            }
+
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
             $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
