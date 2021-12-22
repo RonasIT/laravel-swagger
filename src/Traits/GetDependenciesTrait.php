@@ -3,8 +3,11 @@
 namespace RonasIT\Support\AutoDoc\Traits;
 
 use ReflectionMethod;
-use ReflectionFunctionAbstract;
+use ReflectionFunction;
 use ReflectionParameter;
+use Illuminate\Support\Arr;
+use ReflectionFunctionAbstract;
+use Illuminate\Container\Container;
 
 trait GetDependenciesTrait
 {
@@ -34,6 +37,17 @@ trait GetDependenciesTrait
             return null;
         }
 
-        return interface_exists($class->name) ? get_class(app($class->name)) : $class->name;
+        return interface_exists($class->name) ? $this->getClassByInterface($class->name) : $class->name;
+    }
+
+    protected function getClassByInterface($interfaceName)
+    {
+        $bindings = Container::getInstance()->getBindings();
+
+        $implementation = Arr::get($bindings, "{$interfaceName}.concrete");
+
+        $classFields = (new ReflectionFunction($implementation))->getStaticVariables();
+
+        return $classFields['concrete'];
     }
 }
