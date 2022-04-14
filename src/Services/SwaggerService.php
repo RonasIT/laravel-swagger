@@ -2,14 +2,11 @@
 
 namespace RonasIT\Support\AutoDoc\Services;
 
+use ReflectionClass;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Minime\Annotations\Interfaces\AnnotationsBagInterface;
-use Minime\Annotations\Reader as AnnotationReader;
-use Minime\Annotations\Parser;
-use Minime\Annotations\Cache\ArrayCache;
 use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
@@ -25,7 +22,6 @@ class SwaggerService
 {
     use GetDependenciesTrait;
 
-    protected $annotationReader;
     protected $dataCollector;
 
     protected $data;
@@ -45,8 +41,6 @@ class SwaggerService
 
         if (config('app.env') == 'testing') {
             $this->container = $container;
-
-            $this->annotationReader = new AnnotationReader(new Parser, new ArrayCache);;
 
             $this->security = config('auto-doc.security');
 
@@ -149,7 +143,7 @@ class SwaggerService
 
         $this->prepareItem();
 
-        $this->parseRequest($request);
+        $this->parseRequest();
         $this->parseResponse($response);
 
         $this->dataCollector->saveTmpData($this->data);
@@ -209,7 +203,7 @@ class SwaggerService
         return $result;
     }
 
-    protected function parseRequest($request)
+    protected function parseRequest()
     {
         $this->saveConsume();
         $this->saveTags();
@@ -223,7 +217,7 @@ class SwaggerService
             return;
         }
 
-        $annotations = $this->annotationReader->getClassAnnotations($concreteRequest);
+        $annotations = $this->getClassAnnotations($concreteRequest);
 
         $this->saveParameters($concreteRequest, $annotations);
         $this->saveDescription($concreteRequest, $annotations);
@@ -278,11 +272,11 @@ class SwaggerService
 
         if ($mimeType === 'application/json') {
             $responseExample['schema'] = [
-                'example' => json_decode($content, true),
+                'example' => json_decode($content, true)
             ];
         } elseif ($mimeType === 'application/pdf') {
             $responseExample['schema'] = [
-                'example' => base64_encode($content),
+                'example' => base64_encode($content)
             ];
         } else {
             $responseExample['examples']['example'] = $content;
@@ -291,7 +285,7 @@ class SwaggerService
         return $responseExample;
     }
 
-    protected function saveParameters($request, AnnotationsBagInterface $annotations)
+    protected function saveParameters($request, array $annotations)
     {
         $formRequest = new $request;
         $formRequest->setUserResolver($this->request->getUserResolver());
@@ -307,12 +301,12 @@ class SwaggerService
         }
     }
 
-    protected function saveGetRequestParameters($rules, AnnotationsBagInterface $annotations)
+    protected function saveGetRequestParameters($rules, array $annotations)
     {
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
-            $description = $annotations->get($parameter, implode(', ', $validation));
+            $description = Arr::get($annotations, $parameter, implode(', ', $validation));
 
             $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter, $key) use ($parameter) {
                 return $existedParameter['name'] == $parameter;
@@ -334,7 +328,7 @@ class SwaggerService
         }
     }
 
-    protected function savePostRequestParameters($actionName, $rules, AnnotationsBagInterface $annotations)
+    protected function savePostRequestParameters($actionName, $rules, array $annotations)
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
@@ -353,19 +347,14 @@ class SwaggerService
         }
     }
 
-    protected function saveDefinitions($objectName, $rules, $annotations)
+    protected function saveDefinitions($objectName, $rules, array $annotations)
     {
         $data = [
             'type' => 'object',
             'properties' => []
         ];
         foreach ($rules as $parameter => $rule) {
-            $rulesArray = $rule;
-
-            if (!is_array($rule)) {
-                $rulesArray = explode('|', $rule);
-            }
-
+            $rulesArray = (is_array($rule)) ? $rule : explode('|', $rule);
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
             $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
@@ -411,9 +400,9 @@ class SwaggerService
         ];
     }
 
-    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, AnnotationsBagInterface $annotations)
+    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, array $annotations)
     {
-        $description = $annotations->get($parameter, implode(', ', $rulesArray));
+        $description = Arr::get($annotations, $parameter, implode(', ', $rulesArray));
         $data['properties'][$parameter]['description'] = $description;
     }
 
@@ -487,11 +476,11 @@ class SwaggerService
         $this->item['tags'] = [$tag];
     }
 
-    public function saveDescription($request, AnnotationsBagInterface $annotations)
+    public function saveDescription($request, array $annotations)
     {
         $this->item['summary'] = $this->getSummary($request, $annotations);
 
-        $description = $annotations->get('description');
+        $description = Arr::get($annotations, 'description');
 
         if (!empty($description)) {
             $this->item['description'] = $description;
@@ -515,9 +504,9 @@ class SwaggerService
         }
     }
 
-    protected function getSummary($request, AnnotationsBagInterface $annotations)
+    protected function getSummary($request, array $annotations)
     {
-        $summary = $annotations->get('summary');
+        $summary = Arr::get($annotations, 'summary');
 
         if (empty($summary)) {
             $summary = $this->parseRequestName($request);
@@ -561,7 +550,9 @@ class SwaggerService
                 return empty($request) ? Response::$statusTexts[$code] : null;
             },
             function () use ($request, $code) {
-                return $this->annotationReader->getClassAnnotations($request)->get("_{$code}");
+                $annotations = $this->getClassAnnotations($request);
+
+                return Arr::get($annotations, "_{$code}");
             },
             function () use ($code) {
                 return config("auto-doc.defaults.code-descriptions.{$code}");
@@ -594,9 +585,7 @@ class SwaggerService
 
     public function getDocFileContent()
     {
-        $data = $this->dataCollector->getDocumentation();
-
-        return $data;
+        return $this->dataCollector->getDocumentation();
     }
 
     protected function camelCaseToUnderScore($input)
@@ -696,15 +685,29 @@ class SwaggerService
         return $info;
     }
 
-    protected function throwTraitMissingException()
+    protected function getClassAnnotations($class): array
     {
-        $message = "ERROR:\n" .
-            "It looks like you did not add AutoDocRequestTrait to your requester. \n" .
-            "Please add it or mark in the test that you do not want to collect the \n" .
-            "documentation for this case using the skipDocumentationCollecting() method\n";
+        $reflection = new ReflectionClass($class);
 
-        fwrite(STDERR, print_r($message, TRUE));
+        $annotations = $reflection->getDocComment();
 
-        die;
+        $blocks = explode("\n", $annotations);
+
+        $result = [];
+
+        foreach ($blocks as $block) {
+            if (Str::contains($block, '@')) {
+                $index = strpos($block, '@');
+                $block = substr($block, $index);
+                $exploded = explode(' ', $block);
+
+                $paramName = str_replace('@', '', array_shift($exploded));
+                $paramValue = implode(' ', $exploded);
+
+                $result[$paramName] = $paramValue;
+            }
+        }
+
+        return $result;
     }
 }
