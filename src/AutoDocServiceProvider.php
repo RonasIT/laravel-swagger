@@ -3,6 +3,7 @@
 namespace RonasIT\Support\AutoDoc;
 
 use Illuminate\Support\ServiceProvider;
+use RonasIT\Support\AutoDoc\Commands\PushDocumentationCommand;
 
 class AutoDocServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,10 @@ class AutoDocServiceProvider extends ServiceProvider
         if (!$this->app->routesAreCached()) {
             require __DIR__ . '/Http/routes.php';
         }
+
+        $this->commands([
+            PushDocumentationCommand::class
+        ]);
 
         $this->loadViewsFrom(__DIR__ . '/Views', 'auto-doc');
     }
