@@ -36,7 +36,14 @@ to display the generated documentation for a config.
  1. Configure documentation saving, using one of the next way:
   - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`. Please note that this way will be removed after updating PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)
   ```
-  <extension class="RonasIT\Support\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
+  <extensions>
+      <extension class="RonasIT\Support\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
+  </extensions>
+  <testsuites>
+      <testsuite name="Feature">
+          <directory suffix="Test.php">./tests/Feature</directory>
+      </testsuite>
+  </testsuites>
   ```
   - Call `php artisan swagger:push-documentation` console command after the `tests` stage in your CI/CD configuration
 
