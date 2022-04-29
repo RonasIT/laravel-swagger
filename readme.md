@@ -26,7 +26,6 @@ to display the generated documentation for a config.
 ### Plugin
  1. Add middleware **\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class** to *Http/Kernel.php*.
  1. Use **\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait** in your TestCase in *tests/TestCase.php*
- 1. Call `saveDocumentation` method in the `TearDown` method of your base TestCase class
  1. In *config/auto-doc.php* you can specify enabling of plugin, info of your project, 
  some defaults descriptions and route for rendering of documentation. 
  1. In *.env* file you should add following lines
@@ -34,6 +33,19 @@ to display the generated documentation for a config.
     LOCAL_DATA_COLLECTOR_PROD_PATH=/example-folder/documentation.json  
     LOCAL_DATA_COLLECTOR_TEMP_PATH=/tmp/documentation.json
     `
+ 1. Configure documentation saving, using one of the next way:
+  - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`. Please note that this way will be removed after updating PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)
+  ```
+  <extensions>
+      <extension class="RonasIT\Support\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
+  </extensions>
+  <testsuites>
+      <testsuite name="Feature">
+          <directory suffix="Test.php">./tests/Feature</directory>
+      </testsuite>
+  </testsuites>
+  ```
+  - Call `php artisan swagger:push-documentation` console command after the `tests` stage in your CI/CD configuration
 
 ## Usages
  For correct working of plugin you have to dispose all the validation rules in the rules() method of class YourRequest, 
