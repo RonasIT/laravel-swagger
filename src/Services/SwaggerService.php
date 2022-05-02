@@ -554,22 +554,23 @@ class SwaggerService
 
     protected function getResponseDescription($code)
     {
+        $defaultDescription = Response::$statusTexts[$code];
+
         $request = $this->getConcreteRequest();
 
-        return elseChain(
-            function () use ($request, $code) {
-                return empty($request) ? Response::$statusTexts[$code] : null;
-            },
-            function () use ($request, $code) {
-                return $this->annotationReader->getClassAnnotations($request)->get("_{$code}");
-            },
-            function () use ($code) {
-                return config("auto-doc.defaults.code-descriptions.{$code}");
-            },
-            function () use ($code) {
-                return Response::$statusTexts[$code];
-            }
-        );
+        if (empty($request)) {
+            return $defaultDescription;
+        }
+
+        $annotations = $this->getClassAnnotations($request);
+
+        $localDescription = Arr::get($annotations, "_{$code}");
+
+        if (!empty($localDescription)) {
+            return $localDescription;
+        }
+
+        return config("auto-doc.defaults.code-descriptions.{$code}", $defaultDescription);
     }
 
     protected function getActionName($uri)
