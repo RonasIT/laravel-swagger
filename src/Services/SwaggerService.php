@@ -2,34 +2,35 @@
 
 namespace RonasIT\Support\AutoDoc\Services;
 
-use ReflectionClass;
 use Illuminate\Container\Container;
-use Illuminate\Http\Request;
+use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
-use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
+use ReflectionClass;
+use Illuminate\Http\Request;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\Support\AutoDoc\Exceptions\DataCollectorClassNotFoundException;
-use RonasIT\Support\AutoDoc\DataCollectors\LocalDataCollector;
+use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Http\Testing\File;
+use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
+use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
+use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 
 /**
- * @property DataCollectorInterface $dataCollector
+ * @property SwaggerDriverInterface $driver
  */
 class SwaggerService
 {
     use GetDependenciesTrait;
 
-    protected $dataCollector;
+    protected $driver;
 
     protected $data;
+    protected $config;
     protected $container;
     private $uri;
     private $method;
     /**
-     * @var \Illuminate\Http\Request
+     * @var Request
      */
     private $request;
     private $item;
@@ -37,53 +38,60 @@ class SwaggerService
 
     public function __construct(Container $container)
     {
-        $this->setDataCollector();
+        $this->config = config('auto-doc');
+
+        $this->setDriver();
 
         if (config('app.env') == 'testing') {
             $this->container = $container;
 
-            $this->security = config('auto-doc.security');
+            $this->security = $this->config['security'];
 
-            $this->data = $this->dataCollector->getTmpData();
+            $this->data = $this->driver->getTmpData();
 
             if (empty($this->data)) {
                 $this->data = $this->generateEmptyData();
 
-                $this->dataCollector->saveTmpData($this->data);
+                $this->driver->saveTmpData($this->data);
             }
         }
     }
 
-    protected function setDataCollector()
+    protected function setDriver()
     {
-        $dataCollectorClass = config('auto-doc.data_collector');
+        $driver = $this->config['driver'];
+        $className = Arr::get($this->config, "drivers.{$driver}.class");
 
-        if (empty($dataCollectorClass)) {
-            $this->dataCollector = app(LocalDataCollector::class);
-        } elseif (!class_exists($dataCollectorClass)) {
-            throw new DataCollectorClassNotFoundException();
+        if (!class_exists($className)) {
+            throw new SwaggerDriverClassNotFoundException($className);
         } else {
-            $this->dataCollector = app($dataCollectorClass);
+            $this->driver = app($className);
+        }
+
+        if (!$this->driver instanceof SwaggerDriverInterface) {
+            throw new InvalidDriverClassException($driver);
         }
     }
 
-    protected function generateEmptyData()
+    protected function generateEmptyData(): array
     {
         $data = [
-            'swagger' => config('auto-doc.swagger.version'),
+            'swagger' => Arr::get($this->config, 'swagger.version'),
             'host' => $this->getAppUrl(),
-            'basePath' => config('auto-doc.basePath'),
-            'schemes' => config('auto-doc.schemes'),
+            'basePath' => $this->config['basePath'],
+            'schemes' => $this->config['schemes'],
             'paths' => [],
-            'definitions' => config('auto-doc.definitions')
+            'definitions' => $this->config['definitions']
         ];
 
-        $info = $this->prepareInfo(config('auto-doc.info'));
+        $info = $this->prepareInfo($this->config['info']);
+
         if (!empty($info)) {
             $data['info'] = $info;
         }
 
         $securityDefinitions = $this->generateSecurityDefinition();
+
         if (!empty($securityDefinitions)) {
             $data['securityDefinitions'] = $securityDefinitions;
         }
@@ -102,23 +110,16 @@ class SwaggerService
 
     protected function generateSecurityDefinition()
     {
-        $availableTypes = ['jwt', 'laravel'];
-        $security = $this->security;
-
-        if (empty($security)) {
+        if (empty($this->security)) {
             return '';
         }
 
-        if (!in_array($security, $availableTypes)) {
-            throw new WrongSecurityConfigException();
-        }
-
         return [
-            $security => $this->generateSecurityDefinitionObject($security)
+            $this->security => $this->generateSecurityDefinitionObject($this->security)
         ];
     }
 
-    protected function generateSecurityDefinitionObject($type)
+    protected function generateSecurityDefinitionObject($type): array
     {
         switch ($type) {
             case 'jwt':
@@ -134,6 +135,8 @@ class SwaggerService
                     'name' => 'Cookie',
                     'in' => 'header'
                 ];
+            default:
+                throw new WrongSecurityConfigException();
         }
     }
 
@@ -146,7 +149,7 @@ class SwaggerService
         $this->parseRequest();
         $this->parseResponse($response);
 
-        $this->dataCollector->saveTmpData($this->data);
+        $this->driver->saveTmpData($this->data);
     }
 
     protected function prepareItem()
@@ -172,13 +175,13 @@ class SwaggerService
     protected function getUri()
     {
         $uri = $this->request->route()->uri();
-        $basePath = preg_replace("/^\//", '', config('auto-doc.basePath'));
+        $basePath = preg_replace("/^\//", '', $this->config['basePath']);
         $preparedUri = preg_replace("/^{$basePath}/", '', $uri);
 
         return preg_replace("/^\//", '', $preparedUri);
     }
 
-    protected function getPathParams()
+    protected function getPathParams(): array
     {
         $params = [];
 
@@ -228,6 +231,7 @@ class SwaggerService
         $produceList = $this->data['paths'][$this->uri][$this->method]['produces'];
 
         $produce = $response->headers->get('Content-type');
+
         if (is_null($produce)) {
             $produce = 'text/plain';
         }
@@ -264,20 +268,14 @@ class SwaggerService
         }
     }
 
-    protected function makeResponseExample($content, $mimeType, $description = '')
+    protected function makeResponseExample($content, $mimeType, $description = ''): array
     {
-        $responseExample = [
-            'description' => $description
-        ];
+        $responseExample = ['description' => $description];
 
         if ($mimeType === 'application/json') {
-            $responseExample['schema'] = [
-                'example' => json_decode($content, true)
-            ];
+            $responseExample['schema'] = ['example' => json_decode($content, true)];
         } elseif ($mimeType === 'application/pdf') {
-            $responseExample['schema'] = [
-                'example' => base64_encode($content)
-            ];
+            $responseExample['schema'] = ['example' => base64_encode($content)];
         } else {
             $responseExample['examples']['example'] = $content;
         }
@@ -308,7 +306,7 @@ class SwaggerService
 
             $description = Arr::get($annotations, $parameter, implode(', ', $validation));
 
-            $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter, $key) use ($parameter) {
+            $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter) use ($parameter) {
                 return $existedParameter['name'] == $parameter;
             });
 
@@ -368,7 +366,7 @@ class SwaggerService
         $this->data['definitions'][$objectName . 'Object'] = $data;
     }
 
-    protected function getParameterType(array $validation)
+    protected function getParameterType(array $validation): string
     {
         $validationRules = [
             'array' => 'object',
@@ -385,8 +383,7 @@ class SwaggerService
 
         foreach ($validation as $item) {
             if (in_array($item, array_keys($validationRules))) {
-                $parameterType = $validationRules[$item];
-                break;
+                return $validationRules[$item];
             }
         }
 
@@ -396,7 +393,7 @@ class SwaggerService
     protected function saveParameterType(&$data, $parameter, $parameterType)
     {
         $data['properties'][$parameter] = [
-            'type' => $parameterType,
+            'type' => $parameterType
         ];
     }
 
@@ -406,7 +403,7 @@ class SwaggerService
         $data['properties'][$parameter]['description'] = $description;
     }
 
-    protected function requestHasMoreProperties($actionName)
+    protected function requestHasMoreProperties($actionName): bool
     {
         $requestParametersCount = count($this->request->all());
 
@@ -419,11 +416,11 @@ class SwaggerService
         return $requestParametersCount > $objectParametersCount;
     }
 
-    protected function requestHasBody()
+    protected function requestHasBody(): bool
     {
         $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
 
-        $bodyParamExisted = Arr::where($parameters, function ($value, $key) {
+        $bodyParamExisted = Arr::where($parameters, function ($value) {
             return $value['name'] == 'body';
         });
 
@@ -450,7 +447,7 @@ class SwaggerService
             $route->parametersWithoutNulls(), $instance, $method
         );
 
-        return Arr::first($parameters, function ($key, $parameter) {
+        return Arr::first($parameters, function ($key) {
             return preg_match('/Request/', $key);
         });
     }
@@ -497,6 +494,7 @@ class SwaggerService
     protected function addSecurityToOperation()
     {
         $security = &$this->data['paths'][$this->uri][$this->method]['security'];
+
         if (empty($security)) {
             $security[] = [
                 "{$this->security}" => []
@@ -515,7 +513,7 @@ class SwaggerService
         return $summary;
     }
 
-    protected function requestSupportAuth()
+    protected function requestSupportAuth(): bool
     {
         switch ($this->security) {
             case 'jwt' :
@@ -527,7 +525,6 @@ class SwaggerService
         }
 
         return !empty($header);
-
     }
 
     protected function parseRequestName($request)
@@ -559,10 +556,10 @@ class SwaggerService
             return $localDescription;
         }
 
-        return config("auto-doc.defaults.code-descriptions.{$code}", $defaultDescription);
+        return Arr::get($this->config, "defaults.code-descriptions.{$code}", $defaultDescription);
     }
 
-    protected function getActionName($uri)
+    protected function getActionName($uri): string
     {
         $action = preg_replace('[\/]', '', $uri);
 
@@ -571,7 +568,7 @@ class SwaggerService
 
     protected function saveTempData()
     {
-        $exportFile = config('auto-doc.files.temporary');
+        $exportFile = Arr::get($this->config, 'files.temporary');
         $data = json_encode($this->data);
 
         file_put_contents($exportFile, $data);
@@ -579,25 +576,27 @@ class SwaggerService
 
     public function saveProductionData()
     {
-        $this->dataCollector->saveData();
+        $this->driver->saveData();
     }
 
     public function getDocFileContent()
     {
-        return $this->dataCollector->getDocumentation();
+        return $this->driver->getDocumentation();
     }
 
-    protected function camelCaseToUnderScore($input)
+    protected function camelCaseToUnderScore($input): string
     {
         preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
         $ret = $matches[0];
+
         foreach ($ret as &$match) {
             $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
         }
+
         return implode('_', $ret);
     }
 
-    protected function generateExample($properties)
+    protected function generateExample($properties): array
     {
         $parameters = $this->replaceObjectValues($this->request->all());
         $example = [];
@@ -607,7 +606,7 @@ class SwaggerService
         return $example;
     }
 
-    protected function replaceObjectValues($parameters)
+    protected function replaceObjectValues($parameters): array
     {
         $classNamesValues = [
             File::class => '[uploaded_file]',
@@ -629,12 +628,37 @@ class SwaggerService
         return $returnParameters;
     }
 
+    protected function getClassAnnotations($class): array
+    {
+        $reflection = new ReflectionClass($class);
+
+        $annotations = $reflection->getDocComment();
+
+        $blocks = explode("\n", $annotations);
+
+        $result = [];
+
+        foreach ($blocks as $block) {
+            if (Str::contains($block, '@')) {
+                $index = strpos($block, '@');
+                $block = substr($block, $index);
+                $exploded = explode(' ', $block);
+
+                $paramName = str_replace('@', '', array_shift($exploded));
+                $paramValue = implode(' ', $exploded);
+
+                $result[$paramName] = $paramValue;
+            }
+        }
+
+        return $result;
+    }
+
     /**
      * NOTE: All functions below are temporary solution for
      * this issue: https://github.com/OAI/OpenAPI-Specification/issues/229
      * We hope swagger developers will resolve this problem in next release of Swagger OpenAPI
      * */
-
     protected function replaceNullValues($parameters, $types, &$example)
     {
         foreach ($parameters as $parameter => $value) {
@@ -682,31 +706,5 @@ class SwaggerService
         }
 
         return $info;
-    }
-
-    protected function getClassAnnotations($class): array
-    {
-        $reflection = new ReflectionClass($class);
-
-        $annotations = $reflection->getDocComment();
-
-        $blocks = explode("\n", $annotations);
-
-        $result = [];
-
-        foreach ($blocks as $block) {
-            if (Str::contains($block, '@')) {
-                $index = strpos($block, '@');
-                $block = substr($block, $index);
-                $exploded = explode(' ', $block);
-
-                $paramName = str_replace('@', '', array_shift($exploded));
-                $paramValue = implode(' ', $exploded);
-
-                $result[$paramName] = $paramValue;
-            }
-        }
-
-        return $result;
     }
 }

@@ -1,5 +1,9 @@
 <?php
 
+use RonasIT\Support\AutoDoc\Drivers\LocalDriver;
+use RonasIT\Support\AutoDoc\Drivers\RemoteDriver;
+use RonasIT\Support\AutoDoc\Drivers\StorageDriver;
+
 return [
 
     /*
@@ -9,7 +13,6 @@ return [
     |
     | Route which will return documentation
     */
-
     'route' => '/',
 
     /*
@@ -19,7 +22,6 @@ return [
     |
     | Information fields
     */
-
     'info' => [
 
         /*
@@ -29,7 +31,6 @@ return [
         |
         | You can use your custom documentation view
         */
-
         'description' => 'swagger-description',
         'version' => '0.0.0',
         'title' => 'Name of Your Application',
@@ -54,7 +55,6 @@ return [
     | Base path for API routes. If config is set, all routes which starts from
     | this value will be grouped.
     */
-
     'basePath' => '/',
     'schemes' => [],
     'definitions' => [],
@@ -67,7 +67,6 @@ return [
     | Library name, which used to secure the project.
     | Available values: "jwt", "laravel", "null"
     */
-
     'security' => '',
     'defaults' => [
 
@@ -76,7 +75,6 @@ return [
         | Default descriptions of code statuses
         |--------------------------------------------------------------------------
         */
-
         'code-descriptions' => [
             '200' => 'Operation successfully done',
             '204' => 'Operation successfully done',
@@ -86,31 +84,50 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Data Collector Class
+    | Driver
     |--------------------------------------------------------------------------
     |
-    | Class of data collector, which will collect and save documentation
-    | It can be your own data collector class which should be inherited from
-    | RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface interface,
-    | or our data collectors from next packages:
-    |
-    | ronasit/local-data-collector
-    | ronasit/laravel-remote-data-collector
-    |
-    | If config not set, will be using ronasit/local-data-collector
+    | The name of driver, which will collect and save documentation
+    | Feel free to use your own driver class which should be inherited from
+    | `RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface` interface,
+    | or one of our drivers from the `drivers` config:
     */
+    'driver' => 'local',
 
-    'data_collector' => \RonasIT\Support\AutoDoc\DataCollectors\LocalDataCollector::class,
+    'drivers' => [
+        'local' => [
+            'class' => LocalDriver::class,
+            'production_path' => storage_path('documentation.json')
+        ],
+        'remote' => [
+            'class' => RemoteDriver::class,
+            'key' => 'project_name',
+            'url' => 'http://example.com'
+        ],
+        'storage' => [
+            'class' => StorageDriver::class,
 
-     /*
-     |--------------------------------------------------------------------------
-     | Swagger documentation visibility environments list
-     |-------------------------------------------------------------------------- 
-     |
-     | The list of environments in which auto documentation will be displaying
-     */
+            /*
+            |--------------------------------------------------------------------------
+            | Storage disk
+            |--------------------------------------------------------------------------
+            |
+            | One of the filesystems.disks config value
+            */
+            'disk' => 'public',
+            'production_path' => 'documentation.json'
+        ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Swagger documentation visibility environments list
+    |--------------------------------------------------------------------------
+    |
+    | The list of environments in which auto documentation will be displaying
+    */
     'display_environments' => [
         'local',
-        'development',
-    ],
+        'development'
+    ]
 ];
