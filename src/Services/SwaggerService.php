@@ -38,9 +38,9 @@ class SwaggerService
 
     public function __construct(Container $container)
     {
-        $this->setDriver();
-
         $this->config = config('auto-doc');
+
+        $this->setDriver();
 
         if (config('app.env') == 'testing') {
             $this->container = $container;
@@ -59,8 +59,8 @@ class SwaggerService
 
     protected function setDriver()
     {
-        $driver = config('auto-doc.driver');
-        $className = config("auto-doc.drivers.{$driver}.class");
+        $driver = $this->config['driver'];
+        $className = Arr::get($this->config, "drivers.{$driver}.class");
 
         if (!class_exists($className)) {
             throw new SwaggerDriverClassNotFoundException($className);
