@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use Illuminate\Http\Request;
+use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +39,7 @@ class SwaggerService
 
     public function __construct(Container $container)
     {
-        $this->config = config('auto-doc');
+        $this->initConfig();
 
         $this->setDriver();
 
@@ -54,6 +55,29 @@ class SwaggerService
 
                 $this->driver->saveTmpData($this->data);
             }
+        }
+    }
+
+    protected function initConfig()
+    {
+        $this->config = config('auto-doc');
+
+        $version = Arr::get($this->config, 'config_version');
+
+        if (empty($version)) {
+            throw new LegacyConfigException();
+        }
+
+        $packageConfigs = require __DIR__ . '/../../config/auto-doc.php';
+
+        $major = Str::before($version, '.');
+        $minor = Str::before($version, '.');
+
+        $actualMajor = Str::before($packageConfigs['config_version'], '.');
+        $actualMinor = Str::before($packageConfigs['config_version'], '.');
+
+        if ($actualMajor > $major || $actualMinor > $minor) {
+            throw new LegacyConfigException();
         }
     }
 
