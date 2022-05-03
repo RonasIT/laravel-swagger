@@ -2,7 +2,9 @@
 
 namespace RonasIT\Support\AutoDoc\Interfaces;
 
-interface DataCollectorInterface
+use stdClass;
+
+interface SwaggerDriverInterface
 {
     /**
      * Save temporary data
@@ -24,7 +26,7 @@ interface DataCollectorInterface
     /**
      * Get production documentation
      */
-    public function getDocumentation();
+    public function getDocumentation(): stdClass;
 }
 
 

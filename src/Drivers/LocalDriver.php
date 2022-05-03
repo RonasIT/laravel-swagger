@@ -1,21 +1,21 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\DataCollectors;
+namespace RonasIT\Support\AutoDoc\Drivers;
 
+use stdClass;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RonasIT\Support\AutoDoc\Interfaces\DataCollectorInterface;
+use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
-class LocalDataCollector implements DataCollectorInterface
+class LocalDriver implements SwaggerDriverInterface
 {
     public $prodFilePath;
-    public $tempFilePath;
 
     protected static $data;
 
     public function __construct()
     {
-        $this->prodFilePath = config('local-data-collector.production_path');
+        $this->prodFilePath = config('auto-doc.drivers.local.production_path');
 
         if (empty($this->prodFilePath)) {
             throw new MissedProductionFilePathException();
@@ -41,7 +41,7 @@ class LocalDataCollector implements DataCollectorInterface
         self::$data = [];
     }
 
-    public function getDocumentation()
+    public function getDocumentation(): stdClass
     {
         if (!file_exists($this->prodFilePath)) {
             throw new FileNotFoundException();

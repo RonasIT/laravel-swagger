@@ -14,10 +14,6 @@ class AutoDocServiceProvider extends ServiceProvider
         ], 'config');
 
         $this->publishes([
-            __DIR__ . '/../config/local-data-collector.php' => config_path('local-data-collector.php'),
-        ], 'config');
-
-        $this->publishes([
             __DIR__ . '/Views/swagger-description.blade.php' => resource_path('views/swagger-description.blade.php'),
         ], 'view');
 
@@ -34,6 +30,5 @@ class AutoDocServiceProvider extends ServiceProvider
 
     public function register()
     {
-
     }
 }
