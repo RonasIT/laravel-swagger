@@ -129,5 +129,7 @@ return [
     'display_environments' => [
         'local',
         'development'
-    ]
+    ],
+
+    'config_version' => '2.0'
 ];
