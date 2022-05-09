@@ -84,41 +84,38 @@ class SwaggerService
 
 	public function getConcreteRequest()
 	{
-		$controller = $this->request->route()->getActionName();
+		$route = $this->request->route();
 
-		if ($controller == 'Closure') {
+		$routeController = $route->getActionName();
+		if ($routeController == 'Closure') {
 			return null;
 		}
 
-		$explodedController = explode('@', $controller);
-
-		$class = $explodedController[0];
-		$method = $explodedController[1];
-
-		$instance = app($class);
-		$route = $this->request->route();
+		$controller = $route->getController();
+		$method = Str::contains($routeController, '@') ? $route->getActionMethod() : '__invoke';
 
 		$parameters = $this->resolveClassMethodDependencies(
-			$route->parametersWithoutNulls(), $instance, $method
+			$route->parametersWithoutNulls(), $controller, $method
 		);
 
-		return Arr::first($parameters, function ($key, $parameter) {
+		$request = Arr::first($parameters, function ($key, $parameter) {
 			return preg_match('/Request/', $key);
 		});
+
+		return $request;
 	}
 
 	public function getMethodAnnotation()
 	{
-		$controller = $this->request->route()->getActionName();
-
-		if ($controller == 'Closure') {
+		$route = $this->request->route();
+		$routeController = $route->getActionName();
+		if ($routeController == 'Closure') {
 			return null;
 		}
 
-		$explodedController = explode('@', $controller);
+		$class = get_class($route->getController());
+		$method = Str::contains($routeController, '@') ? $route->getActionMethod() : '__invoke';
 
-		$class = $explodedController[0];
-		$method = $explodedController[1];
 
 		return $this->annotationReader->getMethodAnnotations($class, $method);
 	}
@@ -391,7 +388,9 @@ class SwaggerService
 
 	protected function saveParameters($request, AnnotationsBagInterface $annotations)
 	{
-		$rules = (new $request())->rules();
+		$rules = app($request)
+			->setRouteResolver($this->request->getRouteResolver())
+			->rules();
 		$actionName = $this->getActionName($this->uri);
 
 		if (in_array($this->method, ['get', 'delete'])) {
@@ -404,7 +403,7 @@ class SwaggerService
 	protected function saveGetRequestParameters($rules, AnnotationsBagInterface $annotations)
 	{
 		foreach ($rules as $parameter => $rule) {
-			$validation = explode('|', $rule);
+			$validation = is_array($rule) ? Arr::where($rule, fn ($item) => is_string($item)) : explode('|', $rule);
 
 			$description = $annotations->get($parameter, implode(', ', $validation));
 
