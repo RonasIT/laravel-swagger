@@ -102,7 +102,7 @@ return [
         'remote' => [
             'class' => RemoteDriver::class,
             'key' => 'project_name',
-            'url' => 'http://example.com'
+            'url' => 'https://example.com'
         ],
         'storage' => [
             'class' => StorageDriver::class,
