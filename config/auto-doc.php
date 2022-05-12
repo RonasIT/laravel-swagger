@@ -92,7 +92,7 @@ return [
     | `RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface` interface,
     | or one of our drivers from the `drivers` config:
     */
-    'driver' => 'local',
+    'driver' => env('SWAGGER_DRIVER', 'local'),
 
     'drivers' => [
         'local' => [
@@ -101,8 +101,8 @@ return [
         ],
         'remote' => [
             'class' => RemoteDriver::class,
-            'key' => 'project_name',
-            'url' => 'https://example.com'
+            'key' => env('SWAGGER_REMOTE_DRIVER_KEY', 'project_name'),
+            'url' => env('SWAGGER_REMOTE_DRIVER_URL', 'https://example.com')
         ],
         'storage' => [
             'class' => StorageDriver::class,
@@ -114,7 +114,7 @@ return [
             |
             | One of the filesystems.disks config value
             */
-            'disk' => 'public',
+            'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
             'production_path' => 'documentation.json'
         ]
     ],
@@ -131,5 +131,5 @@ return [
         'development'
     ],
 
-    'config_version' => '2.0'
+    'config_version' => '2.1'
 ];
