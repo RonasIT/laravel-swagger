@@ -40,8 +40,9 @@ class RemoteDriver implements SwaggerDriverInterface
 
         curl_setopt($curl, CURLOPT_URL, $this->getUrl());
         curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($this->getTmpData()));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->getTmpData()));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
         curl_exec($curl);
         curl_close($curl);
