@@ -70,6 +70,8 @@ to display the generated documentation for a config.
   *  <strong>all_cities_available</strong> of user
   *
   * @_204 Successful MF!
+  * 
+  * @some_field  Description of this field from the rules method
   */
  class UpdateUserDataRequest extends FormRequest
  {
