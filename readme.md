@@ -93,7 +93,7 @@ to display the generated documentation for a config.
      public function rules()
      {
          return [
-             'some_field',
+             'some_field' => 'string',
              'all_cities_available' => 'boolean',
              'free_comparison' => 'boolean'
          ];
