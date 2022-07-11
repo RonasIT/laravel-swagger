@@ -93,6 +93,7 @@ to display the generated documentation for a config.
      public function rules()
      {
          return [
+             'some_field',
              'all_cities_available' => 'boolean',
              'free_comparison' => 'boolean'
          ];
@@ -104,6 +105,7 @@ to display the generated documentation for a config.
  - **@summary** - short description of request
  - **@description** - Implementation Notes
  - **@_204** - Custom description of code of response. You can specify any code as you want.
+ - **@some_field** - Description of this field from the rules method
  
  If you do not create a class Request, the summary, Implementation Notes and parameters will be empty. 
  Plugin will collect codes and examples of responses only.
