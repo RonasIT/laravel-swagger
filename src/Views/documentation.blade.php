@@ -42,6 +42,7 @@
             url: "/auto-doc/documentation",
             dom_id: '#swagger-ui',
             deepLinking: true,
+            defaultModelRendering: "model",
             presets: [
                 SwaggerUIBundle.presets.apis,
                 SwaggerUIStandalonePreset
