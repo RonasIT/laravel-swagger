@@ -313,13 +313,14 @@ class SwaggerService
         $formRequest->setUserResolver($this->request->getUserResolver());
         $formRequest->setRouteResolver($this->request->getRouteResolver());
         $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
+        $attributes = method_exists($formRequest, 'attributes') ? $formRequest->attributes() : [];
 
         $actionName = $this->getActionName($this->uri);
 
         if (in_array($this->method, ['get', 'delete'])) {
             $this->saveGetRequestParameters($rules, $annotations);
         } else {
-            $this->savePostRequestParameters($actionName, $rules, $annotations);
+            $this->savePostRequestParameters($actionName, $rules, $attributes, $annotations);
         }
     }
 
@@ -350,7 +351,7 @@ class SwaggerService
         }
     }
 
-    protected function savePostRequestParameters($actionName, $rules, array $annotations)
+    protected function savePostRequestParameters($actionName, $rules, $attributes, array $annotations)
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
@@ -365,25 +366,52 @@ class SwaggerService
                 ];
             }
 
-            $this->saveDefinitions($actionName, $rules, $annotations);
+            $this->saveDefinitions($actionName, $rules, $attributes, $annotations);
         }
     }
 
-    protected function saveDefinitions($objectName, $rules, array $annotations)
+    protected function saveDefinitions($objectName, $rules, $attributes, array $annotations)
     {
         $data = [
             'type' => 'object',
             'properties' => []
         ];
+
+        $uselessRules = [
+            'integer',
+            'array',
+            'boolean',
+            'string',
+            'required',
+            'numeric',
+            'digits',
+            'date'
+        ];
+
         foreach ($rules as $parameter => $rule) {
+            if (empty($annotations) && !empty($attributes)) {
+                foreach ($attributes as $attributeOriginalName => $attributeNewName) {
+                    ($parameter === $attributeOriginalName) ? $parameter = $attributeNewName : $parameter;
+                }
+            }
+
             $rulesArray = (is_array($rule)) ? $rule : explode('|', $rule);
+
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
-            $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
 
-            if (in_array('required', $rulesArray)) {
-                $data['required'][] = $parameter;
+            foreach ($uselessRules as $uselessRule) {
+                if (in_array($uselessRule, $rulesArray)) {
+                    $key = array_search($uselessRule, $rulesArray);
+                    $rulesArray = Arr::except($rulesArray, $key);
+
+                    if ($uselessRule === 'required') {
+                        $data['required'][] = $parameter;
+                    }
+                }
             }
+
+            $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
         }
 
         $data['example'] = $this->generateExample($data['properties']);
