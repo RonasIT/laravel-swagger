@@ -562,7 +562,7 @@ class SwaggerService
             return $defaultDescription;
         }
 
-        $annotations = $this->getClassAnnotations($request);
+        $annotations = $this->annotationReader->getClassAnnotations($request);
 
         $localDescription = Arr::get($annotations, "_{$code}");
 
