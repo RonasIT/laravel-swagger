@@ -29,8 +29,7 @@ to display the generated documentation for a config.
 
 ## Usages
  For correct working of plugin you have to dispose all the validation rules in the rules() method of class YourRequest, 
- which must be connected to the controller via DependencyInjection. In annotation of custom request you can specify 
- summary and description of this request. Plugin will take validation rules from your request and use it as description 
+ which must be connected to the controller via DependencyInjection. Plugin will take validation rules from your request and use it as description 
  of input parameter. 
   
 ### Example
@@ -78,7 +77,36 @@ to display the generated documentation for a config.
  }
 
  ```
+
+In annotation of custom request you can specify summary and description of this request.
+ ```php
+<?php
  
+ namespace App\Http\Controllers;  
+ 
+ use App\Http\Requests\UpdateRequest;
+ 
+ class UpdateController
+ { 
+ 
+ /**
+  * @json-api
+  * @summary Updating of user
+  *
+  * @description
+  *  This request mostly needed to specity flags <strong>free_comparison</strong> and 
+  *  <strong>all_cities_available</strong> of user
+  *
+  * @_204 Successful MF!
+  */
+    public function update(int $id, UpdateRequest $request)
+    {
+        //...
+    }
+ }
+ ```
+ 
+ - **@json-api** - mark request as json-api
  - **@summary** - short description of request
  - **@description** - Implementation Notes
  - **@_204** - Custom description of code of response. You can specify any code as you want.
