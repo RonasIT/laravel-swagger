@@ -83,6 +83,11 @@ return [
 			'204' => 'Operation successfully done',
 			'404' => 'This entity not found',
 		],
+
+		'json-api' => [
+			'annotation' => 'json-api',
+			'label' => 'JSON_API',
+		]
 	],
 
 	/*

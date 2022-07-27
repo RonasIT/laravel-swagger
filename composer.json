@@ -17,6 +17,7 @@
   ],
   "require": {
     "php": ">=7.1.0",
+    "ext-json": "*",
     "laravel/framework": ">=5.3.0",
     "minime/annotations": "dev-master"
   },
