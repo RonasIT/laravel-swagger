@@ -334,7 +334,7 @@ class SwaggerService
         }
     }
 
-    protected function saveGetRequestParameters($rules, $attributes, array $annotations)
+    protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
     {
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
