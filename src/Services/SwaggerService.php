@@ -438,9 +438,9 @@ class SwaggerService
 
     protected function saveParameterDescription(&$data, $parameter, array $rulesArray, array $attributes, array $annotations)
     {
-        if (!empty($annotations)) {
-            $description = Arr::get($annotations, $parameter, implode(', ', $rulesArray));
-        } else {
+        $description = Arr::get($annotations, $parameter, implode(', ', $rulesArray));
+
+        if (empty($description)) {
             $description = Arr::get($attributes, $parameter, implode(', ', $rulesArray));
         }
 
