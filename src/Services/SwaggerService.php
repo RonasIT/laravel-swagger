@@ -339,7 +339,7 @@ class SwaggerService
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
-            $description = Arr::get($annotations, $parameter, implode(', ', $validation));
+            $description = Arr::get($annotations, $parameter);
 
             if (empty($description)) {
                 $description = Arr::get($attributes, $parameter, implode(', ', $validation));
@@ -438,7 +438,7 @@ class SwaggerService
 
     protected function saveParameterDescription(&$data, $parameter, array $rulesArray, array $attributes, array $annotations)
     {
-        $description = Arr::get($annotations, $parameter, implode(', ', $rulesArray));
+        $description = Arr::get($annotations, $parameter);
 
         if (empty($description)) {
             $description = Arr::get($attributes, $parameter, implode(', ', $rulesArray));
