@@ -339,9 +339,9 @@ class SwaggerService
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
-            if (!empty($annotations)) {
-                $description = Arr::get($annotations, $parameter, implode(', ', $validation));
-            } else {
+            $description = Arr::get($annotations, $parameter, implode(', ', $validation));
+
+            if (empty($description)) {
                 $description = Arr::get($attributes, $parameter, implode(', ', $validation));
             }
 
