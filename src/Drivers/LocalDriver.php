@@ -10,12 +10,14 @@ use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 class LocalDriver implements SwaggerDriverInterface
 {
     public $prodFilePath;
+    protected $additionalFilePaths;
 
     protected static $data;
 
     public function __construct()
     {
         $this->prodFilePath = config('auto-doc.drivers.local.production_path');
+        $this->additionalFilePaths = config('auto-doc.additional_paths');
 
         if (empty($this->prodFilePath)) {
             throw new MissedProductionFilePathException();
@@ -32,11 +34,40 @@ class LocalDriver implements SwaggerDriverInterface
         return self::$data;
     }
 
+    protected function mergeDocs()
+    {
+        $content = self::$data;
+
+        if (!empty($this->additionalFilePaths)) {
+            foreach ($this->additionalFilePaths as $filePath) {
+                $fileContent = json_decode(file_get_contents($filePath), true);
+
+                $paths = array_keys($fileContent['paths']);
+
+                foreach ($paths as $path) {
+                    if (empty($content['paths'][$path])) {
+                        $content['paths'][$path] = $fileContent['paths'][$path];
+                    }
+                }
+
+                $definitions = array_keys($fileContent['definitions']);
+
+                foreach ($definitions as $definition) {
+                    if (empty($content['definitions'][$path])) {
+                        $content['definitions'][$definition] = $fileContent['definitions'][$definition];
+                    }
+                }
+            }
+        }
+
+        return $content;
+    }
+
     public function saveData()
     {
-        $content = json_encode(self::$data);
+        $content = $this->mergeDocs();
 
-        file_put_contents($this->prodFilePath, $content);
+        file_put_contents($this->prodFilePath, json_encode($content));
 
         self::$data = [];
     }
