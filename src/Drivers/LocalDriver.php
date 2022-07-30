@@ -34,7 +34,7 @@ class LocalDriver implements SwaggerDriverInterface
         return self::$data;
     }
 
-    protected function mergeDocs()
+    protected function mergingDocs(): array
     {
         $content = self::$data;
 
@@ -65,7 +65,7 @@ class LocalDriver implements SwaggerDriverInterface
 
     public function saveData()
     {
-        $content = $this->mergeDocs();
+        $content = $this->mergingDocs();
 
         file_put_contents($this->prodFilePath, json_encode($content));
 
