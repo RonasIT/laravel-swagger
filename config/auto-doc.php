@@ -97,7 +97,7 @@ return [
     'drivers' => [
         'local' => [
             'class' => LocalDriver::class,
-            'production_path' => storage_path('documentation.json'),
+            'production_path' => storage_path('documentation.json')
         ],
         'remote' => [
             'class' => RemoteDriver::class,
@@ -115,19 +115,18 @@ return [
             | One of the filesystems.disks config value
             */
             'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
-            'production_path' => 'documentation.json',
+            'production_path' => 'documentation.json'
         ]
     ],
 
-    'additional_paths' => [],
-
     /*
     |--------------------------------------------------------------------------
-    | Swagger documentation visibility environments list
+    | Paths to additional documentation
     |--------------------------------------------------------------------------
-    |
-    | The list of environments in which auto documentation will be displaying
+    | An array of documentation paths to merge with the main documentation.
     */
+    'additional_paths' => [],
+
     'display_environments' => [
         'local',
         'development'
