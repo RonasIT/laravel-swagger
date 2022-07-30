@@ -365,7 +365,7 @@ class SwaggerService
         }
     }
 
-    protected function savePostRequestParameters($actionName, $rules, $attributes, array $annotations)
+    protected function savePostRequestParameters($actionName, $rules, array $attributes, array $annotations)
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
