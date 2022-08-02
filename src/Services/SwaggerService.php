@@ -393,11 +393,10 @@ class SwaggerService
 		return $responseExample;
 	}
 
-	protected function saveParameters($request, AnnotationsBagInterface $annotations)
+	protected function saveParameters($request, AnnotationsBagInterface $annotations): void
 	{
-		$rules = app($request)
-			->setRouteResolver($this->request->getRouteResolver())
-			->rules();
+		$requestObj = app($request)->setRouteResolver($this->request->getRouteResolver());
+		$rules = method_exists($requestObj, 'rules') ? $requestObj->rules() : [];
 		$actionName = $this->getActionName($this->uri);
 
 		if (in_array($this->method, ['get', 'delete'])) {
