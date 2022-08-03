@@ -320,7 +320,7 @@ class SwaggerService
 
 		$annotations = $this->annotationReader->getClassAnnotations($concreteRequest);
 
-		$this->saveParameters($concreteRequest, $annotations);
+		$this->saveParameters($request, $annotations);
 		$this->saveDescription($concreteRequest, $descriptionAnnotation);
 	}
 
@@ -395,7 +395,7 @@ class SwaggerService
 
 	protected function saveParameters($request, AnnotationsBagInterface $annotations): void
 	{
-		$requestObj = app($request)->setRouteResolver($this->request->getRouteResolver());
+		$requestObj = $request->setRouteResolver($this->request->getRouteResolver());
 		$rules = method_exists($requestObj, 'rules') ? $requestObj->rules() : [];
 		$actionName = $this->getActionName($this->uri);
 
