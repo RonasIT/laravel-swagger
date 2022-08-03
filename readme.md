@@ -90,7 +90,7 @@ In annotation of custom request you can specify summary and description of this 
  { 
  
  /**
-  * @json-api
+  * @tag json-api
   * @summary Updating of user
   *
   * @description
@@ -106,7 +106,7 @@ In annotation of custom request you can specify summary and description of this 
  }
  ```
  
- - **@json-api** - mark request as json-api
+ - **@tag** - add tag for request
  - **@summary** - short description of request
  - **@description** - Implementation Notes
  - **@_204** - Custom description of code of response. You can specify any code as you want.

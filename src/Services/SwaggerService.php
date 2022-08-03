@@ -147,11 +147,13 @@ class SwaggerService
 		$this->item['summary'] = $this->getSummary($request, $annotations);
 		$this->item['description'] = $annotations->get('description', '');
 
-		if ($annotations->get(config('auto-doc.defaults.json-api.annotation'))) {
-			$label = config('auto-doc.defaults.json-api.label');
-			$this->item['summary'] = $label. ' ' . $this->item['summary'];
-			$this->item['description'] = "<strong>$label</strong><p></p> " . $this->item['description'];
+		$tags = $annotations->get('tag', []);
+
+		if (count($tags)) {
+			$this->item['tags'] = $tags;
 		}
+
+		$this->item['summary'] .= ' || Tags: ' . implode(',', $this->item['tags']);
 	}
 
 	public function saveProductionData(string $filePath = null)
@@ -320,7 +322,7 @@ class SwaggerService
 
 		$annotations = $this->annotationReader->getClassAnnotations($concreteRequest);
 
-		$this->saveParameters($concreteRequest, $annotations);
+		$this->saveParameters($request, $annotations);
 		$this->saveDescription($concreteRequest, $descriptionAnnotation);
 	}
 
@@ -395,7 +397,7 @@ class SwaggerService
 
 	protected function saveParameters($request, AnnotationsBagInterface $annotations): void
 	{
-		$requestObj = app($request)->setRouteResolver($this->request->getRouteResolver());
+		$requestObj = $request->setRouteResolver($this->request->getRouteResolver());
 		$rules = method_exists($requestObj, 'rules') ? $requestObj->rules() : [];
 		$actionName = $this->getActionName($this->uri);
 
