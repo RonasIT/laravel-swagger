@@ -403,8 +403,7 @@ class SwaggerService
                 $data['required'][] = $parameter;
             }
 
-            $intersect = array_intersect_key(array_flip($rulesArray), $uselessRules);
-            $rulesArray = Arr::except($rulesArray, $intersect);
+            $rulesArray = array_diff_key(array_flip($rulesArray), $uselessRules);
 
             $this->saveParameterDescription($data, $parameter, $rulesArray, $attributes, $annotations);
         }
