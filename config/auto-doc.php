@@ -139,5 +139,5 @@ return [
         'development'
     ],
 
-    'config_version' => '2.1'
+    'config_version' => '2.2'
 ];

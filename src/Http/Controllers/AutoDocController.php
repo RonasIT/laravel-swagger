@@ -20,6 +20,32 @@ class AutoDocController extends BaseController
     {
         $documentation = $this->service->getDocFileContent();
 
+        $additionalDocs = config('auto-doc.additional_paths');
+
+        if (!empty($additionalDocs)) {
+            $documentation = json_decode(json_encode($documentation), true);
+
+            foreach ($additionalDocs as $filePath) {
+                $fileContent = json_decode(file_get_contents($filePath), true);
+
+                $paths = array_keys($fileContent['paths']);
+
+                foreach ($paths as $path) {
+                    if (empty($documentation['paths'][$path])) {
+                        $documentation['paths'][$path] = $fileContent['paths'][$path];
+                    }
+                }
+
+                $definitions = array_keys($fileContent['definitions']);
+
+                foreach ($definitions as $definition) {
+                    if (empty($documentation['definitions'][$path])) {
+                        $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                    }
+                }
+            }
+        }
+
         return response()->json($documentation);
     }
 
