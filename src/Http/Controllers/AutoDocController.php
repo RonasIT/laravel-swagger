@@ -33,6 +33,15 @@ class AutoDocController extends BaseController
                 foreach ($paths as $path) {
                     if (empty($documentation['paths'][$path])) {
                         $documentation['paths'][$path] = $fileContent['paths'][$path];
+                    } else {
+                        $methods = array_keys($documentation['paths'][$path]);
+                        $additionalDocMethods = array_keys($fileContent['paths'][$path]);
+
+                        foreach ($additionalDocMethods as $method) {
+                            if (!in_array($method, $methods)) {
+                                $documentation['paths'][$path][$method] = $fileContent['paths'][$path][$method];
+                            }
+                        }
                     }
                 }
 
