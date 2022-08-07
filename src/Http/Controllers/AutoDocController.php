@@ -24,12 +24,12 @@ class AutoDocController extends BaseController
         $additionalDocs = config('auto-doc.additional_paths');
 
         if (!empty($additionalDocs)) {
-            foreach ($additionalDocs as $filePath) {
+            array_map(function ($filePath) {
                 $fileContent = json_decode(file_get_contents($filePath), true);
 
                 $paths = array_keys($fileContent['paths']);
 
-                $callback = function ($path) use ($fileContent) {
+                array_map(function ($path) use ($fileContent) {
                     if (empty($this->documentation['paths'][$path])) {
                         $this->documentation['paths'][$path] = $fileContent['paths'][$path];
                     } else {
@@ -50,10 +50,8 @@ class AutoDocController extends BaseController
                             $this->documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
                         }
                     }, $definitions);
-                };
-
-                array_map($callback, $paths);
-            }
+                }, $paths);
+            }, $additionalDocs);
         }
 
         return response()->json($this->documentation);
