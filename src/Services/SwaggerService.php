@@ -37,6 +37,16 @@ class SwaggerService
     private $item;
     private $security;
 
+    protected $rulesOfTypes = [
+        'array' => 'object',
+        'boolean' => 'boolean',
+        'date' => 'date',
+        'digits' => 'integer',
+        'integer' => 'integer',
+        'numeric' => 'double',
+        'string' => 'string'
+    ];
+
     public function __construct(Container $container)
     {
         $this->initConfig();
@@ -313,22 +323,27 @@ class SwaggerService
         $formRequest->setUserResolver($this->request->getUserResolver());
         $formRequest->setRouteResolver($this->request->getRouteResolver());
         $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
+        $attributes = method_exists($formRequest, 'attributes') ? $formRequest->attributes() : [];
 
         $actionName = $this->getActionName($this->uri);
 
         if (in_array($this->method, ['get', 'delete'])) {
-            $this->saveGetRequestParameters($rules, $annotations);
+            $this->saveGetRequestParameters($rules, $attributes, $annotations);
         } else {
-            $this->savePostRequestParameters($actionName, $rules, $annotations);
+            $this->savePostRequestParameters($actionName, $rules, $attributes, $annotations);
         }
     }
 
-    protected function saveGetRequestParameters($rules, array $annotations)
+    protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
     {
         foreach ($rules as $parameter => $rule) {
             $validation = explode('|', $rule);
 
-            $description = Arr::get($annotations, $parameter, implode(', ', $validation));
+            $description = Arr::get($annotations, $parameter);
+
+            if (empty($description)) {
+                $description = Arr::get($attributes, $parameter, implode(', ', $validation));
+            }
 
             $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter) use ($parameter) {
                 return $existedParameter['name'] == $parameter;
@@ -350,7 +365,7 @@ class SwaggerService
         }
     }
 
-    protected function savePostRequestParameters($actionName, $rules, array $annotations)
+    protected function savePostRequestParameters($actionName, $rules, array $attributes, array $annotations)
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
@@ -365,25 +380,32 @@ class SwaggerService
                 ];
             }
 
-            $this->saveDefinitions($actionName, $rules, $annotations);
+            $this->saveDefinitions($actionName, $rules, $attributes, $annotations);
         }
     }
 
-    protected function saveDefinitions($objectName, $rules, array $annotations)
+    protected function saveDefinitions($objectName, $rules, $attributes, array $annotations)
     {
         $data = [
             'type' => 'object',
             'properties' => []
         ];
+
         foreach ($rules as $parameter => $rule) {
             $rulesArray = (is_array($rule)) ? $rule : explode('|', $rule);
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
-            $this->saveParameterDescription($data, $parameter, $rulesArray, $annotations);
+
+            $uselessRules = $this->rulesOfTypes;
+            $uselessRules['required'] = 'required';
 
             if (in_array('required', $rulesArray)) {
                 $data['required'][] = $parameter;
             }
+
+            $rulesArray = array_diff_key(array_flip($rulesArray), $uselessRules);
+
+            $this->saveParameterDescription($data, $parameter, $rulesArray, $attributes, $annotations);
         }
 
         $data['example'] = $this->generateExample($data['properties']);
@@ -392,16 +414,8 @@ class SwaggerService
 
     protected function getParameterType(array $validation): string
     {
-        $validationRules = [
-            'array' => 'object',
-            'boolean' => 'boolean',
-            'date' => 'date',
-            'digits' => 'integer',
-            'email' => 'string',
-            'integer' => 'integer',
-            'numeric' => 'double',
-            'string' => 'string'
-        ];
+        $validationRules = $this->rulesOfTypes;
+        $validationRules['email'] = 'string';
 
         $parameterType = 'string';
 
@@ -421,9 +435,14 @@ class SwaggerService
         ];
     }
 
-    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, array $annotations)
+    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, array $attributes, array $annotations)
     {
-        $description = Arr::get($annotations, $parameter, implode(', ', $rulesArray));
+        $description = Arr::get($annotations, $parameter);
+
+        if (empty($description)) {
+            $description = Arr::get($attributes, $parameter, implode(', ', $rulesArray));
+        }
+
         $data['properties'][$parameter]['description'] = $description;
     }
 
