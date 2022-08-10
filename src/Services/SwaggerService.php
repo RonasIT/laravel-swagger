@@ -345,7 +345,7 @@ class SwaggerService
 
 		// Remove debug trace from response
 		$content = json_decode($response->getContent(), true);
-		Arr::forget($content, [
+		Arr::except($content, [
 			'code',
 			'exception',
 			'file',
