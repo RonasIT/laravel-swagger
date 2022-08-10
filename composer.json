@@ -11,8 +11,8 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Roman Dubrovin",
-      "email": "rdubrovin@ronasit.com"
+      "name": "Ronas IT",
+      "homepage": "https://github.com/RonasIT/laravel-swagger/graphs/contributors"
     }
   ],
   "require": {
