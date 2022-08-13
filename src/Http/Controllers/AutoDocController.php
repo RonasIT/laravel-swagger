@@ -21,6 +21,13 @@ class AutoDocController extends BaseController
     {
         $this->documentation = json_decode(json_encode($this->service->getDocFileContent()), true);
 
+        $this->mergingDocFileContent();
+
+        return response()->json($this->documentation);
+    }
+
+    public function mergingDocFileContent()
+    {
         $additionalDocs = config('auto-doc.additional_paths');
 
         if (!empty($additionalDocs)) {
@@ -53,8 +60,6 @@ class AutoDocController extends BaseController
                 }
             }
         }
-
-        return response()->json($this->documentation);
     }
 
     public function index()
