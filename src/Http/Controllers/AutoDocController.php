@@ -21,12 +21,12 @@ class AutoDocController extends BaseController
     {
         $this->documentation = json_decode(json_encode($this->service->getDocFileContent()), true);
 
-        $this->mergingDocFileContent();
+        $this->mergingContentsDocFiles();
 
         return response()->json($this->documentation);
     }
 
-    public function mergingDocFileContent()
+    public function mergingContentsDocFiles()
     {
         $additionalDocs = config('auto-doc.additional_paths');
 
