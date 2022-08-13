@@ -24,34 +24,34 @@ class AutoDocController extends BaseController
         $additionalDocs = config('auto-doc.additional_paths');
 
         if (!empty($additionalDocs)) {
-            array_map(function ($filePath) {
+            foreach ($additionalDocs as $filePath) {
                 $fileContent = json_decode(file_get_contents($filePath), true);
 
                 $paths = array_keys($fileContent['paths']);
 
-                array_map(function ($path) use ($fileContent) {
+                foreach ($paths as $path) {
                     if (empty($this->documentation['paths'][$path])) {
                         $this->documentation['paths'][$path] = $fileContent['paths'][$path];
                     } else {
                         $methods = array_keys($this->documentation['paths'][$path]);
                         $additionalDocMethods = array_keys($fileContent['paths'][$path]);
 
-                        array_map(function ($method) use ($methods, $path, $fileContent) {
+                        foreach ($additionalDocMethods as $method) {
                             if (!in_array($method, $methods)) {
                                 $this->documentation['paths'][$path][$method] = $fileContent['paths'][$path][$method];
                             }
-                        }, $additionalDocMethods);
-                    }
-
-                    $definitions = array_keys($fileContent['definitions']);
-
-                    array_map(function ($definition) use ($path, $fileContent) {
-                        if (empty($this->documentation['definitions'][$path])) {
-                            $this->documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
                         }
-                    }, $definitions);
-                }, $paths);
-            }, $additionalDocs);
+                    }
+                }
+
+                $definitions = array_keys($fileContent['definitions']);
+
+                foreach ($definitions as $definition) {
+                    if (empty($this->documentation['definitions'][$definition])) {
+                        $this->documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                    }
+                }
+            }
         }
 
         return response()->json($this->documentation);
