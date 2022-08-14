@@ -23,6 +23,10 @@ class AutoDocController extends BaseController
 
         $this->mergingContentsDocFiles();
 
+        $this->limitResponseData();
+
+        $this->cuttingExceptions();
+
         return response()->json($this->documentation);
     }
 
@@ -56,6 +60,48 @@ class AutoDocController extends BaseController
                 foreach ($definitions as $definition) {
                     if (empty($this->documentation['definitions'][$definition])) {
                         $this->documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                    }
+                }
+            }
+        }
+    }
+
+    protected function limitResponseData($method = 'get', $code = 200)
+    {
+        $paths = array_keys($this->documentation['paths']);
+
+        $limitResponse = config('auto-doc.max_response_count');
+
+        foreach ($paths as $path) {
+            if (!empty($limitResponse)) {
+                $example = Arr::get($this->documentation['paths'][$path], "{$method}.responses.{$code}.schema.example");
+
+                if (!empty($example['data'])) {
+                    $limitedResponseData = array_slice($example['data'], 0, $limitResponse, true);
+                    $this->documentation['paths'][$path][$method]['responses'][$code]['schema']['example']['data'] = $limitedResponseData;
+                } elseif (!empty($example) && count($example) != count($example, COUNT_RECURSIVE)) {
+                    $limitedResponseData = array_slice($example, 0, $limitResponse, true);
+                    $this->documentation['paths'][$path][$method]['responses'][$code]['schema']['example'] = $limitedResponseData;
+                }
+            }
+        }
+    }
+
+    protected function cuttingExceptions()
+    {
+        $paths = $this->documentation['paths'];
+
+        foreach ($paths as $path => $methods) {
+            foreach ($methods as $method => $data) {
+                if(!empty($data['responses'])) {
+                    foreach ($data['responses'] as $code => $data) {
+                        $example = Arr::get($data, 'schema.example');
+
+                        if (!empty($example['exception'])) {
+                            $uselessKeys = array_keys(Arr::except($example, ['message']));
+
+                            $this->documentation['paths'][$path][$method]['responses'][$code]['schema']['example'] = Arr::except($example, $uselessKeys);
+                        }
                     }
                 }
             }

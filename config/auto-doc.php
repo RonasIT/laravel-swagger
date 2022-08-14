@@ -127,6 +127,8 @@ return [
     */
     'additional_paths' => [],
 
+    'max_response_count' => 0,
+
     /*
     |--------------------------------------------------------------------------
     | Swagger documentation visibility environments list
@@ -139,5 +141,5 @@ return [
         'development'
     ],
 
-    'config_version' => '2.2'
+    'config_version' => '2.3'
 ];
