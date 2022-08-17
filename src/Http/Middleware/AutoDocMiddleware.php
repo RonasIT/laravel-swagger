@@ -22,7 +22,7 @@ class AutoDocMiddleware
 	public function handle($request, Closure $next)
 	{
 		$response = $next($request);
-		$allowedEnv = config('auto-doc.allowedEnv');
+		$allowedEnv = config('swagger.allowedEnv');
 
 		if (in_array(config('app.env'), $allowedEnv) && !self::$skipped) {
 			$this->service->addData($request, $response);

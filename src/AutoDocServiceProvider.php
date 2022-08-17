@@ -9,11 +9,7 @@ class AutoDocServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/auto-doc.php' => config_path('auto-doc.php'),
-        ], 'config');
-
-        $this->publishes([
-            __DIR__ . '/../config/local-data-collector.php' => config_path('local-data-collector.php'),
+            __DIR__ . '/../config/swagger.php' => config_path('swagger.php'),
         ], 'config');
 
         $this->publishes([
@@ -24,7 +20,7 @@ class AutoDocServiceProvider extends ServiceProvider
             require __DIR__ . '/Http/routes.php';
         }
 
-        $this->loadViewsFrom(__DIR__ . '/Views', 'auto-doc');
+        $this->loadViewsFrom(__DIR__ . '/Views', 'swagger');
     }
 
     public function register()

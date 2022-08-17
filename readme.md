@@ -19,7 +19,7 @@ to display the generated documentation for a config.
 ### Plugin
  1. Add middleware **\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class** to *Http/Kernel.php*.
  1. Use **\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait** in your TestCase in *tests/TestCase.php*
- 1. In *config/auto-doc.php* you can specify enabling of plugin, info of your project, 
+ 1. In *config/swagger.php* you can specify enabling of plugin, info of your project, 
  some defaults descriptions and route for rendering of documentation. 
  1. In *.env* file you should add following lines
     `
@@ -119,12 +119,12 @@ In annotation of custom request you can specify summary and description of this 
  
  If you do not create annotations for descriptions of codes it will be generated automatically the following priorities:
  1. Annotations of request
- 2. Default description from *auto-doc.defaults.code-descriptions.{$code}*
+ 2. Default description from *swagger.defaults.code-descriptions.{$code}*
  3. Descriptions from **Symfony\Component\HttpFoundation\Response::$statusTexts**
   
   Note about configs:  
- - *auto-doc.route* - it's a route where will be located generated documentation  
- - *auto-doc.basePath* - it's a route where located root of your api
+ - *swagger.route* - it's a route where will be located generated documentation  
+ - *swagger.basePath* - it's a route where located root of your api
  
 Also you can specify way to collect documentation by creating your custom data collector class.
  
