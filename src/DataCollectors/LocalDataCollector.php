@@ -16,7 +16,7 @@ class LocalDataCollector implements DataCollectorInterface
 
 	public function __construct()
 	{
-		$this->prodFilePath = config('local-data-collector.production_path');
+		$this->prodFilePath = config('swagger.production_path');
 
 		if (empty($this->prodFilePath)) {
 			throw new MissedProductionFilePathException();

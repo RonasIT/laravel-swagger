@@ -102,4 +102,5 @@ return [
 	*/
 
 	'data_collector' => \KWXS\Support\AutoDoc\DataCollectors\LocalDataCollector::class,
+	'production_path' => env('LOCAL_DATA_COLLECTOR_PROD_PATH'),
 ];

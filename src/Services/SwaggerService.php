@@ -48,14 +48,14 @@ class SwaggerService
 	public function __construct(Container $container)
 	{
 		$this->setDataCollector();
-		$allowedEnv = config('auto-doc.allowedEnv');
+		$allowedEnv = config('swagger.allowedEnv');
 
 		if (in_array(config('app.env'), $allowedEnv)) {
 			$this->container = $container;
 
 			$this->annotationReader = new AnnotationReader(new Parser(), new ArrayCache());
 
-			$this->security = config('auto-doc.security');
+			$this->security = config('swagger.security');
 
 			$this->data = $this->dataCollector->getTmpData();
 
@@ -168,7 +168,7 @@ class SwaggerService
 
 	protected function setDataCollector()
 	{
-		$dataCollectorClass = config('auto-doc.data_collector');
+		$dataCollectorClass = config('swagger.data_collector');
 
 		if (empty($dataCollectorClass)) {
 			$this->dataCollector = app(LocalDataCollector::class);
@@ -182,15 +182,15 @@ class SwaggerService
 	protected function generateEmptyData()
 	{
 		$data = [
-			'swagger'     => config('auto-doc.swagger.version'),
+			'swagger'     => config('swagger.swagger.version'),
 			'host'        => $this->getAppUrl(),
-			'basePath'    => config('auto-doc.basePath'),
-			'schemes'     => config('auto-doc.schemes'),
+			'basePath'    => config('swagger.basePath'),
+			'schemes'     => config('swagger.schemes'),
 			'paths'       => [],
-			'definitions' => config('auto-doc.definitions'),
+			'definitions' => config('swagger.definitions'),
 		];
 
-		$info = $this->prepareInfo(config('auto-doc.info'));
+		$info = $this->prepareInfo(config('swagger.info'));
 
 		if (!empty($info)) {
 			$data['info'] = $info;
@@ -274,7 +274,7 @@ class SwaggerService
 	protected function getUri()
 	{
 		$uri = $this->request->route()->uri();
-		$basePath = preg_replace('/^\\//', '', config('auto-doc.basePath'));
+		$basePath = preg_replace('/^\\//', '', config('swagger.basePath'));
 		$preparedUri = preg_replace("/^{$basePath}/", '', $uri);
 
 		return preg_replace('/^\\//', '', $preparedUri);
@@ -619,7 +619,7 @@ class SwaggerService
 				return $this->annotationReader->getClassAnnotations($request)->get("_{$code}");
 			},
 			function () use ($code) {
-				return config("auto-doc.defaults.code-descriptions.{$code}");
+				return config("swagger.defaults.code-descriptions.{$code}");
 			},
 			function () use ($code) {
 				return Response::$statusTexts[$code];
@@ -636,7 +636,7 @@ class SwaggerService
 
 	protected function saveTempData()
 	{
-		$exportFile = config('auto-doc.files.temporary');
+		$exportFile = config('swagger.files.temporary');
 		$data = json_encode($this->data);
 
 		file_put_contents($exportFile, $data);

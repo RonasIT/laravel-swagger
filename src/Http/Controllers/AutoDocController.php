@@ -24,7 +24,7 @@ class AutoDocController extends BaseController
 
     public function index()
     {
-        return view('auto-doc::documentation');
+        return view('swagger::documentation');
     }
 
     public function getFile($file)
