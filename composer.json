@@ -22,8 +22,12 @@
   },
   "autoload": {
     "psr-4": {
-      "RonasIT\\Support\\AutoDoc\\": "src/"
+      "RonasIT\\Support\\AutoDoc\\": "src/",
+      "RonasIT\\Tests\\": "tests/"
     },
+    "files": [
+      "src/helpers.php"
+    ],
     "exclude-from-classmap": [
       "src/Tests/"
     ]
