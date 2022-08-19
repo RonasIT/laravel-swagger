@@ -405,7 +405,7 @@ class SwaggerService
                 $data['required'][] = $parameter;
             }
 
-            $rulesArray = array_diff_key(array_flip($rulesArray), $uselessRules);
+            $rulesArray = array_flip(array_diff_key(array_flip($rulesArray), $uselessRules));
 
             $this->saveParameterDescription($data, $parameter, $rulesArray, $attributes, $annotations);
         }
