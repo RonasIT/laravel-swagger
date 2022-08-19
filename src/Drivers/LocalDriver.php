@@ -41,7 +41,7 @@ class LocalDriver implements SwaggerDriverInterface
         self::$data = [];
     }
 
-    public function getDocumentation(): stdClass
+    public function getDocumentation(): array
     {
         if (!file_exists($this->prodFilePath)) {
             throw new FileNotFoundException();
@@ -49,6 +49,6 @@ class LocalDriver implements SwaggerDriverInterface
 
         $fileContent = file_get_contents($this->prodFilePath);
 
-        return json_decode($fileContent);
+        return json_decode($fileContent, true);
     }
 }

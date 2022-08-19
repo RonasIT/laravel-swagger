@@ -39,7 +39,7 @@ class StorageDriver implements SwaggerDriverInterface
         self::$data = [];
     }
 
-    public function getDocumentation(): stdClass
+    public function getDocumentation(): array
     {
         if (!Storage::disk($this->disk)->exists($this->filePath)) {
             throw new FileNotFoundException();
@@ -47,6 +47,6 @@ class StorageDriver implements SwaggerDriverInterface
 
         $fileContent = Storage::disk($this->disk)->get($this->filePath);
 
-        return json_decode($fileContent);
+        return json_decode($fileContent, true);
     }
 }

@@ -47,6 +47,8 @@ class SwaggerService
         'string' => 'string'
     ];
 
+    protected $documentation;
+
     public function __construct(Container $container)
     {
         $this->initConfig();
@@ -624,7 +626,40 @@ class SwaggerService
 
     public function getDocFileContent()
     {
-        return $this->driver->getDocumentation();
+        $this->documentation = $this->driver->getDocumentation();
+
+        $additionalDocs = config('auto-doc.additional_paths', []);
+
+        foreach ($additionalDocs as $filePath) {
+            $fileContent = json_decode(file_get_contents($filePath), true);
+
+            $paths = array_keys($fileContent['paths']);
+
+            foreach ($paths as $path) {
+                if (empty($this->documentation['paths'][$path])) {
+                    $this->documentation['paths'][$path] = $fileContent['paths'][$path];
+                } else {
+                    $methods = array_keys($this->documentation['paths'][$path]);
+                    $additionalDocMethods = array_keys($fileContent['paths'][$path]);
+
+                    foreach ($additionalDocMethods as $method) {
+                        if (!in_array($method, $methods)) {
+                            $this->documentation['paths'][$path][$method] = $fileContent['paths'][$path][$method];
+                        }
+                    }
+                }
+            }
+
+            $definitions = array_keys($fileContent['definitions']);
+
+            foreach ($definitions as $definition) {
+                if (empty($this->documentation['definitions'][$definition])) {
+                    $this->documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                }
+            }
+        }
+
+        return $this->documentation;
     }
 
     protected function camelCaseToUnderScore($input): string
