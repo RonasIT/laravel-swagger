@@ -1,0 +1,46 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "\/",
+  "schemes": [],
+  "paths": {
+    "\/test": {
+      "get": {
+        "tags": [
+          "test"
+        ],
+        "consumes": [
+          "text\/plain"
+        ],
+        "produces": [
+          "application\/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "example": {
+                "param_1": 1,
+                "param_2": 2,
+                "param_3": 3
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": ""
+      }
+    }
+  },
+  "definitions": [],
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  }
+}
