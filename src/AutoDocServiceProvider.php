@@ -26,9 +26,9 @@ class AutoDocServiceProvider extends ServiceProvider
         ]);
 
         $this->loadViewsFrom(__DIR__ . '/Views', 'auto-doc');
-    }
 
-    public function register()
-    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/auto-doc.php', 'auto-doc'
+        );
     }
 }

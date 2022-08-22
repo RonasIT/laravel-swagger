@@ -2,12 +2,11 @@
 
 namespace RonasIT\Tests\Traits;
 
-use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\TestResponse;
 use function app;
 use function array_concat;
-use function base_path;
 use function config;
 use function env;
 
@@ -77,7 +76,7 @@ trait FixturesTrait
         $explodedClass = explode('\\', $class);
         $className = Arr::last($explodedClass);
 
-        return base_path("tests/fixtures/{$className}/{$fixtureName}");
+        return __DIR__."/../fixtures/{$className}/{$fixtureName}";
     }
 
     public function getFixture(string $fixtureName, $failIfNotExists = true): string

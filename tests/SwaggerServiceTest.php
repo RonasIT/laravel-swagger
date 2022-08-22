@@ -2,19 +2,38 @@
 
 namespace RonasIT\Tests;
 
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
+use Illuminate\Routing\Route;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use RonasIT\Tests\Traits\FixturesTrait;
 
 class SwaggerServiceTest extends TestCase
 {
-    public function createApplication()
+    use InteractsWithViews, FixturesTrait;
+
+    protected $service;
+
+    protected function setUp(): void
     {
-        return require __DIR__ . '/../../../bootstrap/app.php';
+        parent::setUp();
+
+        $this->service = app(SwaggerService::class);
     }
 
-    public function testGetAppUrl()
+    public function testSaveProductionData()
     {
-        $result = app(SwaggerService::class)->getApp();
+        $response = response()->json(['kuku' => 1]);
 
-        $this->assertEquals("fdfgffgssfdsf", $result);
+        $request = FormRequest::create('/test', 'GET', ['kuku' => 1]);
+        $request->setRouteResolver(function () use ($request) {
+            return (new Route('GET', 'test', []))->bind($request);
+        });
+        $request->headers->set('Content-type', 'text/plain');
+
+        app(SwaggerService::class)->addData($request, $response);
+        app(SwaggerService::class)->saveProductionData();
+
+        $this->assertEquals(is_file(config('auto-doc.drivers.local.production_path')), true);
     }
 }

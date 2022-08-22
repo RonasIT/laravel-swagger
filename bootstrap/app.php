@@ -23,5 +23,4 @@ $fn = ".env.{$env}";
 
 $app->loadEnvironmentFrom(file_exists(base_path($fn)) ? $fn : '.env');
 
-
 return $app;

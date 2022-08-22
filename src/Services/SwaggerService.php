@@ -130,7 +130,7 @@ class SwaggerService
             $data['securityDefinitions'] = $securityDefinitions;
         }
 
-        $data['info']['description'] = view($data['info']['description'])->render();
+        $data['info']['description'] = view("auto-doc::{$data['info']['description']}")->render();
 
         return $data;
     }
