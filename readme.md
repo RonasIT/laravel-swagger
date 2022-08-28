@@ -1,39 +1,38 @@
 # Laravel AutoDoc plugin 
+<p align="left">
+<a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/dt/ronasit/laravel-swagger" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/v/ronasit/laravel-swagger" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/l/ronasit/laravel-swagger" alt="License"></a>
+</p>
 
-This plugin is designed to gather information and generate documentation about 
-your Rest-Api while passing the tests. The principle of operation is based on 
-the fact that the special Middleware installed on the Route for which you want 
-to collect information that after the successful completion of all tests 
-generated Swagger-file. In addition this plug-in is able to draw Swagger-template 
-to display the generated documentation for a config.
-
+## Introduction
+This plugin is designed to generate documentation about your Rest API while passing the tests. Special Middleware installed on the Route generates Swagger-file after the successful completion of all tests. In addition this plugin is able to draw Swagger-template to display the generated documentation for a config.
 ## Installation
 
 ### Composer
- 1. `composer require ronasit/laravel-swagger`
+ 1. Require this package with composer using the following command: `composer require ronasit/laravel-swagger`
 
 ### Laravel
-1. If you're on Laravel 5.5 or later the package will be auto-discovered.
-   Otherwise you will need to manually configure it in your config/app.php.
+1. For Laravel 5.5 or later the package will be auto-discovered.
+   For older versions add the `AutoDocServiceProvider` to the providers array in config/app.php as follow:
 ```php
 'providers' => [
     // ...
     RonasIT\Support\AutoDoc\AutoDocServiceProvider::class,
 ],
 ```
- 2. run `php artisan vendor:publish`
- 
+ 2. To publish configuration file run `php artisan vendor:publish`
 ### Plugin
  1. Add middleware **\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class** to *Http/Kernel.php*.
  1. Use **\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait** in your TestCase in *tests/TestCase.php*
- 1. In *config/auto-doc.php* you can specify enabling of plugin, info of your project, 
- some defaults descriptions and route for rendering of documentation. 
- 1. In *.env* file you should add following lines
+ 1. In *config/auto-doc.php* you can specify enabling of plugin, project info, 
+ some default descriptions and routes for documentation rendering. 
+ 1. In *.env* file you should add following lines:  
     `
     LOCAL_DATA_COLLECTOR_PROD_PATH=/example-folder/documentation.json  
     LOCAL_DATA_COLLECTOR_TEMP_PATH=/tmp/documentation.json
     `
- 1. Configure documentation saving, using one of the next way:
+ 1. Configure documentation saving using one of the next ways:
   - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`. Please note that this way will be removed after updating PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)
   ```
   <extensions>
@@ -48,9 +47,9 @@ to display the generated documentation for a config.
   - Call `php artisan swagger:push-documentation` console command after the `tests` stage in your CI/CD configuration
 
 ## Usages
- For correct working of plugin you have to dispose all the validation rules in the rules() method of class YourRequest, 
+ For correct working of plugin you have to dispose all the validation rules in the rules() method of `YourRequest` class, 
  which must be connected to the controller via DependencyInjection. In annotation of custom request you can specify 
- summary and description of this request. Plugin will take validation rules from your request and use it as description 
+ summary and description. Plugin will take validation rules from your request and use it as description 
  of input parameter. 
   
 ### Example
@@ -104,13 +103,13 @@ to display the generated documentation for a config.
  
  - **@summary** - short description of request
  - **@description** - Implementation Notes
- - **@_204** - Custom description of code of response. You can specify any code as you want.
- - **@some_field** - Description of this field from the rules method
+ - **@_204** - Custom description of response code. You can specify any code as you want.
+ - **@some_field** - Description of the field from the rules method
  
  If you do not create a class Request, the summary, Implementation Notes and parameters will be empty. 
  Plugin will collect codes and examples of responses only.
  
- If you do not create annotations to request summary will generate automatically from Name of Request.
+ If you do not create annotations to request summary it will generate automatically from Name of Request.
  For example request **UpdateUserDataRequest** will have summary **Update user data request**.  
  
  If you do not create annotations for descriptions of codes it will be generated automatically the following priorities:
@@ -119,8 +118,14 @@ to display the generated documentation for a config.
  3. Descriptions from **Symfony\Component\HttpFoundation\Response::$statusTexts**
   
   Note about configs:  
- - *auto-doc.route* - it's a route where will be located generated documentation  
- - *auto-doc.basePath* - it's a route where located root of your api
+ - *auto-doc.route* - it's a route for generated documentation  
+ - *auto-doc.basePath* - it's a root of your api root
  
 Also you can specify way to collect documentation by creating your custom data collector class.
+## Contributing
+
+Thank you for considering contributing to Laravel Swagger plugin! The contribution guide can be found in the [Contributing guide](CONTRIBUTING.md).
+## License
+
+Laravel Swagger plugin is open-sourced software licensed under the [MIT license](LICENSE).
  
