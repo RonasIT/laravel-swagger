@@ -1,4 +1,4 @@
-# Laravel AutoDoc plugin 
+# Laravel Swagger plugin 
 <p align="left">
 <a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/dt/ronasit/laravel-swagger" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/v/ronasit/laravel-swagger" alt="Latest Stable Version"></a>
@@ -6,7 +6,10 @@
 </p>
 
 ## Introduction
-This plugin is designed to generate documentation about your Rest API while passing the tests. Special Middleware installed on the Route generates Swagger-file after the successful completion of all tests. In addition this plugin is able to draw Swagger-template to display the generated documentation for a config.
+This plugin is designed to generate documentation about your Rest API while 
+passing the tests. Special Middleware installed on the Route generates 
+Swagger-file after the successful completion of all tests. In addition, this 
+plugin is able to draw Swagger-template to display the generated documentation for a config.
 ## Installation
 
 ### Composer
