@@ -128,6 +128,7 @@ Also you can specify way to collect documentation by creating your custom data c
 ## Contributing
 
 Thank you for considering contributing to Laravel Swagger plugin! The contribution guide can be found in the [Contributing guide](CONTRIBUTING.md).
+
 ## License
 
 Laravel Swagger plugin is open-sourced software licensed under the [MIT license](LICENSE).
