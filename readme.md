@@ -50,13 +50,33 @@ plugin is able to draw Swagger-template to display the generated documentation f
   - Call `php artisan swagger:push-documentation` console command after the `tests` stage in your CI/CD configuration
 
 ## Usages
- For correct working of plugin you have to dispose all the validation rules in the rules() method of `YourRequest` class, 
- which must be connected to the controller via DependencyInjection. In annotation of custom request you can specify 
- summary and description. Plugin will take validation rules from your request and use it as description 
- of input parameter. 
+
   
 ### Example
-1. Request data example
+1. Request data fixture
+ ```
+ {
+    "first_name": "Updated User",
+    "is_active": true,
+    "age": 22
+ }
+ ```
+2. Test case code example of API endpoint
+ ```php
+    public function testUpdate()
+    {
+        $data = json_decode(file_get_contents('update_user.json'), true);
+
+        $response = $this->json('put', '/users/1', $data);
+
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+    }
+ ```
+3. Request file code example 
+For correct working of plugin you have to dispose all the validation rules in the rules() method of `YourRequest` class,
+which must be connected to the controller via DependencyInjection. In annotation of custom request you can specify
+summary and description. Plugin will take validation rules from your request and use it as description
+of input parameter.
  ```php
  <?php
  
@@ -119,76 +139,15 @@ plugin is able to draw Swagger-template to display the generated documentation f
  1. Annotations of request
  2. Default description from *auto-doc.defaults.code-descriptions.{$code}*
  3. Descriptions from **Symfony\Component\HttpFoundation\Response::$statusTexts**
-
-
-2. Request data sample
-
- ```
- {
-    "first_name": "Updated User",
-    "is_active": true,
-    "age": 22
-}
- ```
-3. Test case code sample
- ```php
-    public function testUpdate()
-    {
-        $data = $this->getJsonFixture('update_user.json');
-
-        $response = $this->actingAs($this->admin)->json('put', '/users/2', $data);
-
-        $response->assertStatus(Response::HTTP_NO_CONTENT);
-    }
- ```
-4. Request data example
- ```php
- <?php
- 
- namespace App\Http\Requests;  
- 
- use Illuminate\Foundation\Http\FormRequest;
- 
- /**
-  * @summary Updating of user
-  *
-  * @description
-  *  This request mostly needed to specity flags <strong>free_comparison</strong> and 
-  *  <strong>all_cities_available</strong> of user
-  *
-  * @_204 Successful MF!
-  * 
-  * @first_name  Description of this field from the rules method
-  */
- class UpdateUserDataRequest extends FormRequest
- {
-     /**
-      * Determine if the user is authorized to make this request.
-      *
-      * @return bool
-      */
-     public function authorize()
-     {
-         return true;
-     }  
-     
-     public function rules()
-     {
-         return [
-             'first_name' => 'string',
-             'is_active' => 'boolean',
-             'age' => 'integer|nullable'
-         ];
-     }
- }
- ```
-4. Test result
   
   Note about configs:  
  - *auto-doc.route* - it's a route for generated documentation  
  - *auto-doc.basePath* - it's a root of your api root
  
 Also you can specify way to collect documentation by creating your custom data collector class.
+
+4. Test result
+
 ## Contributing
 
 Thank you for considering contributing to Laravel Swagger plugin! The contribution guide can be found in the [Contributing guide](CONTRIBUTING.md).
