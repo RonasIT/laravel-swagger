@@ -56,7 +56,7 @@ plugin is able to draw Swagger-template to display the generated documentation f
  of input parameter. 
   
 ### Example
-
+1. Request data example
  ```php
  <?php
  
@@ -73,7 +73,7 @@ plugin is able to draw Swagger-template to display the generated documentation f
   *
   * @_204 Successful MF!
   * 
-  * @some_field  Description of this field from the rules method
+  * @first_name  Description of this field from the rules method
   */
  class UpdateUserDataRequest extends FormRequest
  {
@@ -95,9 +95,9 @@ plugin is able to draw Swagger-template to display the generated documentation f
      public function rules()
      {
          return [
-             'some_field' => 'string',
-             'all_cities_available' => 'boolean',
-             'free_comparison' => 'boolean'
+             'first_name' => 'string',
+             'is_active' => 'boolean',
+             'age' => 'integer|nullable'
          ];
      }
  }
@@ -107,7 +107,7 @@ plugin is able to draw Swagger-template to display the generated documentation f
  - **@summary** - short description of request
  - **@description** - Implementation Notes
  - **@_204** - Custom description of response code. You can specify any code as you want.
- - **@some_field** - Description of the field from the rules method
+ - **@first_name** - Description of the field from the rules method
  
  If you do not create a class Request, the summary, Implementation Notes and parameters will be empty. 
  Plugin will collect codes and examples of responses only.
@@ -119,6 +119,70 @@ plugin is able to draw Swagger-template to display the generated documentation f
  1. Annotations of request
  2. Default description from *auto-doc.defaults.code-descriptions.{$code}*
  3. Descriptions from **Symfony\Component\HttpFoundation\Response::$statusTexts**
+
+
+2. Request data sample
+
+ ```
+ {
+    "first_name": "Updated User",
+    "is_active": true,
+    "age": 22
+}
+ ```
+3. Test case code sample
+ ```php
+    public function testUpdate()
+    {
+        $data = $this->getJsonFixture('update_user.json');
+
+        $response = $this->actingAs($this->admin)->json('put', '/users/2', $data);
+
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+    }
+ ```
+4. Request data example
+ ```php
+ <?php
+ 
+ namespace App\Http\Requests;  
+ 
+ use Illuminate\Foundation\Http\FormRequest;
+ 
+ /**
+  * @summary Updating of user
+  *
+  * @description
+  *  This request mostly needed to specity flags <strong>free_comparison</strong> and 
+  *  <strong>all_cities_available</strong> of user
+  *
+  * @_204 Successful MF!
+  * 
+  * @first_name  Description of this field from the rules method
+  */
+ class UpdateUserDataRequest extends FormRequest
+ {
+     /**
+      * Determine if the user is authorized to make this request.
+      *
+      * @return bool
+      */
+     public function authorize()
+     {
+         return true;
+     }  
+     
+     public function rules()
+     {
+         return [
+             'first_name' => 'string',
+             'is_active' => 'boolean',
+             'age' => 'integer|nullable'
+         ];
+     }
+ }
+ ```
+4. Test result
   
   Note about configs:  
  - *auto-doc.route* - it's a route for generated documentation  
