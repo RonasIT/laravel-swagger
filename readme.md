@@ -53,7 +53,7 @@ plugin is able to draw Swagger-template to display the generated documentation f
   
 ### Example
 1. Create request data fixture
- ```
+ ```json
  {
     "first_name": "Updated User",
     "is_active": true,
