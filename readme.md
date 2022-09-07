@@ -50,15 +50,15 @@ plugin is able to draw Swagger-template to display the generated documentation f
   - Call `php artisan swagger:push-documentation` console command after the `tests` stage in your CI/CD configuration
 
 ## Usage
-  
-### Example
+
 1. Create request data fixture
  ```json
  {
-    "first_name": "Updated User",
+    "name": "Updated User",
     "is_active": true,
     "age": 22
  }
+```
 2. Prepare test case code of API endpoint
  ```php
     public function testUpdate()
@@ -92,7 +92,7 @@ of input parameter.
   *
   * @_204 Successful MF!
   * 
-  * @first_name  Description of this field from the rules method
+  * @some_field  Description of this field from the rules method
   */
  class UpdateUserDataRequest extends FormRequest
  {
@@ -114,7 +114,7 @@ of input parameter.
      public function rules()
      {
          return [
-             'first_name' => 'string',
+             'name' => 'string',
              'is_active' => 'boolean',
              'age' => 'integer|nullable'
          ];
@@ -126,7 +126,7 @@ of input parameter.
  - **@summary** - short description of request
  - **@description** - Implementation Notes
  - **@_204** - Custom description of response code. You can specify any code as you want.
- - **@first_name** - Description of the field from the rules method
+ - **@some_field** - Description of the field from the rules method
  
  If you do not create a class Request, the summary, Implementation Notes and parameters will be empty. 
  Plugin will collect codes and examples of responses only.
@@ -145,7 +145,9 @@ of input parameter.
  
 Also, you can specify way to collect documentation by creating your custom data collector class.
 
-### Test result
+4. Run tests
+5. Go to route defined in config auto-doc.route
+6. Profit!
 
 ![img.png](assets/images/img.png)
 
