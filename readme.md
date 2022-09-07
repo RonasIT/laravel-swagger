@@ -50,10 +50,10 @@ plugin is able to draw Swagger-template to display the generated documentation f
   - Call `php artisan swagger:push-documentation` console command after the `tests` stage in your CI/CD configuration
 
 ## Usages
-
+To collect documentation run following steps:
   
 ### Example
-1. Request data fixture
+1. Create request data fixture
  ```
  {
     "first_name": "Updated User",
@@ -61,7 +61,7 @@ plugin is able to draw Swagger-template to display the generated documentation f
     "age": 22
  }
  ```
-2. Test case code example of API endpoint
+2. Prepare test case code of API endpoint
  ```php
     public function testUpdate()
     {
@@ -72,7 +72,7 @@ plugin is able to draw Swagger-template to display the generated documentation f
         $response->assertStatus(Response::HTTP_NO_CONTENT);
     }
  ```
-3. Request file code example 
+3. Create request file code 
 For correct working of plugin you have to dispose all the validation rules in the rules() method of `YourRequest` class,
 which must be connected to the controller via DependencyInjection. In annotation of custom request you can specify
 summary and description. Plugin will take validation rules from your request and use it as description
@@ -144,9 +144,11 @@ of input parameter.
  - *auto-doc.route* - it's a route for generated documentation  
  - *auto-doc.basePath* - it's a root of your api root
  
-Also you can specify way to collect documentation by creating your custom data collector class.
+Also, you can specify way to collect documentation by creating your custom data collector class.
 
-4. Test result
+### Test result
+
+![img.png](assets/images/img.png)
 
 ## Contributing
 
