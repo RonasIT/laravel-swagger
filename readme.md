@@ -135,7 +135,7 @@ So, you can specify the way to collect documentation by creating your custom dat
 
 4. Create Controller file code
 ```php
-public function update(UpdateUserRequest $request, $id)
+public function update(UpdateUserDataRequest $request, $id)
 {
     User::where('id', $id)->update($request->validated());
     
