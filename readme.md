@@ -59,7 +59,6 @@ plugin is able to draw Swagger-template to display the generated documentation f
     "is_active": true,
     "age": 22
  }
- ```
 2. Prepare test case code of API endpoint
  ```php
     public function testUpdate()
