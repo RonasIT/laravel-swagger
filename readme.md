@@ -49,7 +49,7 @@ plugin is able to draw Swagger-template to display the generated documentation f
   ```
   - Call `php artisan swagger:push-documentation` console command after the `tests` stage in your CI/CD configuration
 
-## Usages
+## Usage
 To collect documentation run following steps:
   
 ### Example
