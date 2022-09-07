@@ -72,7 +72,8 @@ To collect documentation run following steps:
         $response->assertStatus(Response::HTTP_NO_CONTENT);
     }
  ```
-3. Create request file code 
+3. Create request file code.
+
 For correct working of plugin you have to dispose all the validation rules in the rules() method of `YourRequest` class,
 which must be connected to the controller via DependencyInjection. In annotation of custom request you can specify
 summary and description. Plugin will take validation rules from your request and use it as description
