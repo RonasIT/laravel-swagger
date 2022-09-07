@@ -129,22 +129,8 @@ of input parameter.
  - **@_204** - Custom description of response code. You can specify any code as you want.
  - **@some_field** - Description of the field from the rules method
  
- If you do not create a class Request, the summary, Implementation Notes and parameters will be empty. 
- Plugin will collect codes and examples of responses only.
- 
- If you do not create annotations to request summary it will generate automatically from Name of Request.
- For example request **UpdateUserDataRequest** will have summary **Update user data request**.  
- 
- If you do not create annotations for descriptions of codes it will be generated automatically the following priorities:
- 1. Annotations of request
- 2. Default description from *auto-doc.defaults.code-descriptions.{$code}*
- 3. Descriptions from **Symfony\Component\HttpFoundation\Response::$statusTexts**
-  
-  Note about configs:  
- - *auto-doc.route* - it's a route for generated documentation  
- - *auto-doc.basePath* - it's a root of your api root
- 
-Also, you can specify way to collect documentation by creating your custom data collector class.
+If you do not create a class Request, the summary, Implementation Notes and parameters will be empty.
+So, you can specify the way to collect documentation by creating your custom data collector class.
 
 4. Create Controller file code
 ```php
