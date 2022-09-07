@@ -123,7 +123,8 @@ of input parameter.
  }
 
  ```
- 
+You can use the following annotations in your request classes to customize documentation of your API endpoints:
+
  - **@summary** - short description of request
  - **@description** - Implementation Notes
  - **@_204** - Custom description of response code. You can specify any code as you want.
