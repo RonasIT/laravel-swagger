@@ -636,15 +636,17 @@ class SwaggerService
             $paths = array_keys($fileContent['paths']);
 
             foreach ($paths as $path) {
+                $additionalDocPath =  $fileContent['paths'][$path];
+
                 if (empty($this->documentation['paths'][$path])) {
-                    $this->documentation['paths'][$path] = $fileContent['paths'][$path];
+                    $this->documentation['paths'][$path] = $additionalDocPath;
                 } else {
                     $methods = array_keys($this->documentation['paths'][$path]);
-                    $additionalDocMethods = array_keys($fileContent['paths'][$path]);
+                    $additionalDocMethods = array_keys($additionalDocPath);
 
                     foreach ($additionalDocMethods as $method) {
                         if (!in_array($method, $methods)) {
-                            $this->documentation['paths'][$path][$method] = $fileContent['paths'][$path][$method];
+                            $this->documentation['paths'][$path][$method] = $additionalDocPath[$method];
                         }
                     }
                 }
