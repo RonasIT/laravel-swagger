@@ -37,7 +37,7 @@ class SwaggerService
     private $item;
     private $security;
 
-    protected $rulesOfTypes = [
+    protected $ruleToTypeMap = [
         'array' => 'object',
         'boolean' => 'boolean',
         'date' => 'date',
@@ -398,7 +398,7 @@ class SwaggerService
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
 
-            $uselessRules = $this->rulesOfTypes;
+            $uselessRules = $this->ruleToTypeMap;
             $uselessRules['required'] = 'required';
 
             if (in_array('required', $rulesArray)) {
@@ -416,7 +416,7 @@ class SwaggerService
 
     protected function getParameterType(array $validation): string
     {
-        $validationRules = $this->rulesOfTypes;
+        $validationRules = $this->ruleToTypeMap;
         $validationRules['email'] = 'string';
 
         $parameterType = 'string';
