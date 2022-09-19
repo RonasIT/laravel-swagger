@@ -121,6 +121,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Paths to additional documentation
+    |--------------------------------------------------------------------------
+    | An array of documentation paths to merge with the main documentation.
+    */
+    'additional_paths' => [],
+
+    /*
+    |--------------------------------------------------------------------------
     | Swagger documentation visibility environments list
     |--------------------------------------------------------------------------
     |
@@ -131,5 +139,5 @@ return [
         'development'
     ],
 
-    'config_version' => '2.1'
+    'config_version' => '2.2'
 ];
