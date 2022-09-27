@@ -1,4 +1,5 @@
-# Laravel Swagger plugin 
+# Laravel Swagger plugin
+
 <p align="left">
 <a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/dt/ronasit/laravel-swagger" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/v/ronasit/laravel-swagger" alt="Latest Stable Version"></a>
@@ -6,147 +7,166 @@
 </p>
 
 ## Introduction
-This plugin is designed to generate documentation about your Rest API while 
-passing the tests. Special Middleware installed on the Route generates 
-Swagger-file after the successful completion of all tests. In addition, this 
-plugin is able to draw Swagger-template to display the generated documentation for a config.
+
+This plugin is designed to generate documentation for your REST API during the 
+passing the tests.
+
 ## Installation
 
-### Composer
- 1. Require this package with composer using the following command: `composer require ronasit/laravel-swagger`
+1. Require this package with composer using the following command: `composer require ronasit/laravel-swagger`
 
-### Laravel
-1. For Laravel 5.5 or later the package will be auto-discovered.
-   For older versions add the `AutoDocServiceProvider` to the providers array in config/app.php as follow:
-```php
-'providers' => [
-    // ...
-    RonasIT\Support\AutoDoc\AutoDocServiceProvider::class,
-],
-```
- 2. To publish configuration file run `php artisan vendor:publish`
-### Plugin
- 1. Add middleware **\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class** to *Http/Kernel.php*.
- 1. Use **\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait** in your TestCase in *tests/TestCase.php*
- 1. In *config/auto-doc.php* you can specify enabling of plugin, project info, 
- some default descriptions and routes for documentation rendering. 
- 1. In *.env* file you should add following lines:  
-    `
-    LOCAL_DATA_COLLECTOR_PROD_PATH=/example-folder/documentation.json  
-    LOCAL_DATA_COLLECTOR_TEMP_PATH=/tmp/documentation.json
-    `
- 1. Configure documentation saving using one of the next ways:
-  - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`. Please note that this way will be removed after updating PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)
-  ```
-  <extensions>
-      <extension class="RonasIT\Support\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
-  </extensions>
-  <testsuites>
-      <testsuite name="Feature">
-          <directory suffix="Test.php">./tests/Feature</directory>
-      </testsuite>
-  </testsuites>
-  ```
-  - Call `php artisan swagger:push-documentation` console command after the `tests` stage in your CI/CD configuration
+    > &nbsp;
+    >
+    > ℹ️ ***Note***
+    > 
+    > For Laravel 5.5 or later the package will be auto-discovered.
+    > For older versions add the `AutoDocServiceProvider` to the
+    > providers array in `config/app.php` as follow:
+    > 
+    > ```php
+    > 'providers' => [
+    >    // ...
+    >    RonasIT\Support\AutoDoc\AutoDocServiceProvider::class,
+    > ],
+    > ```
+    >
+    > &nbsp;
+    >
+
+ 2. Run `php artisan vendor:publish`
+ 3. Add middleware `\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class` into `Http/Kernel.php`.
+ 4. Add `\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait` in your `TestCase` in `tests/TestCase.php`
+ 5. Configure documentation saving using one of the next ways:
+   - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
+    **Please note that this way will be removed after updating**
+    **PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)**
+        ```xml
+        <extensions>
+            <extension class="RonasIT\Support\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
+        </extensions>
+        <testsuites>
+            <testsuite name="Feature">
+                <directory suffix="Test.php">./tests/Feature</directory>
+            </testsuite>
+        </testsuites>
+        ```
+   - Call `php artisan swagger:push-documentation` console command after
+    the `tests` stage in your CI/CD configuration
 
 ## Usage
 
-1. Create request data fixture
- ```json
- {
-    "name": "Updated User",
-    "is_active": true,
-    "age": 22
- }
-```
-2. Create test for API endpoint:
- ```php
-public function testUpdate()
-{
-    $data = json_decode(file_get_contents('update_user.json'), true);
+### Basic usage
 
-    $response = $this->json('put', '/users/1', $data);
+1. Create test for API endpoint:
 
-    $response->assertStatus(Response::HTTP_NO_CONTENT);
-}
- ```
-3. Create request file code.
+    ```php
+    public function testUpdate()
+    {
+        $response = $this->json('put', '/users/1', [
+            'name': 'Updated User',
+            'is_active': true,
+            'age': 22
+        ]);
 
-For correct working of plugin you have to dispose all the validation rules 
-in the `rules()` method of `UpdateUserDataRequest` class, which
-must be connected to the controller via DependencyInjection.
-Plugin will take validation rules from your request and use it as description
-of input parameter.
- ```php
- <?php
- 
- namespace App\Http\Requests;  
- 
- use Illuminate\Foundation\Http\FormRequest;
- 
- /**
-  * @summary Updating of user
-  *
-  * @description
-  *  This request mostly needed to specity flags <strong>free_comparison</strong> and 
-  *  <strong>all_cities_available</strong> of user
-  *
-  * @_204 Successful MF!
-  * 
-  * @some_field  Description of this field from the rules method
-  */
- class UpdateUserDataRequest extends FormRequest
- {
-     /**
-      * Determine if the user is authorized to make this request.
-      *
-      * @return bool
-      */
-     public function authorize()
-     {
-         return true;
-     }  
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+    }
+    ```
+
+2. Create request class:
+
+    ```php
+        <?php
+    
+        namespace App\Http\Requests;  
+        
+        use Illuminate\Foundation\Http\FormRequest;
+        
+        /**
+        * @summary Update user
+        *
+        * @description
+        * This request should be used for updating the user data
+        *
+        * @_204 Successful
+        * 
+        * @is_active will indicate whether the user is active or not
+        */
+        class UpdateUserDataRequest extends FormRequest
+        {
+            /**
+            * Determine if the user is authorized to make this request.
+            *
+            * @return bool
+            */
+            public function authorize()
+            {
+                return true;
+            }  
+        
+            /**
+            * Validation Rules
+            *
+            * @return array
+            */
+            public function rules()
+            {
+                return [
+                    'name' => 'string',
+                    'is_active' => 'boolean',
+                    'age' => 'integer|nullable'
+                ];
+            }
+        }
+
+    ```
+
+    > &nbsp;
+    >
+    > ℹ️ ***Note***
+    > 
+    > For correct working of plugin you'll have to dispose all the validation rules 
+    > in the `rules()` method of your request class. Also, your request class
+    > must be connected to the controller via `dependency injection`.
+    > Plugin will take validation rules from your request and use it as description
+    > of input parameter.
+    >
+    > &nbsp;
+    >
+
+3. Run tests
+4. Go to route defined in the `auto-doc.route` config
+5. Profit!
    
-     /**
-      * Get the validation rules that apply to the request.
-      *
-      * @return array
-      */
-     public function rules()
-     {
-         return [
-             'name' => 'string',
-             'is_active' => 'boolean',
-             'age' => 'integer|nullable'
-         ];
-     }
- }
+    ![img.png](assets/images/img.png)
 
- ```
+### Annotations
+
 You can use the following annotations in your request classes to customize documentation of your API endpoints:
 
- - **@summary** - short description of request
- - **@description** - Implementation Notes
- - **@_204** - Custom description of response code. You can specify any code as you want.
- - **@some_field** - Description of the field from the rules method
+- **@summary** - short description of request
+- **@description** - implementation notes
+- **@_204** - custom description of response code. You can specify any code as you want.
+- **@some_field** - description of the field from the rules method
  
-If you do not create a class Request, the summary, Implementation Notes and parameters will be empty.
-So, you can specify the way to collect documentation by creating your custom data collector class.
+> &nbsp;
+>
+> ℹ️ ***Note***
+> 
+> If you do not use request class, the summary and description and parameters will be empty.
+>
+> &nbsp;
+>
 
-4. Create Controller file code
-```php
-public function update(UpdateUserDataRequest $request, $id)
-{
-    User::where('id', $id)->update($request->validated());
-    
-    return response('', Response::HTTP_NO_CONTENT);
-}
-```
-5. Run tests
-6. Go to route defined in config auto-doc.route
-7. Profit!
+### Configs
 
-![img.png](assets/images/img.png)
+- `auto-doc.route` - route for generated documentation
+- `auto-doc.basePath` - root of your API
+
+### Custom driver
+
+You can specify way to collect documentation by creating your custom driver.
+
+You can find example of drivers [here](https://github.com/RonasIT/laravel-swagger/tree/master/src/Drivers).
 
 ## Contributing
 
