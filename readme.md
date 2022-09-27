@@ -31,7 +31,7 @@ passing PHPUnit tests.
     > ```
 
  1. Run `php artisan vendor:publish`
- 2. Add middleware `\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class` into `Http/Kernel.php`.
+ 2. Add `\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware stack in `Http/Kernel.php`.
  3. Add `\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait` in your `TestCase` in `tests/TestCase.php`
  4. Configure documentation saving using one of the next ways:
    - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
