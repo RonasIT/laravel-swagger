@@ -121,7 +121,7 @@ passing PHPUnit tests.
     > 
     > For correct working of plugin you'll have to dispose all the validation rules 
     > in the `rules()` method of your request class. Also, your request class
-    > must be connected to the controller via `dependency injection`.
+    > must be connected to the controller via [dependency injection](https://laravel.com/docs/9.x/container#introduction).
     > Plugin will take validation rules from your request and use it as description
     > of input parameter.
 
