@@ -11,7 +11,7 @@
 ## Introduction
 
 This plugin is designed to generate documentation for your REST API during the 
-passing the tests.
+passing PHPUnit tests.
 
 ## Installation
 
