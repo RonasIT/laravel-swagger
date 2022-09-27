@@ -101,10 +101,10 @@ passing PHPUnit tests.
         }  
     
         /**
-        * Validation Rules
-        *
-        * @return array
-        */
+         * Validation Rules
+         *
+         * @return array
+         */
         public function rules()
         {
             return [
