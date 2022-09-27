@@ -13,7 +13,7 @@ passing the tests.
 
 ## Installation
 
-1. Require this package with composer using the following command: `composer require ronasit/laravel-swagger`
+1. Install the package using the following command: `composer require ronasit/laravel-swagger`
 
     > ***Note***
     > 
