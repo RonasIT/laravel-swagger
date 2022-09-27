@@ -15,9 +15,7 @@ passing the tests.
 
 1. Require this package with composer using the following command: `composer require ronasit/laravel-swagger`
 
-    > &nbsp;
-    >
-    > ℹ️ ***Note***
+    > ***Note***
     > 
     > For Laravel 5.5 or later the package will be auto-discovered.
     > For older versions add the `AutoDocServiceProvider` to the
@@ -29,14 +27,11 @@ passing the tests.
     >    RonasIT\Support\AutoDoc\AutoDocServiceProvider::class,
     > ],
     > ```
-    >
-    > &nbsp;
-    >
 
- 2. Run `php artisan vendor:publish`
- 3. Add middleware `\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class` into `Http/Kernel.php`.
- 4. Add `\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait` in your `TestCase` in `tests/TestCase.php`
- 5. Configure documentation saving using one of the next ways:
+ 1. Run `php artisan vendor:publish`
+ 2. Add middleware `\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class` into `Http/Kernel.php`.
+ 3. Add `\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait` in your `TestCase` in `tests/TestCase.php`
+ 4. Configure documentation saving using one of the next ways:
    - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
     **Please note that this way will be removed after updating**
     **PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)**
@@ -75,63 +70,58 @@ passing the tests.
 2. Create request class:
 
     ```php
-        <?php
+    <?php
+
+    namespace App\Http\Requests;  
     
-        namespace App\Http\Requests;  
-        
-        use Illuminate\Foundation\Http\FormRequest;
-        
+    use Illuminate\Foundation\Http\FormRequest;
+    
+    /**
+    * @summary Update user
+    *
+    * @description
+    * This request should be used for updating the user data
+    *
+    * @_204 Successful
+    * 
+    * @is_active will indicate whether the user is active or not
+    */
+    class UpdateUserDataRequest extends FormRequest
+    {
         /**
-        * @summary Update user
+        * Determine if the user is authorized to make this request.
         *
-        * @description
-        * This request should be used for updating the user data
-        *
-        * @_204 Successful
-        * 
-        * @is_active will indicate whether the user is active or not
+        * @return bool
         */
-        class UpdateUserDataRequest extends FormRequest
+        public function authorize()
         {
-            /**
-            * Determine if the user is authorized to make this request.
-            *
-            * @return bool
-            */
-            public function authorize()
-            {
-                return true;
-            }  
-        
-            /**
-            * Validation Rules
-            *
-            * @return array
-            */
-            public function rules()
-            {
-                return [
-                    'name' => 'string',
-                    'is_active' => 'boolean',
-                    'age' => 'integer|nullable'
-                ];
-            }
+            return true;
+        }  
+    
+        /**
+        * Validation Rules
+        *
+        * @return array
+        */
+        public function rules()
+        {
+            return [
+                'name' => 'string',
+                'is_active' => 'boolean',
+                'age' => 'integer|nullable'
+            ];
         }
+    }
 
     ```
 
-    > &nbsp;
-    >
-    > ℹ️ ***Note***
+    > ***Note***
     > 
     > For correct working of plugin you'll have to dispose all the validation rules 
     > in the `rules()` method of your request class. Also, your request class
     > must be connected to the controller via `dependency injection`.
     > Plugin will take validation rules from your request and use it as description
     > of input parameter.
-    >
-    > &nbsp;
-    >
 
 3. Run tests
 4. Go to route defined in the `auto-doc.route` config
@@ -148,14 +138,9 @@ You can use the following annotations in your request classes to customize docum
 - **@_204** - custom description of response code. You can specify any code as you want.
 - **@some_field** - description of the field from the rules method
  
-> &nbsp;
->
-> ℹ️ ***Note***
+> ***Note***
 > 
 > If you do not use request class, the summary and description and parameters will be empty.
->
-> &nbsp;
->
 
 ### Configs
 
