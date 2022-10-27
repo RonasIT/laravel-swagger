@@ -1,3 +1,5 @@
+<img src="hero.svg" >
+
 # Laravel Swagger plugin
 
 <p align="left">
@@ -5,8 +7,6 @@
 <a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/v/ronasit/laravel-swagger" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/l/ronasit/laravel-swagger" alt="License"></a>
 </p>
-
-![img.png](assets/images/laravel-banner.png)
 
 ## Introduction
 
