@@ -2,8 +2,6 @@
 
 namespace RonasIT\Support\AutoDoc\Interfaces;
 
-use stdClass;
-
 interface SwaggerDriverInterface
 {
     /**
@@ -26,7 +24,7 @@ interface SwaggerDriverInterface
     /**
      * Get production documentation
      */
-    public function getDocumentation(): stdClass;
+    public function getDocumentation(): array;
 }
 
 

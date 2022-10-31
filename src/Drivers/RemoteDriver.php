@@ -52,7 +52,7 @@ class RemoteDriver implements SwaggerDriverInterface
         }
     }
 
-    public function getDocumentation(): stdClass
+    public function getDocumentation(): array
     {
         $content = file_get_contents($this->getUrl());
 
@@ -60,7 +60,7 @@ class RemoteDriver implements SwaggerDriverInterface
             throw new FileNotFoundException();
         }
 
-        return json_decode($content);
+        return json_decode($content, true);
     }
 
     protected function getUrl(): string

@@ -37,7 +37,7 @@ class SwaggerService
     private $item;
     private $security;
 
-    protected $rulesOfTypes = [
+    protected $ruleToTypeMap = [
         'array' => 'object',
         'boolean' => 'boolean',
         'date' => 'date',
@@ -46,6 +46,8 @@ class SwaggerService
         'numeric' => 'double',
         'string' => 'string'
     ];
+
+    protected $documentation;
 
     public function __construct(Container $container)
     {
@@ -396,14 +398,14 @@ class SwaggerService
             $parameterType = $this->getParameterType($rulesArray);
             $this->saveParameterType($data, $parameter, $parameterType);
 
-            $uselessRules = $this->rulesOfTypes;
+            $uselessRules = $this->ruleToTypeMap;
             $uselessRules['required'] = 'required';
 
             if (in_array('required', $rulesArray)) {
                 $data['required'][] = $parameter;
             }
 
-            $rulesArray = array_diff_key(array_flip($rulesArray), $uselessRules);
+            $rulesArray = array_flip(array_diff_key(array_flip($rulesArray), $uselessRules));
 
             $this->saveParameterDescription($data, $parameter, $rulesArray, $attributes, $annotations);
         }
@@ -414,7 +416,7 @@ class SwaggerService
 
     protected function getParameterType(array $validation): string
     {
-        $validationRules = $this->rulesOfTypes;
+        $validationRules = $this->ruleToTypeMap;
         $validationRules['email'] = 'string';
 
         $parameterType = 'string';
@@ -624,7 +626,42 @@ class SwaggerService
 
     public function getDocFileContent()
     {
-        return $this->driver->getDocumentation();
+        $this->documentation = $this->driver->getDocumentation();
+
+        $additionalDocs = config('auto-doc.additional_paths', []);
+
+        foreach ($additionalDocs as $filePath) {
+            $fileContent = json_decode(file_get_contents($filePath), true);
+
+            $paths = array_keys($fileContent['paths']);
+
+            foreach ($paths as $path) {
+                $additionalDocPath =  $fileContent['paths'][$path];
+
+                if (empty($this->documentation['paths'][$path])) {
+                    $this->documentation['paths'][$path] = $additionalDocPath;
+                } else {
+                    $methods = array_keys($this->documentation['paths'][$path]);
+                    $additionalDocMethods = array_keys($additionalDocPath);
+
+                    foreach ($additionalDocMethods as $method) {
+                        if (!in_array($method, $methods)) {
+                            $this->documentation['paths'][$path][$method] = $additionalDocPath[$method];
+                        }
+                    }
+                }
+            }
+
+            $definitions = array_keys($fileContent['definitions']);
+
+            foreach ($definitions as $definition) {
+                if (empty($this->documentation['definitions'][$definition])) {
+                    $this->documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                }
+            }
+        }
+
+        return $this->documentation;
     }
 
     protected function camelCaseToUnderScore($input): string
