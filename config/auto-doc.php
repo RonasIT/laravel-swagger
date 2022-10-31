@@ -127,7 +127,7 @@ return [
     */
     'additional_paths' => [],
 
-    'max_response_count' => 0,
+    'response_example_limit_count' => 1,
 
     /*
     |--------------------------------------------------------------------------
