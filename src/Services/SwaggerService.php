@@ -44,8 +44,7 @@ class SwaggerService
         'digits' => 'integer',
         'integer' => 'integer',
         'numeric' => 'double',
-        'string' => 'string',
-        'int' => 'integer'
+        'string' => 'string'
     ];
 
     protected $documentation;
