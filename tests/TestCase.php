@@ -2,16 +2,29 @@
 
 namespace RonasIT\Support\Tests;
 
+use Illuminate\Filesystem\Filesystem;
 use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\Support\AutoDoc\AutoDocServiceProvider;
 
 class TestCase extends BaseTest
 {
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        (new Filesystem)->cleanDirectory(__DIR__ . '/storage');
+    }
+
     protected function getPackageProviders($app): array
     {
         return [
             AutoDocServiceProvider::class
         ];
+    }
+
+    protected function defineEnvironment($app)
+    {
+        $app->useStoragePath(__DIR__ . '/storage');
     }
 
     protected function getJsonFixture($name)

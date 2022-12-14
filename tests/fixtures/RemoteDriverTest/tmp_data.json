@@ -1,0 +1,138 @@
+{
+    "swagger": "2.0",
+    "host": "localhost",
+    "basePath": "\/",
+    "schemes": [],
+    "paths": {
+        "\/auth\/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "consumes": [
+                    "application\/json"
+                ],
+                "produces": [
+                    "application\/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#\/definitions\/authloginObject"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operation successfully done",
+                        "schema": {
+                            "example": {
+                                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3RcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNTE0NzY0ODAwLCJleHAiOjE1MTQ3Njg0MDAsIm5iZiI6MTUxNDc2NDgwMCwianRpIjoiM2tYM2tXQ3Z0UWdOSjBBOSIsInN1YiI6MiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.Trk1hpjhczDmu60vgKs1aYPl7wxWNJfNCYcW5mC0LQ8",
+                                "user": {
+                                    "id": 2,
+                                    "email": "user@test.com",
+                                    "deleted_at": null,
+                                    "created_at": "2017-11-16 06:08:34",
+                                    "updated_at": "2018-01-01 00:00:00",
+                                    "role_id": 2,
+                                    "clio_user_id": null,
+                                    "images_limit": 500,
+                                    "state": "confirmed",
+                                    "reset_password_hash": null,
+                                    "failed_auth_attempts": 0,
+                                    "last_auth_attempt": "2018-01-01 00:00:00",
+                                    "first_name": "user",
+                                    "last_name": null,
+                                    "set_password_hash_created_at": null,
+                                    "full_name": "user",
+                                    "settings": null,
+                                    "new_email": "new_email_test2@test.com",
+                                    "is_email_verified": true,
+                                    "role": {
+                                        "id": 2,
+                                        "name": "client",
+                                        "created_at": null,
+                                        "updated_at": null,
+                                        "settable": true
+                                    },
+                                    "services": [
+                                        {
+                                            "id": 1,
+                                            "name": "500px",
+                                            "created_at": "2017-11-16 06:08:34",
+                                            "updated_at": "2017-11-16 06:08:34",
+                                            "is_photo_service": true,
+                                            "allow_not_unique_accounts": false,
+                                            "pivot": {
+                                                "user_id": 2,
+                                                "service_id": 1,
+                                                "is_token_expired": 0
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ttl": 60,
+                                "refresh_ttl": 20160
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "example": {
+                                "error": "You have entered an incorrect credentials."
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "example": {
+                                "error": "The limit of failed authorization attempts has been reached. You can't login in next 50 minutes."
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "description": "",
+                "summary": "login"
+            }
+        }
+    },
+    "definitions": {
+        "authloginObject": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "2"
+                },
+                "password": {
+                    "type": "string",
+                    "description": ""
+                }
+            },
+            "required": [
+                "email",
+                "password"
+            ],
+            "example": {
+                "email": "admin@test.com",
+                "password": "123"
+            }
+        }
+    },
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Photoclaim API",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    }
+}
