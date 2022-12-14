@@ -3,6 +3,8 @@
 namespace RonasIT\Support\Tests;
 
 use RonasIT\Support\AutoDoc\Drivers\LocalDriver;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriverTest extends TestCase
 {
@@ -20,6 +22,15 @@ class LocalDriverTest extends TestCase
         config(['auto-doc.drivers.local.production_path' => $this->productionFilePath]);
 
         $this->localDriverClass = new LocalDriver();
+    }
+
+    public function testCreateClassConfigEmpty()
+    {
+        $this->expectException(MissedProductionFilePathException::class);
+
+        config(['auto-doc.drivers.local.production_path' => null]);
+
+        new LocalDriver();
     }
 
     public function testGetAndSaveTmpData()
@@ -46,5 +57,14 @@ class LocalDriverTest extends TestCase
         $documentation = $this->localDriverClass->getDocumentation();
 
         $this->assertEquals($this->getJsonFixture('tmp_data'), $documentation);
+    }
+
+    public function testGetDocumentationFileNotExists()
+    {
+        $this->expectException(FileNotFoundException::class);
+
+        config(['auto-doc.drivers.local.production_path' => 'not_exists_file']);
+
+        (new LocalDriver())->getDocumentation();
     }
 }
