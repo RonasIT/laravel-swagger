@@ -54,6 +54,8 @@ class LocalDriverTest extends TestCase
 
     public function testGetDocumentation()
     {
+        file_put_contents($this->productionFilePath, json_encode($this->tmpData));
+
         $documentation = $this->localDriverClass->getDocumentation();
 
         $this->assertEquals($this->getJsonFixture('tmp_data'), $documentation);
