@@ -17,5 +17,3 @@ bootstrap/cache/
 composer.lock
 
 .phpunit.result.cache
-
-tests/storage
