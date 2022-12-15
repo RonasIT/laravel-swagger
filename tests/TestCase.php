@@ -12,7 +12,7 @@ class TestCase extends BaseTest
     {
         parent::tearDown();
 
-        (new Filesystem)->cleanDirectory(__DIR__ . '/storage');
+        $this->clearDirectory(__DIR__ . '/storage', ['.gitignore']);
     }
 
     protected function getPackageProviders($app): array
@@ -25,6 +25,14 @@ class TestCase extends BaseTest
     protected function defineEnvironment($app)
     {
         $app->useStoragePath(__DIR__ . '/storage');
+    }
+
+    protected function mockCLass($className, $methods = [])
+    {
+        return $this
+            ->getMockBuilder($className)
+            ->onlyMethods($methods)
+            ->getMock();
     }
 
     protected function getJsonFixture($name)
@@ -42,5 +50,18 @@ class TestCase extends BaseTest
         $testClass = last(explode('\\', get_class($this)));
 
         return __DIR__ . "/fixtures/{$testClass}/{$name}";
+    }
+
+    protected function clearDirectory($dirPath, $exceptPaths = [])
+    {
+        $fileSystem = new Filesystem();
+
+        $files = $fileSystem->allFiles($dirPath);
+
+        foreach ($files as $file) {
+            if (!in_array($file->getFilename(), $exceptPaths)) {
+                $fileSystem->delete($file->getRealPath());
+            }
+        }
     }
 }

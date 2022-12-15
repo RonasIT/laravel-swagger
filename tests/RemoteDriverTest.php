@@ -3,6 +3,7 @@
 namespace RonasIT\Support\Tests;
 
 use RonasIT\Support\AutoDoc\Drivers\RemoteDriver;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class RemoteDriverTest extends TestCase
 {
@@ -42,5 +43,83 @@ class RemoteDriverTest extends TestCase
         $result = $this->removeDriverClass->getTmpData();
 
         $this->assertNull($result);
+    }
+
+    public function testSaveData()
+    {
+        config(['auto-doc.drivers.remote.key' => 'mocked_key']);
+        config(['auto-doc.drivers.remote.url' => 'mocked_url']);
+
+        $mock = $this->mockCLass(RemoteDriver::class, ['makeHttpRequest']);
+
+        $mock
+            ->expects($this->once())
+            ->method('makeHttpRequest')
+            ->with('post', 'mocked_url/documentations/mocked_key', $this->tmpData, [
+                'Content-Type: application/json'
+            ])
+            ->willReturn(true);
+
+        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
+
+        $mock->saveData();
+
+        $this->assertFileDoesNotExist($this->tmpDocumentationFilePath);
+    }
+
+    public function testSaveDataWithoutTmpFile()
+    {
+        config(['auto-doc.drivers.remote.key' => 'mocked_key']);
+        config(['auto-doc.drivers.remote.url' => 'mocked_url']);
+
+        $mock = $this->mockCLass(RemoteDriver::class, ['makeHttpRequest']);
+
+        $mock
+            ->expects($this->once())
+            ->method('makeHttpRequest')
+            ->with('post', 'mocked_url/documentations/mocked_key', null, [
+                'Content-Type: application/json'
+            ])
+            ->willReturn(true);
+
+        $mock->saveData();
+    }
+
+    public function testGetDocumentation()
+    {
+        config(['auto-doc.drivers.remote.key' => 'mocked_key']);
+        config(['auto-doc.drivers.remote.url' => 'mocked_url']);
+
+        $mock = $this->mockCLass(RemoteDriver::class, ['makeHttpRequest']);
+
+        $mock
+            ->expects($this->once())
+            ->method('makeHttpRequest')
+            ->with('get', 'mocked_url/documentations/mocked_key')
+            ->willReturn([$this->getFixture('tmp_data_non_formatted.json'), 200]);
+
+        $documentation = $mock->getDocumentation();
+
+        $this->assertEquals($this->tmpData, $documentation);
+    }
+
+    public function testGetDocumentationNoFile()
+    {
+        $this->expectException(FileNotFoundException::class);
+
+        config(['auto-doc.drivers.remote.key' => 'mocked_key']);
+        config(['auto-doc.drivers.remote.url' => 'mocked_url']);
+
+        $mock = $this->mockCLass(RemoteDriver::class, ['makeHttpRequest']);
+
+        $mock
+            ->expects($this->once())
+            ->method('makeHttpRequest')
+            ->with('get', 'mocked_url/documentations/mocked_key')
+            ->willReturn(json_encode([['error' => 'Not found.'], 404]));
+
+        $documentation = $mock->getDocumentation();
+
+        $this->assertEquals($this->tmpData, $documentation);
     }
 }
