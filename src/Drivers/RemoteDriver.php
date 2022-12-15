@@ -61,6 +61,9 @@ class RemoteDriver implements SwaggerDriverInterface
         return "{$this->remoteUrl}/documentations/{$this->key}";
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function makeHttpRequest($type, $url, $data = [], $headers = [])
     {
         $curl = curl_init();
