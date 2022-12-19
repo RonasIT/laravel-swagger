@@ -1,0 +1,63 @@
+{
+    "swagger": "2.0",
+    "host": "localhost",
+    "basePath": "/",
+    "schemes": [],
+    "paths": {
+        "/users/{id}/assign-role/{role-id}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "role-id",
+                        "description": "",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "example": {
+                                "id": 2,
+                                "name": "first_client",
+                                "likes_count": 23,
+                                "role": {
+                                    "id": 2,
+                                    "name": "client"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "description": ""
+            }
+        }
+    },
+    "definitions": {},
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    }
+}

@@ -2,9 +2,12 @@
 
 namespace RonasIT\Support\Tests;
 
+use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Route;
 use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\Support\AutoDoc\AutoDocServiceProvider;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class TestCase extends BaseTest
 {
@@ -12,7 +15,7 @@ class TestCase extends BaseTest
     {
         parent::tearDown();
 
-        $this->clearDirectory(__DIR__ . '/storage', ['.gitignore']);
+        $this->clearDirectory(__DIR__ . '/../storage', ['.gitignore']);
     }
 
     protected function getPackageProviders($app): array
@@ -24,15 +27,7 @@ class TestCase extends BaseTest
 
     protected function defineEnvironment($app)
     {
-        $app->useStoragePath(__DIR__ . '/storage');
-    }
-
-    protected function mockCLass($className, $methods = [])
-    {
-        return $this
-            ->getMockBuilder($className)
-            ->onlyMethods($methods)
-            ->getMock();
+        $app->setBasePath(__DIR__ . '/..');
     }
 
     protected function getJsonFixture($name)
@@ -63,5 +58,31 @@ class TestCase extends BaseTest
                 $fileSystem->delete($file->getRealPath());
             }
         }
+    }
+
+    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
+    {
+        $realUri = $uri;
+
+        foreach ($pathParams as $pathParam => $value) {
+            $realUri = str_replace($pathParam, $value, $uri);
+        }
+
+        $symfonyRequest = SymfonyRequest::create(
+            $this->prepareUrlForRequest($realUri),
+            strtoupper($type),
+            $data,
+            [],
+            [],
+            $this->transformHeadersToServerVars($headers)
+        );
+
+        $request = Request::createFromBase($symfonyRequest);
+
+        $request->setRouteResolver(function () use ($uri) {
+            return Route::get($uri);
+        });
+
+        return $request;
     }
 }

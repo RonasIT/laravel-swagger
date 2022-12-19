@@ -17,7 +17,7 @@ class LocalDriverTest extends TestCase
         parent::setUp();
 
         $this->tmpData = $this->getJsonFixture('tmp_data');
-        $this->productionFilePath = __DIR__ . '/storage/documentation.json';
+        $this->productionFilePath = __DIR__ . '/../storage/documentation.json';
 
         config(['auto-doc.drivers.local.production_path' => $this->productionFilePath]);
 

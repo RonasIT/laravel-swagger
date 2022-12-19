@@ -12,7 +12,7 @@ class AutoDocServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/auto-doc.php', 'auto-doc');
 
         $this->publishes([
-            __DIR__ . '/Views/swagger-description.blade.php' => resource_path('views/swagger-description.blade.php'),
+            __DIR__ . '/../resources/views/swagger-description.blade.php' => resource_path('views/swagger-description.blade.php'),
         ], 'view');
 
         if (!$this->app->routesAreCached()) {
@@ -23,7 +23,7 @@ class AutoDocServiceProvider extends ServiceProvider
             PushDocumentationCommand::class
         ]);
 
-        $this->loadViewsFrom(__DIR__ . '/Views', 'auto-doc');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'auto-doc');
     }
 
     public function register()

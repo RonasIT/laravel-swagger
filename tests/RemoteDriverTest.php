@@ -3,10 +3,13 @@
 namespace RonasIT\Support\Tests;
 
 use RonasIT\Support\AutoDoc\Drivers\RemoteDriver;
+use RonasIT\Support\Tests\Support\Traits\MockTrait;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class RemoteDriverTest extends TestCase
 {
+    use MockTrait;
+
     protected $tmpData;
     protected $removeDriverClass;
     protected $tmpDocumentationFilePath;
@@ -16,7 +19,7 @@ class RemoteDriverTest extends TestCase
         parent::setUp();
 
         $this->tmpData = $this->getJsonFixture('tmp_data');
-        $this->tmpDocumentationFilePath = __DIR__ . '/storage/temp_documentation.json';
+        $this->tmpDocumentationFilePath = __DIR__ . '/../storage/temp_documentation.json';
 
         $this->removeDriverClass = new RemoteDriver();
     }
