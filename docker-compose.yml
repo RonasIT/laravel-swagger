@@ -2,7 +2,9 @@ version: '3'
 
 services:
   nginx:
-    image: ronasit/php-nginx-dev:7.3
+    build:
+      context: ./
+      dockerfile: "Dockerfile"
     working_dir: /app
     ports:
       - 80:80

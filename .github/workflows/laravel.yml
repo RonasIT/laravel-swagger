@@ -7,18 +7,16 @@ on:
     branches: ["master"]
 
 jobs:
-  tests:
+  tests-with-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '7.3'
       - uses: actions/checkout@v3
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-      - name: Execute tests (Unit and Feature tests) via PHPUnit
+      - name: Execute unit tests via PHPUnit with coverage
         run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
       - name: Upload coverage results to Coveralls
         env:
