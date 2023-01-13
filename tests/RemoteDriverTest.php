@@ -11,7 +11,7 @@ class RemoteDriverTest extends TestCase
     use MockTrait;
 
     protected $tmpData;
-    protected $removeDriverClass;
+    protected $remoteDriverClass;
     protected $tmpDocumentationFilePath;
 
     public function setUp(): void
@@ -21,12 +21,12 @@ class RemoteDriverTest extends TestCase
         $this->tmpData = $this->getJsonFixture('tmp_data');
         $this->tmpDocumentationFilePath = __DIR__ . '/../storage/temp_documentation.json';
 
-        $this->removeDriverClass = new RemoteDriver();
+        $this->remoteDriverClass = new RemoteDriver();
     }
 
     public function testSaveTmpData()
     {
-        $this->removeDriverClass->saveTmpData($this->tmpData);
+        $this->remoteDriverClass->saveTmpData($this->tmpData);
 
         $this->assertFileExists($this->tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $this->tmpDocumentationFilePath);
@@ -36,14 +36,14 @@ class RemoteDriverTest extends TestCase
     {
         file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
 
-        $result = $this->removeDriverClass->getTmpData();
+        $result = $this->remoteDriverClass->getTmpData();
 
         $this->assertEquals($this->tmpData, $result);
     }
 
     public function testGetTmpDataNoFile()
     {
-        $result = $this->removeDriverClass->getTmpData();
+        $result = $this->remoteDriverClass->getTmpData();
 
         $this->assertNull($result);
     }
@@ -53,7 +53,7 @@ class RemoteDriverTest extends TestCase
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);
 
-        $mock = $this->mockCLass(RemoteDriver::class, ['makeHttpRequest']);
+        $mock = $this->mockClass(RemoteDriver::class, ['makeHttpRequest']);
 
         $mock
             ->expects($this->once())
@@ -75,7 +75,7 @@ class RemoteDriverTest extends TestCase
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);
 
-        $mock = $this->mockCLass(RemoteDriver::class, ['makeHttpRequest']);
+        $mock = $this->mockClass(RemoteDriver::class, ['makeHttpRequest']);
 
         $mock
             ->expects($this->once())
@@ -93,7 +93,7 @@ class RemoteDriverTest extends TestCase
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);
 
-        $mock = $this->mockCLass(RemoteDriver::class, ['makeHttpRequest']);
+        $mock = $this->mockClass(RemoteDriver::class, ['makeHttpRequest']);
 
         $mock
             ->expects($this->once())
@@ -113,7 +113,7 @@ class RemoteDriverTest extends TestCase
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);
 
-        $mock = $this->mockCLass(RemoteDriver::class, ['makeHttpRequest']);
+        $mock = $this->mockClass(RemoteDriver::class, ['makeHttpRequest']);
 
         $mock
             ->expects($this->once())

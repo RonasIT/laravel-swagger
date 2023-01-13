@@ -2,9 +2,7 @@ version: '3'
 
 services:
   nginx:
-    build:
-      context: ./
-      dockerfile: "Dockerfile"
+    build: .
     working_dir: /app
     ports:
       - 80:80

@@ -8,14 +8,14 @@ trait SwaggerServiceMockTrait
 {
     use MockTrait;
 
-    protected function mockDriverSaveTmpData($expectedData)
+    protected function mockDriverSaveTmpData($expectedData, $driverClass = LocalDriver::class)
     {
-        $driver = $this->mockCLass(LocalDriver::class, ['saveTmpData']);
+        $driver = $this->mockClass($driverClass, ['saveTmpData']);
 
         $firstCall = array_merge($expectedData, ['paths' => []]);
 
         $driver->expects($this->exactly(2))->method('saveTmpData')->withConsecutive([$firstCall], [$expectedData]);
 
-        $this->app->instance(LocalDriver::class, $driver);
+        $this->app->instance($driverClass, $driver);
     }
 }

@@ -4,7 +4,7 @@ namespace RonasIT\Support\Tests\Support\Traits;
 
 trait MockTrait
 {
-    protected function mockCLass($className, $methods = [])
+    protected function mockClass($className, $methods = [])
     {
         return $this
             ->getMockBuilder($className)

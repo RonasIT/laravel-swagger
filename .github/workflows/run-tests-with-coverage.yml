@@ -1,4 +1,4 @@
-name: run-tests-with-coverage
+name: Run tests with coverage
 
 on:
   push:
