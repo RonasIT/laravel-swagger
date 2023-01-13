@@ -2,7 +2,6 @@
 
 namespace RonasIT\Support\AutoDoc\Drivers;
 
-use stdClass;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;

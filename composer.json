@@ -16,13 +16,19 @@
     }
   ],
   "require": {
-    "php": ">=7.1.0",
+    "php": ">=7.3.0",
     "laravel/framework": ">=5.3.0",
     "phpunit/phpunit": ">=7.0|<=10.0"
   },
+  "require-dev": {
+    "orchestra/testbench": "^6.25",
+    "php-coveralls/php-coveralls": "^2.5"
+  },
   "autoload": {
     "psr-4": {
-      "RonasIT\\Support\\AutoDoc\\": "src/"
+      "RonasIT\\Support\\AutoDoc\\": "src/",
+      "RonasIT\\Support\\Tests\\": "tests/",
+      "RonasIT\\Support\\Tests\\Support\\Traits\\": "tests/support/Traits"
     },
     "exclude-from-classmap": [
       "src/Tests/"

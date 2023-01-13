@@ -2,7 +2,7 @@
 
 namespace RonasIT\Support\AutoDoc\Drivers;
 
-use stdClass;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 
 class RemoteDriver implements SwaggerDriverInterface
@@ -36,16 +36,9 @@ class RemoteDriver implements SwaggerDriverInterface
 
     public function saveData()
     {
-        $curl = curl_init();
-
-        curl_setopt($curl, CURLOPT_URL, $this->getUrl());
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->getTmpData()));
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-
-        curl_exec($curl);
-        curl_close($curl);
+        $this->makeHttpRequest('post', $this->getUrl(), $this->getTmpData(), [
+            'Content-Type: application/json'
+        ]);
 
         if (file_exists($this->tempFileName)) {
             unlink($this->tempFileName);
@@ -54,9 +47,9 @@ class RemoteDriver implements SwaggerDriverInterface
 
     public function getDocumentation(): array
     {
-        $content = file_get_contents($this->getUrl());
+        list($content, $statusCode) = $this->makeHttpRequest('get', $this->getUrl());
 
-        if (empty($content)) {
+        if (empty($content) || $statusCode !== 200) {
             throw new FileNotFoundException();
         }
 
@@ -66,5 +59,30 @@ class RemoteDriver implements SwaggerDriverInterface
     protected function getUrl(): string
     {
         return "{$this->remoteUrl}/documentations/{$this->key}";
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function makeHttpRequest($type, $url, $data = [], $headers = [])
+    {
+        $curl = curl_init();
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+        if ($type === 'post') {
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+        }
+
+        $result = curl_exec($curl);
+
+        $statusCode = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+
+        curl_close($curl);
+
+        return [$result, $statusCode];
     }
 }

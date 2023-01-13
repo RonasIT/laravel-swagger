@@ -31,7 +31,7 @@ return [
         |
         | You can use your custom documentation view
         */
-        'description' => 'swagger-description',
+        'description' => 'auto-doc::swagger-description',
         'version' => '0.0.0',
         'title' => 'Name of Your Application',
         'termsOfService' => '',
