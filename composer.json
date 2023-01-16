@@ -32,6 +32,12 @@
       "src/Tests/"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "RonasIT\\Support\\Tests\\": "tests/",
+      "RonasIT\\Support\\Tests\\Support\\Traits\\": "tests/support/Traits"
+    }
+  },
   "extra": {
     "laravel": {
       "providers": [
