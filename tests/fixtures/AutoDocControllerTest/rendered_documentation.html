@@ -36,11 +36,11 @@
 <script src="/auto-doc/swagger-ui-bundle.js" charset="UTF-8"> </script>
 <script src="/auto-doc/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
 <script>
-    const prefix = '/';
+    const prefix = '';
 
     window.onload = () => {
         const ui = SwaggerUIBundle({
-            url: `${prefix}auto-doc/documentation`,
+            url: `${prefix}/auto-doc/documentation`,
             dom_id: '#swagger-ui',
             deepLinking: true,
             defaultModelRendering: 'model',

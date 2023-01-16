@@ -24,7 +24,7 @@ return [
     | In case your app available at https://some.domain.com/service - use
     | /service as global prefix config
     */
-    'global_prefix' => env('SWAGGER_GLOBAL_PREFIX', '/'),
+    'global_prefix' => env('SWAGGER_GLOBAL_PREFIX', ''),
 
     /*
     |--------------------------------------------------------------------------

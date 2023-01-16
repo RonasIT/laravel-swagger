@@ -21,6 +21,13 @@ class AutoDocControllerTest extends TestCase
         config(['auto-doc.drivers.local.production_path' => $this->localDriverFilePath]);
     }
 
+    public function tearDown(): void
+    {
+        putenv('SWAGGER_GLOBAL_PREFIX=');
+
+        parent::tearDown();
+    }
+
     public function testGetJSONDocumentation()
     {
         $response = $this->json('get', '/auto-doc/documentation');
