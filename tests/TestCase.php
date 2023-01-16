@@ -85,4 +85,13 @@ class TestCase extends BaseTest
 
         return $request;
     }
+
+    protected function addGlobalPrefix($prefix = '/global')
+    {
+        parent::tearDown();
+
+        putenv("SWAGGER_GLOBAL_PREFIX={$prefix}");
+
+        $this->setUp();
+    }
 }

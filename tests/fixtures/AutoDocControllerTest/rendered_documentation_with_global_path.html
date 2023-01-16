@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Swagger UI</title>
-    <link rel="stylesheet" type="text/css" href="{{ config('auto-doc.global_prefix') }}/auto-doc/swagger-ui.css" >
-    <link rel="icon" type="image/png" href="{{ config('auto-doc.global_prefix') }}/auto-doc/favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="{{ config('auto-doc.global_prefix') }}/auto-doc/favicon-16x16.png" sizes="16x16" />
+    <link rel="stylesheet" type="text/css" href="/global/auto-doc/swagger-ui.css" >
+    <link rel="icon" type="image/png" href="/global/auto-doc/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/global/auto-doc/favicon-16x16.png" sizes="16x16" />
     <style>
         html
         {
@@ -33,10 +33,10 @@
 <body>
 <div id="swagger-ui"></div>
 
-<script src="{{ config('auto-doc.global_prefix') }}/auto-doc/swagger-ui-bundle.js" charset="UTF-8"> </script>
-<script src="{{ config('auto-doc.global_prefix') }}/auto-doc/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+<script src="/global/auto-doc/swagger-ui-bundle.js" charset="UTF-8"> </script>
+<script src="/global/auto-doc/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
 <script>
-    const prefix = '{{ config('auto-doc.global_prefix') }}';
+    const prefix = '/global';
 
     window.onload = () => {
         const ui = SwaggerUIBundle({
