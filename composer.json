@@ -26,13 +26,17 @@
   },
   "autoload": {
     "psr-4": {
-      "RonasIT\\Support\\AutoDoc\\": "src/",
-      "RonasIT\\Support\\Tests\\": "tests/",
-      "RonasIT\\Support\\Tests\\Support\\Traits\\": "tests/support/Traits"
+      "RonasIT\\Support\\AutoDoc\\": "src/"
     },
     "exclude-from-classmap": [
       "src/Tests/"
     ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "RonasIT\\Support\\Tests\\": "tests/",
+      "RonasIT\\Support\\Tests\\Support\\Traits\\": "tests/support/Traits"
+    }
   },
   "extra": {
     "laravel": {
