@@ -83,13 +83,7 @@ class SwaggerService
 
         $packageConfigs = require __DIR__ . '/../../config/auto-doc.php';
 
-        $major = Str::before($version, '.');
-        $minor = Str::after($version, '.');
-
-        $actualMajor = Str::before($packageConfigs['config_version'], '.');
-        $actualMinor = Str::after($packageConfigs['config_version'], '.');
-
-        if ($actualMajor > $major || $actualMinor > $minor) {
+        if (version_compare($packageConfigs['config_version'], $version, '>')) {
             throw new LegacyConfigException();
         }
     }
