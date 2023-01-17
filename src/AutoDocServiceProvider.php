@@ -12,6 +12,10 @@ class AutoDocServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/auto-doc.php', 'auto-doc');
 
         $this->publishes([
+            __DIR__ . '/../config/auto-doc.php' => config_path('auto-doc.php'),
+        ], 'config');
+
+        $this->publishes([
             __DIR__ . '/../resources/views/swagger-description.blade.php' => resource_path('views/swagger-description.blade.php'),
         ], 'view');
 

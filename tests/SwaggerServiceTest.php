@@ -7,6 +7,7 @@ use RonasIT\Support\AutoDoc\Services\SwaggerService;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
+use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 
 class SwaggerServiceTest extends TestCase
@@ -107,6 +108,15 @@ class SwaggerServiceTest extends TestCase
         ]);
 
         $service->addData($request, $response);
+    }
+
+    public function testAddDataWithEmptySecurity()
+    {
+        config(['auto-doc.security' => 'invalid']);
+
+        $this->expectException(WrongSecurityConfigException::class);
+
+        app(SwaggerService::class);
     }
 
     public function testAddDataWithPathParameters()

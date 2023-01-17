@@ -1,4 +1,4 @@
-<img src="hero.svg" >
+<img src="resources/assets/images/hero.svg" >
 
 # Laravel Swagger plugin
 
@@ -131,8 +131,8 @@ passing PHPUnit tests.
 3. Run tests
 4. Go to route defined in the `auto-doc.route` config
 5. Profit!
-   
-    ![img.png](assets/images/img.png)
+
+    ![img.png](resources/assets/images/img.png)
 
 ### Annotations
 

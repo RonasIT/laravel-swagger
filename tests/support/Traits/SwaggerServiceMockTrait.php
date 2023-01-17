@@ -14,7 +14,13 @@ trait SwaggerServiceMockTrait
 
         $firstCall = array_merge($expectedData, ['paths' => []]);
 
-        $driver->expects($this->exactly(2))->method('saveTmpData')->withConsecutive([$firstCall], [$expectedData]);
+        $driver
+            ->expects($this->exactly(2))
+            ->method('saveTmpData')
+            ->withConsecutive(
+                [$firstCall],
+                [$expectedData]
+            );
 
         $this->app->instance($driverClass, $driver);
     }

@@ -80,4 +80,33 @@ class AutoDocControllerTest extends TestCase
 
         $this->assertEquals($response->getContent(), $this->getFixture('rendered_documentation_with_global_path.html'));
     }
+
+    public function testGetSwaggerAssetFile()
+    {
+        $response = $this->get('/auto-doc/swagger-ui.js');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $this->assertEquals($response->getContent(), file_get_contents(resource_path('/assets/swagger/swagger-ui.js')));
+
+        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+    }
+
+    public function testGetSwaggerAssetFileWithGlobalPrefix()
+    {
+        $this->addGlobalPrefix();
+
+        $response = $this->get('/global/auto-doc/swagger-ui.js');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $this->assertEquals($response->getContent(), file_get_contents(resource_path('/assets/swagger/swagger-ui.js')));
+    }
+
+    public function testGetSwaggerAssetFileNotExists()
+    {
+        $response = $this->get('/global/auto-doc/invalid');
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
 }
