@@ -127,7 +127,13 @@ return [
     */
     'additional_paths' => [],
 
-    'response_example_limit_count' => 1,
+    /*
+    |--------------------------------------------------------------------------
+    | Response example array items limit
+    |--------------------------------------------------------------------------
+    | All array responses will be automatically cut for the config items count
+    */
+    'response_example_limit_count' => 5,
 
     /*
     |--------------------------------------------------------------------------

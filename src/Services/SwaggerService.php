@@ -661,7 +661,50 @@ class SwaggerService
             }
         }
 
+        $this->limitResponseData();
+
+        $this->cutExceptions();
+
         return $this->documentation;
+    }
+
+    protected function limitResponseData()
+    {
+        $paths = array_keys($this->documentation['paths']);
+
+        $responseExampleLimitCount = config('auto-doc.response_example_limit_count');
+
+        if (!empty($responseExampleLimitCount)) {
+            foreach ($paths as $path) {
+                $example = Arr::get($this->documentation['paths'][$path], 'get.responses.200.schema.example');
+
+                if (!empty($example['data'])) {
+                    $limitedResponseData = array_slice($example['data'], 0, $responseExampleLimitCount, true);
+                    $this->documentation['paths'][$path]['get']['responses'][200]['schema']['example']['data'] = $limitedResponseData;
+                }
+            }
+        }
+    }
+
+    protected function cutExceptions()
+    {
+        $paths = $this->documentation['paths'];
+
+        foreach ($paths as $path => $methods) {
+            foreach ($methods as $method => $data) {
+                if(!empty($data['responses'])) {
+                    foreach ($data['responses'] as $code => $data) {
+                        $example = Arr::get($data, 'schema.example');
+
+                        if (!empty($example['exception'])) {
+                            $uselessKeys = array_keys(Arr::except($example, ['message']));
+
+                            $this->documentation['paths'][$path][$method]['responses'][$code]['schema']['example'] = Arr::except($example, $uselessKeys);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     protected function camelCaseToUnderScore($input): string
