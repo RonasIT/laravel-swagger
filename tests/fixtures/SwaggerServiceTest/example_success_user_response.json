@@ -1,0 +1,9 @@
+{
+    "id": 2,
+    "name": "first_client",
+    "likes_count": 23,
+    "role": {
+        "id": 2,
+        "name": "client"
+    }
+}

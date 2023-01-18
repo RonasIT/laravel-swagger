@@ -13,7 +13,18 @@ return [
     |
     | Route which will return documentation
     */
-    'route' => '/',
+    'route' => '',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Global application prefix
+    |--------------------------------------------------------------------------
+    |
+    | Usefully in case the webserver using a path to route requests to the app
+    | In case your app available at https://some.domain.com/service - use
+    | /service as global prefix config
+    */
+    'global_prefix' => env('SWAGGER_GLOBAL_PREFIX', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +42,7 @@ return [
         |
         | You can use your custom documentation view
         */
-        'description' => 'swagger-description',
+        'description' => 'auto-doc::swagger-description',
         'version' => '0.0.0',
         'title' => 'Name of Your Application',
         'termsOfService' => '',

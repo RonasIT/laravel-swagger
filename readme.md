@@ -1,4 +1,4 @@
-<img src="hero.svg" >
+<img src="resources/assets/images/hero.svg" >
 
 # Laravel Swagger plugin
 
@@ -7,6 +7,9 @@
 <a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/v/ronasit/laravel-swagger" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/ronasit/laravel-swagger"><img src="https://img.shields.io/packagist/l/ronasit/laravel-swagger" alt="License"></a>
 </p>
+
+[![Laravel Swagger](https://github.com/RonasIT/laravel-swagger/actions/workflows/laravel.yml/badge.svg?branch=master)](https://github.com/RonasIT/laravel-swagger/actions/workflows/laravel.yml)
+[![Coverage Status](https://coveralls.io/repos/github/RonasIT/laravel-swagger/badge.svg?branch=master)](https://coveralls.io/github/RonasIT/laravel-swagger?branch=master)
 
 ## Introduction
 
@@ -128,8 +131,8 @@ passing PHPUnit tests.
 3. Run tests
 4. Go to route defined in the `auto-doc.route` config
 5. Profit!
-   
-    ![img.png](assets/images/img.png)
+
+    ![img.png](resources/assets/images/img.png)
 
 ### Annotations
 

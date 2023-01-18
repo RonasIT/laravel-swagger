@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Swagger UI</title>
-    <link rel="stylesheet" type="text/css" href="/auto-doc/swagger-ui.css" >
-    <link rel="icon" type="image/png" href="/auto-doc/favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="/auto-doc/favicon-16x16.png" sizes="16x16" />
+    <link rel="stylesheet" type="text/css" href="/global/auto-doc/swagger-ui.css" >
+    <link rel="icon" type="image/png" href="/global/auto-doc/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/global/auto-doc/favicon-16x16.png" sizes="16x16" />
     <style>
         html
         {
@@ -33,16 +33,17 @@
 <body>
 <div id="swagger-ui"></div>
 
-<script src="/auto-doc/swagger-ui-bundle.js" charset="UTF-8"> </script>
-<script src="/auto-doc/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+<script src="/global/auto-doc/swagger-ui-bundle.js" charset="UTF-8"> </script>
+<script src="/global/auto-doc/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
 <script>
-    window.onload = function() {
-        // Begin Swagger UI call region
+    const prefix = '/global';
+
+    window.onload = () => {
         const ui = SwaggerUIBundle({
-            url: "/auto-doc/documentation",
+            url: `${prefix}/auto-doc/documentation`,
             dom_id: '#swagger-ui',
             deepLinking: true,
-            defaultModelRendering: "model",
+            defaultModelRendering: 'model',
             presets: [
                 SwaggerUIBundle.presets.apis,
                 SwaggerUIStandalonePreset
@@ -50,9 +51,8 @@
             plugins: [
                 SwaggerUIBundle.plugins.DownloadUrl
             ],
-            layout: "StandaloneLayout"
+            layout: 'StandaloneLayout'
         })
-        // End Swagger UI call region
 
         window.ui = ui
     }

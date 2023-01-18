@@ -1,0 +1,72 @@
+{
+    "swagger": "2.0",
+    "host": "localhost",
+    "basePath": "/",
+    "schemes": [],
+    "paths": {
+        "/users/roles": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "example": [
+                                {
+                                    "id": 1,
+                                    "name": "admin",
+                                    "users": [
+                                        {
+                                            "id": 1,
+                                            "name": "admin"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 2,
+                                    "name": "client",
+                                    "users": [
+                                        {
+                                            "id": 2,
+                                            "name": "first_client"
+                                        },
+                                        {
+                                            "id": 3,
+                                            "name": "second_client"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "security": [],
+                "description": ""
+            }
+        }
+    },
+    "definitions": {},
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    },
+    "securityDefinitions": {
+        "jwt": {
+            "type": "apiKey",
+            "name": "authorization",
+            "in": "header"
+        }
+    }
+}
