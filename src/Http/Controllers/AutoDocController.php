@@ -11,8 +11,6 @@ class AutoDocController extends BaseController
 {
     protected $service;
 
-    protected $documentation;
-
     public function __construct()
     {
         $this->service = app(SwaggerService::class);
@@ -20,9 +18,9 @@ class AutoDocController extends BaseController
 
     public function documentation()
     {
-        $this->documentation = $this->service->getDocFileContent();
+        $documentation = $this->service->getDocFileContent();
 
-        return response()->json($this->documentation);
+        return response()->json($documentation);
     }
 
     public function index()
