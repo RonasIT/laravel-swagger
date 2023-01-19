@@ -7,6 +7,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Route;
 use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\Support\AutoDoc\AutoDocServiceProvider;
+use RonasIT\Support\Tests\Support\Mock\TestController;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class TestCase extends BaseTest
@@ -62,6 +63,26 @@ class TestCase extends BaseTest
 
     protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
     {
+        $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
+
+        return $request->setRouteResolver(function () use ($uri, $request) {
+            return Route::get($uri)
+                ->setAction(['controller' =>  TestController::class . '@index'])
+                ->bind($request);
+        });
+    }
+
+    protected function generateClosureRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
+    {
+        $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
+
+        return $request->setRouteResolver(function () use ($uri) {
+            return Route::get($uri);
+        });
+    }
+
+    protected function getBaseRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
+    {
         $realUri = $uri;
 
         foreach ($pathParams as $pathParam => $value) {
@@ -77,13 +98,7 @@ class TestCase extends BaseTest
             $this->transformHeadersToServerVars($headers)
         );
 
-        $request = Request::createFromBase($symfonyRequest);
-
-        $request->setRouteResolver(function () use ($uri) {
-            return Route::get($uri);
-        });
-
-        return $request;
+        return Request::createFromBase($symfonyRequest);
     }
 
     protected function addGlobalPrefix($prefix = '/global')

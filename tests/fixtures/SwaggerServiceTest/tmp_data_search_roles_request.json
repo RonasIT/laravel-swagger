@@ -15,10 +15,17 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "string",
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Operation successfully done",
                         "schema": {
                             "example": [
                                 {
@@ -50,7 +57,8 @@
                     }
                 },
                 "security": [],
-                "description": ""
+                "description": "",
+                "summary": "test"
             }
         }
     },
