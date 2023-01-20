@@ -197,7 +197,8 @@ class SwaggerServiceTest extends TestCase
         $service = app(SwaggerService::class);
 
         $request = $this->generateRequest('post', 'users', [
-            'users' => [1,2]
+            'users' => [1,2],
+            'query' => null
         ], [], [
             'authorization' => 'Bearer some_token'
         ]);

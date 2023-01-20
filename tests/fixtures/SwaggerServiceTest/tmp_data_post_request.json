@@ -77,7 +77,8 @@
                 }
             },
             "example": {
-                "users": [1,2]
+                "users": [1,2],
+                "query": null
             },
             "required": ["query"]
         }
