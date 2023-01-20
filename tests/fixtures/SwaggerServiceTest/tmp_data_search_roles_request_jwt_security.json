@@ -17,8 +17,9 @@
                     {
                         "in": "query",
                         "name": "query",
-                        "description": "string",
-                        "type": "string"
+                        "description": "string, required",
+                        "type": "string",
+                        "required": true
                     }
                 ],
                 "responses": {

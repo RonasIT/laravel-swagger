@@ -187,4 +187,26 @@ class SwaggerServiceTest extends TestCase
 
         $service->addData($request, $response);
     }
+
+    public function testAddDataPostRequest()
+    {
+        config(['auto-doc.security' => 'jwt']);
+
+        $this->mockDriverSaveTmpData($this->getJsonFixture('tmp_data_post_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest('post', 'users', [
+            'users' => [1,2]
+        ], [], [
+            'authorization' => 'Bearer some_token'
+        ]);
+
+        $response = new Response($this->getFixture('example_success_users_post_response.json'), 200, [
+            'Content-type' => 'application/json',
+            'authorization' => 'Bearer some_token'
+        ]);
+
+        $service->addData($request, $response);
+    }
 }

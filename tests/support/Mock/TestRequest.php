@@ -9,7 +9,7 @@ class TestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'query' => 'string'
+            'query' => 'string|required'
         ];
     }
 }
