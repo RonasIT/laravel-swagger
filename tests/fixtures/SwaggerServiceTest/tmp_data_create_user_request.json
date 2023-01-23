@@ -1,0 +1,47 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "\/",
+  "schemes": [],
+  "paths":
+  {
+    "\/api\/users":
+    {
+      "post":
+      {
+        "tags": ["api"],
+        "consumes": ["application\/x-www-form-urlencoded"],
+        "produces": ["application\/json"],
+        "parameters": [],
+        "responses":
+        {
+          "403":
+          {
+            "description": "Forbidden",
+            "schema":
+            {
+              "example":
+              {
+                "message": "This action is unauthorized."
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": ""
+      }
+    }
+  },
+  "definitions": {},
+  "info":
+  {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact":
+    {
+      "email": "your@email.com"
+    }
+  }
+}

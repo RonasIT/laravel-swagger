@@ -143,6 +143,8 @@ return [
     | Response example array items limit
     |--------------------------------------------------------------------------
     | All array responses will be automatically cut for the config items count
+    |
+    | Note: you should collect documentation after the config change
     */
     'response_example_limit_count' => 5,
 

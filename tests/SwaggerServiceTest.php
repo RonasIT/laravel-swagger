@@ -139,4 +139,39 @@ class SwaggerServiceTest extends TestCase
 
         $service->addData($request, $response);
     }
+
+    public function testCutExceptions()
+    {
+        $this->mockDriverSaveTmpData($this->getJsonFixture('tmp_data_create_user_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest('post', '/api/users', [
+            'first_name' => 'andrey',
+            'last_name' => 'voronin'
+        ]);
+
+        $response = new Response($this->getFixture('example_forbidden_user_response.json'), 403, [
+            'Content-type' => 'application/json'
+        ]);
+
+        $service->addData($request, $response);
+    }
+
+    public function testLimitResponseData()
+    {
+        config(['auto-doc.response_example_limit_count' => 1]);
+
+        $this->mockDriverSaveTmpData($this->getJsonFixture('tmp_data_search_users_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest('get', '/api/users');
+
+        $response = new Response($this->getFixture('example_success_users_response.json'), 200, [
+            'Content-type' => 'application/json'
+        ]);
+
+        $service->addData($request, $response);
+    }
 }

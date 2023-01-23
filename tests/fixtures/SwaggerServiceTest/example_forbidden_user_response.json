@@ -1,0 +1,22 @@
+{
+  "message": "This action is unauthorized.",
+  "exception": "Symfony\\Component\\HttpKernel\\Exception\\AccessDeniedHttpException",
+  "file": "\/app\/vendor\/laravel\/framework\/src\/Illuminate\/Foundation\/Exceptions\/Handler.php",
+  "line": 384,
+  "trace": [
+    {
+      "file": "\/app\/vendor\/laravel\/framework\/src\/Illuminate\/Foundation\/Exceptions\/Handler.php",
+      "line": 356,
+      "function": "prepareException",
+      "class": "Illuminate\\Foundation\\Exceptions\\Handler",
+      "type": "->"
+    },
+    {
+      "file": "\/app\/vendor\/laravel\/framework\/src\/Illuminate\/Routing\/Pipeline.php",
+      "line": 51,
+      "function": "render",
+      "class": "Illuminate\\Foundation\\Exceptions\\Handler",
+      "type": "->"
+    }
+  ]
+}

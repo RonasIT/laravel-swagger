@@ -48,8 +48,6 @@ class SwaggerService
         'int' => 'integer'
     ];
 
-    protected $documentation;
-
     public function __construct(Container $container)
     {
         $this->initConfig();
@@ -179,6 +177,9 @@ class SwaggerService
 
         $this->parseRequest();
         $this->parseResponse($response);
+
+        $this->limitResponseData();
+        $this->cutExceptions();
 
         $this->driver->saveTmpData($this->data);
     }
@@ -621,7 +622,7 @@ class SwaggerService
 
     public function getDocFileContent()
     {
-        $this->documentation = $this->driver->getDocumentation();
+        $documentation = $this->driver->getDocumentation();
 
         $additionalDocs = config('auto-doc.additional_paths', []);
 
@@ -633,15 +634,15 @@ class SwaggerService
             foreach ($paths as $path) {
                 $additionalDocPath =  $fileContent['paths'][$path];
 
-                if (empty($this->documentation['paths'][$path])) {
-                    $this->documentation['paths'][$path] = $additionalDocPath;
+                if (empty($documentation['paths'][$path])) {
+                    $documentation['paths'][$path] = $additionalDocPath;
                 } else {
-                    $methods = array_keys($this->documentation['paths'][$path]);
+                    $methods = array_keys($documentation['paths'][$path]);
                     $additionalDocMethods = array_keys($additionalDocPath);
 
                     foreach ($additionalDocMethods as $method) {
                         if (!in_array($method, $methods)) {
-                            $this->documentation['paths'][$path][$method] = $additionalDocPath[$method];
+                            $documentation['paths'][$path][$method] = $additionalDocPath[$method];
                         }
                     }
                 }
@@ -650,32 +651,30 @@ class SwaggerService
             $definitions = array_keys($fileContent['definitions']);
 
             foreach ($definitions as $definition) {
-                if (empty($this->documentation['definitions'][$definition])) {
-                    $this->documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                if (empty($documentation['definitions'][$definition])) {
+                    $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
                 }
             }
         }
 
-        $this->limitResponseData();
-
-        $this->cutExceptions();
-
-        return $this->documentation;
+        return $documentation;
     }
 
     protected function limitResponseData()
     {
-        $paths = array_keys($this->documentation['paths']);
+        $paths = array_keys($this->data['paths']);
 
         $responseExampleLimitCount = config('auto-doc.response_example_limit_count');
 
         if (!empty($responseExampleLimitCount)) {
             foreach ($paths as $path) {
-                $example = Arr::get($this->documentation['paths'][$path], 'get.responses.200.schema.example');
+                $example = Arr::get($this->data['paths'][$path], 'get.responses.200.schema.example');
 
                 if (!empty($example['data'])) {
                     $limitedResponseData = array_slice($example['data'], 0, $responseExampleLimitCount, true);
-                    $this->documentation['paths'][$path]['get']['responses'][200]['schema']['example']['data'] = $limitedResponseData;
+                    $this->data['paths'][$path]['get']['responses'][200]['schema']['example']['data'] = $limitedResponseData;
+                    $this->data['paths'][$path]['get']['responses'][200]['schema']['example']['to'] = count($limitedResponseData);
+                    $this->data['paths'][$path]['get']['responses'][200]['schema']['example']['total'] = count($limitedResponseData);
                 }
             }
         }
@@ -683,7 +682,7 @@ class SwaggerService
 
     protected function cutExceptions()
     {
-        $paths = $this->documentation['paths'];
+        $paths = $this->data['paths'];
 
         foreach ($paths as $path => $methods) {
             foreach ($methods as $method => $data) {
@@ -694,7 +693,7 @@ class SwaggerService
                         if (!empty($example['exception'])) {
                             $uselessKeys = array_keys(Arr::except($example, ['message']));
 
-                            $this->documentation['paths'][$path][$method]['responses'][$code]['schema']['example'] = Arr::except($example, $uselessKeys);
+                            $this->data['paths'][$path][$method]['responses'][$code]['schema']['example'] = Arr::except($example, $uselessKeys);
                         }
                     }
                 }
