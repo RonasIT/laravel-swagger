@@ -1,0 +1,51 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "/",
+  "schemes": [],
+  "paths": {
+    "/users/roles": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "description": "string, required",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successfully done",
+            "examples": {
+              "example": "[\n  {\n    \"id\": 1,\n    \"name\": \"admin\",\n    \"users\": [\n      {\n        \"id\": 1,\n        \"name\": \"admin\"\n      }\n    ]\n  }\n]\n"
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "summary": "test"
+      }
+    }
+  },
+  "definitions": {},
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  }
+}

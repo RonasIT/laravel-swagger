@@ -27,11 +27,18 @@
                         "description": "",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "string, required",
+                        "type": "string",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Operation successfully done",
                         "schema": {
                             "example": {
                                 "id": 2,
@@ -46,7 +53,8 @@
                     }
                 },
                 "security": [],
-                "description": ""
+                "description": "",
+                "summary": "test"
             }
         }
     },
