@@ -11,12 +11,20 @@
       {
         "tags": ["api"],
         "produces": ["application\/json"],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "description": "string, required",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses":
         {
           "200":
           {
-            "description": "OK",
+            "description": "Operation successfully done",
             "schema":
             {
               "example":
@@ -75,6 +83,7 @@
         },
         "security": [],
         "description": "",
+        "summary": "test",
         "consumes": []
       }
     }
