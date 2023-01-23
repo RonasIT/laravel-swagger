@@ -124,10 +124,10 @@ return [
     | Paths to additional documentation
     |--------------------------------------------------------------------------
     | An array of documentation paths to merge with the main documentation.
+    |
     | For example, if your additional documentation is located in storage/additional_docs/example.json
     | you need to add 'storage/additional_docs/example.json' to additional_paths, if your additional
-    | documentation is located in the root directory of your project you need to add the filename
-    | to additional_paths as example you need to add 'example.json' to additional_paths.
+    | documentation is located in the root directory of your project you need to add the filename to additional_paths
     */
     'additional_paths' => [],
 
