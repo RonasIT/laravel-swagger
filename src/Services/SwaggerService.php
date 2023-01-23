@@ -779,7 +779,7 @@ class SwaggerService
     protected function replaceNullValues($parameters, $types, &$example)
     {
         foreach ($parameters as $parameter => $value) {
-            if (is_null($value) && in_array($parameter, $types)) {
+            if (is_null($value) && array_key_exists($parameter, $types)) {
                 $example[$parameter] = $this->getDefaultValueByType($types[$parameter]['type']);
             } elseif (is_array($value)) {
                 $this->replaceNullValues($value, $types, $example[$parameter]);

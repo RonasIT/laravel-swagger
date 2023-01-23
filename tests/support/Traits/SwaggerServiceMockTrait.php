@@ -12,7 +12,7 @@ trait SwaggerServiceMockTrait
     {
         $driver = $this->mockClass($driverClass, ['saveTmpData']);
 
-        $firstCall = array_merge($expectedData, ['paths' => []]);
+        $firstCall = array_merge($expectedData, ['paths' => [], 'definitions' => []]);
 
         $driver
             ->expects($this->exactly(2))

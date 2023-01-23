@@ -1,0 +1,51 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "/",
+  "schemes": [],
+  "paths": {
+    "/users/roles": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/pdf"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "description": "string, required",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successfully done",
+            "schema": {
+              "example": "WwogIHsKICAgICJpZCI6IDEsCiAgICAibmFtZSI6ICJhZG1pbiIsCiAgICAidXNlcnMiOiBbCiAgICAgIHsKICAgICAgICAiaWQiOiAxLAogICAgICAgICJuYW1lIjogImFkbWluIgogICAgICB9CiAgICBdCiAgfSwKICB7CiAgICAiaWQiOiAyLAogICAgIm5hbWUiOiAiY2xpZW50IiwKICAgICJ1c2VycyI6IFsKICAgICAgewogICAgICAgICJpZCI6IDIsCiAgICAgICAgIm5hbWUiOiAiZmlyc3RfY2xpZW50IgogICAgICB9LAogICAgICB7CiAgICAgICAgImlkIjogMywKICAgICAgICAibmFtZSI6ICJzZWNvbmRfY2xpZW50IgogICAgICB9CiAgICBdCiAgfQpdCg=="
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "summary": "test"
+      }
+    }
+  },
+  "definitions": {},
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  }
+}
