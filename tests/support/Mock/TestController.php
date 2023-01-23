@@ -6,6 +6,5 @@ class TestController
 {
     public function index(TestRequest $request)
     {
-        //
     }
 }
