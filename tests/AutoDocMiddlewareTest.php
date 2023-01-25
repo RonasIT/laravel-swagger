@@ -20,7 +20,7 @@ class AutoDocMiddlewareTest extends TestCase
             'with' => ['users']
         ]);
 
-        $middleware  = new AutoDocMiddleware();
+        $middleware = new AutoDocMiddleware();
 
         $middleware->handle($request, function () {
             return new Response($this->getFixture('example_success_auto_doc_middleware.json'), 200, [
