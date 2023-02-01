@@ -626,7 +626,7 @@ class SwaggerService
         $additionalDocs = config('auto-doc.additional_paths', []);
 
         foreach ($additionalDocs as $filePath) {
-            $fileContent = json_decode(file_get_contents($filePath), true);
+            $fileContent = json_decode(file_get_contents(base_path($filePath)), true);
 
             $paths = array_keys($fileContent['paths']);
 
