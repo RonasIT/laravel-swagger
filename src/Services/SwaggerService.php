@@ -178,9 +178,6 @@ class SwaggerService
         $this->parseRequest();
         $this->parseResponse($response);
 
-        $this->limitResponseData();
-        $this->cutExceptions();
-
         $this->driver->saveTmpData($this->data);
     }
 
@@ -273,12 +270,32 @@ class SwaggerService
         }
 
         $responses = $this->item['responses'];
+
+        $responseExampleLimitCount = config('auto-doc.response_example_limit_count');
+
+        $content = json_decode($response->getContent(), true);
+
+        if (!empty($responseExampleLimitCount)) {
+            if (!empty($content['data'])) {
+                $limitedResponseData = array_slice($content['data'], 0, $responseExampleLimitCount, true);
+                $content['data'] = $limitedResponseData;
+                $content['to'] = count($limitedResponseData);
+                $content['total'] = count($limitedResponseData);
+            }
+        }
+
+        if (!empty($content['exception'])) {
+            $uselessKeys = array_keys(Arr::except($content, ['message']));
+
+            $content = Arr::except($content, $uselessKeys);
+        }
+
         $code = $response->getStatusCode();
 
         if (!in_array($code, $responses)) {
             $this->saveExample(
-                $response->getStatusCode(),
-                $response->getContent(),
+                $code,
+                json_encode($content, JSON_PRETTY_PRINT),
                 $produce
             );
         }
@@ -658,47 +675,6 @@ class SwaggerService
         }
 
         return $documentation;
-    }
-
-    protected function limitResponseData()
-    {
-        $paths = array_keys($this->data['paths']);
-
-        $responseExampleLimitCount = config('auto-doc.response_example_limit_count');
-
-        if (!empty($responseExampleLimitCount)) {
-            foreach ($paths as $path) {
-                $example = Arr::get($this->data['paths'][$path], 'get.responses.200.schema.example');
-
-                if (!empty($example['data'])) {
-                    $limitedResponseData = array_slice($example['data'], 0, $responseExampleLimitCount, true);
-                    $this->data['paths'][$path]['get']['responses'][200]['schema']['example']['data'] = $limitedResponseData;
-                    $this->data['paths'][$path]['get']['responses'][200]['schema']['example']['to'] = count($limitedResponseData);
-                    $this->data['paths'][$path]['get']['responses'][200]['schema']['example']['total'] = count($limitedResponseData);
-                }
-            }
-        }
-    }
-
-    protected function cutExceptions()
-    {
-        $paths = $this->data['paths'];
-
-        foreach ($paths as $path => $methods) {
-            foreach ($methods as $method => $data) {
-                if(!empty($data['responses'])) {
-                    foreach ($data['responses'] as $code => $data) {
-                        $example = Arr::get($data, 'schema.example');
-
-                        if (!empty($example['exception'])) {
-                            $uselessKeys = array_keys(Arr::except($example, ['message']));
-
-                            $this->data['paths'][$path][$method]['responses'][$code]['schema']['example'] = Arr::except($example, $uselessKeys);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     protected function camelCaseToUnderScore($input): string

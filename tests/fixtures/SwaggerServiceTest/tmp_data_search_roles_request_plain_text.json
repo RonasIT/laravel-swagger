@@ -28,7 +28,7 @@
           "200": {
             "description": "Operation successfully done",
             "examples": {
-              "example": "[\n  {\n    \"id\": 1,\n    \"name\": \"admin\",\n    \"users\": [\n      {\n        \"id\": 1,\n        \"name\": \"admin\"\n      }\n    ]\n  }\n]\n"
+              "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
             }
           }
         },
