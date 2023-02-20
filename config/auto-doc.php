@@ -144,6 +144,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Response example array items limit
+    |--------------------------------------------------------------------------
+    | All array responses will be automatically cut for the config items count
+    |
+    | Note: you should collect documentation after the config change
+    */
+    'response_example_limit_count' => 5,
+
+    /*
+    |--------------------------------------------------------------------------
     | Swagger documentation visibility environments list
     |--------------------------------------------------------------------------
     |
@@ -154,5 +164,5 @@ return [
         'development'
     ],
 
-    'config_version' => '2.3'
+    'config_version' => '2.4'
 ];

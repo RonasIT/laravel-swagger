@@ -48,8 +48,6 @@ class SwaggerService
         'int' => 'integer'
     ];
 
-    protected $documentation;
-
     public function __construct(Container $container)
     {
         $this->initConfig();
@@ -272,12 +270,32 @@ class SwaggerService
         }
 
         $responses = $this->item['responses'];
+
+        $responseExampleLimitCount = config('auto-doc.response_example_limit_count');
+
+        $content = json_decode($response->getContent(), true);
+
+        if (!empty($responseExampleLimitCount)) {
+            if (!empty($content['data'])) {
+                $limitedResponseData = array_slice($content['data'], 0, $responseExampleLimitCount, true);
+                $content['data'] = $limitedResponseData;
+                $content['to'] = count($limitedResponseData);
+                $content['total'] = count($limitedResponseData);
+            }
+        }
+
+        if (!empty($content['exception'])) {
+            $uselessKeys = array_keys(Arr::except($content, ['message']));
+
+            $content = Arr::except($content, $uselessKeys);
+        }
+
         $code = $response->getStatusCode();
 
         if (!in_array($code, $responses)) {
             $this->saveExample(
-                $response->getStatusCode(),
-                $response->getContent(),
+                $code,
+                json_encode($content, JSON_PRETTY_PRINT),
                 $produce
             );
         }
@@ -621,7 +639,7 @@ class SwaggerService
 
     public function getDocFileContent()
     {
-        $this->documentation = $this->driver->getDocumentation();
+        $documentation = $this->driver->getDocumentation();
 
         $additionalDocs = config('auto-doc.additional_paths', []);
 
@@ -633,15 +651,15 @@ class SwaggerService
             foreach ($paths as $path) {
                 $additionalDocPath =  $fileContent['paths'][$path];
 
-                if (empty($this->documentation['paths'][$path])) {
-                    $this->documentation['paths'][$path] = $additionalDocPath;
+                if (empty($documentation['paths'][$path])) {
+                    $documentation['paths'][$path] = $additionalDocPath;
                 } else {
-                    $methods = array_keys($this->documentation['paths'][$path]);
+                    $methods = array_keys($documentation['paths'][$path]);
                     $additionalDocMethods = array_keys($additionalDocPath);
 
                     foreach ($additionalDocMethods as $method) {
                         if (!in_array($method, $methods)) {
-                            $this->documentation['paths'][$path][$method] = $additionalDocPath[$method];
+                            $documentation['paths'][$path][$method] = $additionalDocPath[$method];
                         }
                     }
                 }
@@ -650,13 +668,13 @@ class SwaggerService
             $definitions = array_keys($fileContent['definitions']);
 
             foreach ($definitions as $definition) {
-                if (empty($this->documentation['definitions'][$definition])) {
-                    $this->documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                if (empty($documentation['definitions'][$definition])) {
+                    $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
                 }
             }
         }
 
-        return $this->documentation;
+        return $documentation;
     }
 
     protected function camelCaseToUnderScore($input): string
