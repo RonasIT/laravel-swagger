@@ -1,0 +1,46 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "/",
+  "schemes": [],
+  "paths": {
+    "/users/roles": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "invalid/content-type"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "description": "string, required",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": "*Unavailable for preview*"
+        },
+        "security": [],
+        "description": "",
+        "summary": "test"
+      }
+    }
+  },
+  "definitions": {},
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  }
+}

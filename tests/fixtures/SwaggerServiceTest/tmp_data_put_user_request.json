@@ -1,0 +1,109 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "/",
+  "schemes": [],
+  "paths": {
+    "/users/{id}": {
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/users{id}Object"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successfully done",
+            "schema": {
+              "example": [
+                {
+                  "id": 1,
+                  "name": "admin",
+                  "users": [
+                    {
+                      "id": 1,
+                      "name": "admin"
+                    }
+                  ]
+                },
+                {
+                  "id": 2,
+                  "name": "client",
+                  "users": [
+                    {
+                      "id": 2,
+                      "name": "first_client"
+                    },
+                    {
+                      "id": 3,
+                      "name": "second_client"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "description": "",
+        "summary": "test"
+      }
+    }
+  },
+  "definitions": {
+    "users{id}Object": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "example": {
+        "name": "Ryan",
+        "query": null
+      },
+      "required": ["query"]
+    }
+  },
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  },
+  "securityDefinitions": {
+    "jwt": {
+      "type": "apiKey",
+      "name": "authorization",
+      "in": "header"
+    }
+  }
+}

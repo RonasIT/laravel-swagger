@@ -4,7 +4,9 @@ namespace RonasIT\Support\Tests;
 
 use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\Support\AutoDoc\AutoDocServiceProvider;
 use RonasIT\Support\Tests\Support\Mock\TestController;
@@ -12,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class TestCase extends BaseTest
 {
+    protected $globalExportMode = false;
+
     public function tearDown(): void
     {
         parent::tearDown();
@@ -31,9 +35,41 @@ class TestCase extends BaseTest
         $app->setBasePath(__DIR__ . '/..');
     }
 
+    public function exportJson($fixture, $data): void
+    {
+        if ($data instanceof TestResponse) {
+            $data = $data->json();
+        }
+
+        $this->exportContent(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), "{$fixture}.json");
+    }
+
+    protected function exportContent($content, string $fixture): void
+    {
+        file_put_contents($this->getFixturePath($fixture), $content);
+    }
+
+    public function getFixturePath(string $fixtureName): string
+    {
+        $class = get_class($this);
+        $explodedClass = explode('\\', $class);
+        $className = Arr::last($explodedClass);
+
+        return base_path("tests/fixtures/{$className}/{$fixtureName}");
+    }
+
     protected function getJsonFixture($name)
     {
         return json_decode($this->getFixture("{$name}.json"), true);
+    }
+
+    public function assertEqualsJsonFixture(string $fixture, $data, bool $exportMode = false): void
+    {
+        if ($exportMode || $this->globalExportMode) {
+            $this->exportJson($fixture, $data);
+        }
+
+        $this->assertEquals($this->getJsonFixture($fixture), $data);
     }
 
     protected function getFixture($name)
@@ -61,13 +97,13 @@ class TestCase extends BaseTest
         }
     }
 
-    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
+    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $method = 'test'): Request
     {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
-        return $request->setRouteResolver(function () use ($uri, $request) {
+        return $request->setRouteResolver(function () use ($uri, $request, $method) {
             return Route::get($uri)
-                ->setAction(['controller' =>  TestController::class . '@index'])
+                ->setAction(['controller' =>  TestController::class . '@' . $method])
                 ->bind($request);
         });
     }
