@@ -35,18 +35,18 @@ class TestCase extends BaseTest
         $app->setBasePath(__DIR__ . '/..');
     }
 
-    public function exportJson($fixture, $data): void
+    public function exportJson(string $fixtureName, $data): void
     {
         if ($data instanceof TestResponse) {
             $data = $data->json();
         }
 
-        $this->exportContent(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), "{$fixture}.json");
+        $this->exportContent(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), "{$fixtureName}.json");
     }
 
-    protected function exportContent($content, string $fixture): void
+    protected function exportContent($content, string $fixtureName): void
     {
-        file_put_contents($this->getFixturePath($fixture), $content);
+        file_put_contents($this->getFixturePath($fixtureName), $content);
     }
 
     public function getFixturePath(string $fixtureName): string
@@ -58,18 +58,27 @@ class TestCase extends BaseTest
         return base_path("tests/fixtures/{$className}/{$fixtureName}");
     }
 
-    protected function getJsonFixture($name)
+    protected function getJsonFixture(string $name)
     {
         return json_decode($this->getFixture("{$name}.json"), true);
     }
 
-    public function assertEqualsJsonFixture(string $fixture, $data, bool $exportMode = false): void
+    public function assertEqualsJsonFixture(string $fixtureName, $data, bool $exportMode = false): void
     {
         if ($exportMode || $this->globalExportMode) {
-            $this->exportJson($fixture, $data);
+            $this->exportJson($fixtureName, $data);
         }
 
-        $this->assertEquals($this->getJsonFixture($fixture), $data);
+        $this->assertEquals($this->getJsonFixture($fixtureName), $data);
+    }
+
+    public function assertEqualsFixture(string $fixtureName, $data, bool $exportMode = false): void
+    {
+        if ($exportMode || $this->globalExportMode) {
+            $this->exportContent($fixtureName, $data);
+        }
+
+        $this->assertEquals($this->getFixture($fixtureName), $data);
     }
 
     protected function getFixture($name)

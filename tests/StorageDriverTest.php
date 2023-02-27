@@ -42,7 +42,7 @@ class StorageDriverTest extends TestCase
         $this->storageDriverClass->saveData();
 
         $this->disk->assertExists($this->filePath);
-        $this->assertEquals($this->getFixture('tmp_data_non_formatted.json'), $this->disk->get($this->filePath));
+        $this->assertEqualsFixture('tmp_data_non_formatted.json', $this->disk->get($this->filePath));
 
         $this->assertEquals([], $this->storageDriverClass->getTmpData());
     }
@@ -53,7 +53,7 @@ class StorageDriverTest extends TestCase
 
         $documentation = $this->storageDriverClass->getDocumentation();
 
-        $this->assertEquals($this->getJsonFixture('tmp_data'), $documentation);
+        $this->assertEqualsJsonFixture('tmp_data', $documentation);
     }
 
     public function testGetDocumentationFileNotExists()

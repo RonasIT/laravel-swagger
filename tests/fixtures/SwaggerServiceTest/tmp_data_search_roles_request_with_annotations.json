@@ -26,7 +26,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The operation was completed successfully\r",
+            "description": "The operation was completed successfully",
             "schema": {
               "example": [
                 {
@@ -58,8 +58,8 @@
           }
         },
         "security": [],
-        "description": "Description of the request class\r",
-        "summary": "Request class to validate input data\r"
+        "description": "Description of the request class",
+        "summary": "Request class to validate input data"
       }
     }
   },

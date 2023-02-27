@@ -69,7 +69,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $this->assertEquals($response->getContent(), $this->getFixture('rendered_documentation.html'));
+        $this->assertEqualsFixture('rendered_documentation.html', $response->getContent());
     }
 
     public function testGetViewDocumentationEnvironmentDisable()
@@ -91,7 +91,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $this->assertEquals($response->getContent(), $this->getFixture('rendered_documentation_with_global_path.html'));
+        $this->assertEqualsFixture('rendered_documentation_with_global_path.html', $response->getContent());
     }
 
     public function testGetSwaggerAssetFile()
