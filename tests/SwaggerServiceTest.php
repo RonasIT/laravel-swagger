@@ -96,13 +96,9 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ], [], [
-            'Content-type' => 'application/json'
-        ]);
+        $request = $this->generateGetRolesRequest();
 
-        $response = new Response($this->getFixture($responseFixture), 200, [
+        $response = $this->generateJsonResponse($responseFixture, 200, [
             'Content-type' => $contentType,
             'authorization' => 'Bearer some_token'
         ]);
@@ -116,13 +112,9 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ], [], [
-            'Content-type' => 'application/json'
-        ], 'testRequestWithoutRuleType');
+        $request = $this->generateGetRolesRequest('testRequestWithoutRuleType');
 
-        $response = new Response($this->getFixture('example_success_roles_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]);
@@ -136,13 +128,9 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ], [], [
-            'Content-type' => 'application/json'
-        ], 'testRequestWithAnnotations');
+        $request = $this->generateGetRolesRequest('testRequestWithAnnotations');
 
-        $response = new Response($this->getFixture('example_success_roles_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]);
@@ -158,11 +146,9 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ]);
+        $request = $this->generateGetRolesRequest();
 
-        $response = new Response($this->getFixture('example_success_roles_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]);
@@ -178,11 +164,9 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ]);
+        $request = $this->generateGetRolesRequest();
 
-        $response = new Response($this->getFixture('example_success_roles_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]);
@@ -198,13 +182,9 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ], [], [
-            'Content-type' => 'application/json'
-        ]);
+        $request = $this->generateGetRolesRequest();
 
-        $response = new Response($this->getFixture('example_success_roles_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]);
@@ -235,7 +215,7 @@ class SwaggerServiceTest extends TestCase
             'role-id' => 5
         ]);
 
-        $response = new Response($this->getFixture('example_success_user_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_user_response.json', 200, [
             'Content-type' => 'application/json'
         ]);
 
@@ -254,7 +234,7 @@ class SwaggerServiceTest extends TestCase
             'with' => ['users']
         ]);
 
-        $response = new Response($this->getFixture('example_success_roles_closure_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_roles_closure_response.json', 200, [
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]);
@@ -277,7 +257,7 @@ class SwaggerServiceTest extends TestCase
             'authorization' => 'Bearer some_token'
         ]);
 
-        $response = new Response($this->getFixture('example_success_users_post_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_users_post_response.json', 200, [
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]);
@@ -335,7 +315,7 @@ class SwaggerServiceTest extends TestCase
             'authorization' => 'Bearer some_token'
         ]);
 
-        $response = new Response($this->getFixture('example_success_users_post_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_users_post_response.json', 200, [
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]);
@@ -354,7 +334,7 @@ class SwaggerServiceTest extends TestCase
             'last_name' => 'voronin'
         ]);
 
-        $response = new Response($this->getFixture('example_forbidden_user_response.json'), 403, [
+        $response = $this->generateJsonResponse('example_forbidden_user_response.json', 403, [
             'Content-type' => 'application/json'
         ]);
 
@@ -371,7 +351,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateRequest('get', '/api/users');
 
-        $response = new Response($this->getFixture('example_success_users_response.json'), 200, [
+        $response = $this->generateJsonResponse('example_success_users_response.json', 200, [
             'Content-type' => 'application/json'
         ]);
 

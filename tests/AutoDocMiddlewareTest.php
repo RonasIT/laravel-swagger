@@ -22,10 +22,10 @@ class AutoDocMiddlewareTest extends TestCase
             'Content-type' => 'application/json'
         ]);
 
-        $middleware  = new AutoDocMiddleware();
+        $middleware = new AutoDocMiddleware();
 
         $middleware->handle($request, function () {
-            return new Response($this->getFixture('example_success_search_roles_response.json'), 200, [
+            return $this->generateJsonResponse('example_success_search_roles_response.json', 200, [
                 'Content-type' => 'application/json',
                 'authorization' => 'Bearer some_token'
             ]);

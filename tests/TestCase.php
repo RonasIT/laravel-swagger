@@ -11,6 +11,7 @@ use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\Support\AutoDoc\AutoDocServiceProvider;
 use RonasIT\Support\Tests\Support\Mock\TestController;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Component\HttpFoundation\Response;
 
 class TestCase extends BaseTest
 {
@@ -115,6 +116,20 @@ class TestCase extends BaseTest
                 ->setAction(['controller' =>  TestController::class . '@' . $method])
                 ->bind($request);
         });
+    }
+
+    protected function generateGetRolesRequest($method = 'test'): Request
+    {
+        return $this->generateRequest('get', 'users/roles', [
+            'with' => ['users']
+        ], [], [
+            'Content-type' => 'application/json'
+        ], $method);
+    }
+
+    protected function generateJsonResponse($fixture, $status, $headers): Response
+    {
+        return new Response($this->getFixture($fixture), $status, $headers);
     }
 
     protected function generateClosureRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
