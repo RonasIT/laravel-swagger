@@ -334,7 +334,7 @@ class SwaggerService
 
     protected function saveParameters($request, array $annotations)
     {
-        $formRequest = new $request;
+        $formRequest = new $request();
         $formRequest->setUserResolver($this->request->getUserResolver());
         $formRequest->setRouteResolver($this->request->getRouteResolver());
         $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
@@ -502,7 +502,9 @@ class SwaggerService
         $route = $this->request->route();
 
         $parameters = $this->resolveClassMethodDependencies(
-            $route->parametersWithoutNulls(), $instance, $method
+            $route->parametersWithoutNulls(),
+            $instance,
+            $method
         );
 
         return Arr::first($parameters, function ($key) {
@@ -574,10 +576,10 @@ class SwaggerService
     protected function requestSupportAuth(): bool
     {
         switch ($this->security) {
-            case 'jwt' :
+            case 'jwt':
                 $header = $this->request->header('authorization');
                 break;
-            case 'laravel' :
+            case 'laravel':
                 $header = $this->request->cookie('__ym_uid');
                 break;
         }

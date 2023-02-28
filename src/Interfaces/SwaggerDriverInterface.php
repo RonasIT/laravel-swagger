@@ -26,5 +26,3 @@ interface SwaggerDriverInterface
      */
     public function getDocumentation(): array;
 }
-
-
