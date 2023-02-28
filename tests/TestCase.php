@@ -134,8 +134,7 @@ class TestCase extends BaseTest
             'Content-type' => 'application/json',
             'authorization' => 'Bearer some_token'
         ]
-    ): Response
-    {
+    ): Response {
         return new Response($fixture ? $this->getFixture($fixture) : null, $status, $headers);
     }
 
