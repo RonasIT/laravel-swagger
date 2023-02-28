@@ -98,7 +98,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateGetRolesRequest();
 
-        $response = $this->generateJsonResponse($responseFixture, 200, [
+        $response = $this->generateResponse($responseFixture, 200, [
             'Content-type' => $contentType,
             'authorization' => 'Bearer some_token'
         ]);
@@ -114,10 +114,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateGetRolesRequest('testRequestWithoutRuleType');
 
-        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse('example_success_roles_response.json');
 
         $service->addData($request, $response);
     }
@@ -130,10 +127,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateGetRolesRequest('testRequestWithAnnotations');
 
-        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse('example_success_roles_response.json');
 
         $service->addData($request, $response);
     }
@@ -148,10 +142,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateGetRolesRequest();
 
-        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse('example_success_roles_response.json');
 
         $service->addData($request, $response);
     }
@@ -166,10 +157,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateGetRolesRequest();
 
-        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse('example_success_roles_response.json');
 
         $service->addData($request, $response);
     }
@@ -184,10 +172,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateGetRolesRequest();
 
-        $response = $this->generateJsonResponse('example_success_roles_response.json', 200, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse('example_success_roles_response.json');
 
         $service->addData($request, $response);
     }
@@ -215,7 +200,7 @@ class SwaggerServiceTest extends TestCase
             'role-id' => 5
         ]);
 
-        $response = $this->generateJsonResponse('example_success_user_response.json', 200, [
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
             'Content-type' => 'application/json'
         ]);
 
@@ -234,10 +219,7 @@ class SwaggerServiceTest extends TestCase
             'with' => ['users']
         ]);
 
-        $response = $this->generateJsonResponse('example_success_roles_closure_response.json', 200, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse('example_success_roles_closure_response.json');
 
         $service->addData($request, $response);
     }
@@ -257,10 +239,7 @@ class SwaggerServiceTest extends TestCase
             'authorization' => 'Bearer some_token'
         ]);
 
-        $response = $this->generateJsonResponse('example_success_users_post_response.json', 200, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse('example_success_users_post_response.json');
 
         $service->addData($request, $response);
     }
@@ -285,10 +264,7 @@ class SwaggerServiceTest extends TestCase
             'authorization' => 'Bearer some_token'
         ]);
 
-        $response = new Response('', 204, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse(null, 204);
 
         $service->addData($request, $response);
     }
@@ -315,10 +291,7 @@ class SwaggerServiceTest extends TestCase
             'authorization' => 'Bearer some_token'
         ]);
 
-        $response = $this->generateJsonResponse('example_success_users_post_response.json', 200, [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]);
+        $response = $this->generateResponse('example_success_users_post_response.json');
 
         $service->addData($request, $response);
     }
@@ -334,7 +307,7 @@ class SwaggerServiceTest extends TestCase
             'last_name' => 'voronin'
         ]);
 
-        $response = $this->generateJsonResponse('example_forbidden_user_response.json', 403, [
+        $response = $this->generateResponse('example_forbidden_user_response.json', 403, [
             'Content-type' => 'application/json'
         ]);
 
@@ -351,7 +324,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateRequest('get', '/api/users');
 
-        $response = $this->generateJsonResponse('example_success_users_response.json', 200, [
+        $response = $this->generateResponse('example_success_users_response.json', 200, [
             'Content-type' => 'application/json'
         ]);
 

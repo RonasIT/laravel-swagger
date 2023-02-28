@@ -3,7 +3,6 @@
 namespace RonasIT\Support\Tests;
 
 use RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware;
-use Symfony\Component\HttpFoundation\Response;
 use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
 
 class AutoDocMiddlewareTest extends TestCase
@@ -16,19 +15,12 @@ class AutoDocMiddlewareTest extends TestCase
 
         $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request'));
 
-        $request = $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ], [], [
-            'Content-type' => 'application/json'
-        ]);
+        $request = $this->generateGetRolesRequest();
 
         $middleware = new AutoDocMiddleware();
 
         $middleware->handle($request, function () {
-            return $this->generateJsonResponse('example_success_search_roles_response.json', 200, [
-                'Content-type' => 'application/json',
-                'authorization' => 'Bearer some_token'
-            ]);
+            return $this->generateResponse('example_success_search_roles_response.json');
         });
     }
 }

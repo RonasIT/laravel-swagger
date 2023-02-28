@@ -2,8 +2,8 @@
 
 namespace RonasIT\Support\Tests;
 
-use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
@@ -127,9 +127,16 @@ class TestCase extends BaseTest
         ], $method);
     }
 
-    protected function generateJsonResponse($fixture, $status, $headers): Response
+    protected function generateResponse(
+        ?string $fixture,
+        int    $status = 200,
+        array  $headers = [
+            'Content-type' => 'application/json',
+            'authorization' => 'Bearer some_token'
+        ]
+    ): Response
     {
-        return new Response($this->getFixture($fixture), $status, $headers);
+        return new Response($fixture ? $this->getFixture($fixture) : null, $status, $headers);
     }
 
     protected function generateClosureRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
