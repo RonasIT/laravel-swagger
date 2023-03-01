@@ -127,7 +127,7 @@ class TestCase extends BaseTest
         ], $method);
     }
 
-    protected function generateResponse($fixture, int $status = 200, array  $headers = []): Response
+    protected function generateResponse($fixture, int $status = 200, array $headers = []): Response
     {
         if (empty($headers)) {
             $headers = [
