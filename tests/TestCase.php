@@ -135,6 +135,7 @@ class TestCase extends BaseTest
                 'authorization' => 'Bearer some_token'
             ];
         }
+
         return new Response(($fixture) ? $this->getFixture($fixture) : null, $status, $headers);
     }
 
