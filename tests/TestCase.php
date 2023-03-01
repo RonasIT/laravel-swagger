@@ -135,7 +135,7 @@ class TestCase extends BaseTest
             'authorization' => 'Bearer some_token'
         ]
     ): Response {
-        return new Response($fixture ? $this->getFixture($fixture) : null, $status, $headers);
+        return new Response(($fixture) ? $this->getFixture($fixture) : null, $status, $headers);
     }
 
     protected function generateClosureRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
