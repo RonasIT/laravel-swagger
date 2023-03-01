@@ -127,14 +127,14 @@ class TestCase extends BaseTest
         ], $method);
     }
 
-    protected function generateResponse(
-        ?string $fixture,
-        int    $status = 200,
-        array  $headers = [
-            'Content-type' => 'application/json',
-            'authorization' => 'Bearer some_token'
-        ]
-    ): Response {
+    protected function generateResponse($fixture, int $status = 200, array  $headers = []): Response
+    {
+        if (empty($headers)) {
+            $headers = [
+                'Content-type' => 'application/json',
+                'authorization' => 'Bearer some_token'
+            ];
+        } 
         return new Response(($fixture) ? $this->getFixture($fixture) : null, $status, $headers);
     }
 
