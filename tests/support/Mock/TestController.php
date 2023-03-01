@@ -4,7 +4,15 @@ namespace RonasIT\Support\Tests\Support\Mock;
 
 class TestController
 {
-    public function index(TestRequest $request)
+    public function test(TestRequest $request)
+    {
+    }
+
+    public function testRequestWithoutRuleType(TestRequestWithoutRuleType $request)
+    {
+    }
+
+    public function testRequestWithAnnotations(TestRequestWithAnnotations $request)
     {
     }
 }

@@ -8,19 +8,36 @@ trait SwaggerServiceMockTrait
 {
     use MockTrait;
 
-    protected function mockDriverSaveTmpData($expectedData, $driverClass = LocalDriver::class)
+    protected function mockDriverGetEmptyAndSaveTpmData($tmpData, $driverClass = LocalDriver::class)
     {
-        $driver = $this->mockClass($driverClass, ['saveTmpData']);
-
-        $firstCall = array_merge($expectedData, ['paths' => [], 'definitions' => []]);
+        $driver = $this->mockClass($driverClass, ['getTmpData', 'saveTmpData']);
 
         $driver
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
+            ->method('getTmpData')
+            ->willReturn(array_merge($tmpData, ['paths' => [], 'definitions' => []]));
+
+        $driver
+            ->expects($this->exactly(1))
             ->method('saveTmpData')
-            ->withConsecutive(
-                [$firstCall],
-                [$expectedData]
-            );
+            ->with($tmpData);
+
+        $this->app->instance($driverClass, $driver);
+    }
+
+    protected function mockDriverGetPreparedAndSaveTpmData($getTmpData, $saveTmpData, $driverClass = LocalDriver::class)
+    {
+        $driver = $this->mockClass($driverClass, ['getTmpData', 'saveTmpData']);
+
+        $driver
+            ->expects($this->exactly(1))
+            ->method('getTmpData')
+            ->willReturn($getTmpData);
+
+        $driver
+            ->expects($this->exactly(1))
+            ->method('saveTmpData')
+            ->with($saveTmpData);
 
         $this->app->instance($driverClass, $driver);
     }

@@ -58,7 +58,7 @@ class LocalDriverTest extends TestCase
 
         $documentation = $this->localDriverClass->getDocumentation();
 
-        $this->assertEquals($this->getJsonFixture('tmp_data'), $documentation);
+        $this->assertEqualsJsonFixture('tmp_data', $documentation);
     }
 
     public function testGetDocumentationFileNotExists()

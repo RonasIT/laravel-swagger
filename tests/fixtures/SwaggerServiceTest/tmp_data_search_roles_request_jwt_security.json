@@ -9,7 +9,9 @@
                 "tags": [
                     "users"
                 ],
-                "consumes": [],
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],

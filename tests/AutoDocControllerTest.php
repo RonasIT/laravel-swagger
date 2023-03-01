@@ -37,6 +37,19 @@ class AutoDocControllerTest extends TestCase
         $response->assertJson($this->documentation);
     }
 
+    public function testGetJSONDocumentationWithAdditionalPaths()
+    {
+        config([
+            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/tmp_data_with_additional_paths.json']
+        ]);
+
+        $response = $this->json('get', '/auto-doc/documentation');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $this->assertEqualsJsonFixture('tmp_data_with_additional_paths', $response->json());
+    }
+
     public function testGetJSONDocumentationWithGlobalPrefix()
     {
         $this->addGlobalPrefix();
@@ -56,7 +69,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $this->assertEquals($response->getContent(), $this->getFixture('rendered_documentation.html'));
+        $this->assertEqualsFixture('rendered_documentation.html', $response->getContent());
     }
 
     public function testGetViewDocumentationEnvironmentDisable()
@@ -78,7 +91,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $this->assertEquals($response->getContent(), $this->getFixture('rendered_documentation_with_global_path.html'));
+        $this->assertEqualsFixture('rendered_documentation_with_global_path.html', $response->getContent());
     }
 
     public function testGetSwaggerAssetFile()
@@ -90,6 +103,13 @@ class AutoDocControllerTest extends TestCase
         $this->assertEquals($response->getContent(), file_get_contents(resource_path('/assets/swagger/swagger-ui.js')));
 
         $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+    }
+
+    public function testGetFileNotExists()
+    {
+        $response = $this->get('/auto-doc/non-existent-file.js');
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
     public function testGetSwaggerAssetFileWithGlobalPrefix()

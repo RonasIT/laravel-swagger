@@ -125,7 +125,9 @@ class SwaggerService
             $data['securityDefinitions'] = $securityDefinitions;
         }
 
-        $data['info']['description'] = view($data['info']['description'])->render();
+        if (!empty($data['info']['description'])) {
+            $data['info']['description'] = view($data['info']['description'])->render();
+        }
 
         return $data;
     }
