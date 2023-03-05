@@ -3,6 +3,7 @@
 namespace RonasIT\Support\Tests;
 
 use Illuminate\Http\Testing\File;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
@@ -10,7 +11,7 @@ use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
 use RonasIT\Support\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
-use Symfony\Component\HttpFoundation\Response;
+use stdClass;
 
 class SwaggerServiceTest extends TestCase
 {
@@ -45,14 +46,14 @@ class SwaggerServiceTest extends TestCase
 
     public function testConstructorDriverClassNotImplementsInterface()
     {
-        config(['auto-doc.drivers.local.class' => TestCase::class]);
+        config(['auto-doc.drivers.local.class' => stdClass::class]);
 
         $this->expectException(InvalidDriverClassException::class);
 
         app(SwaggerService::class);
     }
 
-    public function getAddData(): array
+    public static function getAddData(): array
     {
         return [
             [
@@ -83,13 +84,7 @@ class SwaggerServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getAddData
-     *
-     * @param ?string $contentType
-     * @param string $requestFixture
-     * @param string $responseFixture
-     */
+    #[DataProvider('getAddData')]
     public function testAddData(?string $contentType, string $requestFixture, string $responseFixture)
     {
         $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture($requestFixture));

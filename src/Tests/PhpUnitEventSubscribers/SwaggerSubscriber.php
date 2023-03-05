@@ -5,12 +5,12 @@ namespace RonasIT\Support\AutoDoc\Tests\PhpUnitEventSubscribers;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Application;
 use PHPUnit\Event;
-use PHPUnit\Event\Test\AfterTestMethodFinished;
+use PHPUnit\Event\Test\AfterLastTestMethodFinished;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
-final class SwaggerSubscriber implements Event\Test\AfterTestMethodFinishedSubscriber
+final class SwaggerSubscriber implements Event\Test\AfterLastTestMethodFinishedSubscriber
 {
-    public function notify(AfterTestMethodFinished $event): void
+    public function notify(AfterLastTestMethodFinished $event): void
     {
         $this->createApplication();
 
