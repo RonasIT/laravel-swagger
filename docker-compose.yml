@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nginx:
-    build: .
+    image: webdevops/php-nginx-dev:8.1
     working_dir: /app
     ports:
       - 80:80

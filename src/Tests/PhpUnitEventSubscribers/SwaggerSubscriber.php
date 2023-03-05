@@ -10,10 +10,6 @@ use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
 final class SwaggerSubscriber implements Event\Test\AfterTestMethodFinishedSubscriber
 {
-    public function __construct()
-    {
-    }
-
     public function notify(AfterTestMethodFinished $event): void
     {
         $this->createApplication();
@@ -23,7 +19,7 @@ final class SwaggerSubscriber implements Event\Test\AfterTestMethodFinishedSubsc
 
     protected function createApplication(): Application
     {
-        $app = require base_path('bootstrap/app.php');
+        $app = require_once base_path('bootstrap/app.php');
 
         $app->loadEnvironmentFrom('.env.testing');
         $app->make(Kernel::class)->bootstrap();

@@ -2,34 +2,16 @@
 
 namespace RonasIT\Support\AutoDoc\Tests\PhpUnitExtensions;
 
-use PHPUnit\Runner\AfterLastTestHook;
-use Illuminate\Foundation\Application;
-use Illuminate\Contracts\Console\Kernel;
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use PHPUnit\Runner\Extension\Extension as PhpunitExtension;
+use PHPUnit\Runner\Extension\Facade as EventFacade;
+use PHPUnit\Runner\Extension\ParameterCollection;
+use PHPUnit\TextUI\Configuration\Configuration;
+use RonasIT\Support\AutoDoc\Tests\PhpUnitEventSubscribers\SwaggerSubscriber;
 
-/**
- * This interface, as well as the associated mechanism for extending PHPUnit,
- * will be removed in PHPUnit 10. There is no alternative available in this
- * version of PHPUnit.
- *
- * @see https://github.com/sebastianbergmann/phpunit/issues/4676
- */
-class SwaggerExtension implements AfterLastTestHook
+final class SwaggerExtension implements PhpunitExtension
 {
-    public function executeAfterLastTest(): void
+    public function bootstrap(Configuration $configuration, EventFacade $facade, ParameterCollection $parameters): void
     {
-        $this->createApplication();
-
-        app(SwaggerService::class)->saveProductionData();
-    }
-
-    protected function createApplication(): Application
-    {
-        $app = require base_path('bootstrap/app.php');
-
-        $app->loadEnvironmentFrom('.env.testing');
-        $app->make(Kernel::class)->bootstrap();
-
-        return $app;
+        $facade->registerSubscriber(new SwaggerSubscriber());
     }
 }
