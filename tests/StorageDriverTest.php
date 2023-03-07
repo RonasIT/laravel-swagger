@@ -5,6 +5,7 @@ namespace RonasIT\Support\Tests;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Storage;
 use RonasIT\Support\AutoDoc\Drivers\StorageDriver;
+use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class StorageDriverTest extends TestCase
 {
@@ -48,6 +49,22 @@ class StorageDriverTest extends TestCase
         $result = $this->storageDriverClass->getTmpData();
 
         $this->assertEqualsJsonFixture('tmp_data', $result);
+    }
+
+    public function testGetTmpDataNoFile()
+    {
+        $result = $this->storageDriverClass->getTmpData();
+
+        $this->assertNull($result);
+    }
+
+    public function testCreateClassConfigEmpty()
+    {
+        $this->expectException(MissedProductionFilePathException::class);
+
+        config(['auto-doc.drivers.storage.production_path' => null]);
+
+        new StorageDriver();
     }
 
     public function testGetAndSaveTmpData()

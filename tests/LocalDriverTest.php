@@ -44,6 +44,13 @@ class LocalDriverTest extends TestCase
         $this->assertEquals($this->tmpData, $result);
     }
 
+    public function testGetTmpDataNoFile()
+    {
+        $result = $this->localDriverClass->getTmpData();
+
+        $this->assertNull($result);
+    }
+
     public function testCreateClassConfigEmpty()
     {
         $this->expectException(MissedProductionFilePathException::class);

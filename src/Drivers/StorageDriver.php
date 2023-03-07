@@ -4,6 +4,7 @@ namespace RonasIT\Support\AutoDoc\Drivers;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Storage;
+use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 
 class StorageDriver implements SwaggerDriverInterface
@@ -17,6 +18,10 @@ class StorageDriver implements SwaggerDriverInterface
         $this->disk = config('auto-doc.drivers.storage.disk');
         $this->prodFilePath = config('auto-doc.drivers.storage.production_path');
         $this->tempFilePath = 'temp_documentation.json';
+
+        if (empty($this->prodFilePath)) {
+            throw new MissedProductionFilePathException();
+        }
     }
 
     public function saveTmpData($data)
