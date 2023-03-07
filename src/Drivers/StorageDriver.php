@@ -2,49 +2,51 @@
 
 namespace RonasIT\Support\AutoDoc\Drivers;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Facades\Storage;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 
 class StorageDriver implements SwaggerDriverInterface
 {
     protected $disk;
-    protected $filePath;
-
-    protected static $data;
+    protected $prodFilePath;
+    protected $tempFilePath;
 
     public function __construct()
     {
         $this->disk = config('auto-doc.drivers.storage.disk');
-        $this->filePath = config('auto-doc.drivers.storage.production_path');
+        $this->prodFilePath = config('auto-doc.drivers.storage.production_path');
+        $this->tempFilePath = 'temp_documentation.json';
     }
 
-    public function saveTmpData($tempData)
+    public function saveTmpData($data)
     {
-        self::$data = $tempData;
+        Storage::disk($this->disk)->put($this->tempFilePath, json_encode($data));
     }
 
     public function getTmpData()
     {
-        return self::$data;
+        if (Storage::disk($this->disk)->exists($this->tempFilePath)) {
+            $content = Storage::disk($this->disk)->get($this->tempFilePath);
+
+            return json_decode($content, true);
+        }
+
+        return null;
     }
 
     public function saveData()
     {
-        $content = json_encode(self::$data);
-
-        Storage::disk($this->disk)->put($this->filePath, $content);
-
-        self::$data = [];
+        Storage::disk($this->disk)->put($this->prodFilePath, json_encode($this->getTmpData()));
     }
 
     public function getDocumentation(): array
     {
-        if (!Storage::disk($this->disk)->exists($this->filePath)) {
+        if (!Storage::disk($this->disk)->exists($this->prodFilePath)) {
             throw new FileNotFoundException();
         }
 
-        $fileContent = Storage::disk($this->disk)->get($this->filePath);
+        $fileContent = Storage::disk($this->disk)->get($this->prodFilePath);
 
         return json_decode($fileContent, true);
     }

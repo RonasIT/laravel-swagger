@@ -9,24 +9,24 @@ class RemoteDriver implements SwaggerDriverInterface
 {
     protected $key;
     protected $remoteUrl;
-    protected $tempFileName;
+    protected $tempFilePath;
 
     public function __construct()
     {
         $this->key = config('auto-doc.drivers.remote.key');
         $this->remoteUrl = config('auto-doc.drivers.remote.url');
-        $this->tempFileName = storage_path('temp_documentation.json');
+        $this->tempFilePath = storage_path('temp_documentation.json');
     }
 
     public function saveTmpData($data)
     {
-        file_put_contents($this->tempFileName, json_encode($data));
+        file_put_contents($this->tempFilePath, json_encode($data));
     }
 
     public function getTmpData()
     {
-        if (file_exists($this->tempFileName)) {
-            $content = file_get_contents($this->tempFileName);
+        if (file_exists($this->tempFilePath)) {
+            $content = file_get_contents($this->tempFilePath);
 
             return json_decode($content, true);
         }
@@ -40,8 +40,8 @@ class RemoteDriver implements SwaggerDriverInterface
             'Content-Type: application/json'
         ]);
 
-        if (file_exists($this->tempFileName)) {
-            unlink($this->tempFileName);
+        if (file_exists($this->tempFilePath)) {
+            unlink($this->tempFilePath);
         }
     }
 

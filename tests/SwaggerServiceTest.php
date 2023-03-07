@@ -10,7 +10,6 @@ use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
 use RonasIT\Support\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
-use Symfony\Component\HttpFoundation\Response;
 
 class SwaggerServiceTest extends TestCase
 {

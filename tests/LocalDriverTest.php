@@ -8,20 +8,40 @@ use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriverTest extends TestCase
 {
-    protected $tmpData;
     protected $localDriverClass;
     protected $productionFilePath;
+    protected $tmpDocumentationFilePath;
+    protected $tmpData;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->tmpData = $this->getJsonFixture('tmp_data');
         $this->productionFilePath = __DIR__ . '/../storage/documentation.json';
+        $this->tmpDocumentationFilePath = __DIR__ . '/../storage/temp_documentation.json';
+
+        $this->tmpData = $this->getJsonFixture('tmp_data');
 
         config(['auto-doc.drivers.local.production_path' => $this->productionFilePath]);
 
         $this->localDriverClass = new LocalDriver();
+    }
+
+    public function testSaveTmpData()
+    {
+        $this->localDriverClass->saveTmpData($this->tmpData);
+
+        $this->assertFileExists($this->tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $this->tmpDocumentationFilePath);
+    }
+
+    public function testGetTmpData()
+    {
+        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
+
+        $result = $this->localDriverClass->getTmpData();
+
+        $this->assertEquals($this->tmpData, $result);
     }
 
     public function testCreateClassConfigEmpty()
@@ -37,7 +57,7 @@ class LocalDriverTest extends TestCase
     {
         $this->localDriverClass->saveTmpData($this->tmpData);
 
-        $this->assertEquals($this->tmpData, $this->localDriverClass->getTmpData());
+        $this->assertEqualsJsonFixture('tmp_data', $this->localDriverClass->getTmpData());
     }
 
     public function testSaveData()
@@ -49,7 +69,7 @@ class LocalDriverTest extends TestCase
         $this->assertFileExists($this->productionFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $this->productionFilePath);
 
-        $this->assertEquals([], $this->localDriverClass->getTmpData());
+        $this->assertEqualsJsonFixture('tmp_data', $this->localDriverClass->getTmpData());
     }
 
     public function testGetDocumentation()
