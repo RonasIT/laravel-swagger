@@ -40,6 +40,10 @@ class LocalDriver implements SwaggerDriverInterface
     public function saveData()
     {
         file_put_contents($this->prodFilePath, json_encode($this->getTmpData()));
+
+        if (file_exists($this->tempFilePath)) {
+            unlink($this->tempFilePath);
+        }
     }
 
     public function getDocumentation(): array

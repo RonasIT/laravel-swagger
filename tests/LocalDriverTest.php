@@ -69,14 +69,14 @@ class LocalDriverTest extends TestCase
 
     public function testSaveData()
     {
-        $this->localDriverClass->saveTmpData($this->tmpData);
+        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
 
         $this->localDriverClass->saveData();
 
         $this->assertFileExists($this->productionFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $this->productionFilePath);
 
-        $this->assertEqualsJsonFixture('tmp_data', $this->localDriverClass->getTmpData());
+        $this->assertFileDoesNotExist($this->tmpDocumentationFilePath);
     }
 
     public function testGetDocumentation()
