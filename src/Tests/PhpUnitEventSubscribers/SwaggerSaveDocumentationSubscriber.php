@@ -6,9 +6,10 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Application;
 use PHPUnit\Event;
 use PHPUnit\Event\Test\AfterLastTestMethodFinished;
+use PHPUnit\Event\Test\AfterLastTestMethodFinishedSubscriber;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
-final class SwaggerSubscriber implements Event\Test\AfterLastTestMethodFinishedSubscriber
+final class SwaggerSaveDocumentationSubscriber implements AfterLastTestMethodFinishedSubscriber
 {
     public function notify(AfterLastTestMethodFinished $event): void
     {
