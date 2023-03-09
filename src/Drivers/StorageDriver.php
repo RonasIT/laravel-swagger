@@ -17,7 +17,7 @@ class StorageDriver implements SwaggerDriverInterface
     {
         $this->disk = Storage::disk(config('auto-doc.drivers.storage.disk'));
         $this->prodFilePath = config('auto-doc.drivers.storage.production_path');
-        $this->tempFilePath = 'temp_documentation.json';
+        $this->tempFilePath = storage_path('temp_documentation.json');
 
         if (empty($this->prodFilePath)) {
             throw new MissedProductionFilePathException();
@@ -26,13 +26,13 @@ class StorageDriver implements SwaggerDriverInterface
 
     public function saveTmpData($data)
     {
-        $this->disk->put($this->tempFilePath, json_encode($data));
+        file_put_contents($this->tempFilePath, json_encode($data));
     }
 
     public function getTmpData()
     {
-        if ($this->disk->exists($this->tempFilePath)) {
-            $content = $this->disk->get($this->tempFilePath);
+        if (file_exists($this->tempFilePath)) {
+            $content = file_get_contents($this->tempFilePath);
 
             return json_decode($content, true);
         }
@@ -44,8 +44,8 @@ class StorageDriver implements SwaggerDriverInterface
     {
         $this->disk->put($this->prodFilePath, json_encode($this->getTmpData()));
 
-        if ($this->disk->exists($this->tempFilePath)) {
-            $this->disk->delete($this->tempFilePath);
+        if (file_exists($this->tempFilePath)) {
+            unlink($this->tempFilePath);
         }
     }
 

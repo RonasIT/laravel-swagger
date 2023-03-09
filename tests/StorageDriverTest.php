@@ -22,7 +22,7 @@ class StorageDriverTest extends TestCase
         $this->disk = Storage::fake('testing');
 
         $this->productionFilePath = 'documentation.json';
-        $this->tmpDocumentationFilePath = 'temp_documentation.json';
+        $this->tmpDocumentationFilePath = __DIR__ . '/../storage/temp_documentation.json';
 
         $this->tmpData = $this->getJsonFixture('tmp_data');
 
@@ -36,18 +36,17 @@ class StorageDriverTest extends TestCase
     {
         $this->storageDriverClass->saveTmpData($this->tmpData);
 
-        $this->disk->assertExists($this->tmpDocumentationFilePath);
-
-        $this->assertEqualsFixture('tmp_data_non_formatted.json', $this->disk->get($this->tmpDocumentationFilePath));
+        $this->assertFileExists($this->tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $this->tmpDocumentationFilePath);
     }
 
     public function testGetTmpData()
     {
-        $this->disk->put($this->tmpDocumentationFilePath, json_encode($this->tmpData));
+        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
 
         $result = $this->storageDriverClass->getTmpData();
 
-        $this->assertEqualsJsonFixture('tmp_data', $result);
+        $this->assertEquals($this->tmpData, $result);
     }
 
     public function testGetTmpDataNoFile()
@@ -75,14 +74,14 @@ class StorageDriverTest extends TestCase
 
     public function testSaveData()
     {
-        $this->disk->put($this->tmpDocumentationFilePath, json_encode($this->tmpData));
+        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
 
         $this->storageDriverClass->saveData();
 
         $this->disk->assertExists($this->productionFilePath);
         $this->assertEqualsFixture('tmp_data_non_formatted.json', $this->disk->get($this->productionFilePath));
 
-        $this->disk->assertMissing($this->tmpDocumentationFilePath);
+        $this->assertFileDoesNotExist($this->tmpDocumentationFilePath);
     }
 
     public function testGetDocumentation()
