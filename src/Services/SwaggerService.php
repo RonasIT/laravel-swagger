@@ -8,16 +8,16 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use Illuminate\Http\Request;
+use RonasIT\Support\AutoDoc\Drivers\BaseDriver;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use Symfony\Component\HttpFoundation\Response;
-use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 
 /**
- * @property SwaggerDriverInterface $driver
+ * @property BaseDriver $driver
  */
 class SwaggerService
 {
@@ -97,7 +97,7 @@ class SwaggerService
             $this->driver = app($className);
         }
 
-        if (!$this->driver instanceof SwaggerDriverInterface) {
+        if (!$this->driver instanceof BaseDriver) {
             throw new InvalidDriverClassException($driver);
         }
     }

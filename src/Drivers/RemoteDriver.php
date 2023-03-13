@@ -3,38 +3,25 @@
 namespace RonasIT\Support\AutoDoc\Drivers;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
+use RonasIT\Support\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
 
-class RemoteDriver implements SwaggerDriverInterface
+class RemoteDriver extends BaseDriver
 {
     protected $key;
     protected $remoteUrl;
-    protected $tempFilePath;
 
     public function __construct()
     {
         $this->key = config('auto-doc.drivers.remote.key');
         $this->remoteUrl = config('auto-doc.drivers.remote.url');
         $this->tempFilePath = storage_path('temp_documentation.json');
-    }
 
-    public function saveTmpData($data)
-    {
-        file_put_contents($this->tempFilePath, json_encode($data));
-    }
-
-    public function getTmpData()
-    {
-        if (file_exists($this->tempFilePath)) {
-            $content = file_get_contents($this->tempFilePath);
-
-            return json_decode($content, true);
+        if (empty($this->remoteUrl)) {
+            throw new MissedRemoteDocumentationUrlException();
         }
-
-        return null;
     }
 
-    public function saveData()
+    public function saveData(): void
     {
         $this->makeHttpRequest('post', $this->getUrl(), $this->getTmpData(), [
             'Content-Type: application/json'
@@ -64,7 +51,7 @@ class RemoteDriver implements SwaggerDriverInterface
     /**
      * @codeCoverageIgnore
      */
-    protected function makeHttpRequest($type, $url, $data = [], $headers = [])
+    protected function makeHttpRequest($type, $url, $data = [], $headers = []): array
     {
         $curl = curl_init();
 
