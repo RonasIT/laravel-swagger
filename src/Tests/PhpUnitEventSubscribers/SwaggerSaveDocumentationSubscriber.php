@@ -4,7 +4,6 @@ namespace RonasIT\Support\AutoDoc\Tests\PhpUnitEventSubscribers;
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Application;
-use PHPUnit\Event;
 use PHPUnit\Event\Test\AfterLastTestMethodFinished;
 use PHPUnit\Event\Test\AfterLastTestMethodFinishedSubscriber;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;

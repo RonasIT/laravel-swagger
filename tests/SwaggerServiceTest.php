@@ -325,4 +325,11 @@ class SwaggerServiceTest extends TestCase
 
         $service->addData($request, $response);
     }
+
+    public function testSaveProductionData()
+    {
+        $this->mockDriverSaveData();
+
+        app(SwaggerService::class)->saveProductionData();
+    }
 }
