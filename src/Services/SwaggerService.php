@@ -628,14 +628,6 @@ class SwaggerService
         return Str::camel($action);
     }
 
-    protected function saveTempData()
-    {
-        $exportFile = Arr::get($this->config, 'files.temporary');
-        $data = json_encode($this->data);
-
-        file_put_contents($exportFile, $data);
-    }
-
     public function saveProductionData()
     {
         $this->driver->saveData();
