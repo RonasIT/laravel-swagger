@@ -10,8 +10,6 @@ class PushDocumentationCommandTest extends TestCase
 
     public function testHandle()
     {
-        config(['auto-doc.security' => 'laravel']);
-
         $this->mockDriverSaveData();
 
         $this->artisan('swagger:push-documentation')->assertExitCode(0);

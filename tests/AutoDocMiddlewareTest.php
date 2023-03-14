@@ -11,8 +11,6 @@ class AutoDocMiddlewareTest extends TestCase
 
     public function testHandle()
     {
-        config(['auto-doc.security' => 'laravel']);
-
         $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request'));
 
         $request = $this->generateGetRolesRequest();
