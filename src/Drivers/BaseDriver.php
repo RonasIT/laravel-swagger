@@ -2,9 +2,16 @@
 
 namespace RonasIT\Support\AutoDoc\Drivers;
 
-abstract class BaseDriver
+use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
+
+abstract class BaseDriver implements SwaggerDriverInterface
 {
     protected $tempFilePath;
+
+    public function __construct()
+    {
+        $this->tempFilePath = storage_path('temp_documentation.json');
+    }
 
     public function saveTmpData($data): void
     {
@@ -22,7 +29,10 @@ abstract class BaseDriver
         return null;
     }
 
-    abstract public function saveData(): void;
-
-    abstract public function getDocumentation(): array;
+    protected function clearTmpData(): void
+    {
+        if (file_exists($this->tempFilePath)) {
+            unlink($this->tempFilePath);
+        }
+    }
 }

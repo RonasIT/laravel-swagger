@@ -13,9 +13,10 @@ class StorageDriver extends BaseDriver
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->disk = Storage::disk(config('auto-doc.drivers.storage.disk'));
         $this->prodFilePath = config('auto-doc.drivers.storage.production_path');
-        $this->tempFilePath = storage_path('temp_documentation.json');
 
         if (empty($this->prodFilePath)) {
             throw new MissedProductionFilePathException();
@@ -26,9 +27,7 @@ class StorageDriver extends BaseDriver
     {
         $this->disk->put($this->prodFilePath, json_encode($this->getTmpData()));
 
-        if (file_exists($this->tempFilePath)) {
-            unlink($this->tempFilePath);
-        }
+        $this->clearTmpData();
     }
 
     public function getDocumentation(): array

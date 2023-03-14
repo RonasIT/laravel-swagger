@@ -100,7 +100,7 @@ return [
     |
     | The name of driver, which will collect and save documentation
     | Feel free to use your own driver class which should be inherited from
-    | `RonasIT\Support\AutoDoc\Drivers\BaseDriver` class,
+    | `RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface` interface,
     | or one of our drivers from the `drivers` config:
     */
     'driver' => env('SWAGGER_DRIVER', 'local'),

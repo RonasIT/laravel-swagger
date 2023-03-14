@@ -12,9 +12,10 @@ class RemoteDriver extends BaseDriver
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->key = config('auto-doc.drivers.remote.key');
         $this->remoteUrl = config('auto-doc.drivers.remote.url');
-        $this->tempFilePath = storage_path('temp_documentation.json');
 
         if (empty($this->remoteUrl)) {
             throw new MissedRemoteDocumentationUrlException();
@@ -27,9 +28,7 @@ class RemoteDriver extends BaseDriver
             'Content-Type: application/json'
         ]);
 
-        if (file_exists($this->tempFilePath)) {
-            unlink($this->tempFilePath);
-        }
+        $this->clearTmpData();
     }
 
     public function getDocumentation(): array

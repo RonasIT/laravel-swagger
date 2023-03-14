@@ -11,8 +11,9 @@ class LocalDriver extends BaseDriver
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->prodFilePath = config('auto-doc.drivers.local.production_path');
-        $this->tempFilePath = storage_path('temp_documentation.json');
 
         if (empty($this->prodFilePath)) {
             throw new MissedProductionFilePathException();
@@ -23,9 +24,7 @@ class LocalDriver extends BaseDriver
     {
         file_put_contents($this->prodFilePath, json_encode($this->getTmpData()));
 
-        if (file_exists($this->tempFilePath)) {
-            unlink($this->tempFilePath);
-        }
+        $this->clearTmpData();
     }
 
     public function getDocumentation(): array
