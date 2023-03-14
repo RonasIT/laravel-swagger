@@ -3,6 +3,7 @@
 namespace RonasIT\Support\Tests;
 
 use RonasIT\Support\AutoDoc\Drivers\RemoteDriver;
+use RonasIT\Support\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
 use RonasIT\Support\Tests\Support\Traits\MockTrait;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
@@ -48,6 +49,15 @@ class RemoteDriverTest extends TestCase
         $this->assertNull($result);
     }
 
+    public function testCreateClassConfigEmpty()
+    {
+        $this->expectException(MissedRemoteDocumentationUrlException::class);
+
+        config(['auto-doc.drivers.remote.url' => null]);
+
+        new RemoteDriver();
+    }
+
     public function testSaveData()
     {
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
@@ -61,7 +71,7 @@ class RemoteDriverTest extends TestCase
             ->with('post', 'mocked_url/documentations/mocked_key', $this->tmpData, [
                 'Content-Type: application/json'
             ])
-            ->willReturn(true);
+            ->willReturn(['', 204]);
 
         file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
 
@@ -83,7 +93,7 @@ class RemoteDriverTest extends TestCase
             ->with('post', 'mocked_url/documentations/mocked_key', null, [
                 'Content-Type: application/json'
             ])
-            ->willReturn(true);
+            ->willReturn(['', 204]);
 
         $mock->saveData();
     }
@@ -119,7 +129,7 @@ class RemoteDriverTest extends TestCase
             ->expects($this->once())
             ->method('makeHttpRequest')
             ->with('get', 'mocked_url/documentations/mocked_key')
-            ->willReturn(json_encode([['error' => 'Not found.'], 404]));
+            ->willReturn([json_encode(['error' => 'Not found.']), 404]);
 
         $documentation = $mock->getDocumentation();
 

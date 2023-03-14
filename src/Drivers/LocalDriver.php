@@ -3,17 +3,16 @@
 namespace RonasIT\Support\AutoDoc\Drivers;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
-class LocalDriver implements SwaggerDriverInterface
+class LocalDriver extends BaseDriver
 {
-    public $prodFilePath;
-
-    protected static $data;
+    protected $prodFilePath;
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->prodFilePath = config('auto-doc.drivers.local.production_path');
 
         if (empty($this->prodFilePath)) {
@@ -21,23 +20,11 @@ class LocalDriver implements SwaggerDriverInterface
         }
     }
 
-    public function saveTmpData($tempData)
+    public function saveData(): void
     {
-        self::$data = $tempData;
-    }
+        file_put_contents($this->prodFilePath, json_encode($this->getTmpData()));
 
-    public function getTmpData()
-    {
-        return self::$data;
-    }
-
-    public function saveData()
-    {
-        $content = json_encode(self::$data);
-
-        file_put_contents($this->prodFilePath, $content);
-
-        self::$data = [];
+        $this->clearTmpData();
     }
 
     public function getDocumentation(): array

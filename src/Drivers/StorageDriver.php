@@ -2,49 +2,41 @@
 
 namespace RonasIT\Support\AutoDoc\Drivers;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
+use Illuminate\Support\Facades\Storage;
+use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
-class StorageDriver implements SwaggerDriverInterface
+class StorageDriver extends BaseDriver
 {
     protected $disk;
-    protected $filePath;
-
-    protected static $data;
+    protected $prodFilePath;
 
     public function __construct()
     {
-        $this->disk = config('auto-doc.drivers.storage.disk');
-        $this->filePath = config('auto-doc.drivers.storage.production_path');
+        parent::__construct();
+
+        $this->disk = Storage::disk(config('auto-doc.drivers.storage.disk'));
+        $this->prodFilePath = config('auto-doc.drivers.storage.production_path');
+
+        if (empty($this->prodFilePath)) {
+            throw new MissedProductionFilePathException();
+        }
     }
 
-    public function saveTmpData($tempData)
+    public function saveData(): void
     {
-        self::$data = $tempData;
-    }
+        $this->disk->put($this->prodFilePath, json_encode($this->getTmpData()));
 
-    public function getTmpData()
-    {
-        return self::$data;
-    }
-
-    public function saveData()
-    {
-        $content = json_encode(self::$data);
-
-        Storage::disk($this->disk)->put($this->filePath, $content);
-
-        self::$data = [];
+        $this->clearTmpData();
     }
 
     public function getDocumentation(): array
     {
-        if (!Storage::disk($this->disk)->exists($this->filePath)) {
+        if (!$this->disk->exists($this->prodFilePath)) {
             throw new FileNotFoundException();
         }
 
-        $fileContent = Storage::disk($this->disk)->get($this->filePath);
+        $fileContent = $this->disk->get($this->prodFilePath);
 
         return json_decode($fileContent, true);
     }

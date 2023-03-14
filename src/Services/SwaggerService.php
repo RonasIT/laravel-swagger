@@ -3,18 +3,18 @@
 namespace RonasIT\Support\AutoDoc\Services;
 
 use Illuminate\Container\Container;
+use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use Illuminate\Http\Request;
+use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
+use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
 use Symfony\Component\HttpFoundation\Response;
-use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
-use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
-use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 
 /**
  * @property SwaggerDriverInterface $driver
@@ -653,7 +653,7 @@ class SwaggerService
             $paths = array_keys($fileContent['paths']);
 
             foreach ($paths as $path) {
-                $additionalDocPath =  $fileContent['paths'][$path];
+                $additionalDocPath = $fileContent['paths'][$path];
 
                 if (empty($documentation['paths'][$path])) {
                     $documentation['paths'][$path] = $additionalDocPath;
