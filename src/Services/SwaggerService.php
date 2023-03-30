@@ -648,32 +648,36 @@ class SwaggerService
         $additionalDocs = config('auto-doc.additional_paths', []);
 
         foreach ($additionalDocs as $filePath) {
-            $fileContent = json_decode(file_get_contents(base_path($filePath)), true);
+            $fullFilePath = base_path($filePath);
 
-            $paths = array_keys($fileContent['paths']);
+            if (file_exists($fullFilePath)) {
+                $fileContent = json_decode(file_get_contents($fullFilePath), true);
 
-            foreach ($paths as $path) {
-                $additionalDocPath = $fileContent['paths'][$path];
+                $paths = array_keys($fileContent['paths']);
 
-                if (empty($documentation['paths'][$path])) {
-                    $documentation['paths'][$path] = $additionalDocPath;
-                } else {
-                    $methods = array_keys($documentation['paths'][$path]);
-                    $additionalDocMethods = array_keys($additionalDocPath);
+                foreach ($paths as $path) {
+                    $additionalDocPath = $fileContent['paths'][$path];
 
-                    foreach ($additionalDocMethods as $method) {
-                        if (!in_array($method, $methods)) {
-                            $documentation['paths'][$path][$method] = $additionalDocPath[$method];
+                    if (empty($documentation['paths'][$path])) {
+                        $documentation['paths'][$path] = $additionalDocPath;
+                    } else {
+                        $methods = array_keys($documentation['paths'][$path]);
+                        $additionalDocMethods = array_keys($additionalDocPath);
+
+                        foreach ($additionalDocMethods as $method) {
+                            if (!in_array($method, $methods)) {
+                                $documentation['paths'][$path][$method] = $additionalDocPath[$method];
+                            }
                         }
                     }
                 }
-            }
 
-            $definitions = array_keys($fileContent['definitions']);
+                $definitions = array_keys($fileContent['definitions']);
 
-            foreach ($definitions as $definition) {
-                if (empty($documentation['definitions'][$definition])) {
-                    $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                foreach ($definitions as $definition) {
+                    if (empty($documentation['definitions'][$definition])) {
+                        $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
+                    }
                 }
             }
         }

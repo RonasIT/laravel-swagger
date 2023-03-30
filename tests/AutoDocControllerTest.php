@@ -50,6 +50,19 @@ class AutoDocControllerTest extends TestCase
         $this->assertEqualsJsonFixture('tmp_data_with_additional_paths', $response->json());
     }
 
+    public function testGetJSONDocumentationWithInvalidAdditionalPath()
+    {
+        config([
+            'auto-doc.additional_paths' => ['invalid_path/non_existent_file.json']
+        ]);
+
+        $response = $this->json('get', '/auto-doc/documentation');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $response->assertJson($this->documentation);
+    }
+
     public function testGetJSONDocumentationWithGlobalPrefix()
     {
         $this->addGlobalPrefix();
