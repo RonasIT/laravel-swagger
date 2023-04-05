@@ -161,21 +161,6 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function testAddDataWithoutInfo()
-    {
-        config(['auto-doc.info' => []]);
-
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request_without_info'));
-
-        $service = app(SwaggerService::class);
-
-        $request = $this->generateGetRolesRequest();
-
-        $response = $this->generateResponse('example_success_roles_response.json');
-
-        $service->addData($request, $response);
-    }
-
     public function testAddDataWithEmptySecurity()
     {
         config(['auto-doc.security' => 'invalid']);

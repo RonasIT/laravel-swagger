@@ -50,10 +50,48 @@ class AutoDocControllerTest extends TestCase
         $this->assertEqualsJsonFixture('tmp_data_with_additional_paths', $response->json());
     }
 
-    public function testGetJSONDocumentationWithInvalidAdditionalPath()
+    public function getJSONDocumentationInvalidAdditionalDoc(): array
+    {
+        return [
+            [
+                'additionalDocPath' => 'invalid_path/non_existent_file.json'
+            ],
+            [
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/non_json_documentation.txt'
+            ],
+            [
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_paths_field.json'
+            ],
+            [
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_endpoint_responses_field.json'
+            ],
+            [
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_parameter_in_field.json'
+            ],
+            [
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__wrong_parameter_in_field.json'
+            ],
+            [
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_response_description_field.json'
+            ],
+            [
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_definition_type_field.json'
+            ],
+            [
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__unknown_http_method.json'
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getJSONDocumentationInvalidAdditionalDoc
+     *
+     * @param string $additionalDocPath
+     */
+    public function testGetJSONDocumentationInvalidFormat(string $additionalDocPath)
     {
         config([
-            'auto-doc.additional_paths' => ['invalid_path/non_existent_file.json']
+            'auto-doc.additional_paths' => [$additionalDocPath]
         ]);
 
         $response = $this->json('get', '/auto-doc/documentation');

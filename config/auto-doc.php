@@ -40,7 +40,7 @@ return [
         | Documentation Template
         |--------------------------------------------------------------------------
         |
-        | You can use your custom documentation view
+        | You can use your custom documentation view. Title and version fields are required.
         */
         'description' => 'auto-doc::swagger-description',
         'version' => '0.0.0',
