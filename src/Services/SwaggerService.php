@@ -9,16 +9,14 @@ use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use RonasIT\Support\AutoDoc\Exceptions\InvalidDocumentationFieldValueException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
-use RonasIT\Support\AutoDoc\Exceptions\InvalidSwaggerFormatException;
-use RonasIT\Support\AutoDoc\Exceptions\MissingDocumentationFieldException;
-use RonasIT\Support\AutoDoc\Exceptions\InvalidResponseCodeException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
+use RonasIT\Support\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -28,70 +26,12 @@ class SwaggerService
 {
     use GetDependenciesTrait;
 
-    const SCHEMA_TYPES = [
-        'array', 'boolean', 'integer', 'number', 'string', 'object', 'null', 'undefined'
-    ];
-
-    const PRIMITIVE_TYPES = [
-        'array', 'boolean', 'integer', 'number', 'string'
-    ];
-
-    const REQUIRED_DOC_FIELDS = [
-        'swagger', 'info', 'paths'
-    ];
-
-    const REQUIRED_INFO_FIELDS = [
-        'title', 'version'
-    ];
-
-    const REQUIRED_ENDPOINT_FIELDS = [
-        'responses'
-    ];
-
-    const REQUIRED_PARAMETER_FIELDS = [
-        'in', 'name'
-    ];
-    const AVAILABLE_PARAMETER_IN = [
-        'body', 'path', 'query', 'header', 'formData'
-    ];
-    const AVAILABLE_PARAMETER_TYPE = [
-        'string', 'number', 'integer', 'boolean', 'array', 'file'
-    ];
-
-    const REQUIRED_RESPONSE_FIELDS = [
-        'description'
-    ];
-
-    const REQUIRED_DEFINITION_FIELDS = [
-        'type'
-    ];
-
-    const REQUIRED_TAG_FIELDS = [
-        'name'
-    ];
-
-    const REQUIRED_SECURITY_DEFINITIONS_FIELDS = [
-        'type'
-    ];
-    const AVAILABLE_SECURITY_DEFINITIONS_TYPE = [
-        'basic', 'apiKey', 'oauth2'
-    ];
-    const AVAILABLE_SECURITY_DEFINITIONS_IN = [
-        'query', 'header'
-    ];
-    const AVAILABLE_SECURITY_DEFINITIONS_FLOW = [
-        'implicit', 'password', 'application', 'accessCode'
-    ];
-
-    const AVAILABLE_SCHEMES = [
-        'http', 'https', 'ws', 'wss'
-    ];
-
-    const SUPPORTED_HTTP_METHODS = [
-        'get', 'post', 'put', 'patch', 'delete', 'head', 'options'
-    ];
-
     protected $driver;
+
+    /**
+     * @var SwaggerSpecValidator
+     */
+    protected $specValidator;
 
     protected $data;
     protected $config;
@@ -122,6 +62,8 @@ class SwaggerService
 
         $this->setDriver();
 
+        $this->specValidator = app(SwaggerSpecValidator::class);
+
         if (config('app.env') == 'testing') {
             $this->container = $container;
 
@@ -130,7 +72,7 @@ class SwaggerService
             $this->data = $this->driver->getTmpData();
 
             if (!empty($this->data)) {
-                $this->validateSwaggerFormat($this->data);
+                $this->specValidator->validate($this->data);
             } else {
                 $this->data = $this->generateEmptyData();
 
@@ -153,6 +95,13 @@ class SwaggerService
 
         if (version_compare($packageConfigs['config_version'], $version, '>')) {
             throw new LegacyConfigException();
+        }
+
+        if (
+            version_compare($this->config['swagger'], '2.0', '<')
+            || version_compare($this->config['swagger'], '3.0', '>=')
+        ) {
+            throw new InvalidSwaggerVersionException($this->config['swagger']);
         }
     }
 
@@ -714,7 +663,7 @@ class SwaggerService
 
                 if ($fileContent) {
                     try {
-                        $this->validateSwaggerFormat($fileContent);
+                        $this->specValidator->validate($fileContent);
                     } catch (Exception $exception) {
                         report($exception);
 
@@ -873,174 +822,5 @@ class SwaggerService
         }
 
         return $info;
-    }
-
-    protected function validateSwaggerFormat(array $documentation): void
-    {
-        $missingDocFields = array_diff(self::REQUIRED_DOC_FIELDS, array_keys($documentation));
-
-        if (!empty($missingDocFields)) {
-            throw new MissingDocumentationFieldException($missingDocFields);
-        }
-
-        $missingInfoFields = array_diff(self::REQUIRED_INFO_FIELDS, array_keys($documentation['info']));
-
-        if (!empty($missingInfoFields)) {
-            throw new MissingDocumentationFieldException($missingInfoFields);
-        }
-
-        $notAvailableSchemes = $this->getInvalidFieldValues(Arr::get($documentation, 'schemes', []), self::AVAILABLE_SCHEMES);
-
-        if (!empty($notAvailableSchemes)) {
-            throw new InvalidDocumentationFieldValueException('schemes', $notAvailableSchemes);
-        }
-
-        foreach ($documentation['paths'] as $path => $endpoints) {
-            foreach ($endpoints as $method => $endpoint) {
-                $this->validateEndpoint($endpoint, $path, $method);
-            }
-        }
-
-        $definitions = Arr::get($documentation, 'definitions', []);
-
-        foreach ($definitions as $definition) {
-            $missingDefinitionFields = array_diff(self::REQUIRED_DEFINITION_FIELDS, array_keys($definition));
-
-            if (!empty($missingDefinitionFields)) {
-                throw new MissingDocumentationFieldException($missingDefinitionFields);
-            }
-        }
-
-        $securityDefinitions = Arr::get($documentation, 'securityDefinitions', []);
-
-        foreach ($securityDefinitions as $index => $securityDefinition) {
-            $this->validateSecurityDefinition($securityDefinition, $index);
-        }
-
-        $tags = Arr::get($documentation, 'tags', []);
-
-        foreach ($tags as $tag) {
-            $missingTagFields = array_diff(self::REQUIRED_TAG_FIELDS, array_keys($tag));
-
-            if (!empty($missingTagFields)) {
-                throw new MissingDocumentationFieldException($missingDocFields);
-            }
-        }
-    }
-
-    protected function validateEndpoint(array $endpoint, string $path, string $method): void
-    {
-        if (!in_array($method, self::SUPPORTED_HTTP_METHODS)) {
-            throw new InvalidDocumentationFieldValueException("{$path}.{$method}", $method);
-        }
-
-        $missingEndpointFields = array_diff(self::REQUIRED_ENDPOINT_FIELDS, array_keys($endpoint));
-
-        if (!empty($missingEndpointFields)) {
-            throw new MissingDocumentationFieldException($missingEndpointFields);
-        }
-
-        $parameters = Arr::get($endpoint, 'parameters', []);
-
-        foreach ($parameters as $parameter) {
-            $this->validateParameter($parameter, $path, $method);
-        }
-
-        foreach ($endpoint['responses'] as $statusCode => $response) {
-            $this->validateResponse($response, $path, $method, $statusCode);
-        }
-    }
-
-    protected function validateResponse(array $response, string $path, string $method, string $statusCode): void
-    {
-        $responseId = $path . '.' . $method . '.responses.' . $statusCode;
-
-        $missingResponseFields = array_diff(self::REQUIRED_RESPONSE_FIELDS, array_keys($response));
-
-        if (!empty($missingResponseFields)) {
-            throw new MissingDocumentationFieldException($missingResponseFields);
-        }
-
-        if (($statusCode < 100) || ($statusCode > 599)) {
-            throw new InvalidResponseCodeException($statusCode, $responseId);
-        }
-
-        foreach (Arr::get($response, 'headers', []) as $header) {
-            $this->validateSchema($response['schema'], self::PRIMITIVE_TYPES, "{$responseId}.headers.{$header['name']}.schema");
-        }
-
-        if (!empty($response['schema'])) {
-            $this->validateSchema($response['schema'], self::SCHEMA_TYPES, "{$responseId}.schema");
-        }
-    }
-
-    protected function validateParameter(array $parameter, string $path, string $method): void
-    {
-        $missingParameterFields = array_diff(self::REQUIRED_PARAMETER_FIELDS, array_keys($parameter));
-
-        if (!empty($missingParameterFields)) {
-            throw new MissingDocumentationFieldException($missingParameterFields);
-        }
-
-        $parameterId = $path . '.' . $method . '.parameters.' . $parameter['name'];
-
-        if (!in_array($parameter['in'], self::AVAILABLE_PARAMETER_IN)) {
-            throw new InvalidDocumentationFieldValueException($parameterId, $parameter['in']);
-        }
-
-        if (
-            !empty($parameter['type'])
-            && !in_array($parameter['type'], self::AVAILABLE_PARAMETER_TYPE)
-        ) {
-            throw new InvalidDocumentationFieldValueException($parameterId, $parameter['type']);
-        }
-    }
-
-    protected function validateSchema(array $schema, array $validTypes, string $fieldId): void
-    {
-        if (!empty($schema['type']) && !in_array($schema['type'], $validTypes)) {
-            throw new InvalidDocumentationFieldValueException("", $schema['type']);
-        }
-
-        if (
-            (Arr::get($schema, 'type') === 'array')
-            && empty($schema['items'])
-        ) {
-            throw new InvalidSwaggerFormatException("Validation failed. {$fieldId} is an array, so it must include an 'items' field.");
-        }
-    }
-
-    protected function validateSecurityDefinition(array $securityDefinition, int $index): void
-    {
-        $missingSecurityDefinitionFields = array_diff(self::REQUIRED_SECURITY_DEFINITIONS_FIELDS, array_keys($securityDefinition));
-
-        if (!empty($missingSecurityDefinitionFields)) {
-            throw new MissingDocumentationFieldException($missingSecurityDefinitionFields);
-        }
-
-        if (!in_array($securityDefinition['type'], self::AVAILABLE_SECURITY_DEFINITIONS_TYPE)) {
-            throw new InvalidDocumentationFieldValueException("securityDefinitions.{$index}.type", $securityDefinition['type']);
-        }
-
-        if (
-            !empty($securityDefinition['in'])
-            && !in_array($securityDefinition['in'], self::AVAILABLE_SECURITY_DEFINITIONS_IN)
-        ) {
-            throw new InvalidDocumentationFieldValueException("securityDefinitions.{$index}.in", $securityDefinition['in']);
-        }
-
-        if (
-            !empty($securityDefinition['flow'])
-            && !in_array($securityDefinition['flow'], self::AVAILABLE_SECURITY_DEFINITIONS_FLOW)
-        ) {
-            throw new InvalidDocumentationFieldValueException("securityDefinitions.{$index}.flow", $securityDefinition['flow']);
-        }
-    }
-
-    protected function getInvalidFieldValues(array $values, array $validValues): array
-    {
-        $approvedValues = array_intersect($values, $validValues);
-
-        return array_diff($values, $approvedValues);
     }
 }
