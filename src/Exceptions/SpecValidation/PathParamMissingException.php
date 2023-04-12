@@ -10,6 +10,6 @@ class PathParamMissingException extends Exception
     {
         $placeholdersString = implode(', ', $placeholders);
 
-        parent::__construct("Validation failed. {$path} is missing path parameter(s) for placeholders {$placeholdersString}");
+        parent::__construct("Validation failed. Path '{$path}' has no parameters for placeholders ({$placeholdersString}).");
     }
 }

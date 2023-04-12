@@ -28,11 +28,6 @@ class SwaggerService
 
     protected $driver;
 
-    /**
-     * @var SwaggerSpecValidator
-     */
-    protected $specValidator;
-
     protected $data;
     protected $config;
     protected $container;
@@ -62,8 +57,6 @@ class SwaggerService
 
         $this->setDriver();
 
-        $this->specValidator = app(SwaggerSpecValidator::class);
-
         if (config('app.env') == 'testing') {
             $this->container = $container;
 
@@ -72,7 +65,7 @@ class SwaggerService
             $this->data = $this->driver->getTmpData();
 
             if (!empty($this->data)) {
-                $this->specValidator->validate($this->data);
+                $this->validateSpec($this->data);
             } else {
                 $this->data = $this->generateEmptyData();
 
@@ -97,10 +90,7 @@ class SwaggerService
             throw new LegacyConfigException();
         }
 
-        if (
-            version_compare($this->config['swagger'], '2.0', '<')
-            || version_compare($this->config['swagger'], '3.0', '>=')
-        ) {
+        if (version_compare($this->config['swagger'], '2.0', '!=')) {
             throw new InvalidSwaggerVersionException($this->config['swagger']);
         }
     }
@@ -663,7 +653,7 @@ class SwaggerService
 
                 if ($fileContent) {
                     try {
-                        $this->specValidator->validate($fileContent);
+                        $this->validateSpec($fileContent);
                     } catch (Exception $exception) {
                         report($exception);
 
@@ -822,5 +812,12 @@ class SwaggerService
         }
 
         return $info;
+    }
+
+    protected function validateSpec(array $doc): void
+    {
+        $validator = new SwaggerSpecValidator($doc);
+
+        $validator->validate();
     }
 }

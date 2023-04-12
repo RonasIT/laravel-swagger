@@ -14,6 +14,6 @@ class InvalidDocFieldValueException extends Exception
     {
         $valueString = (is_array($value)) ? implode(', ', $value) : (string)$value;
 
-        parent::__construct("Validation failed. Field '{$fieldName}' has an invalid value: {$valueString}");
+        parent::__construct("Validation failed. Field '{$fieldName}' has an invalid values ({$valueString}).");
     }
 }
