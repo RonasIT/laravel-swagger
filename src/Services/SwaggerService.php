@@ -90,8 +90,8 @@ class SwaggerService
             throw new LegacyConfigException();
         }
 
-        if (version_compare($this->config['swagger'], '2.0', '!=')) {
-            throw new InvalidSwaggerVersionException($this->config['swagger']);
+        if (version_compare($this->config['swagger']['version'], '2.0', '!=')) {
+            throw new InvalidSwaggerVersionException($this->config['swagger']['version']);
         }
     }
 

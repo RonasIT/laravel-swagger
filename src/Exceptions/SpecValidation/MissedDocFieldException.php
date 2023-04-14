@@ -10,6 +10,6 @@ class MissedDocFieldException extends Exception
     {
         $fieldsString = implode(', ', $fields);
 
-        parent::__construct("Validation failed. Fields ({$fieldsString}) in '{$parent}' field listed as required but don't exist in documentation.");
+        parent::__construct("Validation failed. Fields ({$fieldsString}) nested in '{$parent}' are listed as required but don't exist in documentation.");
     }
 }

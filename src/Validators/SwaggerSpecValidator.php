@@ -10,7 +10,7 @@ use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidHttpMethodException
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidResponseCodeException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissedDocDefinitionsException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissedDocDefinitionException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissedDocFieldException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\PathParamMissingException;
 
@@ -97,7 +97,7 @@ class SwaggerSpecValidator
     {
         foreach ($this->doc['paths'] as $path => $operations) {
             foreach ($operations as $method => $operation) {
-                $operationId = "paths|{$path}|methods|{$method}";
+                $operationId = "paths|{$path}|{$method}";
 
                 if (!in_array($method, self::AVAILABLE_VALUES['http_method'])) {
                     throw new InvalidHttpMethodException($method, $path);
@@ -125,7 +125,7 @@ class SwaggerSpecValidator
         $missedDefinitions = $this->getMissedFields($definitions, $this->getRefs());
 
         if (!empty($missedDefinitions)) {
-            throw new MissedDocDefinitionsException($missedDefinitions);
+            throw new MissedDocDefinitionException($missedDefinitions);
         }
     }
 
@@ -159,7 +159,7 @@ class SwaggerSpecValidator
 
         $this->validateMissedFields($response, self::REQUIRED_FIELDS['response'], $responseId);
 
-        if (($statusCode < 100) || ($statusCode > 599)) {
+        if (($statusCode !== 'default') && (($statusCode < 100) || ($statusCode > 599))) {
             throw new InvalidResponseCodeException($statusCode, $responseId);
         }
 
@@ -172,7 +172,7 @@ class SwaggerSpecValidator
         }
 
         if (!empty($response['items'])) {
-            $this->validateItems($response['items'], "{$responseId}.items");
+            $this->validateItems($response['items'], "{$responseId}|items");
         }
     }
 
@@ -191,7 +191,7 @@ class SwaggerSpecValidator
             $this->validateParameterType($param, $operation, $paramId, $operationId);
 
             if (!empty($param['items'])) {
-                $this->validateItems($param['items'], "{$paramId}.items");
+                $this->validateItems($param['items'], "{$paramId}|items");
             }
         }
 
@@ -236,6 +236,7 @@ class SwaggerSpecValidator
         });
 
         preg_match_all(self::PATH_PARAM_REGEXP, $path, $placeholders);
+        $placeholders = $placeholders[0];
 
         $placeholderDuplicates = array_get_duplicates($placeholders);
 
@@ -244,7 +245,7 @@ class SwaggerSpecValidator
         }
 
         foreach ($pathParams as $param) {
-            if (Arr::get($param, 'required', false)) {
+            if (!Arr::get($param, 'required', false)) {
                 throw new InvalidSwaggerSpecException("Validation failed. Path parameters cannot be optional. Set required=true for the '{$param['name']}' parameter at operation '{$operationId}'.");
             }
 
@@ -258,7 +259,7 @@ class SwaggerSpecValidator
         }
 
         if (!empty($placeholders)) {
-            throw new PathParamMissingException($path, $placeholders);
+            throw new PathParamMissingException($operationId, $placeholders);
         }
     }
 
@@ -301,7 +302,7 @@ class SwaggerSpecValidator
         $schema = Arr::get($param, 'schema', $param);
         $this->validateSchema($schema, $validTypes, $paramId);
 
-        if ($schema['type'] === 'file') {
+        if (Arr::get($schema, 'type') === 'file') {
             $requiredMimeType = Arr::first(
                 Arr::get($operation, 'consumes', []),
                 function ($consume) {
@@ -320,6 +321,10 @@ class SwaggerSpecValidator
         $this->validateMissedFields($header, self::REQUIRED_FIELDS['header'], $headerId);
 
         $this->validateSchema($header, self::PRIMITIVE_TYPES, $headerId);
+
+        if (!empty($header['items'])) {
+            $this->validateItems($header['items'], $headerId);
+        }
     }
 
     protected function validateItems(array $items, string $itemsId): void
@@ -355,8 +360,9 @@ class SwaggerSpecValidator
 
     protected function validateFieldHasAvailableValues(string $fieldName, array $parent, array $availableValues, string $parentId = null): void
     {
-        $approvedValues = array_intersect($parent[$fieldName], $availableValues);
-        $invalidValues = array_diff($parent[$fieldName], $approvedValues);
+        $inputValue = Arr::get($parent, $fieldName, []);
+        $approvedValues = array_intersect($inputValue, $availableValues);
+        $invalidValues = array_diff($inputValue, $approvedValues);
 
         if (!empty($invalidValues)) {
             throw new InvalidDocFieldValueException($parentId ? "{$parentId}|{$fieldName}" : $fieldName, $invalidValues);

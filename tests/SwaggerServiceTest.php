@@ -5,6 +5,16 @@ namespace RonasIT\Support\Tests;
 use Illuminate\Http\Testing\File;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicatedParamException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicatedPathPlaceholderException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidDocFieldValueException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidHttpMethodException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidResponseCodeException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissedDocDefinitionException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissedDocFieldException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\PathParamMissingException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
@@ -47,6 +57,158 @@ class SwaggerServiceTest extends TestCase
         config(['auto-doc.drivers.local.class' => TestCase::class]);
 
         $this->expectException(InvalidDriverClassException::class);
+
+        app(SwaggerService::class);
+    }
+
+    public function getConstructorInvalidTmpData(): array
+    {
+        return [
+            [
+                'tmpDoc' => 'documentation__invalid_version',
+                'exception' => InvalidSwaggerVersionException::class,
+                'exceptionMessage' => "Unrecognized Swagger version: 1.0. Expected 2.0."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__array_parameter__no_items',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. paths|/users|post|parameters|0 is an array, so it must include an 'items' field."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__array_response_body__no_items',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. paths|/users|get|responses|200|schema is an array, so it must include an 'items' field."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__array_response_header__no_items',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. paths|/users|get|responses|default|headers|Last-Modified is an array, so it must include an 'items' field."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__body_and_form_params',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Operation 'paths|/users/{username}|post' has body parameters and formData parameters. Only one or the other is allowed."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__duplicate_header_params',
+                'exception' => DuplicatedParamException::class,
+                'exceptionMessage' => "Validation failed. Found multiple header parameters named 'foo'."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__duplicate_path_params',
+                'exception' => DuplicatedParamException::class,
+                'exceptionMessage' => "Validation failed. Found multiple path parameters named 'username'."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__duplicate_path_placeholders',
+                'exception' => DuplicatedPathPlaceholderException::class,
+                'exceptionMessage' => "Validation failed. Path '/users/{username}/profile/{username}/image/{img_id}' has multiple path placeholders named (username)."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__file_invalid_consumes',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Operation 'paths|/users/{username}/profile/image|post' has a file parameter, so it must consume 'multipart/form-data' or 'application/x-www-form-urlencoded'."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__file_no_consumes',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Operation 'paths|/users/{username}/profile/image|post' has a file parameter, so it must consume 'multipart/form-data' or 'application/x-www-form-urlencoded'."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__multiple_body_params',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Operation 'paths|/users/{username}|get' has 2 body parameters. Only one is allowed."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__no_path_params',
+                'exception' => PathParamMissingException::class,
+                'exceptionMessage' => "Validation failed. Operation 'paths|/users/{username}/{foo}|get' has no parameters for placeholders (username, foo)."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__path_param_no_placeholder',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Operation paths|/users/{username}|post has a path parameter named 'foo', but there is no corresponding 'foo' in the path string."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__invalid_value_response_code',
+                'exception' => InvalidResponseCodeException::class,
+                'exceptionMessage' => "Validation failed. Response 'paths|/users|get|responses|888' has an invalid response code '888'."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__invalid_value__http_method',
+                'exception' => InvalidHttpMethodException::class,
+                'exceptionMessage' => "Validation failed. Invalid http method 'invalid_method' provided for path '/auth/login'."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__invalid_value__parameter_in',
+                'exception' => InvalidDocFieldValueException::class,
+                'exceptionMessage' => "Validation failed. Field 'paths|/auth/login|post|parameters|0|in' has an invalid value (invalid_in)."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__paths',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (paths) nested in '' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__operation_responses',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (responses) nested in 'paths|/auth/login|post' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__parameter_in',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (in) nested in 'paths|/auth/login|post|parameters|0' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__response_description',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (description) nested in 'paths|/auth/login|post|responses|200' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__definition_type',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (type) nested in 'definitions|authloginObject' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__info_version',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (version) nested in 'info' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__items_type',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (type) nested in 'paths|/pet/findByStatus|get|parameters|0|items' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__header_type',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (type) nested in 'paths|/user/login|get|responses|200|headers|X-Rate-Limit' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_field__tag_name',
+                'exception' => MissedDocFieldException::class,
+                'exceptionMessage' => "Validation failed. Fields (name) nested in 'tags|0' are listed as required but don't exist in documentation."
+            ],
+            [
+                'tmpDoc' => 'documentation__invalid_format__missed_definition',
+                'exception' => MissedDocDefinitionException::class,
+                'exceptionMessage' => "Validation failed. Definitions (loginObject) are used in \$refs but not defined in 'definitions' section."
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getConstructorInvalidTmpData
+     *
+     * @param string $tmpDoc
+     * @param string $exception
+     * @param string $exceptionMessage
+     */
+    public function testConstructorInvalidTmpData(string $tmpDoc, string $exception, string $exceptionMessage)
+    {
+        $this->mockDriverGetTpmData($this->getJsonFixture($tmpDoc));
+        $this->expectException($exception);
+        $this->expectExceptionMessage($exceptionMessage);
 
         app(SwaggerService::class);
     }

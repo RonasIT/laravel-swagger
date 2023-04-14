@@ -57,29 +57,11 @@ class AutoDocControllerTest extends TestCase
                 'additionalDocPath' => 'invalid_path/non_existent_file.json'
             ],
             [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/non_json_documentation.txt'
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__non_json.txt'
             ],
             [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_paths_field.json'
-            ],
-            [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_endpoint_responses_field.json'
-            ],
-            [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_parameter_in_field.json'
-            ],
-            [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__wrong_parameter_in_field.json'
-            ],
-            [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_response_description_field.json'
-            ],
-            [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_definition_type_field.json'
-            ],
-            [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__unknown_http_method.json'
-            ],
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missed_field__paths.json'
+            ]
         ];
     }
 
@@ -88,7 +70,7 @@ class AutoDocControllerTest extends TestCase
      *
      * @param string $additionalDocPath
      */
-    public function testGetJSONDocumentationInvalidFormat(string $additionalDocPath)
+    public function testGetJSONDocumentationInvalidAdditionalDoc(string $additionalDocPath)
     {
         config([
             'auto-doc.additional_paths' => [$additionalDocPath]
