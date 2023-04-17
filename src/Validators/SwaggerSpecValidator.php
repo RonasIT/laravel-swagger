@@ -17,14 +17,14 @@ use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderExce
 
 class SwaggerSpecValidator
 {
-    const SCHEMA_TYPES = [
+    public const SCHEMA_TYPES = [
         'array', 'boolean', 'integer', 'number', 'string', 'object', 'null', 'undefined'
     ];
-    const PRIMITIVE_TYPES = [
+    public const PRIMITIVE_TYPES = [
         'array', 'boolean', 'integer', 'number', 'string'
     ];
 
-    const REQUIRED_FIELDS = [
+    public const REQUIRED_FIELDS = [
         'definition' => ['type'],
         'doc' => ['swagger', 'info', 'paths'],
         'info' => ['title', 'version'],
@@ -37,7 +37,7 @@ class SwaggerSpecValidator
         'tag' => ['name']
     ];
 
-    const AVAILABLE_VALUES = [
+    public const AVAILABLE_VALUES = [
         'parameter_collection_format' => ['csv', 'ssv', 'tsv', 'pipes', 'multi'],
         'items_collection_format' => ['csv', 'ssv', 'tsv', 'pipes'],
         'header_collection_format' => ['csv', 'ssv', 'tsv', 'pipes'],
@@ -49,11 +49,11 @@ class SwaggerSpecValidator
         'security_definition_type' => ['basic', 'apiKey', 'oauth2']
     ];
 
-    const PATH_PARAM_REGEXP = '#(?<={)[^/}]+(?=})#';
-    const DEFINITION_REF_REGEXP = '/^#\/definitions\/.+/';
+    public const PATH_PARAM_REGEXP = '#(?<={)[^/}]+(?=})#';
+    public const DEFINITION_REF_REGEXP = '/^#\/definitions\/.+/';
 
-    const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
-    const MIME_TYPE_APPLICATION_URLENCODED = 'application/x-www-form-urlencoded';
+    public const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
+    public const MIME_TYPE_APPLICATION_URLENCODED = 'application/x-www-form-urlencoded';
 
     /**
      * @var array
