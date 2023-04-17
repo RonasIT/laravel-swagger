@@ -4,7 +4,7 @@ namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
 use Exception;
 
-class DuplicatedPathPlaceholderException extends Exception
+class DuplicatePathPlaceholderException extends Exception
 {
     public function __construct(array $placeholders, string $path)
     {

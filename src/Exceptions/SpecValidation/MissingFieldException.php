@@ -4,7 +4,7 @@ namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
 use Exception;
 
-class MissedDocFieldException extends Exception
+class MissingFieldException extends Exception
 {
     public function __construct(array $fields, string $parent = null)
     {

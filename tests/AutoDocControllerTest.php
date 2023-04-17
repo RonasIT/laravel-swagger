@@ -60,7 +60,7 @@ class AutoDocControllerTest extends TestCase
                 'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__non_json.txt'
             ],
             [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missed_field__paths.json'
+                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_field__paths.json'
             ]
         ];
     }

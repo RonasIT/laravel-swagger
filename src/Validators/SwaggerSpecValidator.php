@@ -3,16 +3,17 @@
 namespace RonasIT\Support\AutoDoc\Validators;
 
 use Illuminate\Support\Arr;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicatedParamException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicatedPathPlaceholderException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidDocFieldValueException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidHttpMethodException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidResponseCodeException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicateFieldException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicateParamException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicatePathPlaceholderException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidFieldNameException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissedDocDefinitionException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissedDocFieldException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\PathParamMissingException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingDefinitionException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
 
 class SwaggerSpecValidator
 {
@@ -37,8 +38,10 @@ class SwaggerSpecValidator
     ];
 
     const AVAILABLE_VALUES = [
-        'collection_format' => ['csv', 'ssv', 'tsv', 'pipes', 'multi'],
-        'http_method' => ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'],
+        'parameter_collection_format' => ['csv', 'ssv', 'tsv', 'pipes', 'multi'],
+        'items_collection_format' => ['csv', 'ssv', 'tsv', 'pipes'],
+        'header_collection_format' => ['csv', 'ssv', 'tsv', 'pipes'],
+        'path_key' => ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', '$ref', 'parameters'],
         'parameter_in' => ['body', 'formData', 'query', 'path', 'header'],
         'schemes' => ['http', 'https', 'ws', 'wss'],
         'security_definition_flow' => ['implicit', 'password', 'application', 'accessCode'],
@@ -65,7 +68,7 @@ class SwaggerSpecValidator
     public function validate(): void
     {
         $this->validateVersion();
-        $this->validateMissedFields($this->doc, self::REQUIRED_FIELDS['doc']);
+        $this->validateFieldsPresent($this->doc, self::REQUIRED_FIELDS['doc']);
         $this->validateInfo();
         $this->validateSchemes();
         $this->validatePaths();
@@ -85,25 +88,25 @@ class SwaggerSpecValidator
 
     protected function validateInfo(): void
     {
-        $this->validateMissedFields($this->doc['info'], self::REQUIRED_FIELDS['info'], 'info');
+        $this->validateFieldsPresent($this->doc['info'], self::REQUIRED_FIELDS['info'], 'info');
     }
 
     protected function validateSchemes(): void
     {
-        $this->validateFieldHasAvailableValues('schemes', $this->doc, self::AVAILABLE_VALUES['schemes']);
+        $this->validateFieldValue('schemes', $this->doc, self::AVAILABLE_VALUES['schemes']);
     }
 
     protected function validatePaths(): void
     {
         foreach ($this->doc['paths'] as $path => $operations) {
-            foreach ($operations as $method => $operation) {
-                $operationId = "paths|{$path}|{$method}";
+            foreach ($operations as $pathKey => $operation) {
+                $operationId = "paths.{$path}.{$pathKey}";
 
-                if (!in_array($method, self::AVAILABLE_VALUES['http_method'])) {
-                    throw new InvalidHttpMethodException($method, $path);
+                if (!in_array($pathKey, self::AVAILABLE_VALUES['path_key'])) {
+                    throw new InvalidFieldNameException($operationId);
                 }
 
-                $this->validateMissedFields($operation, self::REQUIRED_FIELDS['operation'], $operationId);
+                $this->validateFieldsPresent($operation, self::REQUIRED_FIELDS['operation'], $operationId);
 
                 $this->validateParameters($operation, $path, $operationId);
 
@@ -112,6 +115,8 @@ class SwaggerSpecValidator
                 }
             }
         }
+
+        $this->validateOperationIdUnique();
     }
 
     protected function validateDefinitions(): void
@@ -119,13 +124,13 @@ class SwaggerSpecValidator
         $definitions = Arr::get($this->doc, 'definitions', []);
 
         foreach ($definitions as $index => $definition) {
-            $this->validateMissedFields($definition, self::REQUIRED_FIELDS['definition'], "definitions|{$index}");
+            $this->validateFieldsPresent($definition, self::REQUIRED_FIELDS['definition'], "definitions.{$index}");
         }
 
-        $missedDefinitions = $this->getMissedFields($definitions, $this->getRefs());
+        $missingDefinitions = $this->getMissingFields($definitions, $this->getRefs());
 
-        if (!empty($missedDefinitions)) {
-            throw new MissedDocDefinitionException($missedDefinitions);
+        if (!empty($missingDefinitions)) {
+            throw new MissingDefinitionException($missingDefinitions);
         }
     }
 
@@ -134,13 +139,13 @@ class SwaggerSpecValidator
         $securityDefinitions = Arr::get($this->doc, 'securityDefinitions', []);
 
         foreach ($securityDefinitions as $index => $securityDefinition) {
-            $parentId = "securityDefinitions|{$index}";
+            $parentId = "securityDefinitions.{$index}";
 
-            $this->validateMissedFields($securityDefinition, self::REQUIRED_FIELDS['security_definition'], $parentId);
+            $this->validateFieldsPresent($securityDefinition, self::REQUIRED_FIELDS['security_definition'], $parentId);
 
-            $this->validateFieldHasAvailableValue('type', $securityDefinition, self::AVAILABLE_VALUES['security_definition_type'], $parentId);
-            $this->validateFieldHasAvailableValue('in', $securityDefinition, self::AVAILABLE_VALUES['security_definition_in'], $parentId);
-            $this->validateFieldHasAvailableValue('flow', $securityDefinition, self::AVAILABLE_VALUES['security_definition_flow'], $parentId);
+            $this->validateFieldValue('type', $securityDefinition, self::AVAILABLE_VALUES['security_definition_type'], $parentId);
+            $this->validateFieldValue('in', $securityDefinition, self::AVAILABLE_VALUES['security_definition_in'], $parentId);
+            $this->validateFieldValue('flow', $securityDefinition, self::AVAILABLE_VALUES['security_definition_flow'], $parentId);
         }
     }
 
@@ -149,30 +154,32 @@ class SwaggerSpecValidator
         $tags = Arr::get($this->doc, 'tags', []);
 
         foreach ($tags as $index => $tag) {
-            $this->validateMissedFields($tag, self::REQUIRED_FIELDS['tag'], "tags|{$index}");
+            $this->validateFieldsPresent($tag, self::REQUIRED_FIELDS['tag'], "tags.{$index}");
         }
+
+        $this->validateTagsUnique();
     }
 
     protected function validateResponse(array $response, string $statusCode, string $operationId): void
     {
-        $responseId = "{$operationId}|responses|{$statusCode}";
+        $responseId = "{$operationId}.responses.{$statusCode}";
 
-        $this->validateMissedFields($response, self::REQUIRED_FIELDS['response'], $responseId);
+        $this->validateFieldsPresent($response, self::REQUIRED_FIELDS['response'], $responseId);
 
         if (($statusCode !== 'default') && (($statusCode < 100) || ($statusCode > 599))) {
-            throw new InvalidResponseCodeException($statusCode, $responseId);
+            throw new InvalidFieldNameException($responseId);
         }
 
         foreach (Arr::get($response, 'headers', []) as $headerName => $header) {
-            $this->validateHeader($header, "{$responseId}|headers|{$headerName}");
+            $this->validateHeader($header, "{$responseId}.headers.{$headerName}");
         }
 
         if (!empty($response['schema'])) {
-            $this->validateSchema($response['schema'], array_merge(self::SCHEMA_TYPES, ['files']), "{$responseId}|schema");
+            $this->validateType($response['schema'], array_merge(self::SCHEMA_TYPES, ['file']), "{$responseId}.schema");
         }
 
         if (!empty($response['items'])) {
-            $this->validateItems($response['items'], "{$responseId}|items");
+            $this->validateItems($response['items'], "{$responseId}.items");
         }
     }
 
@@ -181,51 +188,36 @@ class SwaggerSpecValidator
         $parameters = Arr::get($operation, 'parameters', []);
 
         foreach ($parameters as $index => $param) {
-            $paramId = "{$operationId}|parameters|{$index}";
+            $paramId = "{$operationId}.parameters.{$index}";
 
-            $this->validateMissedFields($param, self::REQUIRED_FIELDS['parameter'], $paramId);
+            $this->validateFieldsPresent($param, self::REQUIRED_FIELDS['parameter'], $paramId);
 
-            $this->validateFieldHasAvailableValue('in', $param, self::AVAILABLE_VALUES['parameter_in'], $paramId);
-            $this->validateFieldHasAvailableValue('collectionFormat', $param, self::AVAILABLE_VALUES['collection_format'], $paramId);
+            $this->validateFieldValue('in', $param, self::AVAILABLE_VALUES['parameter_in'], $paramId);
+            $this->validateFieldValue('collectionFormat', $param, self::AVAILABLE_VALUES['parameter_collection_format'], $paramId);
 
             $this->validateParameterType($param, $operation, $paramId, $operationId);
 
             if (!empty($param['items'])) {
-                $this->validateItems($param['items'], "{$paramId}|items");
+                $this->validateItems($param['items'], "{$paramId}.items");
             }
         }
 
-        $this->validateParamDuplicates($parameters);
+        $this->validateParamsUnique($parameters);
 
         $this->validatePathParameters($parameters, $path, $operationId);
         $this->validateBodyParameters($parameters, $operationId);
     }
 
-    protected function validateSchema(array $schema, array $validTypes, string $schemaId): void
+    protected function validateType(array $schema, array $validTypes, string $schemaId): void
     {
         $schemaType = Arr::get($schema, 'type');
 
         if (!empty($schemaType) && !in_array($schemaType, $validTypes)) {
-            throw new InvalidDocFieldValueException("{$schemaId}|type", $schema['type']);
+            throw new InvalidFieldValueException("{$schemaId}.type", $schema['type']);
         }
 
         if (($schemaType === 'array') && empty($schema['items'])) {
             throw new InvalidSwaggerSpecException("Validation failed. {$schemaId} is an array, so it must include an 'items' field.");
-        }
-    }
-
-    protected function validateParamDuplicates(array $params): void
-    {
-        for ($i = 0; $i < count($params) - 1; $i++) {
-            $outer = $params[$i];
-
-            for ($j = $i + 1; $j < count($params); $j++) {
-                $inner = $params[$j];
-
-                if (($outer['name'] === $inner['name']) && ($outer['in'] === $inner['in'])) {
-                    throw new DuplicatedParamException($outer['in'], $outer['name']);
-                }
-            }
         }
     }
 
@@ -235,13 +227,13 @@ class SwaggerSpecValidator
             return ($param['in'] === 'path');
         });
 
-        preg_match_all(self::PATH_PARAM_REGEXP, $path, $placeholders);
-        $placeholders = $placeholders[0];
+        preg_match_all(self::PATH_PARAM_REGEXP, $path, $matches);
+        $placeholders = $matches[0];
 
         $placeholderDuplicates = array_get_duplicates($placeholders);
 
         if (!empty($placeholderDuplicates)) {
-            throw new DuplicatedPathPlaceholderException($placeholderDuplicates, $path);
+            throw new DuplicatePathPlaceholderException($placeholderDuplicates, $path);
         }
 
         foreach ($pathParams as $param) {
@@ -252,14 +244,14 @@ class SwaggerSpecValidator
             $placeholderIndex = array_search($param['name'], $placeholders);
 
             if ($placeholderIndex === false) {
-                throw new InvalidSwaggerSpecException("Validation failed. Operation {$operationId} has a path parameter named '{$param['name']}', but there is no corresponding '{$param['name']}' in the path string.");
+                throw new MissingPathPlaceholderException($operationId, $param['name']);
             }
 
             unset($placeholders[$placeholderIndex]);
         }
 
         if (!empty($placeholders)) {
-            throw new PathParamMissingException($operationId, $placeholders);
+            throw new MissingPathParamException($operationId, $placeholders);
         }
     }
 
@@ -297,10 +289,10 @@ class SwaggerSpecValidator
                 $validTypes = self::PRIMITIVE_TYPES;
         }
 
-        $this->validateMissedFields($param, $requiredFields, $paramId);
+        $this->validateFieldsPresent($param, $requiredFields, $paramId);
 
         $schema = Arr::get($param, 'schema', $param);
-        $this->validateSchema($schema, $validTypes, $paramId);
+        $this->validateType($schema, $validTypes, $paramId);
 
         if (Arr::get($schema, 'type') === 'file') {
             $requiredMimeType = Arr::first(
@@ -318,9 +310,10 @@ class SwaggerSpecValidator
 
     protected function validateHeader(array $header, string $headerId): void
     {
-        $this->validateMissedFields($header, self::REQUIRED_FIELDS['header'], $headerId);
+        $this->validateFieldsPresent($header, self::REQUIRED_FIELDS['header'], $headerId);
 
-        $this->validateSchema($header, self::PRIMITIVE_TYPES, $headerId);
+        $this->validateType($header, self::PRIMITIVE_TYPES, $headerId);
+        $this->validateFieldValue('collectionFormat', $header, self::AVAILABLE_VALUES['header_collection_format'], $headerId);
 
         if (!empty($header['items'])) {
             $this->validateItems($header['items'], $headerId);
@@ -329,43 +322,34 @@ class SwaggerSpecValidator
 
     protected function validateItems(array $items, string $itemsId): void
     {
-        $this->validateMissedFields($items, self::REQUIRED_FIELDS['item'], $itemsId);
+        $this->validateFieldsPresent($items, self::REQUIRED_FIELDS['item'], $itemsId);
 
-        $this->validateSchema($items, self::PRIMITIVE_TYPES, $itemsId);
+        $this->validateType($items, self::PRIMITIVE_TYPES, $itemsId);
+        $this->validateFieldValue('collectionFormat', $items, self::AVAILABLE_VALUES['items_collection_format'], $itemsId);
     }
 
-    protected function getMissedFields(array $parentField, array $requiredFields): array
+    protected function getMissingFields(array $parentField, array $requiredFields): array
     {
         return array_diff($requiredFields, array_keys($parentField));
     }
 
-    protected function validateMissedFields(array $parent, array $requiredFields, string $parentId = null): void
+    protected function validateFieldsPresent(array $parent, array $requiredFields, string $parentId = null): void
     {
-        $missedDocFields = $this->getMissedFields($parent, $requiredFields);
+        $missingDocFields = $this->getMissingFields($parent, $requiredFields);
 
-        if (!empty($missedDocFields)) {
-            throw new MissedDocFieldException($missedDocFields, $parentId);
+        if (!empty($missingDocFields)) {
+            throw new MissingFieldException($missingDocFields, $parentId);
         }
     }
 
-    protected function validateFieldHasAvailableValue(string $fieldName, array $parent, array $availableValues, string $parentId = null): void
+    protected function validateFieldValue(string $fieldName, array $parent, array $availableValues, string $parentId = null): void
     {
-        if (
-            !empty($parent[$fieldName])
-            && !in_array($parent[$fieldName], $availableValues)
-        ) {
-            throw new InvalidDocFieldValueException($parentId ? "{$parentId}|{$fieldName}" : $fieldName, $parent[$fieldName]);
-        }
-    }
-
-    protected function validateFieldHasAvailableValues(string $fieldName, array $parent, array $availableValues, string $parentId = null): void
-    {
-        $inputValue = Arr::get($parent, $fieldName, []);
+        $inputValue = Arr::wrap(Arr::get($parent, $fieldName, []));
         $approvedValues = array_intersect($inputValue, $availableValues);
         $invalidValues = array_diff($inputValue, $approvedValues);
 
         if (!empty($invalidValues)) {
-            throw new InvalidDocFieldValueException($parentId ? "{$parentId}|{$fieldName}" : $fieldName, $invalidValues);
+            throw new InvalidFieldValueException($parentId ? "{$parentId}.{$fieldName}" : $fieldName, $invalidValues);
         }
     }
 
@@ -382,6 +366,49 @@ class SwaggerSpecValidator
             }
         });
 
-        return $refs;
+        return array_unique($refs);
+    }
+
+    protected function validateParamsUnique(array $params): void
+    {
+        for ($i = 0; $i < count($params) - 1; $i++) {
+            $outer = $params[$i];
+
+            for ($j = $i + 1; $j < count($params); $j++) {
+                $inner = $params[$j];
+
+                if (($outer['name'] === $inner['name']) && ($outer['in'] === $inner['in'])) {
+                    throw new DuplicateParamException($outer['in'], $outer['name']);
+                }
+            }
+        }
+    }
+
+    protected function validateOperationIdUnique(): void
+    {
+        $operationIds = array_filter(
+            Arr::flatten(
+                Arr::pluck($this->doc['paths'], '*.operationId')
+            )
+        );
+        $duplicateOperationIds = array_get_duplicates($operationIds);
+
+        if (!empty($duplicateOperationIds)) {
+            throw new DuplicateFieldException('paths.*.operationId', $duplicateOperationIds);
+        }
+    }
+
+    protected function validateTagsUnique(): void
+    {
+        $tagIds = array_filter(
+            Arr::flatten(
+                array_values(Arr::get($this->doc, 'tags', []))
+            )
+        );
+        $duplicateTags = array_get_duplicates($tagIds);
+
+        if (!empty($duplicateTags)) {
+            throw new DuplicateFieldException('tags.*.name', $duplicateTags);
+        }
     }
 }

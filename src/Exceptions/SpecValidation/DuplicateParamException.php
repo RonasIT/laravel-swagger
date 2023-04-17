@@ -4,7 +4,7 @@ namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
 use Exception;
 
-class DuplicatedParamException extends Exception
+class DuplicateParamException extends Exception
 {
     public function __construct(string $in, string $name)
     {

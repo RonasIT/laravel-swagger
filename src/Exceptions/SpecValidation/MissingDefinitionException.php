@@ -4,7 +4,7 @@ namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
 use Exception;
 
-class MissedDocDefinitionException extends Exception
+class MissingDefinitionException extends Exception
 {
     public function __construct(array $definitions)
     {

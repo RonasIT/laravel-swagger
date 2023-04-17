@@ -4,7 +4,7 @@ namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
 use Exception;
 
-class InvalidDocFieldValueException extends Exception
+class InvalidFieldValueException extends Exception
 {
     /**
      * @param string $fieldName

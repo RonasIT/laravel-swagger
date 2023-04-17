@@ -4,7 +4,7 @@ namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
 use Exception;
 
-class PathParamMissingException extends Exception
+class MissingPathParamException extends Exception
 {
     public function __construct(string $operationId, array $placeholders)
     {
