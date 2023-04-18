@@ -12,7 +12,7 @@ use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidFieldNameException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingDefinitionException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingRefException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
@@ -202,8 +202,8 @@ class SwaggerServiceTest extends TestCase
             ],
             [
                 'tmpDoc' => 'documentation__invalid_format__missing_definition',
-                'exception' => MissingDefinitionException::class,
-                'exceptionMessage' => "Validation failed. Definitions (loginObject) are used in \$refs but not defined in 'definitions' section."
+                'exception' => MissingRefException::class,
+                'exceptionMessage' => "Validation failed. Ref 'loginObject' are used in \$ref but not defined in 'definitions' field."
             ],
         ];
     }

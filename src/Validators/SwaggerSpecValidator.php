@@ -10,7 +10,7 @@ use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidFieldNameException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingDefinitionException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingRefException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
@@ -50,7 +50,7 @@ class SwaggerSpecValidator
     ];
 
     public const PATH_PARAM_REGEXP = '#(?<={)[^/}]+(?=})#';
-    public const DEFINITION_REF_REGEXP = '/^#\/definitions\/.+/';
+    public const REF_REGEXP = '/^#\/(.+)\/(.+)/';
 
     public const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
     public const MIME_TYPE_APPLICATION_URLENCODED = 'application/x-www-form-urlencoded';
@@ -75,6 +75,7 @@ class SwaggerSpecValidator
         $this->validateDefinitions();
         $this->validateSecurityDefinitions();
         $this->validateTags();
+        $this->validateRefs();
     }
 
     protected function validateVersion(): void
@@ -107,6 +108,7 @@ class SwaggerSpecValidator
                 }
 
                 $this->validateFieldsPresent($operation, self::REQUIRED_FIELDS['operation'], $operationId);
+                $this->validateFieldValue('schemes', $operation, self::AVAILABLE_VALUES['schemes'], $operationId);
 
                 $this->validateParameters($operation, $path, $operationId);
 
@@ -125,12 +127,6 @@ class SwaggerSpecValidator
 
         foreach ($definitions as $index => $definition) {
             $this->validateFieldsPresent($definition, self::REQUIRED_FIELDS['definition'], "definitions.{$index}");
-        }
-
-        $missingDefinitions = $this->getMissingFields($definitions, $this->getRefs());
-
-        if (!empty($missingDefinitions)) {
-            throw new MissingDefinitionException($missingDefinitions);
         }
     }
 
@@ -353,20 +349,23 @@ class SwaggerSpecValidator
         }
     }
 
-    protected function getRefs(): array
+    protected function validateRefs(): void
     {
-        $refs = [];
-
-        array_walk_recursive($this->doc, function ($item, $key) use (&$refs) {
+        array_walk_recursive($this->doc, function ($item, $key) {
             if (
                 ($key === '$ref')
-                && preg_match(self::DEFINITION_REF_REGEXP, $item)
+                && preg_match(self::REF_REGEXP, $item, $matches)
             ) {
-                $refs[] = str_replace('#/definitions/', '', $item);
+                $refParentKey = $matches[1];
+                $refKey = $matches[2];
+
+                $missingRefs = $this->getMissingFields(Arr::get($this->doc, $refParentKey, []), [$refKey]);
+
+                if (!empty($missingRefs)) {
+                    throw new MissingRefException($refKey, $refParentKey);
+                }
             }
         });
-
-        return array_unique($refs);
     }
 
     protected function validateParamsUnique(array $params): void
