@@ -226,7 +226,7 @@ class SwaggerSpecValidator
         preg_match_all(self::PATH_PARAM_REGEXP, $path, $matches);
         $placeholders = $matches[0];
 
-        $placeholderDuplicates = array_get_duplicates($placeholders);
+        $placeholderDuplicates = array_duplicate($placeholders);
 
         if (!empty($placeholderDuplicates)) {
             throw new DuplicatePathPlaceholderException($placeholderDuplicates, $path);
@@ -390,7 +390,7 @@ class SwaggerSpecValidator
                 Arr::pluck($this->doc['paths'], '*.operationId')
             )
         );
-        $duplicateOperationIds = array_get_duplicates($operationIds);
+        $duplicateOperationIds = array_duplicate($operationIds);
 
         if (!empty($duplicateOperationIds)) {
             throw new DuplicateFieldException('paths.*.operationId', $duplicateOperationIds);
@@ -404,7 +404,7 @@ class SwaggerSpecValidator
                 array_values(Arr::get($this->doc, 'tags', []))
             )
         );
-        $duplicateTags = array_get_duplicates($tagIds);
+        $duplicateTags = array_duplicate($tagIds);
 
         if (!empty($duplicateTags)) {
             throw new DuplicateFieldException('tags.*.name', $duplicateTags);
