@@ -5,7 +5,7 @@
   "schemes": [],
   "paths": {
     "\/auth\/login": {
-      "invalid_method": {
+      "post": {
         "tags": [
           "auth"
         ],
@@ -22,7 +22,7 @@
             "description": "",
             "required": true,
             "schema": {
-              "$ref": "#\/definitions\/authloginObject"
+              "$ref": "invalid-filename.json"
             }
           }
         ],

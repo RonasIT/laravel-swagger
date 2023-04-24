@@ -2,14 +2,12 @@
 
 namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
-use Exception;
-
-class MissingFieldException extends Exception
+class MissingFieldException extends InvalidSwaggerSpecException
 {
-    public function __construct(array $fields, string $parent = null)
+    public function __construct(array $missingFields, string $parentField = null)
     {
-        $fieldsString = implode(', ', $fields);
+        $fieldsString = implode(', ', $missingFields);
 
-        parent::__construct("Validation failed. Fields ({$fieldsString}) nested in '{$parent}' are listed as required but don't exist in documentation.");
+        parent::__construct("Validation failed. '{$parentField}' should have required fields: {$fieldsString}.");
     }
 }

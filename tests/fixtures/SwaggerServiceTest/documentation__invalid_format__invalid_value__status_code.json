@@ -8,7 +8,7 @@
     "/users": {
       "get": {
         "responses": {
-          "888": {
+          "8888": {
             "description": "hello world"
           }
         }

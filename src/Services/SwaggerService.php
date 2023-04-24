@@ -2,7 +2,6 @@
 
 namespace RonasIT\Support\AutoDoc\Services;
 
-use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
@@ -11,6 +10,7 @@ use Illuminate\Support\Str;
 use ReflectionClass;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
@@ -654,7 +654,7 @@ class SwaggerService
                 if ($fileContent) {
                     try {
                         $this->validateSpec($fileContent);
-                    } catch (Exception $exception) {
+                    } catch (InvalidSwaggerSpecException $exception) {
                         report($exception);
 
                         continue;

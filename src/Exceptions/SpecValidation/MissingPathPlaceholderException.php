@@ -2,12 +2,12 @@
 
 namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
-use Exception;
-
-class MissingPathPlaceholderException extends Exception
+class MissingPathPlaceholderException extends InvalidSwaggerSpecException
 {
-    public function __construct(string $operationId, string $paramName)
+    public function __construct(string $operationId, array $params)
     {
-        parent::__construct("Validation failed. Operation {$operationId} has a path parameter named '{$paramName}', but there is no corresponding '{$paramName}' in the path string.");
+        $paramsString = implode(', ', $params);
+
+        parent::__construct("Validation failed. Operation '{$operationId}' has no placeholders for params: {$paramsString}.");
     }
 }

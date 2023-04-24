@@ -2,14 +2,12 @@
 
 namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
-use Exception;
-
-class DuplicatePathPlaceholderException extends Exception
+class DuplicatePathPlaceholderException extends InvalidSwaggerSpecException
 {
     public function __construct(array $placeholders, string $path)
     {
         $placeholdersString = implode(', ', $placeholders);
 
-        parent::__construct("Validation failed. Path '{$path}' has multiple path placeholders named ({$placeholdersString}).");
+        parent::__construct("Validation failed. Path '{$path}' has multiple path placeholders with name: {$placeholdersString}.");
     }
 }

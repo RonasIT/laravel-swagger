@@ -29,6 +29,7 @@
         }
       },
       "post": {
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "username",

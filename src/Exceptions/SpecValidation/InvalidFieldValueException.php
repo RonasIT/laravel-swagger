@@ -2,18 +2,12 @@
 
 namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
-use Exception;
-
-class InvalidFieldValueException extends Exception
+class InvalidFieldValueException extends InvalidSwaggerSpecException
 {
-    /**
-     * @param string $fieldName
-     * @param mixed $value
-     */
-    public function __construct(string $fieldName, $value)
+    public function __construct(string $fieldId, array $allowedValues)
     {
-        $valueString = (is_array($value)) ? implode(', ', $value) : (string)$value;
+        $allowedValuesString = implode(', ', $allowedValues);
 
-        parent::__construct("Validation failed. Field '{$fieldName}' has an invalid value ({$valueString}).");
+        parent::__construct("Validation failed. Field '{$fieldId}' has an invalid value. Allowed values: {$allowedValuesString}.");
     }
 }

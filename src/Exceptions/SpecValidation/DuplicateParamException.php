@@ -2,12 +2,10 @@
 
 namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
-use Exception;
-
-class DuplicateParamException extends Exception
+class DuplicateParamException extends InvalidSwaggerSpecException
 {
-    public function __construct(string $in, string $name)
+    public function __construct(string $in, string $name, string $operationId)
     {
-        parent::__construct("Validation failed. Found multiple {$in} parameters named '{$name}'.");
+        parent::__construct("Validation failed. Operation '{$operationId}' has multiple in:{$in} parameters with name:{$name}.");
     }
 }
