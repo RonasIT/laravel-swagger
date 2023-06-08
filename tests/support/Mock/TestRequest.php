@@ -10,8 +10,8 @@ class TestRequest extends FormRequest
     {
         return [
             'query' => 'string|required',
-            'user_id' => ['integer', new TestRuleWithToStringRule],
-            'is_email_enabled' => new TestRuleWithoutToStringRule
+            'user_id' => ['integer', new TestRuleWithToStringRule()],
+            'is_email_enabled' => new TestRuleWithoutToStringRule()
         ];
     }
 }
