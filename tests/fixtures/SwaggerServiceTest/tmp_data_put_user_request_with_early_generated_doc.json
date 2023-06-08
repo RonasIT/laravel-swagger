@@ -87,15 +87,6 @@
             "description": "",
             "required": true,
             "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/users{id}Object"
-            }
           }
         ],
         "responses": {
@@ -123,6 +114,14 @@
         "query": {
           "type": "string",
           "description": ""
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "with_to_array_rule_string_name"
+        },
+        "is_email_enabled": {
+          "type": "string",
+          "description": "test_rule_without_to_array"
         }
       },
       "example": {

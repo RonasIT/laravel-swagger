@@ -339,7 +339,7 @@ class SwaggerService
         $formRequest = new $request();
         $formRequest->setUserResolver($this->request->getUserResolver());
         $formRequest->setRouteResolver($this->request->getRouteResolver());
-        $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
+        $rules = method_exists($formRequest, 'rules') ? $this->prepareRules($formRequest->rules()) : [];
         $attributes = method_exists($formRequest, 'attributes') ? $formRequest->attributes() : [];
 
         $actionName = $this->getActionName($this->uri);
@@ -349,6 +349,47 @@ class SwaggerService
         } else {
             $this->savePostRequestParameters($actionName, $rules, $attributes, $annotations);
         }
+    }
+
+    protected function prepareRules(array $rules): array
+    {
+        $preparedRules = [];
+
+        foreach ($rules as $field => $rulesField) {
+            if (is_array($rulesField)) {
+                $rulesField = array_map(function ($rule) {
+                    return $this->getRuleAsString($rule);
+                }, $rulesField);
+
+                $preparedRules[$field] = implode('|', $rulesField);
+            } else {
+                $preparedRules[$field] = $this->getRuleAsString($rulesField);
+            }
+        }
+
+        return $preparedRules;
+    }
+
+    protected function getRuleAsString($rule): string
+    {
+        if (is_string($rule)) {
+            return $rule;
+        }
+
+        $reflectionRule = new ReflectionClass($rule);
+
+        if ($reflectionRule->hasMethod('__toString')) {
+            return $rule->__toString();
+        }
+
+        $ruleName = preg_replace('/Rule$/', '', $reflectionRule->getShortName());
+
+        return $this->toSnakeCase($ruleName);
+    }
+
+    public static function toSnakeCase(string $string): string
+    {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $string));
     }
 
     protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
