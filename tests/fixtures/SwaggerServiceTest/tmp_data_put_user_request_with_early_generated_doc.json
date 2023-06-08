@@ -87,6 +87,15 @@
             "description": "",
             "required": true,
             "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/users{id}Object"
+            }
           }
         ],
         "responses": {
