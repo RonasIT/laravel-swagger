@@ -29,7 +29,7 @@
             "in": "query",
             "name": "is_email_enabled",
             "type": "string",
-            "description": "test_rule_without_to_array"
+            "description": "test_rule_without_to_string"
           }
         ],
         "responses":
