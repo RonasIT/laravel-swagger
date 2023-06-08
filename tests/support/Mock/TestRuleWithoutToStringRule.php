@@ -14,6 +14,6 @@ class TestRuleWithoutToStringRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-         // May be implemented in the future if rule validation is needed.
+        // May be implemented in the future if rule validation is needed.
     }
 }
