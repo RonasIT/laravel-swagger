@@ -372,24 +372,24 @@ class SwaggerService
 
     protected function getRuleAsString($rule): string
     {
-        if (is_string($rule)) {
-            return $rule;
+        if (is_object($rule)) {
+            if (method_exists($rule, '__toString')) {
+                return $rule->__toString();
+            }
+
+            list ($shortName) = extract_last_part(get_class($rule), '\\');
+
+            $ruleName = preg_replace('/Rule$/', '', $shortName);
+
+            return $this->toSnakeCase($ruleName);
         }
 
-        $reflectionRule = new ReflectionClass($rule);
-
-        if ($reflectionRule->hasMethod('__toString')) {
-            return $rule->__toString();
-        }
-
-        $ruleName = preg_replace('/Rule$/', '', $reflectionRule->getShortName());
-
-        return $this->toSnakeCase($ruleName);
+        return $rule;
     }
 
     public static function toSnakeCase(string $string): string
     {
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $string));
+        return (function_exists('snake_case')) ? snake_case($string) : Str::snake($string);
     }
 
     protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
