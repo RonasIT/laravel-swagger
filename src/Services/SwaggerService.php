@@ -377,7 +377,7 @@ class SwaggerService
                 return $rule->__toString();
             }
 
-            list ($shortName) = extract_last_part(get_class($rule), '\\');
+            list($shortName) = extract_last_part(get_class($rule), '\\');
 
             $ruleName = preg_replace('/Rule$/', '', $shortName);
 
