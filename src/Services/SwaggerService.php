@@ -381,15 +381,10 @@ class SwaggerService
 
             $ruleName = preg_replace('/Rule$/', '', $shortName);
 
-            return $this->toSnakeCase($ruleName);
+            return Str::snake($ruleName);
         }
 
         return $rule;
-    }
-
-    public static function toSnakeCase(string $string): string
-    {
-        return (function_exists('snake_case')) ? snake_case($string) : Str::snake($string);
     }
 
     protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
