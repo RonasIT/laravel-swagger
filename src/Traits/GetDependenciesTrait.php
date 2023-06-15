@@ -46,6 +46,10 @@ trait GetDependenciesTrait
 
         $implementation = Arr::get($bindings, "{$interfaceName}.concrete");
 
+        if (empty($implementation)) {
+            return null;
+        }
+
         $classFields = (new ReflectionFunction($implementation))->getStaticVariables();
 
         return $classFields['concrete'];

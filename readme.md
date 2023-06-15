@@ -57,22 +57,7 @@ passing PHPUnit tests.
 
 ### Basic usage
 
-1. Create test for API endpoint:
-
-    ```php
-    public function testUpdate()
-    {
-        $response = $this->json('put', '/users/1', [
-            'name': 'Updated User',
-            'is_active': true,
-            'age': 22
-        ]);
-
-        $response->assertStatus(Response::HTTP_NO_CONTENT);
-    }
-    ```
-
-2. Create request class:
+1. Create request class:
 
     ```php
     <?php
@@ -119,7 +104,6 @@ passing PHPUnit tests.
     }
 
     ```
-
     > ***Note***
     > 
     > For correct working of plugin you'll have to dispose all the validation rules 
@@ -128,9 +112,49 @@ passing PHPUnit tests.
     > Plugin will take validation rules from the request class and generate fields description
     > of input parameter.
 
-3. Run tests
-4. Go to route defined in the `auto-doc.route` config
-5. Profit!
+2. Create a controller and a method for your route:
+
+    ```php
+    <?php
+
+    namespace App\Http\Controllers;
+
+    use App\Http\Requests\Users\UpdateUserDataRequest;
+
+    class UserController extends Controller
+    {
+        public function update(UpdateUserDataRequest $request, UserService $service, $id)
+        {
+            // do something here...
+
+            return response('', Response::HTTP_NO_CONTENT);
+        }
+    }
+    ```
+
+    > ***Note***
+    > 
+    > Dependency injection of request class is optional but if it not presents,
+    > the "Parameters" block in the API documentation will be empty.
+
+3. Create test for API endpoint:
+
+    ```php
+    public function testUpdate()
+    {
+        $response = $this->json('put', '/users/1', [
+            'name': 'Updated User',
+            'is_active': true,
+            'age': 22
+        ]);
+
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+    }
+    ```
+
+4. Run tests
+5. Go to route defined in the `auto-doc.route` config
+6. Profit!
 
     ![img.png](resources/assets/images/img.png)
 

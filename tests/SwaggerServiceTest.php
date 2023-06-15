@@ -329,4 +329,21 @@ class SwaggerServiceTest extends TestCase
 
         $service->addData($request, $response);
     }
+
+    public function testAddDataWithoutBoundContract()
+    {
+        config(['auto-doc.response_example_limit_count' => 1]);
+
+        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_users_empty_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest('get', '/api/users', [], [], [], 'testRequestWithContract');
+
+        $response = $this->generateResponse('example_success_users_response.json', 200, [
+            'Content-type' => 'application/json'
+        ]);
+
+        $service->addData($request, $response);
+    }
 }

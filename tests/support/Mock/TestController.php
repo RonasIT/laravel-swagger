@@ -15,4 +15,8 @@ class TestController
     public function testRequestWithAnnotations(TestRequestWithAnnotations $request)
     {
     }
+
+    public function testRequestWithContract(TestContract $contract)
+    {
+    }
 }
