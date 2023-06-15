@@ -134,8 +134,8 @@ passing PHPUnit tests.
 
     > ***Note***
     > 
-    > Dependency injection of request class is optional but in this case,
-    > the documentation about the request will not be collected..
+    > Dependency injection of request class is optional but if it not presents,
+    > the "Parameters" block in the API documentation will be empty.
 
 3. Create test for API endpoint:
 
