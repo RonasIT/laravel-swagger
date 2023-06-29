@@ -36,7 +36,7 @@ class AutoDocController extends BaseController
 
     public function getFile(Request $request, $file)
     {
-        $filePath = __DIR__ . '/../../../resources/assets/swagger/' . $file;
+        $filePath = __DIR__ . '/../../../resources/assets/elements/' . $file;
 
         if (!file_exists($filePath)) {
             throw new NotFoundHttpException();
