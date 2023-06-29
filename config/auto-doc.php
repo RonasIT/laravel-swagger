@@ -105,6 +105,16 @@ return [
     */
     'driver' => env('SWAGGER_DRIVER', 'local'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAPI Spec viewer
+    |--------------------------------------------------------------------------
+    |
+    | Tool for rendering API documentation in HTML format.
+    | Available values: "swagger", "elements"
+    */
+    'documentation_viewer' => env('SWAGGER_SPEC_VIEWER', 'swagger'),
+
     'drivers' => [
         'local' => [
             'class' => LocalDriver::class,
