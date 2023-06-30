@@ -562,11 +562,13 @@ class SwaggerService
 
     public function saveTags()
     {
-        $tagIndex = 1;
+        $globalPrefix = config('auto-doc.global_prefix');
 
         $explodedUri = explode('/', $this->uri);
 
-        $tag = Arr::get($explodedUri, $tagIndex);
+        $tag = (!empty($globalPrefix) && "/{$explodedUri[1]}" === $globalPrefix)
+            ? Arr::get($explodedUri, 2)
+            : Arr::get($explodedUri, 1);
 
         $this->item['tags'] = [$tag];
     }
