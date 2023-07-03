@@ -11,6 +11,11 @@
 </head>
 
 <body>
-<elements-api apiDescriptionUrl="/auto-doc/documentation" router="hash" layout="sidebar"/>
+    <elements-api
+        apiDescriptionUrl="{{ config('auto-doc.global_prefix') }}/auto-doc/documentation"
+        tryItCredentialsPolicy="include"
+        router="hash"
+        layout="sidebar"
+    />
 </body>
 </html>
