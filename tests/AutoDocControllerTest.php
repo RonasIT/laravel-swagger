@@ -85,6 +85,20 @@ class AutoDocControllerTest extends TestCase
         $this->assertEqualsFixture('rendered_documentation.html', $response->getContent());
     }
 
+    public function testGetViewElementsDocumentation()
+    {
+        config([
+            'auto-doc.display_environments' => ['testing'],
+            'auto-doc.documentation_viewer' => 'elements'
+        ]);
+
+        $response = $this->get('/');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $this->assertEqualsFixture('rendered_elements_documentation.html', $response->getContent());
+    }
+
     public function testGetViewDocumentationEnvironmentDisable()
     {
         $response = $this->get('/');
@@ -114,6 +128,19 @@ class AutoDocControllerTest extends TestCase
         $response->assertStatus(Response::HTTP_OK);
 
         $this->assertEquals($response->getContent(), file_get_contents(resource_path('/assets/swagger/swagger-ui.js')));
+
+        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+    }
+
+    public function testGetElementsAssetFile()
+    {
+        config(['auto-doc.documentation_viewer' => 'elements']);
+
+        $response = $this->get('/auto-doc/web-components.min.js');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $this->assertEquals($response->getContent(), file_get_contents(resource_path('/assets/elements/web-components.min.js')));
 
         $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
     }
