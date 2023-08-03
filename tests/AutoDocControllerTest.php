@@ -99,6 +99,20 @@ class AutoDocControllerTest extends TestCase
         $this->assertEqualsFixture('rendered_elements_documentation.html', $response->getContent());
     }
 
+    public function testGetViewRapidocDocumentation()
+    {
+        config([
+            'auto-doc.display_environments' => ['testing'],
+            'auto-doc.documentation_viewer' => 'rapidoc'
+        ]);
+
+        $response = $this->get('/');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $this->assertEqualsFixture('rendered_rapidoc_documentation.html', $response->getContent());
+    }
+
     public function testGetViewDocumentationEnvironmentDisable()
     {
         $response = $this->get('/');
