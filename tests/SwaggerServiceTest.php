@@ -3,6 +3,7 @@
 namespace RonasIT\Support\Tests;
 
 use Illuminate\Http\Testing\File;
+use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
@@ -47,6 +48,15 @@ class SwaggerServiceTest extends TestCase
         config(['auto-doc.drivers.local.class' => TestCase::class]);
 
         $this->expectException(InvalidDriverClassException::class);
+
+        app(SwaggerService::class);
+    }
+
+    public function testEmptyContactEmail()
+    {
+        config(['auto-doc.contact.email' => null]);
+
+        $this->expectException(EmptyContactEmailException::class);
 
         app(SwaggerService::class);
     }

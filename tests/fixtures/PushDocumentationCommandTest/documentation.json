@@ -11,7 +11,7 @@
         "title": "Name of Your Application",
         "termsOfService": "",
         "contact": {
-            "email": "your@email.com"
+            "email": null
         }
     }
 }
