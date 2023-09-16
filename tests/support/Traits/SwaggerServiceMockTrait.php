@@ -8,19 +8,23 @@ trait SwaggerServiceMockTrait
 {
     use MockTrait;
 
-    protected function mockDriverGetEmptyAndSaveTpmData($tmpData, $driverClass = LocalDriver::class)
+    protected function mockDriverGetEmptyAndSaveTpmData($tmpData, $savedTmpData = null, $driverClass = LocalDriver::class)
     {
         $driver = $this->mockClass($driverClass, ['getTmpData', 'saveTmpData']);
 
         $driver
             ->expects($this->exactly(1))
             ->method('getTmpData')
-            ->willReturn(array_merge($tmpData, ['paths' => [], 'definitions' => []]));
+            ->willReturn(
+                empty($tmpData)
+                ? $tmpData
+                : array_merge($tmpData, ['paths' => [], 'definitions' => []])
+            );
 
         $driver
             ->expects($this->exactly(1))
             ->method('saveTmpData')
-            ->with($tmpData);
+            ->with($savedTmpData ?? $tmpData);
 
         $this->app->instance($driverClass, $driver);
     }
