@@ -3,6 +3,7 @@
 namespace RonasIT\Support\Tests;
 
 use Illuminate\Http\Testing\File;
+use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
@@ -47,6 +48,55 @@ class SwaggerServiceTest extends TestCase
         config(['auto-doc.drivers.local.class' => TestCase::class]);
 
         $this->expectException(InvalidDriverClassException::class);
+
+        app(SwaggerService::class);
+    }
+
+    public function testEmptyContactEmail()
+    {
+        config(['auto-doc.contact.email' => null]);
+
+        $this->expectException(EmptyContactEmailException::class);
+
+        app(SwaggerService::class);
+    }
+
+    public function getAddEmptyData(): array
+    {
+        return [
+            [
+                'security' => 'laravel',
+                'savedTmpDataFixture' => 'tmp_data_request_with_empty_data_laravel',
+            ],
+            [
+                'security' => 'jwt',
+                'savedTmpDataFixture' => 'tmp_data_request_with_empty_data_jwt',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getAddEmptyData
+     *
+     * @param string $security
+     * @param string $savedTmpDataFixture
+     */
+    public function testAddDataRequestWithEmptyDataLaravel(string $security, string $savedTmpDataFixture)
+    {
+        config([
+            'auto-doc.security' => $security,
+        ]);
+
+        $this->mockDriverGetEmptyAndSaveTpmData([], $this->getJsonFixture($savedTmpDataFixture));
+
+        app(SwaggerService::class);
+    }
+
+    public function testAddDataRequestWithEmptyDataAndInfo()
+    {
+        config(['auto-doc.info' => []]);
+
+        $this->mockDriverGetEmptyAndSaveTpmData([], $this->getJsonFixture('tmp_data_request_with_empty_data_and_info'));
 
         app(SwaggerService::class);
     }
@@ -131,26 +181,31 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function testAddDataWithJWTSecurity()
+    public function addDataWithSecurity(): array
     {
-        config(['auto-doc.security' => 'jwt']);
-
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request_jwt_security'));
-
-        $service = app(SwaggerService::class);
-
-        $request = $this->generateGetRolesRequest();
-
-        $response = $this->generateResponse('example_success_roles_response.json');
-
-        $service->addData($request, $response);
+        return [
+            [
+                'security' => 'laravel',
+                'requestFixture' => 'tmp_data_search_roles_request_laravel_security',
+            ],
+            [
+                'security' => 'jwt',
+                'requestFixture' => 'tmp_data_search_roles_request_jwt_security',
+            ],
+        ];
     }
 
-    public function testAddDataWithLaravelSecurity()
+    /**
+     * @dataProvider addDataWithSecurity
+     *
+     * @param string $security
+     * @param string $requestFixture
+     */
+    public function testAddDataWithJWTSecurity(string $security, string $requestFixture)
     {
-        config(['auto-doc.security' => 'laravel']);
+        config(['auto-doc.security' => $security]);
 
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request_laravel_security'));
+        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture($requestFixture));
 
         $service = app(SwaggerService::class);
 

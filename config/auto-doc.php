@@ -44,10 +44,10 @@ return [
         */
         'description' => 'auto-doc::swagger-description',
         'version' => '0.0.0',
-        'title' => 'Name of Your Application',
+        'title' => env('APP_NAME', 'Name of Your Application'),
         'termsOfService' => '',
         'contact' => [
-            'email' => 'your@email.com'
+            'email' => null
         ],
         'license' => [
             'name' => '',

@@ -13,5 +13,12 @@
         "contact": {
             "email": null
         }
+    },
+    "securityDefinitions": {
+        "jwt": {
+            "type": "apiKey",
+            "name": "authorization",
+            "in": "header"
+        }
     }
 }

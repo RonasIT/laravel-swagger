@@ -8,6 +8,7 @@ use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
@@ -104,6 +105,10 @@ class SwaggerService
 
     protected function generateEmptyData(): array
     {
+        if (!Arr::get($this->config, 'contact.email')) {
+            throw new EmptyContactEmailException();
+        }
+
         $data = [
             'swagger' => Arr::get($this->config, 'swagger.version'),
             'host' => $this->getAppUrl(),
