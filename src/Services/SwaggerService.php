@@ -26,6 +26,8 @@ class SwaggerService
 {
     use GetDependenciesTrait;
 
+    const SWAGGER_VERSION = '2.0';
+
     protected $driver;
 
     protected $data;
@@ -89,10 +91,6 @@ class SwaggerService
         if (version_compare($packageConfigs['config_version'], $version, '>')) {
             throw new LegacyConfigException();
         }
-
-        if (version_compare($this->config['swagger']['version'], '2.0', '!=')) {
-            throw new InvalidSwaggerVersionException($this->config['swagger']['version']);
-        }
     }
 
     protected function setDriver()
@@ -114,7 +112,7 @@ class SwaggerService
     protected function generateEmptyData(): array
     {
         $data = [
-            'swagger' => Arr::get($this->config, 'swagger.version', '2.0'),
+            'swagger' => self::SWAGGER_VERSION,
             'host' => $this->getAppUrl(),
             'basePath' => $this->config['basePath'],
             'schemes' => $this->config['schemes'],
@@ -648,44 +646,48 @@ class SwaggerService
         foreach ($additionalDocs as $filePath) {
             $fullFilePath = base_path($filePath);
 
-            if (file_exists($fullFilePath)) {
-                $fileContent = json_decode(file_get_contents($fullFilePath), true);
+            if (!file_exists($fullFilePath)) {
+                continue;
+            }
 
-                if ($fileContent) {
-                    try {
-                        $this->validateSpec($fileContent);
-                    } catch (InvalidSwaggerSpecException $exception) {
-                        report($exception);
+            $fileContent = json_decode(file_get_contents($fullFilePath), true);
 
-                        continue;
-                    }
+            if (empty($fileContent)) {
+                continue;
+            }
 
-                    $paths = array_keys($fileContent['paths']);
+            try {
+                $this->validateSpec($fileContent);
+            } catch (InvalidSwaggerSpecException $exception) {
+                report($exception);
 
-                    foreach ($paths as $path) {
-                        $additionalDocPath = $fileContent['paths'][$path];
+                continue;
+            }
 
-                        if (empty($documentation['paths'][$path])) {
-                            $documentation['paths'][$path] = $additionalDocPath;
-                        } else {
-                            $methods = array_keys($documentation['paths'][$path]);
-                            $additionalDocMethods = array_keys($additionalDocPath);
+            $paths = array_keys($fileContent['paths']);
 
-                            foreach ($additionalDocMethods as $method) {
-                                if (!in_array($method, $methods)) {
-                                    $documentation['paths'][$path][$method] = $additionalDocPath[$method];
-                                }
-                            }
+            foreach ($paths as $path) {
+                $additionalDocPath = $fileContent['paths'][$path];
+
+                if (empty($documentation['paths'][$path])) {
+                    $documentation['paths'][$path] = $additionalDocPath;
+                } else {
+                    $methods = array_keys($documentation['paths'][$path]);
+                    $additionalDocMethods = array_keys($additionalDocPath);
+
+                    foreach ($additionalDocMethods as $method) {
+                        if (!in_array($method, $methods)) {
+                            $documentation['paths'][$path][$method] = $additionalDocPath[$method];
                         }
                     }
+                }
+            }
 
-                    $definitions = array_keys($fileContent['definitions']);
+            $definitions = array_keys($fileContent['definitions']);
 
-                    foreach ($definitions as $definition) {
-                        if (empty($documentation['definitions'][$definition])) {
-                            $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
-                        }
-                    }
+            foreach ($definitions as $definition) {
+                if (empty($documentation['definitions'][$definition])) {
+                    $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
                 }
             }
         }
@@ -816,8 +818,6 @@ class SwaggerService
 
     protected function validateSpec(array $doc): void
     {
-        $validator = new SwaggerSpecValidator($doc);
-
-        $validator->validate();
+        app(SwaggerSpecValidator::class)->validate($doc);
     }
 }

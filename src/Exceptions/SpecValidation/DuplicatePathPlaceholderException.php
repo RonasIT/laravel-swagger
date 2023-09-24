@@ -8,6 +8,6 @@ class DuplicatePathPlaceholderException extends InvalidSwaggerSpecException
     {
         $placeholdersString = implode(', ', $placeholders);
 
-        parent::__construct("Validation failed. Path '{$path}' has multiple path placeholders with name: {$placeholdersString}.");
+        parent::__construct("Path '{$path}' has multiple path placeholders with name: {$placeholdersString}.");
     }
 }

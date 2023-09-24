@@ -8,6 +8,6 @@ class DuplicateFieldException extends InvalidSwaggerSpecException
     {
         $fieldValueString = implode(', ', $fieldValue);
 
-        parent::__construct("Validation failed. Found multiple fields '{$fieldName}' with values: {$fieldValueString}.");
+        parent::__construct("Found multiple fields '{$fieldName}' with values: {$fieldValueString}.");
     }
 }

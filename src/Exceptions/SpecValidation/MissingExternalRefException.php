@@ -6,6 +6,6 @@ class MissingExternalRefException extends InvalidSwaggerSpecException
 {
     public function __construct(string $ref, string $filename)
     {
-        parent::__construct("Validation failed. Ref '{$ref}' is used in \$ref but not defined in '{$filename}' file.");
+        parent::__construct("Ref '{$ref}' is used in \$ref but not defined in '{$filename}' file.");
     }
 }

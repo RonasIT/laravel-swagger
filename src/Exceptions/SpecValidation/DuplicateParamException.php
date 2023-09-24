@@ -6,6 +6,6 @@ class DuplicateParamException extends InvalidSwaggerSpecException
 {
     public function __construct(string $in, string $name, string $operationId)
     {
-        parent::__construct("Validation failed. Operation '{$operationId}' has multiple in:{$in} parameters with name:{$name}.");
+        parent::__construct("Operation '{$operationId}' has multiple in:{$in} parameters with name:{$name}.");
     }
 }

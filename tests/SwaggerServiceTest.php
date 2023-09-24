@@ -146,17 +146,17 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation__invalid_format__invalid_value__path',
                 'exception' => InvalidPathException::class,
-                'exceptionMessage' => "Validation failed at 'paths.users'. Paths should only have path names that starts with `/`."
+                'exceptionMessage' => "Validation failed. Incorrect 'paths.users'. Paths should only have path names that starts with `/`."
             ],
             [
                 'tmpDoc' => 'documentation__invalid_format__invalid_value__status_code',
                 'exception' => InvalidStatusCodeException::class,
-                'exceptionMessage' => "Validation failed at 'paths./users.get.responses.8888'. Operation should only have three-digit status codes, `default`, and vendor extensions (`x-*`) as properties."
+                'exceptionMessage' => "Validation failed. Operation at 'paths./users.get.responses.8888' should only have three-digit status codes, `default`, and vendor extensions (`x-*`) as properties."
             ],
             [
                 'tmpDoc' => 'documentation__invalid_format__invalid_value__parameter_in',
                 'exception' => InvalidFieldValueException::class,
-                'exceptionMessage' => "Validation failed. Field 'paths./auth/login.post.parameters.0.in' has an invalid value. Allowed values: body, formData, query, path, header."
+                'exceptionMessage' => "Validation failed. Field 'paths./auth/login.post.parameters.0.in' has an invalid value: invalid_in. Allowed values: body, formData, query, path, header."
             ],
             [
                 'tmpDoc' => 'documentation__invalid_format__missing_field__paths',

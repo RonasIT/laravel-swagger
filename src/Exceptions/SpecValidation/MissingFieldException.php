@@ -8,6 +8,6 @@ class MissingFieldException extends InvalidSwaggerSpecException
     {
         $fieldsString = implode(', ', $missingFields);
 
-        parent::__construct("Validation failed. '{$parentField}' should have required fields: {$fieldsString}.");
+        parent::__construct("'{$parentField}' should have required fields: {$fieldsString}.");
     }
 }

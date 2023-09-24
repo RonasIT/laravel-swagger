@@ -2,10 +2,14 @@
 
 namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
 
+use RonasIT\Support\AutoDoc\Services\SwaggerService;
+
 class InvalidSwaggerVersionException extends InvalidSwaggerSpecException
 {
     public function __construct(string $version)
     {
-        parent::__construct("Unrecognized Swagger version '{$version}'. Expected 2.0.");
+        $expectedVersion = SwaggerService::SWAGGER_VERSION;
+
+        parent::__construct("Unrecognized Swagger version '{$version}'. Expected {$expectedVersion}.");
     }
 }

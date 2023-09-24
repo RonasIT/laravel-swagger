@@ -18,6 +18,7 @@ use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
+use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
 class SwaggerSpecValidator
 {
@@ -64,13 +65,10 @@ class SwaggerSpecValidator
      */
     protected $doc;
 
-    public function __construct(array $doc)
+    public function validate(array $doc): void
     {
         $this->doc = $doc;
-    }
 
-    public function validate(): void
-    {
         $this->validateVersion();
         $this->validateFieldsPresent(self::REQUIRED_FIELDS['doc']);
         $this->validateInfo();
@@ -86,7 +84,7 @@ class SwaggerSpecValidator
     {
         $version = Arr::get($this->doc, 'swagger', '');
 
-        if (version_compare($version, '2.0', '!=')) {
+        if (version_compare($version, SwaggerService::SWAGGER_VERSION, '!=')) {
             throw new InvalidSwaggerVersionException($version);
         }
     }
@@ -217,11 +215,11 @@ class SwaggerSpecValidator
         $schemaType = Arr::get($schema, 'type');
 
         if (!empty($schemaType) && !in_array($schemaType, $validTypes)) {
-            throw new InvalidFieldValueException("{$schemaId}.type", $schema['type']);
+            throw new InvalidFieldValueException("{$schemaId}.type", $validTypes, [$schema['type']]);
         }
 
         if (($schemaType === 'array') && empty($schema['items'])) {
-            throw new InvalidSwaggerSpecException("Validation failed. {$schemaId} is an array, so it must include an 'items' field.");
+            throw new InvalidSwaggerSpecException("{$schemaId} is an array, so it must include an 'items' field.");
         }
     }
 
@@ -234,7 +232,7 @@ class SwaggerSpecValidator
         preg_match_all(self::PATH_PARAM_REGEXP, $path, $matches);
         $placeholders = $matches[0];
 
-        $placeholderDuplicates = array_duplicate($placeholders);
+        $placeholderDuplicates = $this->getArrayDuplicates($placeholders);
 
         if (!empty($placeholderDuplicates)) {
             throw new DuplicatePathPlaceholderException($placeholderDuplicates, $path);
@@ -245,7 +243,7 @@ class SwaggerSpecValidator
         }));
 
         if (!empty($requiredParams)) {
-            throw new InvalidSwaggerSpecException("Validation failed. Path parameters cannot be optional. Set required=true for the '{$requiredParams}' parameters at operation '{$operationId}'.");
+            throw new InvalidSwaggerSpecException("Path parameters cannot be optional. Set required=true for the '{$requiredParams}' parameters at operation '{$operationId}'.");
         }
 
         $missingPlaceholders = array_diff(Arr::pluck($pathParams, 'name'), $placeholders);
@@ -271,11 +269,11 @@ class SwaggerSpecValidator
         });
 
         if (($bodyParamsCount = count($bodyParams)) > 1) {
-            throw new InvalidSwaggerSpecException("Validation failed. Operation '{$operationId}' has {$bodyParamsCount} body parameters. Only one is allowed.");
+            throw new InvalidSwaggerSpecException("Operation '{$operationId}' has {$bodyParamsCount} body parameters. Only one is allowed.");
         }
 
         if (!empty($bodyParams) && !empty($formParams)) {
-            throw new InvalidSwaggerSpecException("Validation failed. Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed.");
+            throw new InvalidSwaggerSpecException("Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed.");
         }
     }
 
@@ -323,31 +321,31 @@ class SwaggerSpecValidator
         $this->validateFieldValue("{$itemsId}.collectionFormat", self::ALLOWED_VALUES['items_collection_format']);
     }
 
-    protected function getMissingFields(array $requiredFields, ?string $fieldId = null, ?array $doc = null): array
+    protected function getMissingFields(array $requiredFields, ?string $fieldName = null, ?array $doc = null): array
     {
         return array_diff(
             $requiredFields,
-            array_keys(Arr::get($doc ?? $this->doc, $fieldId))
+            array_keys(Arr::get($doc ?? $this->doc, $fieldName))
         );
     }
 
-    protected function validateFieldsPresent(array $requiredFields, ?string $fieldId = null): void
+    protected function validateFieldsPresent(array $requiredFields, ?string $fieldName = null): void
     {
-        $missingDocFields = $this->getMissingFields($requiredFields, $fieldId);
+        $missingDocFields = $this->getMissingFields($requiredFields, $fieldName);
 
         if (!empty($missingDocFields)) {
-            throw new MissingFieldException($missingDocFields, $fieldId);
+            throw new MissingFieldException($missingDocFields, $fieldName);
         }
     }
 
-    protected function validateFieldValue(string $fieldId, array $allowedValues): void
+    protected function validateFieldValue(string $fieldName, array $allowedValues): void
     {
-        $inputValue = Arr::wrap(Arr::get($this->doc, $fieldId, []));
+        $inputValue = Arr::wrap(Arr::get($this->doc, $fieldName, []));
         $approvedValues = array_intersect($inputValue, $allowedValues);
         $invalidValues = array_diff($inputValue, $approvedValues);
 
         if (!empty($invalidValues)) {
-            throw new InvalidFieldValueException($fieldId, $allowedValues);
+            throw new InvalidFieldValueException($fieldName, $allowedValues, $invalidValues);
         }
     }
 
@@ -405,7 +403,7 @@ class SwaggerSpecValidator
                 Arr::pluck(Arr::get($this->doc, 'tags', []), 'name')
             )
         );
-        $duplicates = array_duplicate($tagNames);
+        $duplicates = $this->getArrayDuplicates($tagNames);
 
         if (!empty($duplicates)) {
             throw new DuplicateFieldException('tags.*.name', $duplicates);
@@ -419,7 +417,7 @@ class SwaggerSpecValidator
                 Arr::pluck(Arr::get($this->doc, 'paths', []), '*.operationId')
             )
         );
-        $duplicates = array_duplicate($operationIds);
+        $duplicates = $this->getArrayDuplicates($operationIds);
 
         if (!empty($duplicates)) {
             throw new DuplicateFieldException('paths.*.*.operationId', $duplicates);
@@ -436,7 +434,16 @@ class SwaggerSpecValidator
         );
 
         if (empty($requiredConsume)) {
-            throw new InvalidSwaggerSpecException("Validation failed. Operation '{$operationId}' has a formData parameter, so it must include 'multipart/form-data' or 'application/x-www-form-urlencoded' in their 'consumes' field.");
+            throw new InvalidSwaggerSpecException("Operation '{$operationId}' has a formData parameter, so it must include 'multipart/form-data' or 'application/x-www-form-urlencoded' in their 'consumes' field.");
         }
+    }
+
+    protected function getArrayDuplicates(array $array): array
+    {
+        $duplicates = array_filter(array_count_values($array), function($value) {
+            return $value > 1;
+        });
+
+        return array_keys($duplicates);
     }
 }

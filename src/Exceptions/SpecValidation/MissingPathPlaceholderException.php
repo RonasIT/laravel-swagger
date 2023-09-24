@@ -8,6 +8,6 @@ class MissingPathPlaceholderException extends InvalidSwaggerSpecException
     {
         $paramsString = implode(', ', $params);
 
-        parent::__construct("Validation failed. Operation '{$operationId}' has no placeholders for params: {$paramsString}.");
+        parent::__construct("Operation '{$operationId}' has no placeholders for params: {$paramsString}.");
     }
 }
