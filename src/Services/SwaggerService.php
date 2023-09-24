@@ -8,6 +8,7 @@ use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
@@ -111,6 +112,10 @@ class SwaggerService
 
     protected function generateEmptyData(): array
     {
+        if (!Arr::get($this->config, 'contact.email')) {
+            throw new EmptyContactEmailException();
+        }
+
         $data = [
             'swagger' => self::SWAGGER_VERSION,
             'host' => $this->getAppUrl(),
@@ -335,7 +340,7 @@ class SwaggerService
         $formRequest = new $request();
         $formRequest->setUserResolver($this->request->getUserResolver());
         $formRequest->setRouteResolver($this->request->getRouteResolver());
-        $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
+        $rules = method_exists($formRequest, 'rules') ? $this->prepareRules($formRequest->rules()) : [];
         $attributes = method_exists($formRequest, 'attributes') ? $formRequest->attributes() : [];
 
         $actionName = $this->getActionName($this->uri);
@@ -345,6 +350,42 @@ class SwaggerService
         } else {
             $this->savePostRequestParameters($actionName, $rules, $attributes, $annotations);
         }
+    }
+
+    protected function prepareRules(array $rules): array
+    {
+        $preparedRules = [];
+
+        foreach ($rules as $field => $rulesField) {
+            if (is_array($rulesField)) {
+                $rulesField = array_map(function ($rule) {
+                    return $this->getRuleAsString($rule);
+                }, $rulesField);
+
+                $preparedRules[$field] = implode('|', $rulesField);
+            } else {
+                $preparedRules[$field] = $this->getRuleAsString($rulesField);
+            }
+        }
+
+        return $preparedRules;
+    }
+
+    protected function getRuleAsString($rule): string
+    {
+        if (is_object($rule)) {
+            if (method_exists($rule, '__toString')) {
+                return $rule->__toString();
+            }
+
+            $shortName = Str::afterLast(get_class($rule), '\\');
+
+            $ruleName = preg_replace('/Rule$/', '', $shortName);
+
+            return Str::snake($ruleName);
+        }
+
+        return $rule;
     }
 
     protected function saveGetRequestParameters($rules, array $attributes, array $annotations)

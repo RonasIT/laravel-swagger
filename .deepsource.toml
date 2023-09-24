@@ -11,5 +11,8 @@ exclude_patterns = [
 [[analyzers]]
 name = "php"
 
+[analyzers.meta]
+skip_doc_coverage = ["class", "magic"]
+
 [[transformers]]
 name = "php-cs-fixer"

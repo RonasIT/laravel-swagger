@@ -11,32 +11,12 @@
       {
         "tags": ["api"],
         "produces": ["application\/json"],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "query",
-            "description": "string, required",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "user_id",
-            "description": "integer, with_to_array_rule_string_name",
-            "type": "integer"
-          },
-          {
-            "in": "query",
-            "name": "is_email_enabled",
-            "type": "string",
-            "description": "test_rule_without_to_string"
-          }
-        ],
+        "parameters": [],
         "responses":
         {
           "200":
           {
-            "description": "Operation successfully done",
+            "description": "OK",
             "schema":
             {
               "example":
@@ -95,7 +75,6 @@
         },
         "security": [],
         "description": "",
-        "summary": "test",
         "consumes": []
       }
     }

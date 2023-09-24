@@ -13,5 +13,12 @@
         "contact": {
             "email": null
         }
+    },
+    "securityDefinitions": {
+        "laravel": {
+            "type": "apiKey",
+            "name": "Cookie",
+            "in": "header"
+        }
     }
 }

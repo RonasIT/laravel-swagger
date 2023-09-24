@@ -22,6 +22,18 @@
             "description": "string, required",
             "type": "string",
             "required": true
+          },
+          {
+            "in": "query",
+            "name": "user_id",
+            "description": "integer, with_to_array_rule_string_name",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "is_email_enabled",
+            "type": "string",
+            "description": "test_rule_without_to_string"
           }
         ],
         "responses": {
