@@ -440,7 +440,7 @@ class SwaggerSpecValidator
 
     protected function getArrayDuplicates(array $array): array
     {
-        $duplicates = array_filter(array_count_values($array), function($value) {
+        $duplicates = array_filter(array_count_values($array), function ($value) {
             return $value > 1;
         });
 
