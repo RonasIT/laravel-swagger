@@ -26,7 +26,7 @@ class SwaggerService
 {
     use GetDependenciesTrait;
 
-    const SWAGGER_VERSION = '2.0';
+    public const SWAGGER_VERSION = '2.0';
 
     protected $driver;
 
