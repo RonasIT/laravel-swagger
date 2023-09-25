@@ -408,7 +408,7 @@ class SwaggerSpecValidator
     protected function validateTagsUnique(): void
     {
         $tags = Arr::get($this->doc, 'tags', []);
-        $tagNames = Arr::flatten(Arr::pluck($tags, 'name'));
+        $tagNames = Arr::pluck($tags, 'name');
         $duplicates = $this->getArrayDuplicates($tagNames);
 
         if (!empty($duplicates)) {
