@@ -277,7 +277,7 @@ class SwaggerSpecValidator
             );
         }
 
-        if (!empty($bodyParams) && $formParamsCount) {
+        if ($bodyParamsCount && $formParamsCount) {
             throw new InvalidSwaggerSpecException(
                 "Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed."
             );
