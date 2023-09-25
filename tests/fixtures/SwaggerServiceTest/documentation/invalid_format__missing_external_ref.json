@@ -22,7 +22,7 @@
             "description": "",
             "required": true,
             "schema": {
-              "$ref": "tests\/fixtures\/SwaggerServiceTest\/documentation__with_definitions.json#\/definitions\/authloginObject"
+              "$ref": "tests\/fixtures\/SwaggerServiceTest\/documentation\/with_definitions.json#\/definitions\/authloginObject"
             }
           }
         ],

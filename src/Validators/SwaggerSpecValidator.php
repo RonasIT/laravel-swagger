@@ -212,7 +212,6 @@ class SwaggerSpecValidator
         }
 
         $this->validateParamsUnique($parameters, $operationId);
-
         $this->validatePathParameters($parameters, $path, $operationId);
         $this->validateBodyParameters($parameters, $operationId);
     }
@@ -314,7 +313,6 @@ class SwaggerSpecValidator
     protected function validateHeader(array $header, string $headerId): void
     {
         $this->validateFieldsPresent(self::REQUIRED_FIELDS['header'], $headerId);
-
         $this->validateType($header, self::PRIMITIVE_TYPES, $headerId);
         $this->validateFieldValue("{$headerId}.collectionFormat", self::ALLOWED_VALUES['header_collection_format']);
 
@@ -326,7 +324,6 @@ class SwaggerSpecValidator
     protected function validateItems(array $items, string $itemsId): void
     {
         $this->validateFieldsPresent(self::REQUIRED_FIELDS['item'], $itemsId);
-
         $this->validateType($items, self::PRIMITIVE_TYPES, $itemsId);
         $this->validateFieldValue("{$itemsId}.collectionFormat", self::ALLOWED_VALUES['items_collection_format']);
     }
