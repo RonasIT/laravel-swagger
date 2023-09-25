@@ -52,15 +52,17 @@ class AutoDocControllerTest extends TestCase
 
     public function getJSONDocumentationInvalidAdditionalDoc(): array
     {
+        $basePath = 'tests/fixtures/AutoDocControllerTest';
+
         return [
             [
                 'additionalDocPath' => 'invalid_path/non_existent_file.json'
             ],
             [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__non_json.txt'
+                'additionalDocPath' => $basePath . '/documentation__non_json.txt'
             ],
             [
-                'additionalDocPath' => 'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_field__paths.json'
+                'additionalDocPath' => $basePath. '/documentation__invalid_format__missing_field__paths.json'
             ]
         ];
     }
@@ -174,7 +176,9 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $this->assertEquals($response->getContent(), file_get_contents(resource_path('/assets/elements/web-components.min.js')));
+        $this->assertEquals(
+            $response->getContent(), file_get_contents(resource_path('/assets/elements/web-components.min.js'))
+        );
 
         $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
     }

@@ -9,6 +9,8 @@ class InvalidFieldValueException extends InvalidSwaggerSpecException
         $allowedValuesString = implode(', ', $allowedValues);
         $invalidValuesString = implode(', ', $invalidValues);
 
-        parent::__construct("Field '{$fieldName}' has an invalid value: {$invalidValuesString}. Allowed values: {$allowedValuesString}.");
+        parent::__construct(
+            "Field '{$fieldName}' has an invalid value: {$invalidValuesString}. Allowed values: {$allowedValuesString}."
+        );
     }
 }

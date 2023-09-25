@@ -177,7 +177,9 @@ class SwaggerSpecValidator
         }
 
         if (!empty($response['schema'])) {
-            $this->validateType($response['schema'], array_merge(self::SCHEMA_TYPES, ['file']), "{$responseId}.schema");
+            $this->validateType(
+                $response['schema'], array_merge(self::SCHEMA_TYPES, ['file']), "{$responseId}.schema"
+            );
         }
 
         if (!empty($response['items'])) {
@@ -195,7 +197,9 @@ class SwaggerSpecValidator
             $this->validateFieldsPresent(self::REQUIRED_FIELDS['parameter'], $paramId);
 
             $this->validateFieldValue("{$paramId}.in", self::ALLOWED_VALUES['parameter_in']);
-            $this->validateFieldValue("{$paramId}.collectionFormat", self::ALLOWED_VALUES['parameter_collection_format']);
+            $this->validateFieldValue(
+                "{$paramId}.collectionFormat", self::ALLOWED_VALUES['parameter_collection_format']
+            );
 
             $this->validateParameterType($param, $operation, $paramId, $operationId);
 
@@ -226,7 +230,7 @@ class SwaggerSpecValidator
     protected function validatePathParameters(array $params, string $path, string $operationId): void
     {
         $pathParams = Arr::where($params, function ($param) {
-            return ($param['in'] === 'path');
+            return $param['in'] === 'path';
         });
 
         preg_match_all(self::PATH_PARAM_REGEXP, $path, $matches);
@@ -243,7 +247,10 @@ class SwaggerSpecValidator
         }));
 
         if (!empty($requiredParams)) {
-            throw new InvalidSwaggerSpecException("Path parameters cannot be optional. Set required=true for the '{$requiredParams}' parameters at operation '{$operationId}'.");
+            throw new InvalidSwaggerSpecException(
+                "Path parameters cannot be optional. Set required=true for the "
+                . "'{$requiredParams}' parameters at operation '{$operationId}'."
+            );
         }
 
         $missingPlaceholders = array_diff(Arr::pluck($pathParams, 'name'), $placeholders);
@@ -265,11 +272,15 @@ class SwaggerSpecValidator
         $formParamsCount = collect($parameters)->where('in', 'formData')->count();
 
         if ($bodyParamsCount > 1) {
-            throw new InvalidSwaggerSpecException("Operation '{$operationId}' has {$bodyParamsCount} body parameters. Only one is allowed.");
+            throw new InvalidSwaggerSpecException(
+                "Operation '{$operationId}' has {$bodyParamsCount} body parameters. Only one is allowed."
+            );
         }
 
         if (!empty($bodyParams) && $formParamsCount) {
-            throw new InvalidSwaggerSpecException("Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed.");
+            throw new InvalidSwaggerSpecException(
+                "Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed."
+            );
         }
     }
 
@@ -358,7 +369,9 @@ class SwaggerSpecValidator
 
                 if (!empty($refFilename) && !file_exists($refFilename)) {
                     throw new MissingRefFileException($refFilename);
-                } elseif (!empty($refFilename) && file_exists($refFilename)) {
+                }
+
+                if (!empty($refFilename)) {
                     $externalDoc = json_decode(file_get_contents($refFilename), true);
 
                     $missingRefs = $this->getMissingFields([$refKey], $refParentKey, $externalDoc);
@@ -426,7 +439,9 @@ class SwaggerSpecValidator
         );
 
         if (empty($requiredConsume)) {
-            throw new InvalidSwaggerSpecException("Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed.");
+            throw new InvalidSwaggerSpecException(
+                "Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed."
+            );
         }
     }
 
