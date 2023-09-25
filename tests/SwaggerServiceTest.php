@@ -308,7 +308,8 @@ class SwaggerServiceTest extends TestCase
         config(['auto-doc.info' => []]);
 
         $this->mockDriverGetEmptyAndSaveTpmData(
-            [], $this->getJsonFixture('tmp_data_request_with_empty_data_and_info')
+            [],
+            $this->getJsonFixture('tmp_data_request_with_empty_data_and_info')
         );
 
         app(SwaggerService::class);

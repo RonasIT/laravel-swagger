@@ -178,7 +178,9 @@ class SwaggerSpecValidator
 
         if (!empty($response['schema'])) {
             $this->validateType(
-                $response['schema'], array_merge(self::SCHEMA_TYPES, ['file']), "{$responseId}.schema"
+                $response['schema'],
+                array_merge(self::SCHEMA_TYPES, ['file']),
+                "{$responseId}.schema"
             );
         }
 
@@ -198,7 +200,8 @@ class SwaggerSpecValidator
 
             $this->validateFieldValue("{$paramId}.in", self::ALLOWED_VALUES['parameter_in']);
             $this->validateFieldValue(
-                "{$paramId}.collectionFormat", self::ALLOWED_VALUES['parameter_collection_format']
+                "{$paramId}.collectionFormat",
+                self::ALLOWED_VALUES['parameter_collection_format']
             );
 
             $this->validateParameterType($param, $operation, $paramId, $operationId);

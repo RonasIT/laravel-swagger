@@ -177,7 +177,8 @@ class AutoDocControllerTest extends TestCase
         $response->assertStatus(Response::HTTP_OK);
 
         $this->assertEquals(
-            $response->getContent(), file_get_contents(resource_path('/assets/elements/web-components.min.js'))
+            $response->getContent(),
+            file_get_contents(resource_path('/assets/elements/web-components.min.js'))
         );
 
         $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
