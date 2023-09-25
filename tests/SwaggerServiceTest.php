@@ -262,7 +262,8 @@ class SwaggerServiceTest extends TestCase
                 'tmpDoc' => 'documentation/invalid_format__invalid_schema_type',
                 'exception' => InvalidFieldValueException::class,
                 'exceptionMessage' => "Validation failed. Field 'paths./users.get.responses.200.schema.type' "
-                    . "has an invalid value: something. Allowed values: array, boolean, integer, number, string, object, null, undefined, file."
+                    . "has an invalid value: something. Allowed values: array, boolean, integer, number, "
+                    . "string, object, null, undefined, file."
             ],
         ];
     }
