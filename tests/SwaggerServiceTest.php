@@ -122,12 +122,12 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation__invalid_format__file_invalid_consumes',
                 'exception' => InvalidSwaggerSpecException::class,
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/profile/image.post' has a formData parameter, so it must include 'multipart/form-data' or 'application/x-www-form-urlencoded' in their 'consumes' field."
+                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/profile/image.post' has body and formData parameters. Only one or the other is allowed."
             ],
             [
                 'tmpDoc' => 'documentation__invalid_format__file_no_consumes',
                 'exception' => InvalidSwaggerSpecException::class,
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/profile/image.post' has a formData parameter, so it must include 'multipart/form-data' or 'application/x-www-form-urlencoded' in their 'consumes' field."
+                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/profile/image.post' has body and formData parameters. Only one or the other is allowed."
             ],
             [
                 'tmpDoc' => 'documentation__invalid_format__multiple_body_params',

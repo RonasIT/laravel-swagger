@@ -261,18 +261,14 @@ class SwaggerSpecValidator
 
     protected function validateBodyParameters(array $parameters, string $operationId): void
     {
-        $bodyParams = Arr::where($parameters, function ($param) {
-            return ($param['in'] === 'body');
-        });
-        $formParams = Arr::where($parameters, function ($param) {
-            return ($param['in'] === 'formData');
-        });
+        $bodyParamsCount = collect($parameters)->where('in', 'body')->count();
+        $formParamsCount = collect($parameters)->where('in', 'formData')->count();
 
-        if (($bodyParamsCount = count($bodyParams)) > 1) {
+        if ($bodyParamsCount > 1) {
             throw new InvalidSwaggerSpecException("Operation '{$operationId}' has {$bodyParamsCount} body parameters. Only one is allowed.");
         }
 
-        if (!empty($bodyParams) && !empty($formParams)) {
+        if (!empty($bodyParams) && $formParamsCount) {
             throw new InvalidSwaggerSpecException("Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed.");
         }
     }
@@ -398,11 +394,8 @@ class SwaggerSpecValidator
 
     protected function validateTagsUnique(): void
     {
-        $tagNames = array_filter(
-            Arr::flatten(
-                Arr::pluck(Arr::get($this->doc, 'tags', []), 'name')
-            )
-        );
+        $tags = Arr::get($this->doc, 'tags', []);
+        $tagNames = Arr::flatten(Arr::pluck($tags, 'name'));
         $duplicates = $this->getArrayDuplicates($tagNames);
 
         if (!empty($duplicates)) {
@@ -412,11 +405,8 @@ class SwaggerSpecValidator
 
     protected function validateOperationIdsUnique(): void
     {
-        $operationIds = array_filter(
-            Arr::flatten(
-                Arr::pluck(Arr::get($this->doc, 'paths', []), '*.operationId')
-            )
-        );
+        $operationIds = Arr::pluck(Arr::get($this->doc, 'paths', []), '*.operationId');
+        $operationIds = Arr::flatten($operationIds);
         $duplicates = $this->getArrayDuplicates($operationIds);
 
         if (!empty($duplicates)) {
@@ -429,17 +419,20 @@ class SwaggerSpecValidator
         $requiredConsume = Arr::first(
             Arr::get($operation, 'consumes', []),
             function ($consume) {
-                return (($consume === self::MIME_TYPE_APPLICATION_URLENCODED) || ($consume === self::MIME_TYPE_MULTIPART_FORM_DATA));
+                return in_array($consume, [
+                    self::MIME_TYPE_APPLICATION_URLENCODED, self::MIME_TYPE_MULTIPART_FORM_DATA
+                ]);
             }
         );
 
         if (empty($requiredConsume)) {
-            throw new InvalidSwaggerSpecException("Operation '{$operationId}' has a formData parameter, so it must include 'multipart/form-data' or 'application/x-www-form-urlencoded' in their 'consumes' field.");
+            throw new InvalidSwaggerSpecException("Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed.");
         }
     }
 
     protected function getArrayDuplicates(array $array): array
     {
+        $array = array_filter($array);
         $duplicates = array_filter(array_count_values($array), function ($value) {
             return $value > 1;
         });

@@ -840,6 +840,10 @@ class SwaggerService
 
     protected function prepareInfo(array $info): array
     {
+        if (empty($info)) {
+            return $info;
+        }
+
         foreach ($info['license'] as $key => $value) {
             if (empty($value)) {
                 unset($info['license'][$key]);
