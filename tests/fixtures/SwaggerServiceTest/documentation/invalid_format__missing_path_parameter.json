@@ -5,7 +5,7 @@
     "title": "Invalid API"
   },
   "paths": {
-    "/users/{username}": {
+    "/users": {
       "get": {
         "parameters": [
           {
@@ -15,31 +15,22 @@
             "type": "string"
           },
           {
-            "name": "foo",
-            "in": "body",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "hello world"
-          }
-        }
-      },
-      "post": {
-        "parameters": [
+            "name": "bar",
+            "in": "header",
+            "type": "string",
+            "required": false
+          },
           {
             "name": "username",
-            "in": "path",
-            "required": true,
+            "in": "header",
             "type": "string"
           },
           {
-            "name": "foo",
-            "in": "path",
-            "type": "number"
+            "name": "username",
+            "in": "body",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {

@@ -244,14 +244,16 @@ class SwaggerSpecValidator
             throw new DuplicatePathPlaceholderException($placeholderDuplicates, $path);
         }
 
-        $requiredParams = implode(',', array_filter($pathParams, function ($param) {
-            return !Arr::get($param, 'required', false);
-        }));
+        $missedRequiredParams = array_filter($pathParams, function ($param) use ($placeholders) {
+            return Arr::get($param, 'required', false) && !in_array(Arr::get($param, 'name'), $placeholders);
+        });
 
-        if (!empty($requiredParams)) {
+        if (!empty($missedRequiredParams)) {
+            $missedRequiredString = implode(',', Arr::pluck($missedRequiredParams, 'name'));
+
             throw new InvalidSwaggerSpecException(
                 "Path parameters cannot be optional. Set required=true for the "
-                . "'{$requiredParams}' parameters at operation '{$operationId}'."
+                . "'{$missedRequiredString}' parameters at operation '{$operationId}'."
             );
         }
 

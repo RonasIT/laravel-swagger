@@ -265,6 +265,12 @@ class SwaggerServiceTest extends TestCase
                     . "has an invalid value: something. Allowed values: array, boolean, integer, number, "
                     . "string, object, null, undefined, file."
             ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_path_parameter',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Path parameters cannot be optional. "
+                    . "Set required=true for the 'username' parameters at operation 'paths./users.get'."
+            ],
         ];
     }
 
