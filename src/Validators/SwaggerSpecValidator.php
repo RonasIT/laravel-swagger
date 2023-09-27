@@ -331,10 +331,7 @@ class SwaggerSpecValidator
 
     protected function getMissingFields(array $requiredFields, array $doc, ?string $fieldName = null): array
     {
-        return array_diff(
-            $requiredFields,
-            array_keys(Arr::get($doc, $fieldName))
-        );
+        return array_diff($requiredFields, array_keys(Arr::get($doc, $fieldName)));
     }
 
     protected function validateFieldsPresent(array $requiredFields, ?string $fieldName = null): void
