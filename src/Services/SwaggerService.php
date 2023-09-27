@@ -144,11 +144,13 @@ class SwaggerService
 
     protected function generateSecurityDefinition(): ?array
     {
-        return (empty($this->security))
-            ? null
-            : [
-                $this->security => $this->generateSecurityDefinitionObject($this->security)
-            ];
+        if (empty($this->security)) {
+            return null;
+        }
+
+        return [
+            $this->security => $this->generateSecurityDefinitionObject($this->security)
+        ];
     }
 
     protected function generateSecurityDefinitionObject($type): array

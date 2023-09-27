@@ -54,7 +54,6 @@ class SwaggerSpecValidator
     ];
 
     public const PATH_PARAM_REGEXP = '#(?<={)[^/}]+(?=})#';
-    public const REF_REGEXP = '/^(.+\.json)?(?:#\/(.+)\/(.+))?/';
     public const ADDITIONAL_FIELD_REGEXP = '/^x-/';
 
     public const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
@@ -236,7 +235,7 @@ class SwaggerSpecValidator
         });
 
         preg_match_all(self::PATH_PARAM_REGEXP, $path, $matches);
-        $placeholders = $matches[0];
+        $placeholders = Arr::first($matches);
 
         $placeholderDuplicates = $this->getArrayDuplicates($placeholders);
 
@@ -330,17 +329,17 @@ class SwaggerSpecValidator
         $this->validateFieldValue("{$itemsId}.collectionFormat", self::ALLOWED_VALUES['items_collection_format']);
     }
 
-    protected function getMissingFields(array $requiredFields, ?string $fieldName = null, ?array $doc = null): array
+    protected function getMissingFields(array $requiredFields, array $doc, ?string $fieldName = null): array
     {
         return array_diff(
             $requiredFields,
-            array_keys(Arr::get($doc ?? $this->doc, $fieldName))
+            array_keys(Arr::get($doc, $fieldName))
         );
     }
 
     protected function validateFieldsPresent(array $requiredFields, ?string $fieldName = null): void
     {
-        $missingDocFields = $this->getMissingFields($requiredFields, $fieldName);
+        $missingDocFields = $this->getMissingFields($requiredFields, $this->doc, $fieldName);
 
         if (!empty($missingDocFields)) {
             throw new MissingFieldException($missingDocFields, $fieldName);
@@ -361,30 +360,32 @@ class SwaggerSpecValidator
     protected function validateRefs(): void
     {
         array_walk_recursive($this->doc, function ($item, $key) {
-            if (
-                ($key === '$ref')
-                && preg_match(self::REF_REGEXP, $item, $matches)
-            ) {
-                $refFilename = Arr::get($matches, 1);
-                $refParentKey = Arr::get($matches, 2);
-                $refKey = Arr::get($matches, 3);
+            if ($key === '$ref') {
+                $refParts = explode('#/', $item);
+                $refFilename = Arr::first($refParts);
+
+                if (count($refParts) > 1) {
+                    $path = pathinfo(Arr::last($refParts));
+                    $refParentKey = $path['dirname'];
+                    $refKey = $path['filename'];
+                }
 
                 if (!empty($refFilename) && !file_exists($refFilename)) {
                     throw new MissingRefFileException($refFilename);
                 }
 
-                if (!empty($refFilename)) {
-                    $externalDoc = json_decode(file_get_contents($refFilename), true);
+                $missingRefs = $this->getMissingFields(
+                    (array)$refKey,
+                    !empty($refFilename)
+                        ? json_decode(file_get_contents($refFilename), true)
+                        : $this->doc,
+                    $refParentKey
+                );
 
-                    $missingRefs = $this->getMissingFields([$refKey], $refParentKey, $externalDoc);
-
-                    if (!empty($missingRefs)) {
+                if (!empty($missingRefs)) {
+                    if (!empty($refFilename)) {
                         throw new MissingExternalRefException($refKey, $refFilename);
-                    }
-                } else {
-                    $missingRefs = $this->getMissingFields([$refKey], $refParentKey);
-
-                    if (!empty($missingRefs)) {
+                    } else {
                         throw new MissingLocalRefException($refKey, $refParentKey);
                     }
                 }
@@ -431,14 +432,14 @@ class SwaggerSpecValidator
 
     protected function validateFormDataConsumes(array $operation, string $operationId): void
     {
-        $requiredConsume = Arr::first(
-            Arr::get($operation, 'consumes', []),
-            function ($consume) {
-                return in_array($consume, [
-                    self::MIME_TYPE_APPLICATION_URLENCODED, self::MIME_TYPE_MULTIPART_FORM_DATA
-                ]);
-            }
-        );
+        $consumes = Arr::get($operation, 'consumes', []);
+
+        $requiredConsume = Arr::first($consumes, function ($consume) {
+            return in_array($consume, [
+                self::MIME_TYPE_APPLICATION_URLENCODED,
+                self::MIME_TYPE_MULTIPART_FORM_DATA,
+            ]);
+        });
 
         if (empty($requiredConsume)) {
             throw new InvalidSwaggerSpecException(
