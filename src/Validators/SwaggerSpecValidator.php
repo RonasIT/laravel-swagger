@@ -20,13 +20,28 @@ use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderExce
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
+/**
+ * @property array $doc
+ */
 class SwaggerSpecValidator
 {
     public const SCHEMA_TYPES = [
-        'array', 'boolean', 'integer', 'number', 'string', 'object', 'null', 'undefined'
+        'array',
+        'boolean',
+        'integer',
+        'number',
+        'string',
+        'object',
+        'null',
+        'undefined',
     ];
+
     public const PRIMITIVE_TYPES = [
-        'array', 'boolean', 'integer', 'number', 'string'
+        'array',
+        'boolean',
+        'integer',
+        'number',
+        'string',
     ];
 
     public const REQUIRED_FIELDS = [
@@ -54,14 +69,11 @@ class SwaggerSpecValidator
     ];
 
     public const PATH_PARAM_REGEXP = '#(?<={)[^/}]+(?=})#';
-    public const ADDITIONAL_FIELD_REGEXP = '/^x-/';
+    public const PATH_REGEXP = '/^x-/';
 
     public const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
     public const MIME_TYPE_APPLICATION_URLENCODED = 'application/x-www-form-urlencoded';
 
-    /**
-     * @var array
-     */
     protected $doc;
 
     public function validate(array $doc): void
@@ -101,7 +113,7 @@ class SwaggerSpecValidator
     protected function validatePaths(): void
     {
         foreach ($this->doc['paths'] as $path => $operations) {
-            if (!Str::startsWith($path, '/') && !preg_match(self::ADDITIONAL_FIELD_REGEXP, $path)) {
+            if (!Str::startsWith($path, '/') && !preg_match(self::PATH_REGEXP, $path)) {
                 throw new InvalidPathException("paths.{$path}");
             }
 
@@ -165,8 +177,8 @@ class SwaggerSpecValidator
 
         if (
             ($statusCode !== 'default')
-            && !preg_match('/^\d{3}$/', $statusCode)
-            && !preg_match(self::ADDITIONAL_FIELD_REGEXP, $statusCode)
+            && !$this->isValidStatusCode($statusCode)
+            && !preg_match(self::PATH_REGEXP, $statusCode)
         ) {
             throw new InvalidStatusCodeException($responseId);
         }
@@ -293,12 +305,14 @@ class SwaggerSpecValidator
             case 'body':
                 $requiredFields = ['schema'];
                 $validTypes = self::SCHEMA_TYPES;
+
                 break;
             case 'formData':
                 $this->validateFormDataConsumes($operation, $operationId);
 
                 $requiredFields = ['type'];
                 $validTypes = array_merge(self::PRIMITIVE_TYPES, ['file']);
+
                 break;
             default:
                 $requiredFields = ['type'];
@@ -372,7 +386,7 @@ class SwaggerSpecValidator
                 }
 
                 $missingRefs = $this->getMissingFields(
-                    (array)$refKey,
+                    (array) $refKey,
                     !empty($refFilename)
                         ? json_decode(file_get_contents($refFilename), true)
                         : $this->doc,
@@ -392,16 +406,15 @@ class SwaggerSpecValidator
 
     protected function validateParamsUnique(array $params, string $operationId): void
     {
-        for ($i = 0; $i < count($params) - 1; $i++) {
-            $outer = $params[$i];
+        $collection = collect($params);
+        $duplicates = $collection->duplicates(function ($item) {
+            return $item['in'] . $item['name'];
+        });
 
-            for ($j = $i + 1; $j < count($params); $j++) {
-                $inner = $params[$j];
+        if ($duplicates->count()) {
+            $duplicateIndex = $duplicates->keys()->first();
 
-                if (($outer['name'] === $inner['name']) && ($outer['in'] === $inner['in'])) {
-                    throw new DuplicateParamException($outer['in'], $outer['name'], $operationId);
-                }
-            }
+            throw new DuplicateParamException($params[$duplicateIndex]['in'], $params[$duplicateIndex]['name'], $operationId);
         }
     }
 
@@ -453,5 +466,12 @@ class SwaggerSpecValidator
         });
 
         return array_keys($duplicates);
+    }
+
+    protected function isValidStatusCode(string $code): bool
+    {
+        $code = intval($code);
+
+        return $code >= 100 && $code < 600;
     }
 }
