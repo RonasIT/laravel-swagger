@@ -111,7 +111,7 @@ class SwaggerServiceTest extends TestCase
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.post' "
                     . "has body and formData parameters. Only one or the other is allowed."
-            ],*/
+            ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_header_params',
                 'exception' => DuplicateParamException::class,
