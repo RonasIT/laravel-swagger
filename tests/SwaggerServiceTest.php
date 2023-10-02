@@ -83,7 +83,7 @@ class SwaggerServiceTest extends TestCase
     public function getConstructorInvalidTmpData(): array
     {
         return [
-            /*[
+            [
                 'tmpDoc' => 'documentation/invalid_version',
                 'exception' => InvalidSwaggerVersionException::class,
                 'exceptionMessage' => "Unrecognized Swagger version '1.0'. Expected 2.0."
