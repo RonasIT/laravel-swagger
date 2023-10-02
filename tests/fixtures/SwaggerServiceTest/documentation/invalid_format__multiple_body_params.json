@@ -1,0 +1,75 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Invalid API"
+  },
+  "paths": {
+    "/users/{username}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "bar",
+            "in": "header",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "foo",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "foo2",
+            "in": "body",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "hello world"
+          }
+        }
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "bar",
+            "in": "header",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "bar",
+            "in": "body",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "hello world"
+          }
+        }
+      }
+    }
+  }
+}

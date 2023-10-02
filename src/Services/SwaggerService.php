@@ -11,10 +11,13 @@ use ReflectionClass;
 use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
+use RonasIT\Support\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -23,6 +26,8 @@ use Symfony\Component\HttpFoundation\Response;
 class SwaggerService
 {
     use GetDependenciesTrait;
+
+    public const SWAGGER_VERSION = '2.0';
 
     protected $driver;
 
@@ -62,7 +67,9 @@ class SwaggerService
 
             $this->data = $this->driver->getTmpData();
 
-            if (empty($this->data)) {
+            if (!empty($this->data)) {
+                $this->validateSpec($this->data);
+            } else {
                 $this->data = $this->generateEmptyData();
 
                 $this->driver->saveTmpData($this->data);
@@ -110,19 +117,14 @@ class SwaggerService
         }
 
         $data = [
-            'swagger' => Arr::get($this->config, 'swagger.version'),
+            'swagger' => self::SWAGGER_VERSION,
             'host' => $this->getAppUrl(),
             'basePath' => $this->config['basePath'],
             'schemes' => $this->config['schemes'],
             'paths' => [],
-            'definitions' => $this->config['definitions']
+            'definitions' => $this->config['definitions'],
+            'info' => $this->prepareInfo($this->config['info'])
         ];
-
-        $info = $this->prepareInfo($this->config['info']);
-
-        if (!empty($info)) {
-            $data['info'] = $info;
-        }
 
         $securityDefinitions = $this->generateSecurityDefinition();
 
@@ -130,24 +132,20 @@ class SwaggerService
             $data['securityDefinitions'] = $securityDefinitions;
         }
 
-        if (!empty($data['info']['description'])) {
-            $data['info']['description'] = view($data['info']['description'])->render();
-        }
-
         return $data;
     }
 
-    protected function getAppUrl()
+    protected function getAppUrl(): string
     {
         $url = config('app.url');
 
         return str_replace(['http://', 'https://', '/'], '', $url);
     }
 
-    protected function generateSecurityDefinition()
+    protected function generateSecurityDefinition(): ?array
     {
         if (empty($this->security)) {
-            return '';
+            return null;
         }
 
         return [
@@ -691,34 +689,48 @@ class SwaggerService
         foreach ($additionalDocs as $filePath) {
             $fullFilePath = base_path($filePath);
 
-            if (file_exists($fullFilePath)) {
-                $fileContent = json_decode(file_get_contents($fullFilePath), true);
+            if (!file_exists($fullFilePath)) {
+                continue;
+            }
 
-                $paths = array_keys($fileContent['paths']);
+            $fileContent = json_decode(file_get_contents($fullFilePath), true);
 
-                foreach ($paths as $path) {
-                    $additionalDocPath = $fileContent['paths'][$path];
+            if (empty($fileContent)) {
+                continue;
+            }
 
-                    if (empty($documentation['paths'][$path])) {
-                        $documentation['paths'][$path] = $additionalDocPath;
-                    } else {
-                        $methods = array_keys($documentation['paths'][$path]);
-                        $additionalDocMethods = array_keys($additionalDocPath);
+            try {
+                $this->validateSpec($fileContent);
+            } catch (InvalidSwaggerSpecException $exception) {
+                report($exception);
 
-                        foreach ($additionalDocMethods as $method) {
-                            if (!in_array($method, $methods)) {
-                                $documentation['paths'][$path][$method] = $additionalDocPath[$method];
-                            }
+                continue;
+            }
+
+            $paths = array_keys($fileContent['paths']);
+
+            foreach ($paths as $path) {
+                $additionalDocPath = $fileContent['paths'][$path];
+
+                if (empty($documentation['paths'][$path])) {
+                    $documentation['paths'][$path] = $additionalDocPath;
+                } else {
+                    $methods = array_keys($documentation['paths'][$path]);
+                    $additionalDocMethods = array_keys($additionalDocPath);
+
+                    foreach ($additionalDocMethods as $method) {
+                        if (!in_array($method, $methods)) {
+                            $documentation['paths'][$path][$method] = $additionalDocPath[$method];
                         }
                     }
                 }
+            }
 
-                $definitions = array_keys($fileContent['definitions']);
+            $definitions = array_keys($fileContent['definitions']);
 
-                foreach ($definitions as $definition) {
-                    if (empty($documentation['definitions'][$definition])) {
-                        $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
-                    }
+            foreach ($definitions as $definition) {
+                if (empty($documentation['definitions'][$definition])) {
+                    $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
                 }
             }
         }
@@ -828,11 +840,7 @@ class SwaggerService
         return $values[$type];
     }
 
-    /**
-     * @param $info
-     * @return mixed
-     */
-    protected function prepareInfo($info)
+    protected function prepareInfo(array $info): array
     {
         if (empty($info)) {
             return $info;
@@ -843,10 +851,20 @@ class SwaggerService
                 unset($info['license'][$key]);
             }
         }
+
         if (empty($info['license'])) {
             unset($info['license']);
         }
 
+        if (!empty($info['description'])) {
+            $info['description'] = view($info['description'])->render();
+        }
+
         return $info;
+    }
+
+    protected function validateSpec(array $doc): void
+    {
+        app(SwaggerSpecValidator::class)->validate($doc);
     }
 }
