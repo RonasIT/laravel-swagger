@@ -316,7 +316,7 @@ class SwaggerSpecValidator
                 break;
             default:
                 $requiredFields = ['type'];
-                $validTypes = self::PRIMITIVE_TYPES;
+                $validTypes = array_merge(self::PRIMITIVE_TYPES, ['object']);
         }
 
         $this->validateFieldsPresent($requiredFields, $paramId);
