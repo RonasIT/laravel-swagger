@@ -111,7 +111,9 @@ class SwaggerService
 
     protected function generateEmptyData(): array
     {
-        if (Arr::get($this->config, 'info') && !Arr::get($this->config, 'info.contact.email')) {
+        // client must enter at least `contact.email` to generate a default `info` block
+        // otherwise an exception will be called
+        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
             throw new EmptyContactEmailException();
         }
 
