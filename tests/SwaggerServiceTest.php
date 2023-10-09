@@ -292,7 +292,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testEmptyContactEmail()
     {
-        config(['auto-doc.contact.email' => null]);
+        config(['auto-doc.info.contact.email' => null]);
 
         $this->expectException(EmptyContactEmailException::class);
 

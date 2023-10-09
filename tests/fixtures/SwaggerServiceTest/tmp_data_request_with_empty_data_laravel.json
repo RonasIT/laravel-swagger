@@ -11,7 +11,7 @@
         "title": "Name of Your Application",
         "termsOfService": "",
         "contact": {
-            "email": null
+            "email": "your@mail.com"
         }
     },
     "securityDefinitions": {
