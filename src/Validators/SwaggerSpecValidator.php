@@ -42,6 +42,9 @@ class SwaggerSpecValidator
         'integer',
         'number',
         'string',
+        'object',
+        'date',
+        'double',
     ];
 
     public const REQUIRED_FIELDS = [
@@ -316,7 +319,7 @@ class SwaggerSpecValidator
                 break;
             default:
                 $requiredFields = ['type'];
-                $validTypes = array_merge(self::PRIMITIVE_TYPES, ['object']);
+                $validTypes = self::PRIMITIVE_TYPES;
         }
 
         $this->validateFieldsPresent($requiredFields, $paramId);
