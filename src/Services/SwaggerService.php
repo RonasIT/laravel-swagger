@@ -312,7 +312,8 @@ class SwaggerService
         $description = $this->getResponseDescription($code);
         $availableContentTypes = [
             'application',
-            'text'
+            'text',
+            'image',
         ];
         $explodedContentType = explode('/', $produce);
 
