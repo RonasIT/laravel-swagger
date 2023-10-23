@@ -3,6 +3,8 @@
 namespace RonasIT\Support\Tests;
 
 use Illuminate\Http\Response;
+use RonasIT\Support\AutoDoc\Exceptions\DocFileNotExistsException;
+use RonasIT\Support\AutoDoc\Exceptions\EmptyDocFileException;
 
 class AutoDocControllerTest extends TestCase
 {
@@ -50,32 +52,32 @@ class AutoDocControllerTest extends TestCase
         $this->assertEqualsJsonFixture('tmp_data_with_additional_paths', $response->json());
     }
 
-    public function getJSONDocumentationInvalidAdditionalDoc(): array
-    {
-        $basePath = 'tests/fixtures/AutoDocControllerTest';
-
-        return [
-            [
-                'additionalDocPath' => 'invalid_path/non_existent_file.json'
-            ],
-            [
-                'additionalDocPath' => $basePath . '/documentation__non_json.txt'
-            ],
-            [
-                'additionalDocPath' => $basePath. '/documentation__invalid_format__missing_field__paths.json'
-            ]
-        ];
-    }
-
-    /**
-     * @dataProvider getJSONDocumentationInvalidAdditionalDoc
-     *
-     * @param string $additionalDocPath
-     */
-    public function testGetJSONDocumentationInvalidAdditionalDoc(string $additionalDocPath)
+    public function getJSONDocumentationDoesntExist()
     {
         config([
-            'auto-doc.additional_paths' => [$additionalDocPath]
+            'auto-doc.additional_paths' => ['invalid_path/non_existent_file.json']
+        ]);
+
+        $this->expectException(DocFileNotExistsException::class);
+
+        $this->json('get', '/auto-doc/documentation');
+    }
+
+    public function getJSONDocumentationIsEmpty()
+    {
+        config([
+            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/documentation__non_json.txt']
+        ]);
+
+        $this->expectException(EmptyDocFileException::class);
+
+        $this->json('get', '/auto-doc/documentation');
+    }
+
+    public function testGetJSONDocumentationInvalidAdditionalDoc()
+    {
+        config([
+            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_field__paths.json']
         ]);
 
         $response = $this->json('get', '/auto-doc/documentation');
