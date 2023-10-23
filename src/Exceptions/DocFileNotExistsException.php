@@ -3,6 +3,7 @@
 namespace RonasIT\Support\AutoDoc\Exceptions;
 
 use Exception;
+
 class DocFileNotExistsException extends Exception
 {
     public function __construct(string $filename)
