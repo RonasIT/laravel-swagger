@@ -671,6 +671,10 @@ class SwaggerService
         return Str::camel($action);
     }
 
+    /**
+     * @deprecated method is not in use
+     * @codeCoverageIgnore
+     */
     protected function saveTempData()
     {
         $exportFile = Arr::get($this->config, 'files.temporary');
