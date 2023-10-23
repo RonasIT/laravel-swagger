@@ -8,7 +8,9 @@ use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use RonasIT\Support\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
+use RonasIT\Support\AutoDoc\Exceptions\EmptyDocFileException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
@@ -692,13 +694,13 @@ class SwaggerService
             $fullFilePath = base_path($filePath);
 
             if (!file_exists($fullFilePath)) {
-                continue;
+                throw new DocFileNotExistsException($fullFilePath);
             }
 
             $fileContent = json_decode(file_get_contents($fullFilePath), true);
 
             if (empty($fileContent)) {
-                continue;
+                throw new EmptyDocFileException($fullFilePath);
             }
 
             try {
