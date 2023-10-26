@@ -697,19 +697,19 @@ class SwaggerService
         foreach ($additionalDocs as $filePath) {
             $fullFilePath = base_path($filePath);
 
-            if (!file_exists($fullFilePath)) {
-                throw new DocFileNotExistsException($fullFilePath);
-            }
-
-            $fileContent = json_decode(file_get_contents($fullFilePath), true);
-
-            if (empty($fileContent)) {
-                throw new EmptyDocFileException($fullFilePath);
-            }
-
             try {
+                if (!file_exists($fullFilePath)) {
+                    throw new DocFileNotExistsException($fullFilePath);
+                }
+
+                $fileContent = json_decode(file_get_contents($fullFilePath), true);
+
+                if (empty($fileContent)) {
+                    throw new EmptyDocFileException($fullFilePath);
+                }
+
                 $this->validateSpec($fileContent);
-            } catch (InvalidSwaggerSpecException $exception) {
+            } catch (DocFileNotExistsException|EmptyDocFileException|InvalidSwaggerSpecException $exception) {
                 report($exception);
 
                 continue;
