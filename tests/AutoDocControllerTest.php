@@ -8,7 +8,8 @@ use RonasIT\Support\Tests\Support\Traits\MockTrait;
 
 class AutoDocControllerTest extends TestCase
 {
-    use MockTrait, PHPMock;
+    use MockTrait;
+    use PHPMock;
 
     protected $documentation;
     protected $localDriverFilePath;
