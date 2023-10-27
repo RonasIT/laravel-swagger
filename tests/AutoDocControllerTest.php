@@ -3,11 +3,14 @@
 namespace RonasIT\Support\Tests;
 
 use Illuminate\Http\Response;
-use RonasIT\Support\AutoDoc\Exceptions\DocFileNotExistsException;
-use RonasIT\Support\AutoDoc\Exceptions\EmptyDocFileException;
+use phpmock\phpunit\PHPMock;
+use RonasIT\Support\Tests\Support\Traits\MockTrait;
 
 class AutoDocControllerTest extends TestCase
 {
+    use MockTrait;
+    use PHPMock;
+
     protected $documentation;
     protected $localDriverFilePath;
 
@@ -52,32 +55,44 @@ class AutoDocControllerTest extends TestCase
         $this->assertEqualsJsonFixture('tmp_data_with_additional_paths', $response->json());
     }
 
-    public function getJSONDocumentationDoesntExist()
+    public function testGetJSONDocumentationDoesntExist()
     {
+        $mock = $this->getFunctionMock('RonasIT\Support\AutoDoc\Services', 'report');
+        $mock->expects($this->once());
+
         config([
             'auto-doc.additional_paths' => ['invalid_path/non_existent_file.json']
         ]);
 
-        $this->expectException(DocFileNotExistsException::class);
+        $response = $this->json('get', '/auto-doc/documentation');
 
-        $this->json('get', '/auto-doc/documentation');
+        $response->assertStatus(Response::HTTP_OK);
+
+        $response->assertJson($this->documentation);
     }
 
-    public function getJSONDocumentationIsEmpty()
+    public function testGetJSONDocumentationIsEmpty()
     {
+        $mock = $this->getFunctionMock('RonasIT\Support\AutoDoc\Services', 'report');
+        $mock->expects($this->once());
+
         config([
             'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/documentation__non_json.txt']
         ]);
 
-        $this->expectException(EmptyDocFileException::class);
+        $response = $this->json('get', '/auto-doc/documentation');
 
-        $this->json('get', '/auto-doc/documentation');
+        $response->assertStatus(Response::HTTP_OK);
+
+        $response->assertJson($this->documentation);
     }
 
     public function testGetJSONDocumentationInvalidAdditionalDoc()
     {
         config([
-            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_field__paths.json']
+            'auto-doc.additional_paths' => [
+                'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_field__paths.json'
+            ]
         ]);
 
         $response = $this->json('get', '/auto-doc/documentation');
