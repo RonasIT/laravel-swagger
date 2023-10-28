@@ -277,7 +277,7 @@ class SwaggerServiceTest extends TestCase
     /**
      * @dataProvider getConstructorInvalidTmpData
      *
-     * @param string $tmpDoc
+     * @param string $docFilePath
      * @param string $exception
      * @param string $exceptionMessage
      */
