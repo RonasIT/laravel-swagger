@@ -271,6 +271,21 @@ class SwaggerServiceTest extends TestCase
                 'exceptionMessage' => "Validation failed. Path parameters cannot be optional. "
                     . "Set required=true for the 'username' parameters at operation 'paths./users.get'."
             ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__security_definition__type',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.type' has an invalid value: invalid. Allowed values: basic, apiKey, oauth2."
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__security_definition__flow',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.flow' has an invalid value: invalid. Allowed values: implicit, password, application, accessCode."
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__security_definition__in',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header."
+            ],
         ];
     }
 

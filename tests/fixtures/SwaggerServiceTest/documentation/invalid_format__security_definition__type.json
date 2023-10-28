@@ -1,0 +1,88 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "\/",
+  "schemes": [],
+  "paths": {
+    "\/api\/users":
+    {
+      "post":
+      {
+        "tags": ["api"],
+        "consumes": ["application\/x-www-form-urlencoded"],
+        "produces": ["application\/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+           "schema": {
+             "$ref": "#/definitions/apiusersObject"
+           }
+          }
+        ],
+        "responses":
+        {
+          "403":
+          {
+            "description": "Forbidden",
+            "schema":
+            {
+              "example":
+              {
+                "message": "This action is unauthorized."
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "summary": "test"
+      }
+    }
+  },
+  "definitions": {
+    "apiusersObject": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": ""
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "with_to_array_rule_string_name"
+        },
+        "is_email_enabled": {
+          "type": "string",
+          "description": "test_rule_without_to_string"
+        }
+      },
+      "required": {
+        "0": "query"
+      },
+      "example": {
+        "first_name": "andrey",
+        "last_name": "voronin"
+      }
+    }
+  },
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact":
+    {
+      "email": "your@email.com"
+    }
+  },
+  "securityDefinitions": [
+    {
+      "type": "invalid",
+      "in": "query",
+      "flow": "password"
+    }
+  ]
+}
