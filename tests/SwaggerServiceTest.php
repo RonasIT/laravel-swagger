@@ -281,13 +281,14 @@ class SwaggerServiceTest extends TestCase
      * @param string $exception
      * @param string $exceptionMessage
      */
-    public function testConstructorInvalidTmpData(string $tmpDoc, string $exception, string $exceptionMessage)
+    public function testGetDocFileContentInvalidTmpData(string $docFilePath, string $exception, string $exceptionMessage)
     {
-        $this->mockDriverGetTpmData($this->getJsonFixture($tmpDoc));
+        $this->mockDriverGetDocumentation($this->getJsonFixture($docFilePath));
+
         $this->expectException($exception);
         $this->expectExceptionMessage($exceptionMessage);
 
-        app(SwaggerService::class);
+        app(SwaggerService::class)->getDocFileContent();
     }
 
     public function testEmptyContactEmail()
