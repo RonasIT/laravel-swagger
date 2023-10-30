@@ -31,6 +31,7 @@ class SwaggerService
     public const SWAGGER_VERSION = '2.0';
 
     protected $driver;
+    protected $openAPIValidator;
 
     protected $data;
     protected $config;
@@ -57,6 +58,8 @@ class SwaggerService
 
     public function __construct(Container $container)
     {
+        $this->openAPIValidator = app(SwaggerSpecValidator::class);
+
         $this->initConfig();
 
         $this->setDriver();
@@ -68,9 +71,7 @@ class SwaggerService
 
             $this->data = $this->driver->getTmpData();
 
-            if (!empty($this->data)) {
-                $this->validateSpec($this->data);
-            } else {
+            if (empty($this->data)) {
                 $this->data = $this->generateEmptyData();
 
                 $this->driver->saveTmpData($this->data);
@@ -692,55 +693,20 @@ class SwaggerService
     {
         $documentation = $this->driver->getDocumentation();
 
+        $this->openAPIValidator->validate($documentation);
+
         $additionalDocs = config('auto-doc.additional_paths', []);
 
         foreach ($additionalDocs as $filePath) {
-            $fullFilePath = base_path($filePath);
-
             try {
-                if (!file_exists($fullFilePath)) {
-                    throw new DocFileNotExistsException($fullFilePath);
-                }
-
-                $fileContent = json_decode(file_get_contents($fullFilePath), true);
-
-                if (empty($fileContent)) {
-                    throw new EmptyDocFileException($fullFilePath);
-                }
-
-                $this->validateSpec($fileContent);
+                $additionalDocContent = $this->getOpenAPIFileContent(base_path($filePath));
             } catch (DocFileNotExistsException|EmptyDocFileException|InvalidSwaggerSpecException $exception) {
                 report($exception);
 
                 continue;
             }
 
-            $paths = array_keys($fileContent['paths']);
-
-            foreach ($paths as $path) {
-                $additionalDocPath = $fileContent['paths'][$path];
-
-                if (empty($documentation['paths'][$path])) {
-                    $documentation['paths'][$path] = $additionalDocPath;
-                } else {
-                    $methods = array_keys($documentation['paths'][$path]);
-                    $additionalDocMethods = array_keys($additionalDocPath);
-
-                    foreach ($additionalDocMethods as $method) {
-                        if (!in_array($method, $methods)) {
-                            $documentation['paths'][$path][$method] = $additionalDocPath[$method];
-                        }
-                    }
-                }
-            }
-
-            $definitions = array_keys($fileContent['definitions']);
-
-            foreach ($definitions as $definition) {
-                if (empty($documentation['definitions'][$definition])) {
-                    $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
-                }
-            }
+            $this->mergeOpenAPIDocs($documentation, $additionalDocContent);
         }
 
         return $documentation;
@@ -871,8 +837,50 @@ class SwaggerService
         return $info;
     }
 
-    protected function validateSpec(array $doc): void
+    protected function getOpenAPIFileContent(string $filePath): array
     {
-        app(SwaggerSpecValidator::class)->validate($doc);
+        if (!file_exists($filePath)) {
+            throw new DocFileNotExistsException($filePath);
+        }
+
+        $fileContent = json_decode(file_get_contents($filePath), true);
+
+        if (empty($fileContent)) {
+            throw new EmptyDocFileException($filePath);
+        }
+
+        $this->openAPIValidator->validate($fileContent);
+
+        return $fileContent;
+    }
+
+    protected function mergeOpenAPIDocs(array &$documentation, array $additionalDocumentation): void
+    {
+        $paths = array_keys($additionalDocumentation['paths']);
+
+        foreach ($paths as $path) {
+            $additionalDocPath = $additionalDocumentation['paths'][$path];
+
+            if (empty($documentation['paths'][$path])) {
+                $documentation['paths'][$path] = $additionalDocPath;
+            } else {
+                $methods = array_keys($documentation['paths'][$path]);
+                $additionalDocMethods = array_keys($additionalDocPath);
+
+                foreach ($additionalDocMethods as $method) {
+                    if (!in_array($method, $methods)) {
+                        $documentation['paths'][$path][$method] = $additionalDocPath[$method];
+                    }
+                }
+            }
+        }
+
+        $definitions = array_keys($additionalDocumentation['definitions']);
+
+        foreach ($definitions as $definition) {
+            if (empty($documentation['definitions'][$definition])) {
+                $documentation['definitions'][$definition] = $additionalDocumentation['definitions'][$definition];
+            }
+        }
     }
 }

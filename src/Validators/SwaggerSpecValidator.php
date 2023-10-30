@@ -155,9 +155,9 @@ class SwaggerSpecValidator
 
             $this->validateFieldsPresent(self::REQUIRED_FIELDS['security_definition'], $parentId);
 
-            $this->validateFieldValue("{$parentId}.'type", self::ALLOWED_VALUES['security_definition_type']);
-            $this->validateFieldValue("{$parentId}.'in", self::ALLOWED_VALUES['security_definition_in']);
-            $this->validateFieldValue("{$parentId}.'flow", self::ALLOWED_VALUES['security_definition_flow']);
+            $this->validateFieldValue("{$parentId}.type", self::ALLOWED_VALUES['security_definition_type']);
+            $this->validateFieldValue("{$parentId}.in", self::ALLOWED_VALUES['security_definition_in']);
+            $this->validateFieldValue("{$parentId}.flow", self::ALLOWED_VALUES['security_definition_flow']);
         }
     }
 
