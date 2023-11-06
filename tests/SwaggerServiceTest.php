@@ -656,7 +656,10 @@ class SwaggerServiceTest extends TestCase
         config(['auto-doc.documentation_viewer' => 'invalid']);
 
         $this->expectException(UnsupportedDocumentationViewerException::class);
-        $this->expectExceptionMessage("The documentation viewer 'invalid' does not exists. Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values.");
+        $this->expectExceptionMessage(
+            "The documentation viewer 'invalid' does not exists."
+            . " Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values."
+        );
 
         app(SwaggerService::class);
     }
@@ -666,7 +669,10 @@ class SwaggerServiceTest extends TestCase
         config(['auto-doc.documentation_viewer' => null]);
 
         $this->expectException(UnsupportedDocumentationViewerException::class);
-        $this->expectExceptionMessage("The documentation viewer '' does not exists. Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values.");
+        $this->expectExceptionMessage(
+            "The documentation viewer '' does not exists."
+            . " Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values."
+        );
 
         app(SwaggerService::class);
     }
