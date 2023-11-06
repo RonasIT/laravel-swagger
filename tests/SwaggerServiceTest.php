@@ -21,6 +21,7 @@ use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
+use RonasIT\Support\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
 use RonasIT\Support\Tests\Support\Mock\TestNotificationSetting;
@@ -648,5 +649,25 @@ class SwaggerServiceTest extends TestCase
         ]);
 
         $service->addData($request, $response);
+    }
+
+    public function testSetInvalidDocumentationViewer()
+    {
+        config(['auto-doc.documentation_viewer' => 'invalid']);
+
+        $this->expectException(UnsupportedDocumentationViewerException::class);
+        $this->expectExceptionMessage("The documentation viewer 'invalid' does not exists. Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values.");
+
+        app(SwaggerService::class);
+    }
+
+    public function testSetNullableDocumentationViewer()
+    {
+        config(['auto-doc.documentation_viewer' => null]);
+
+        $this->expectException(UnsupportedDocumentationViewerException::class);
+        $this->expectExceptionMessage("The documentation viewer '' does not exists. Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values.");
+
+        app(SwaggerService::class);
     }
 }
