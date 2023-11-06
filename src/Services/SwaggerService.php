@@ -57,12 +57,6 @@ class SwaggerService
         'int' => 'integer'
     ];
 
-    protected $documentationViewers = [
-        'swagger',
-        'elements',
-        'rapidoc'
-    ];
-
     public function __construct(Container $container)
     {
         $this->openAPIValidator = app(SwaggerSpecValidator::class);
@@ -103,7 +97,8 @@ class SwaggerService
         }
 
         $documentationViewer = (string)Arr::get($this->config, 'documentation_viewer');
-        if (!in_array($documentationViewer, $this->documentationViewers)) {
+
+        if (!view()->exists("auto-doc::documentation-{$documentationViewer}")) {
             throw new UnsupportedDocumentationViewerException($documentationViewer);
         }
     }
