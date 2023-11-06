@@ -182,9 +182,21 @@ You can specify the way to collect documentation by creating your own custom dri
 
 You can find example of drivers [here](https://github.com/RonasIT/laravel-swagger/tree/master/src/Drivers).
 
+### Documentation viewer setting
+
+Since version 2.2 we've added new OpenAPI documentation display shells. Just change the
+`documentation_viewer` config to instantly see new viewer without rebuilding documentation
+file.
+
+### Additional documentations merging
+
+Package allows to merge base documentation with valid OpenAPI files from the `additional_paths`
+config.
+
 ## Contributing
 
-Thank you for considering contributing to Laravel Swagger plugin! The contribution guide can be found in the [Contributing guide](CONTRIBUTING.md).
+Thank you for considering contributing to Laravel Swagger plugin! The contribution guide
+can be found in the [Contributing guide](CONTRIBUTING.md).
 
 ## License
 
