@@ -182,16 +182,16 @@ You can specify the way to collect documentation by creating your own custom dri
 
 You can find example of drivers [here](https://github.com/RonasIT/laravel-swagger/tree/master/src/Drivers).
 
-### Documentation viewer setting
+### Viewing OpenAPI documentation
 
-Since version 2.2 we've added new OpenAPI documentation display shells. Just change the
-`documentation_viewer` config to instantly see new viewer without rebuilding documentation
-file.
+As of version 2.2, the package includes the ability to switch between OpenAPI documentation
+viewers. To access different viewers, modify the `documentation_viewer` configuration.
+This change is reflected immediately, without the need to rebuild the documentation file.
 
-### Additional documentations merging
+### Merging additional documentations
 
-Package allows to merge base documentation with valid OpenAPI files from the `additional_paths`
-config.
+The package supports the integration of the primary documentation with additional valid
+OpenAPI files specified in the `additional_paths` configuration.
 
 ## Contributing
 
