@@ -96,7 +96,7 @@ class SwaggerService
             throw new LegacyConfigException();
         }
 
-        $documentationViewer = (string)Arr::get($this->config, 'documentation_viewer');
+        $documentationViewer = (string) Arr::get($this->config, 'documentation_viewer');
 
         if (!view()->exists("auto-doc::documentation-{$documentationViewer}")) {
             throw new UnsupportedDocumentationViewerException($documentationViewer);
