@@ -1,0 +1,38 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "\/",
+  "schemes": [],
+  "definitions": {
+    "authloginObject": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "2"
+        },
+        "password": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "required": [
+        "email",
+        "password"
+      ],
+      "example": {
+        "email": "admin@test.com",
+        "password": "123"
+      }
+    }
+  },
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Project Title",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "swagger": "2.0",
+    "host": "localhost",
+    "basePath": "\/",
+    "schemes": [],
+    "paths": [],
+    "definitions": [],
+    "info": []
+}

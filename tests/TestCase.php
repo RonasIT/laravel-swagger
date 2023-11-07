@@ -17,6 +17,13 @@ class TestCase extends BaseTest
 {
     protected $globalExportMode = false;
 
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        config(['auto-doc.info.contact.email' => 'your@mail.com']);
+    }
+
     public function tearDown(): void
     {
         parent::tearDown();

@@ -40,22 +40,19 @@ return [
         | Documentation Template
         |--------------------------------------------------------------------------
         |
-        | You can use your custom documentation view
+        | You can use your custom documentation view.
         */
         'description' => 'auto-doc::swagger-description',
         'version' => '0.0.0',
-        'title' => 'Name of Your Application',
+        'title' => env('APP_NAME', 'Name of Your Application'),
         'termsOfService' => '',
         'contact' => [
-            'email' => 'your@email.com'
+            'email' => null
         ],
         'license' => [
             'name' => '',
             'url' => ''
         ]
-    ],
-    'swagger' => [
-        'version' => '2.0'
     ],
 
     /*
@@ -104,6 +101,16 @@ return [
     | or one of our drivers from the `drivers` config:
     */
     'driver' => env('SWAGGER_DRIVER', 'local'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAPI Spec viewer
+    |--------------------------------------------------------------------------
+    |
+    | Tool for rendering API documentation in HTML format.
+    | Available values: "swagger", "elements", "rapidoc"
+    */
+    'documentation_viewer' => env('SWAGGER_SPEC_VIEWER', 'swagger'),
 
     'drivers' => [
         'local' => [
@@ -164,5 +171,5 @@ return [
         'development'
     ],
 
-    'config_version' => '2.4'
+    'config_version' => '2.6'
 ];

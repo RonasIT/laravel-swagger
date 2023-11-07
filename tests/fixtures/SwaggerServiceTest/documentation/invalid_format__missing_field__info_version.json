@@ -1,0 +1,16 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "\/",
+  "schemes": [],
+  "paths": {
+  },
+  "info": {
+    "description": "This is automatically collected documentation",
+    "title": "Project Title",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  }
+}

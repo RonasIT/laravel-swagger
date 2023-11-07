@@ -1,0 +1,24 @@
+{
+    "swagger": "2.0",
+    "host": "localhost",
+    "basePath": "\/",
+    "schemes": [],
+    "paths": [],
+    "definitions": [],
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@mail.com"
+        }
+    },
+    "securityDefinitions": {
+        "jwt": {
+            "type": "apiKey",
+            "name": "authorization",
+            "in": "header"
+        }
+    }
+}

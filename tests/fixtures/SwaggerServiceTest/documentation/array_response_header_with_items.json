@@ -1,0 +1,39 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Invalid API"
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "hello world",
+            "headers": {
+              "Content-Type": {
+                "type": "string"
+              },
+              "Last-Modified": {
+                "type": "array",
+                "items": {
+                  "date": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "schema": {
+              "type": "array",
+              "items": {
+                "user": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

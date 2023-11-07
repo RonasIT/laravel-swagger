@@ -8,12 +8,18 @@ use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use RonasIT\Support\AutoDoc\Exceptions\DocFileNotExistsException;
+use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
+use RonasIT\Support\AutoDoc\Exceptions\EmptyDocFileException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
+use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
+use RonasIT\Support\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
+use RonasIT\Support\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -23,7 +29,10 @@ class SwaggerService
 {
     use GetDependenciesTrait;
 
+    public const SWAGGER_VERSION = '2.0';
+
     protected $driver;
+    protected $openAPIValidator;
 
     protected $data;
     protected $config;
@@ -50,6 +59,8 @@ class SwaggerService
 
     public function __construct(Container $container)
     {
+        $this->openAPIValidator = app(SwaggerSpecValidator::class);
+
         $this->initConfig();
 
         $this->setDriver();
@@ -84,6 +95,12 @@ class SwaggerService
         if (version_compare($packageConfigs['config_version'], $version, '>')) {
             throw new LegacyConfigException();
         }
+
+        $documentationViewer = (string) Arr::get($this->config, 'documentation_viewer');
+
+        if (!view()->exists("auto-doc::documentation-{$documentationViewer}")) {
+            throw new UnsupportedDocumentationViewerException($documentationViewer);
+        }
     }
 
     protected function setDriver()
@@ -104,20 +121,21 @@ class SwaggerService
 
     protected function generateEmptyData(): array
     {
+        // client must enter at least `contact.email` to generate a default `info` block
+        // otherwise an exception will be called
+        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
+            throw new EmptyContactEmailException();
+        }
+
         $data = [
-            'swagger' => Arr::get($this->config, 'swagger.version'),
+            'swagger' => self::SWAGGER_VERSION,
             'host' => $this->getAppUrl(),
             'basePath' => $this->config['basePath'],
             'schemes' => $this->config['schemes'],
             'paths' => [],
-            'definitions' => $this->config['definitions']
+            'definitions' => $this->config['definitions'],
+            'info' => $this->prepareInfo($this->config['info'])
         ];
-
-        $info = $this->prepareInfo($this->config['info']);
-
-        if (!empty($info)) {
-            $data['info'] = $info;
-        }
 
         $securityDefinitions = $this->generateSecurityDefinition();
 
@@ -125,24 +143,20 @@ class SwaggerService
             $data['securityDefinitions'] = $securityDefinitions;
         }
 
-        if (!empty($data['info']['description'])) {
-            $data['info']['description'] = view($data['info']['description'])->render();
-        }
-
         return $data;
     }
 
-    protected function getAppUrl()
+    protected function getAppUrl(): string
     {
         $url = config('app.url');
 
         return str_replace(['http://', 'https://', '/'], '', $url);
     }
 
-    protected function generateSecurityDefinition()
+    protected function generateSecurityDefinition(): ?array
     {
         if (empty($this->security)) {
-            return '';
+            return null;
         }
 
         return [
@@ -308,7 +322,8 @@ class SwaggerService
         $description = $this->getResponseDescription($code);
         $availableContentTypes = [
             'application',
-            'text'
+            'text',
+            'image',
         ];
         $explodedContentType = explode('/', $produce);
 
@@ -339,7 +354,7 @@ class SwaggerService
         $formRequest = new $request();
         $formRequest->setUserResolver($this->request->getUserResolver());
         $formRequest->setRouteResolver($this->request->getRouteResolver());
-        $rules = method_exists($formRequest, 'rules') ? $formRequest->rules() : [];
+        $rules = method_exists($formRequest, 'rules') ? $this->prepareRules($formRequest->rules()) : [];
         $attributes = method_exists($formRequest, 'attributes') ? $formRequest->attributes() : [];
 
         $actionName = $this->getActionName($this->uri);
@@ -349,6 +364,42 @@ class SwaggerService
         } else {
             $this->savePostRequestParameters($actionName, $rules, $attributes, $annotations);
         }
+    }
+
+    protected function prepareRules(array $rules): array
+    {
+        $preparedRules = [];
+
+        foreach ($rules as $field => $rulesField) {
+            if (is_array($rulesField)) {
+                $rulesField = array_map(function ($rule) {
+                    return $this->getRuleAsString($rule);
+                }, $rulesField);
+
+                $preparedRules[$field] = implode('|', $rulesField);
+            } else {
+                $preparedRules[$field] = $this->getRuleAsString($rulesField);
+            }
+        }
+
+        return $preparedRules;
+    }
+
+    protected function getRuleAsString($rule): string
+    {
+        if (is_object($rule)) {
+            if (method_exists($rule, '__toString')) {
+                return $rule->__toString();
+            }
+
+            $shortName = Str::afterLast(get_class($rule), '\\');
+
+            $ruleName = preg_replace('/Rule$/', '', $shortName);
+
+            return Str::snake($ruleName);
+        }
+
+        return $rule;
     }
 
     protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
@@ -628,6 +679,18 @@ class SwaggerService
         return Str::camel($action);
     }
 
+    /**
+     * @deprecated method is not in use
+     * @codeCoverageIgnore
+     */
+    protected function saveTempData()
+    {
+        $exportFile = Arr::get($this->config, 'files.temporary');
+        $data = json_encode($this->data);
+
+        file_put_contents($exportFile, $data);
+    }
+
     public function saveProductionData()
     {
         $this->driver->saveData();
@@ -637,37 +700,20 @@ class SwaggerService
     {
         $documentation = $this->driver->getDocumentation();
 
+        $this->openAPIValidator->validate($documentation);
+
         $additionalDocs = config('auto-doc.additional_paths', []);
 
         foreach ($additionalDocs as $filePath) {
-            $fileContent = json_decode(file_get_contents(base_path($filePath)), true);
+            try {
+                $additionalDocContent = $this->getOpenAPIFileContent(base_path($filePath));
+            } catch (DocFileNotExistsException|EmptyDocFileException|InvalidSwaggerSpecException $exception) {
+                report($exception);
 
-            $paths = array_keys($fileContent['paths']);
-
-            foreach ($paths as $path) {
-                $additionalDocPath = $fileContent['paths'][$path];
-
-                if (empty($documentation['paths'][$path])) {
-                    $documentation['paths'][$path] = $additionalDocPath;
-                } else {
-                    $methods = array_keys($documentation['paths'][$path]);
-                    $additionalDocMethods = array_keys($additionalDocPath);
-
-                    foreach ($additionalDocMethods as $method) {
-                        if (!in_array($method, $methods)) {
-                            $documentation['paths'][$path][$method] = $additionalDocPath[$method];
-                        }
-                    }
-                }
+                continue;
             }
 
-            $definitions = array_keys($fileContent['definitions']);
-
-            foreach ($definitions as $definition) {
-                if (empty($documentation['definitions'][$definition])) {
-                    $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
-                }
-            }
+            $this->mergeOpenAPIDocs($documentation, $additionalDocContent);
         }
 
         return $documentation;
@@ -775,11 +821,7 @@ class SwaggerService
         return $values[$type];
     }
 
-    /**
-     * @param $info
-     * @return mixed
-     */
-    protected function prepareInfo($info)
+    protected function prepareInfo(array $info): array
     {
         if (empty($info)) {
             return $info;
@@ -790,10 +832,62 @@ class SwaggerService
                 unset($info['license'][$key]);
             }
         }
+
         if (empty($info['license'])) {
             unset($info['license']);
         }
 
+        if (!empty($info['description'])) {
+            $info['description'] = view($info['description'])->render();
+        }
+
         return $info;
+    }
+
+    protected function getOpenAPIFileContent(string $filePath): array
+    {
+        if (!file_exists($filePath)) {
+            throw new DocFileNotExistsException($filePath);
+        }
+
+        $fileContent = json_decode(file_get_contents($filePath), true);
+
+        if (empty($fileContent)) {
+            throw new EmptyDocFileException($filePath);
+        }
+
+        $this->openAPIValidator->validate($fileContent);
+
+        return $fileContent;
+    }
+
+    protected function mergeOpenAPIDocs(array &$documentation, array $additionalDocumentation): void
+    {
+        $paths = array_keys($additionalDocumentation['paths']);
+
+        foreach ($paths as $path) {
+            $additionalDocPath = $additionalDocumentation['paths'][$path];
+
+            if (empty($documentation['paths'][$path])) {
+                $documentation['paths'][$path] = $additionalDocPath;
+            } else {
+                $methods = array_keys($documentation['paths'][$path]);
+                $additionalDocMethods = array_keys($additionalDocPath);
+
+                foreach ($additionalDocMethods as $method) {
+                    if (!in_array($method, $methods)) {
+                        $documentation['paths'][$path][$method] = $additionalDocPath[$method];
+                    }
+                }
+            }
+        }
+
+        $definitions = array_keys($additionalDocumentation['definitions']);
+
+        foreach ($definitions as $definition) {
+            if (empty($documentation['definitions'][$definition])) {
+                $documentation['definitions'][$definition] = $additionalDocumentation['definitions'][$definition];
+            }
+        }
     }
 }

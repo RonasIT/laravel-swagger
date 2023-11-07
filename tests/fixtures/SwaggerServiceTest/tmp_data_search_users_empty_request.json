@@ -1,0 +1,94 @@
+{
+  "swagger": "2.0",
+  "host": "localhost",
+  "basePath": "\/",
+  "schemes": [],
+  "paths":
+  {
+    "\/api\/users":
+    {
+      "get":
+      {
+        "tags": ["api"],
+        "produces": ["application\/json"],
+        "parameters": [],
+        "responses":
+        {
+          "200":
+          {
+            "description": "OK",
+            "schema":
+            {
+              "example":
+              {
+                "current_page": 1,
+                "data": [
+                  {
+                    "id": 1,
+                    "first_name": "Billy",
+                    "last_name": "Coleman",
+                    "email": "billy.coleman@example.com",
+                    "created_at": null,
+                    "updated_at": null,
+                    "role_id": 1,
+                    "date_of_birth": "1986-05-20",
+                    "phone": "+79535482530",
+                    "position": "admin",
+                    "starts_on": "2022-04-16 00:00:00",
+                    "hr_id": null,
+                    "manager_id": null,
+                    "lead_id": null,
+                    "avatar_id": null,
+                    "deleted_at": null,
+                    "company_id": 1
+                  }
+                ],
+                "first_page_url": "http:\/\/localhost\/api\/users?page=1",
+                "from": 1,
+                "last_page": 1,
+                "last_page_url": "http:\/\/localhost\/api\/users?page=1",
+                "links": [
+                  {
+                    "url": null,
+                    "label": "&laquo; Previous",
+                    "active": false
+                  },
+                  {
+                    "url": "http:\/\/localhost\/api\/users?page=1",
+                    "label": "1",
+                    "active": true
+                  },
+                  {
+                    "url": null,
+                    "label": "Next &raquo;",
+                    "active": false
+                  }],
+                "next_page_url": null,
+                "path": "http:\/\/localhost\/api\/users",
+                "per_page": 20,
+                "prev_page_url": null,
+                "to": 1,
+                "total": 1
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "consumes": []
+      }
+    }
+  },
+  "definitions": [],
+  "info":
+  {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact":
+    {
+      "email": "your@email.com"
+    }
+  }
+}
