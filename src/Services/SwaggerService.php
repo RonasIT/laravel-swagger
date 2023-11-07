@@ -15,6 +15,7 @@ use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
+use RonasIT\Support\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
@@ -93,6 +94,12 @@ class SwaggerService
 
         if (version_compare($packageConfigs['config_version'], $version, '>')) {
             throw new LegacyConfigException();
+        }
+
+        $documentationViewer = (string) Arr::get($this->config, 'documentation_viewer');
+
+        if (!view()->exists("auto-doc::documentation-{$documentationViewer}")) {
+            throw new UnsupportedDocumentationViewerException($documentationViewer);
         }
     }
 
