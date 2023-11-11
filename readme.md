@@ -69,6 +69,8 @@ passing PHPUnit tests.
     /**
     * @summary Update user
     *
+    * @deprecated 
+    *
     * @description
     * This request should be used for updating the user data
     *
@@ -166,6 +168,7 @@ You can use the following annotations in your request classes to customize docum
 - **@description** - implementation notes
 - **@_204** - custom description of response code. You can specify any code as you want.
 - **@some_field** - description of the field from the rules method
+- **@deprecated** - mark route as deprecated
  
 > ***Note***
 > 
