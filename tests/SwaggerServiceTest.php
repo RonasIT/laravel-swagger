@@ -478,6 +478,24 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
+    public function testAddInSourceKeyForJWTSecurity()
+    {
+        config([
+            'auto-doc.security' => 'jwt',
+            'auto-doc.security_in_source_key' => 'my-custom-header'
+        ]);
+
+        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request_jwt_security_with_custom_key'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequestWithCustomSecurityKey();
+
+        $response = $this->generateResponseWithCustomSecurityDefinitionKey('example_success_roles_response.json');
+
+        $service->addData($request, $response);
+    }
+
     public function testAddDataWithEmptySecurity()
     {
         config(['auto-doc.security' => 'invalid']);

@@ -76,6 +76,12 @@ return [
     | Available values: "jwt", "laravel", "null"
     */
     'security' => '',
+    /*
+    | Customize parameter key name in source.
+    | For example, "X-Custom-Key", "my_auth_token", e.t.c.
+    | Default values are "authorization" for "jwt" and "__ym_uid" for "laravel".
+    */
+    'security_in_source_key' => null,
     'defaults' => [
 
         /*

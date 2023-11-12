@@ -1,0 +1,99 @@
+{
+    "swagger": "2.0",
+    "host": "localhost",
+    "basePath": "/",
+    "schemes": [],
+    "paths": {
+        "/users/roles": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "string, required",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "description": "integer, with_to_array_rule_string_name",
+                        "type": "integer"
+                    },
+                    {
+                        "in": "query",
+                        "name": "is_email_enabled",
+                        "type": "string",
+                        "description": "test_rule_without_to_string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operation successfully done",
+                        "schema": {
+                            "example": [
+                                {
+                                    "id": 1,
+                                    "name": "admin",
+                                    "users": [
+                                        {
+                                            "id": 1,
+                                            "name": "admin"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 2,
+                                    "name": "client",
+                                    "users": [
+                                        {
+                                            "id": 2,
+                                            "name": "first_client"
+                                        },
+                                        {
+                                            "id": 3,
+                                            "name": "second_client"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt": []
+                    }
+                ],
+                "description": "",
+                "summary": "test"
+            }
+        }
+    },
+    "definitions": {},
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    },
+    "securityDefinitions": {
+        "jwt": {
+            "type": "apiKey",
+            "name": "authorization",
+            "in": "header"
+        }
+    }
+}

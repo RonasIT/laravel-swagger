@@ -628,12 +628,14 @@ class SwaggerService
 
     protected function requestSupportAuth(): bool
     {
+        $securityInSourceKey = Arr::get($this->config, 'security_in_source_key');
+
         switch ($this->security) {
             case 'jwt':
-                $header = $this->request->header('authorization');
+                $header = $this->request->header($securityInSourceKey ?? 'authorization');
                 break;
             case 'laravel':
-                $header = $this->request->cookie('__ym_uid');
+                $header = $this->request->cookie($securityInSourceKey ?? '__ym_uid');
                 break;
         }
 
