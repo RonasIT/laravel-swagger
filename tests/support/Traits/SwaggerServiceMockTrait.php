@@ -72,4 +72,15 @@ trait SwaggerServiceMockTrait
 
         $this->app->instance($driverClass, $driver);
     }
+
+    protected function mockDriverSaveData($driverClass = LocalDriver::class)
+    {
+        $driver = $this->mockClass($driverClass, ['saveData']);
+
+        $driver
+            ->expects($this->exactly(1))
+            ->method('saveData');
+
+        $this->app->instance($driverClass, $driver);
+    }
 }
