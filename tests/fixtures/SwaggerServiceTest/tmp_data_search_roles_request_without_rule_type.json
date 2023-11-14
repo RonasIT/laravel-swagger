@@ -59,7 +59,8 @@
         },
         "security": [],
         "description": "",
-        "summary": "test without rule type"
+        "summary": "test without rule type",
+        "deprecated": false
       }
     }
   },

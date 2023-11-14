@@ -70,7 +70,8 @@
           }
         ],
         "description": "",
-        "summary": "test"
+        "summary": "test",
+        "deprecated": false
       },
       "patch": {
         "tags": [
@@ -112,7 +113,8 @@
           }
         ],
         "description": "",
-        "summary": "test"
+        "summary": "test",
+        "deprecated": false
       }
     }
   },

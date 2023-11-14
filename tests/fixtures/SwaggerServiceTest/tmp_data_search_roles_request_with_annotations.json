@@ -59,7 +59,8 @@
         },
         "security": [],
         "description": "Description of the request class",
-        "summary": "Request class to validate input data"
+        "summary": "Request class to validate input data",
+        "deprecated": true
       }
     }
   },

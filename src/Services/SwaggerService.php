@@ -57,6 +57,10 @@ class SwaggerService
         'int' => 'integer'
     ];
 
+    protected $booleanAnnotations = [
+        'deprecated'
+    ];
+
     public function __construct(Container $container)
     {
         $this->openAPIValidator = app(SwaggerSpecValidator::class);
@@ -267,8 +271,14 @@ class SwaggerService
 
         $annotations = $this->getClassAnnotations($concreteRequest);
 
+        $this->markAsDeprecated($annotations);
         $this->saveParameters($concreteRequest, $annotations);
         $this->saveDescription($concreteRequest, $annotations);
+    }
+
+    protected function markAsDeprecated(array $annotations)
+    {
+        $this->item['deprecated'] = Arr::get($annotations, 'deprecated', false);
     }
 
     protected function parseResponse($response)
@@ -781,6 +791,10 @@ class SwaggerService
 
                 $paramName = str_replace('@', '', array_shift($exploded));
                 $paramValue = implode(' ', $exploded);
+
+                if (in_array($paramName, $this->booleanAnnotations)) {
+                    $paramValue = true;
+                }
 
                 $result[$paramName] = $paramValue;
             }
