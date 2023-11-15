@@ -17,7 +17,7 @@
     "securityDefinitions": {
         "jwt": {
             "type": "apiKey",
-            "name": "authorization",
+            "name": "Authorization",
             "in": "header"
         }
     }

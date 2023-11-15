@@ -77,11 +77,26 @@ return [
     */
     'security' => '',
     /*
-    | Customize parameter key name in source.
-    | For example, "X-Custom-Key", "my_auth_token", e.t.c.
-    | Default values are "authorization" for "jwt" and "__ym_uid" for "laravel".
+    |--------------------------------------------------------------------------------------------
+    | Auth driver
+    |--------------------------------------------------------------------------------------------
+    | Auth driver name using in the project.
+    | Should have on of the key from the `auth_drivers` config
     */
-    'security_in_source_key' => null,
+    'auth_driver' => 'jwt',
+
+    'auth_drivers' => [
+        'jwt' => [
+            'type' => 'apiKey',
+            'name' => 'Authorization',
+            'in' => 'header'
+        ],
+        'laravel' => [
+            'type' => 'apiKey',
+            'name' => '__ym_uid',
+            'in' => 'header'
+        ]
+    ],
     'defaults' => [
 
         /*

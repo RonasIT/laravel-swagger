@@ -340,6 +340,7 @@ class SwaggerServiceTest extends TestCase
     {
         config([
             'auto-doc.security' => $security,
+            'auto-doc.auth_driver' => $security
         ]);
 
         $this->mockDriverGetEmptyAndSaveTpmData([], $this->getJsonFixture($savedTmpDataFixture));
@@ -478,27 +479,9 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function testAddInSourceKeyForJWTSecurity()
+    public function testAddDataWithInvalidAuthDriver()
     {
-        config([
-            'auto-doc.security' => 'jwt',
-            'auto-doc.security_in_source_key' => 'my-custom-header'
-        ]);
-
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request_jwt_security_with_custom_key'));
-
-        $service = app(SwaggerService::class);
-
-        $request = $this->generateRequestWithCustomSecurityKey();
-
-        $response = $this->generateResponseWithCustomSecurityDefinitionKey('example_success_roles_response.json');
-
-        $service->addData($request, $response);
-    }
-
-    public function testAddDataWithEmptySecurity()
-    {
-        config(['auto-doc.security' => 'invalid']);
+        config(['auto-doc.auth_driver' => 'invalid']);
 
         $this->expectException(WrongSecurityConfigException::class);
 

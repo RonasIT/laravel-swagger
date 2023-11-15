@@ -101,6 +101,12 @@ class SwaggerService
         if (!view()->exists("auto-doc::documentation-{$documentationViewer}")) {
             throw new UnsupportedDocumentationViewerException($documentationViewer);
         }
+
+        $authDriver = Arr::get($this->config, 'auth_driver');
+
+        if (!array_key_exists($authDriver, Arr::get($this->config, 'auth_drivers'))) {
+            throw new WrongSecurityConfigException();
+        }
     }
 
     protected function setDriver()
@@ -166,23 +172,11 @@ class SwaggerService
 
     protected function generateSecurityDefinitionObject($type): array
     {
-        switch ($type) {
-            case 'jwt':
-                return [
-                    'type' => 'apiKey',
-                    'name' => 'authorization',
-                    'in' => 'header'
-                ];
-
-            case 'laravel':
-                return [
-                    'type' => 'apiKey',
-                    'name' => 'Cookie',
-                    'in' => 'header'
-                ];
-            default:
-                throw new WrongSecurityConfigException();
-        }
+        return [
+            'type' => $this->config['auth_drivers'][$type]['type'],
+            'name' => $this->config['auth_drivers'][$type]['name'],
+            'in' => $this->config['auth_drivers'][$type]['in']
+        ];
     }
 
     public function addData(Request $request, $response)

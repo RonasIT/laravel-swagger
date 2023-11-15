@@ -134,34 +134,12 @@ class TestCase extends BaseTest
         ], $method);
     }
 
-    protected function generateRequestWithCustomSecurityKey($method = 'test'): Request
-    {
-        return $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ], [], [
-            'Content-type' => 'application/json',
-            'my-custom-header' => '12345'
-        ], $method);
-    }
-
     protected function generateResponse($fixture, int $status = 200, array $headers = []): Response
     {
         if (empty($headers)) {
             $headers = [
                 'Content-type' => 'application/json',
                 'authorization' => 'Bearer some_token'
-            ];
-        }
-
-        return new Response(($fixture) ? $this->getFixture($fixture) : null, $status, $headers);
-    }
-
-    protected function generateResponseWithCustomSecurityDefinitionKey($fixture, int $status = 200, array $headers = []): Response
-    {
-        if (empty($headers)) {
-            $headers = [
-                'Content-type' => 'application/json',
-                'My-Custom-Header' => 'Bearer 12345'
             ];
         }
 
