@@ -297,7 +297,11 @@ class SwaggerServiceTest extends TestCase
      * @param string $exception
      * @param string $exceptionMessage
      */
-    public function testGetDocFileContentInvalidTmpData(string $docFilePath, string $exception, string $exceptionMessage)
+    public function testGetDocFileContentInvalidTmpData(
+        string $docFilePath,
+        string $exception,
+        string $exceptionMessage
+    )
     {
         $this->mockDriverGetDocumentation($this->getJsonFixture($docFilePath));
 
