@@ -376,9 +376,11 @@ class SwaggerService
         if ($content && str_starts_with($code, 2)) {
             $this->saveResponseSchema($content);
 
-            $action = Str::ucfirst($this->getActionName($this->uri));
             if (is_array($this->item['responses'][$code])) {
-                $this->item['responses'][$code]['schema']['$ref'] = "#/definitions/{$this->method}{$action}ResponseObject";
+                $action = Str::ucfirst($this->getActionName($this->uri));
+                $definition = "#/definitions/{$this->method}{$action}ResponseObject";
+
+                $this->item['responses'][$code]['schema']['$ref'] = $definition;
             }
         }
     }
