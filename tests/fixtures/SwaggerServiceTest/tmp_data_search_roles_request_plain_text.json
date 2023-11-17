@@ -41,6 +41,9 @@
             "description": "Operation successfully done",
             "examples": {
               "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
+            },
+            "schema": {
+              "$ref": "#/definitions/getUsersrolesResponseObject"
             }
           }
         },
@@ -51,7 +54,20 @@
       }
     }
   },
-  "definitions": {},
+  "definitions": {
+    "getUsersrolesResponseObject": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "allOf": [
+            {
+              "type": "array"
+            }
+          ]
+        }
+      }
+    }
+  },
   "info": {
     "description": "This is automatically collected documentation",
     "version": "0.0.0",

@@ -69,7 +69,8 @@
                 "prev_page_url": null,
                 "to": 1,
                 "total": 1
-              }
+              },
+              "$ref": "#/definitions/getApiusersResponseObject"
             }
           }
         },
@@ -79,7 +80,52 @@
       }
     }
   },
-  "definitions": [],
+  "definitions": {
+    "getApiusersResponseObject": {
+      "type": "object",
+      "properties": {
+        "current_page": {
+          "type": "integer"
+        },
+        "data": {
+          "type": "array"
+        },
+        "first_page_url": {
+          "type": "string"
+        },
+        "from": {
+          "type": "integer"
+        },
+        "last_page": {
+          "type": "integer"
+        },
+        "last_page_url": {
+          "type": "string"
+        },
+        "links": {
+          "type": "array"
+        },
+        "next_page_url": {
+          "nullable": true
+        },
+        "path": {
+          "type": "string"
+        },
+        "per_page": {
+          "type": "integer"
+        },
+        "prev_page_url": {
+          "nullable": true
+        },
+        "to": {
+          "type": "integer"
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    }
+  },
   "info":
   {
     "description": "This is automatically collected documentation",

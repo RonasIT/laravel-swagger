@@ -65,7 +65,8 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "$ref": "#/definitions/getUsersrolesResponseObject"
             }
           }
         },
@@ -76,7 +77,20 @@
       }
     }
   },
-  "definitions": {},
+  "definitions": {
+    "getUsersrolesResponseObject": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "allOf": [
+            {
+              "type": "array"
+            }
+          ]
+        }
+      }
+    }
+  },
   "info": {
     "description": "This is automatically collected documentation",
     "version": "0.0.0",

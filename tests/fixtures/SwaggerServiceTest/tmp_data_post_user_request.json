@@ -55,7 +55,8 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "$ref": "#/definitions/postUsersResponseObject"
             }
           }
         },
@@ -97,6 +98,18 @@
       "required": [
         "query"
       ]
+    },
+    "postUsersResponseObject": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "allOf": [
+            {
+              "type": "array"
+            }
+          ]
+        }
+      }
     }
   },
   "info": {

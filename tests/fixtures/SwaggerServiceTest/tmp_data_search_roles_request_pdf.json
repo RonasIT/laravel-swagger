@@ -40,7 +40,8 @@
           "200": {
             "description": "Operation successfully done",
             "schema": {
-              "example": "WwogICAgewogICAgICAgICJpZCI6IDEsCiAgICAgICAgIm5hbWUiOiAiYWRtaW4iLAogICAgICAgICJ1c2VycyI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImlkIjogMSwKICAgICAgICAgICAgICAgICJuYW1lIjogImFkbWluIgogICAgICAgICAgICB9CiAgICAgICAgXQogICAgfSwKICAgIHsKICAgICAgICAiaWQiOiAyLAogICAgICAgICJuYW1lIjogImNsaWVudCIsCiAgICAgICAgInVzZXJzIjogWwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAyLAogICAgICAgICAgICAgICAgIm5hbWUiOiAiZmlyc3RfY2xpZW50IgogICAgICAgICAgICB9LAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAzLAogICAgICAgICAgICAgICAgIm5hbWUiOiAic2Vjb25kX2NsaWVudCIKICAgICAgICAgICAgfQogICAgICAgIF0KICAgIH0KXQ=="
+              "example": "WwogICAgewogICAgICAgICJpZCI6IDEsCiAgICAgICAgIm5hbWUiOiAiYWRtaW4iLAogICAgICAgICJ1c2VycyI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImlkIjogMSwKICAgICAgICAgICAgICAgICJuYW1lIjogImFkbWluIgogICAgICAgICAgICB9CiAgICAgICAgXQogICAgfSwKICAgIHsKICAgICAgICAiaWQiOiAyLAogICAgICAgICJuYW1lIjogImNsaWVudCIsCiAgICAgICAgInVzZXJzIjogWwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAyLAogICAgICAgICAgICAgICAgIm5hbWUiOiAiZmlyc3RfY2xpZW50IgogICAgICAgICAgICB9LAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAzLAogICAgICAgICAgICAgICAgIm5hbWUiOiAic2Vjb25kX2NsaWVudCIKICAgICAgICAgICAgfQogICAgICAgIF0KICAgIH0KXQ==",
+              "$ref": "#/definitions/getUsersrolesResponseObject"
             }
           }
         },
@@ -51,7 +52,20 @@
       }
     }
   },
-  "definitions": {},
+  "definitions": {
+    "getUsersrolesResponseObject": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "allOf": [
+            {
+              "type": "array"
+            }
+          ]
+        }
+      }
+    }
+  },
   "info": {
     "description": "This is automatically collected documentation",
     "version": "0.0.0",

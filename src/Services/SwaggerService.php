@@ -281,6 +281,53 @@ class SwaggerService
         $this->item['deprecated'] = Arr::get($annotations, 'deprecated', false);
     }
 
+    protected function saveResponseSchema(?array $content)
+    {
+        if (empty($content)) {
+            return;
+        }
+
+        $schemaProperties = [];
+        $action = Str::ucfirst($this->getActionName($this->uri));
+        $schemaType = 'object';
+
+        if (array_is_list($content)) {
+            $schemaType = 'array';
+            $types = [];
+
+            foreach ($content as $value) {
+                $type = gettype($value);
+                if (!in_array($type, $types)) {
+                    $types[] = $type;
+                    $schemaProperties['items']['allOf'][]['type'] = $type;
+                }
+            }
+        } else {
+            $properties = Arr::get(
+                $this->data['definitions'],
+                "{$this->getActionName($this->uri)}ResponseObject.properties",
+                []
+            );
+
+            foreach ($content as $name => $value) {
+                $property = Arr::get($properties, $name, []);
+
+                if (is_null($value)) {
+                    $property['nullable'] = true;
+                } else {
+                    $property['type'] = gettype($value);
+                }
+
+                $schemaProperties[$name] = $property;
+            }
+        }
+
+        $this->data['definitions']["{$this->method}{$action}ResponseObject"] = [
+            'type' => $schemaType,
+            'properties' => $schemaProperties
+        ];
+    }
+
     protected function parseResponse($response)
     {
         $produceList = $this->data['paths'][$this->uri][$this->method]['produces'];
@@ -324,6 +371,15 @@ class SwaggerService
                 json_encode($content, JSON_PRETTY_PRINT),
                 $produce
             );
+        }
+
+        if ($content && str_starts_with($code, 2)) {
+            $this->saveResponseSchema($content);
+
+            $action = Str::ucfirst($this->getActionName($this->uri));
+            if (is_array($this->item['responses'][$code])) {
+                $this->item['responses'][$code]['schema']['$ref'] = "#/definitions/{$this->method}{$action}ResponseObject";
+            }
         }
     }
 
