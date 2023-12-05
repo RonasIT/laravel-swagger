@@ -628,10 +628,12 @@ class SwaggerService
 
         switch (Arr::get($securityDriver, 'in')) {
             case 'header':
-                $securityToken = $this->request->header($securityDriver['name']);
-                break;
-            case 'cookie':
-                $securityToken = $this->request->cookie($securityDriver['name']);
+                // TODO Change this logic after migration on Swagger 3.0
+                // Swagger 2.0 does not support cookie authorization.
+                $securityToken = $this->request->hasHeader($securityDriver['name'])
+                    ? $this->request->header($securityDriver['name'])
+                    : $this->request->cookie($securityDriver['name']);
+
                 break;
             case 'query':
                 $securityToken = $this->request->query($securityDriver['name']);

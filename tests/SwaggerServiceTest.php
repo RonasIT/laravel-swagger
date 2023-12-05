@@ -286,7 +286,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__in',
                 'exception' => InvalidSwaggerSpecException::class,
-                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header, cookie."
+                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header."
             ],
         ];
     }
