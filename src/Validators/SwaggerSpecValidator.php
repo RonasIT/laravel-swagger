@@ -67,7 +67,7 @@ class SwaggerSpecValidator
         'parameter_in' => ['body', 'formData', 'query', 'path', 'header'],
         'schemes' => ['http', 'https', 'ws', 'wss'],
         'security_definition_flow' => ['implicit', 'password', 'application', 'accessCode'],
-        'security_definition_in' => ['query', 'header'],
+        'security_definition_in' => ['query', 'header', 'cookie'],
         'security_definition_type' => ['basic', 'apiKey', 'oauth2']
     ];
 

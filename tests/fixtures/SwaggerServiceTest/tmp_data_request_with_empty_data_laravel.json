@@ -17,8 +17,8 @@
     "securityDefinitions": {
         "laravel": {
             "type": "apiKey",
-            "name": "__ym_uid",
-            "in": "header"
+            "name": "laravel",
+            "in": "cookie"
         }
     }
 }

@@ -73,19 +73,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | Library name, which used to secure the project.
-    | Available values: "jwt", "laravel", "null"
+    | Should have one of the key from the `security_drivers` config
     */
     'security' => '',
-    /*
-    |--------------------------------------------------------------------------------------------
-    | Auth driver
-    |--------------------------------------------------------------------------------------------
-    | Auth driver name using in the project.
-    | Should have on of the key from the `auth_drivers` config
-    */
-    'auth_driver' => 'jwt',
-
-    'auth_drivers' => [
+    'security_drivers' => [
         'jwt' => [
             'type' => 'apiKey',
             'name' => 'Authorization',
@@ -94,9 +85,10 @@ return [
         'laravel' => [
             'type' => 'apiKey',
             'name' => '__ym_uid',
-            'in' => 'header'
+            'in' => 'cookie'
         ]
     ],
+
     'defaults' => [
 
         /*
@@ -192,5 +184,5 @@ return [
         'development'
     ],
 
-    'config_version' => '2.6'
+    'config_version' => '2.7'
 ];

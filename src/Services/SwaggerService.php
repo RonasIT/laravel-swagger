@@ -65,7 +65,7 @@ class SwaggerService
 
         $this->setDriver();
 
-        if (config('app.env') == 'testing') {
+        if (config('app.env') === 'testing') {
             $this->container = $container;
 
             $this->security = $this->config['security'];
@@ -102,9 +102,9 @@ class SwaggerService
             throw new UnsupportedDocumentationViewerException($documentationViewer);
         }
 
-        $authDriver = Arr::get($this->config, 'auth_driver');
+        $securityDriver = Arr::get($this->config, 'security');
 
-        if (!array_key_exists($authDriver, Arr::get($this->config, 'auth_drivers'))) {
+        if ($securityDriver && !array_key_exists($securityDriver, Arr::get($this->config, 'security_drivers'))) {
             throw new WrongSecurityConfigException();
         }
     }
@@ -173,9 +173,9 @@ class SwaggerService
     protected function generateSecurityDefinitionObject($type): array
     {
         return [
-            'type' => $this->config['auth_drivers'][$type]['type'],
-            'name' => $this->config['auth_drivers'][$type]['name'],
-            'in' => $this->config['auth_drivers'][$type]['in']
+            'type' => $this->config['security_drivers'][$type]['type'],
+            'name' => $this->config['security_drivers'][$type]['name'],
+            'in' => $this->config['security_drivers'][$type]['in']
         ];
     }
 
@@ -622,18 +622,23 @@ class SwaggerService
 
     protected function requestSupportAuth(): bool
     {
-        $securityInSourceKey = Arr::get($this->config, 'security_in_source_key');
+        $security = Arr::get($this->config, 'security');
+        $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
+        $securityToken = null;
 
-        switch ($this->security) {
-            case 'jwt':
-                $header = $this->request->header($securityInSourceKey ?? 'authorization');
+        switch (Arr::get($securityDriver, 'in')) {
+            case 'header':
+                $securityToken = $this->request->header($securityDriver['name']);
                 break;
-            case 'laravel':
-                $header = $this->request->cookie($securityInSourceKey ?? '__ym_uid');
+            case 'cookie':
+                $securityToken = $this->request->cookie($securityDriver['name']);
+                break;
+            case 'query':
+                $securityToken = $this->request->query($securityDriver['name']);
                 break;
         }
 
-        return !empty($header);
+        return !empty($securityToken);
     }
 
     protected function parseRequestName($request)

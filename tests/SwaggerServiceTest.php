@@ -24,6 +24,7 @@ use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\Support\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use RonasIT\Support\Tests\Support\Mock\TestController;
 use RonasIT\Support\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
 
@@ -60,7 +61,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testConstructorDriverClassNotImplementsInterface()
     {
-        config(['auto-doc.drivers.local.class' => TestCase::class]);
+        config(['auto-doc.drivers.local.class' => TestController::class]);
 
         $this->expectException(InvalidDriverClassException::class);
 
@@ -285,7 +286,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__in',
                 'exception' => InvalidSwaggerSpecException::class,
-                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header."
+                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header, cookie."
             ],
         ];
     }
@@ -344,7 +345,18 @@ class SwaggerServiceTest extends TestCase
     {
         config([
             'auto-doc.security' => $security,
-            'auto-doc.auth_driver' => $security
+            'auto-doc.security_drivers' => [
+                'laravel' => [
+                    'name' => 'laravel',
+                    'in' => 'cookie',
+                    'type' => 'apiKey'
+                ],
+                'jwt' => [
+                    'name' => 'Authorization',
+                    'in' => 'header',
+                    'type' => 'apiKey'
+                ]
+            ]
         ]);
 
         $this->mockDriverGetEmptyAndSaveTpmData([], $this->getJsonFixture($savedTmpDataFixture));
@@ -483,9 +495,9 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function testAddDataWithInvalidAuthDriver()
+    public function testAddDataWithInvalidSecurity()
     {
-        config(['auto-doc.auth_driver' => 'invalid']);
+        config(['auto-doc.security' => 'invalid']);
 
         $this->expectException(WrongSecurityConfigException::class);
 
