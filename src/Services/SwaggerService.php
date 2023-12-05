@@ -624,7 +624,6 @@ class SwaggerService
     {
         $security = Arr::get($this->config, 'security');
         $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
-        $securityToken = null;
 
         switch (Arr::get($securityDriver, 'in')) {
             case 'header':
@@ -637,7 +636,10 @@ class SwaggerService
                 break;
             case 'query':
                 $securityToken = $this->request->query($securityDriver['name']);
+
                 break;
+            default:
+                $securityToken = null;
         }
 
         return !empty($securityToken);
