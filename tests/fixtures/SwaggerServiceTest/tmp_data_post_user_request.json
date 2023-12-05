@@ -56,7 +56,7 @@
                   ]
                 }
               ],
-              "$ref": "#/definitions/postUsersResponseObject"
+              "$ref": "#/definitions/postUsers200ResponseObject"
             }
           }
         },
@@ -99,7 +99,7 @@
         "query"
       ]
     },
-    "postUsersResponseObject": {
+    "postUsers200ResponseObject": {
       "type": "array",
       "properties": {
         "items": {

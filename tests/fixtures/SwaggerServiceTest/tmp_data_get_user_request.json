@@ -61,7 +61,7 @@
                                     "name": "client"
                                 }
                             },
-                            "$ref": "#/definitions/getUsers{id}assignRole{roleId}ResponseObject"
+                            "$ref": "#/definitions/getUsers{id}assignRole{roleId}200ResponseObject"
                         }
                     }
                 },
@@ -73,7 +73,7 @@
         }
     },
     "definitions": {
-        "getUsers{id}assignRole{roleId}ResponseObject": {
+        "getUsers{id}assignRole{roleId}200ResponseObject": {
             "type": "object",
             "properties": {
                 "id": {

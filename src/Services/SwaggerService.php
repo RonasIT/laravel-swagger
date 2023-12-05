@@ -281,7 +281,7 @@ class SwaggerService
         $this->item['deprecated'] = Arr::get($annotations, 'deprecated', false);
     }
 
-    protected function saveResponseSchema(?array $content)
+    protected function saveResponseSchema(?array $content, int $code)
     {
         if (empty($content)) {
             return;
@@ -305,7 +305,7 @@ class SwaggerService
         } else {
             $properties = Arr::get(
                 $this->data['definitions'],
-                "{$this->getActionName($this->uri)}ResponseObject.properties",
+                "{$this->method}{$action}{$code}ResponseObject.properties",
                 []
             );
 
@@ -322,7 +322,7 @@ class SwaggerService
             }
         }
 
-        $this->data['definitions']["{$this->method}{$action}ResponseObject"] = [
+        $this->data['definitions']["{$this->method}{$action}{$code}ResponseObject"] = [
             'type' => $schemaType,
             'properties' => $schemaProperties
         ];
@@ -373,15 +373,13 @@ class SwaggerService
             );
         }
 
-        if ($content && str_starts_with($code, 2)) {
-            $this->saveResponseSchema($content);
+        $this->saveResponseSchema($content, $code);
 
-            if (is_array($this->item['responses'][$code])) {
-                $action = Str::ucfirst($this->getActionName($this->uri));
-                $definition = "#/definitions/{$this->method}{$action}ResponseObject";
+        if (is_array($this->item['responses'][$code])) {
+            $action = Str::ucfirst($this->getActionName($this->uri));
+            $definition = "#/definitions/{$this->method}{$action}{$code}ResponseObject";
 
-                $this->item['responses'][$code]['schema']['$ref'] = $definition;
-            }
+            $this->item['responses'][$code]['schema']['$ref'] = $definition;
         }
     }
 

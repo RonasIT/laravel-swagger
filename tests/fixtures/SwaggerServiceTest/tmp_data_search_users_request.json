@@ -90,7 +90,7 @@
                 "to": 1,
                 "total": 1
               },
-              "$ref": "#/definitions/getApiusersResponseObject"
+              "$ref": "#/definitions/getApiusers200ResponseObject"
             }
           }
         },
@@ -103,7 +103,7 @@
     }
   },
   "definitions": {
-    "getApiusersResponseObject": {
+    "getApiusers200ResponseObject": {
       "type": "object",
       "properties": {
         "current_page": {

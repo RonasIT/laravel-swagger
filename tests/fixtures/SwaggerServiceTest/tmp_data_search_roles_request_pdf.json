@@ -41,7 +41,7 @@
             "description": "Operation successfully done",
             "schema": {
               "example": "WwogICAgewogICAgICAgICJpZCI6IDEsCiAgICAgICAgIm5hbWUiOiAiYWRtaW4iLAogICAgICAgICJ1c2VycyI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImlkIjogMSwKICAgICAgICAgICAgICAgICJuYW1lIjogImFkbWluIgogICAgICAgICAgICB9CiAgICAgICAgXQogICAgfSwKICAgIHsKICAgICAgICAiaWQiOiAyLAogICAgICAgICJuYW1lIjogImNsaWVudCIsCiAgICAgICAgInVzZXJzIjogWwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAyLAogICAgICAgICAgICAgICAgIm5hbWUiOiAiZmlyc3RfY2xpZW50IgogICAgICAgICAgICB9LAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAzLAogICAgICAgICAgICAgICAgIm5hbWUiOiAic2Vjb25kX2NsaWVudCIKICAgICAgICAgICAgfQogICAgICAgIF0KICAgIH0KXQ==",
-              "$ref": "#/definitions/getUsersrolesResponseObject"
+              "$ref": "#/definitions/getUsersroles200ResponseObject"
             }
           }
         },
@@ -53,7 +53,7 @@
     }
   },
   "definitions": {
-    "getUsersrolesResponseObject": {
+    "getUsersroles200ResponseObject": {
       "type": "array",
       "properties": {
         "items": {

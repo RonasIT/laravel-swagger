@@ -44,7 +44,7 @@
                                     ]
                                 }
                             ],
-                            "$ref": "#/definitions/getUsersrolesResponseObject"
+                            "$ref": "#/definitions/getUsersroles200ResponseObject"
                         }
                     }
                 },
@@ -54,7 +54,7 @@
         }
     },
     "definitions": {
-        "getUsersrolesResponseObject": {
+        "getUsersroles200ResponseObject": {
             "type": "array",
             "properties": {
                 "items": {
