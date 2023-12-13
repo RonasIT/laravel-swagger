@@ -11,7 +11,7 @@ use Illuminate\Container\Container;
 
 trait GetDependenciesTrait
 {
-    protected function resolveClassMethodDependencies(array $parameters, object $instance, string $method): array
+    protected function resolveClassMethodDependencies(array $parameters, $instance, $method)
     {
         if (!method_exists($instance, $method)) {
             return $parameters;
@@ -22,14 +22,14 @@ trait GetDependenciesTrait
         );
     }
 
-    public function getDependencies(ReflectionFunctionAbstract $reflector): array
+    public function getDependencies(ReflectionFunctionAbstract $reflector)
     {
         return array_map(function ($parameter) {
             return $this->transformDependency($parameter);
         }, $reflector->getParameters());
     }
 
-    protected function transformDependency(ReflectionParameter $parameter): ?string
+    protected function transformDependency(ReflectionParameter $parameter)
     {
         $class = $parameter->getClass();
 
@@ -40,7 +40,7 @@ trait GetDependenciesTrait
         return interface_exists($class->name) ? $this->getClassByInterface($class->name) : $class->name;
     }
 
-    protected function getClassByInterface(string $interfaceName): ?string
+    protected function getClassByInterface($interfaceName)
     {
         $bindings = Container::getInstance()->getBindings();
 

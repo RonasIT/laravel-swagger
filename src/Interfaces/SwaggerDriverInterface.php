@@ -6,18 +6,20 @@ interface SwaggerDriverInterface
 {
     /**
      * Save temporary data
+     *
+     * @param array $data
      */
-    public function saveTmpData(array $data): void;
+    public function saveTmpData($data);
 
     /**
      * Get temporary data
      */
-    public function getTmpData(): void;
+    public function getTmpData();
 
     /**
      * Save production data
      */
-    public function saveData(): void;
+    public function saveData();
 
     /**
      * Get production documentation

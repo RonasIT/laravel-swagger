@@ -3,14 +3,13 @@
 namespace RonasIT\Support\AutoDoc\Drivers;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class StorageDriver extends BaseDriver
 {
-    protected Filesystem $disk;
-    protected string $prodFilePath;
+    protected $disk;
+    protected $prodFilePath;
 
     public function __construct()
     {

@@ -7,7 +7,7 @@ use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriver extends BaseDriver
 {
-    protected string $prodFilePath;
+    protected $prodFilePath;
 
     public function __construct()
     {

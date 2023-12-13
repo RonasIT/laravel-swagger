@@ -9,7 +9,7 @@ trait AutoDocTestCaseTrait
     /**
      * Disabling documentation collecting on current test
      */
-    public function skipDocumentationCollecting(): void
+    public function skipDocumentationCollecting()
     {
         AutoDocMiddleware::$skipped = true;
     }
