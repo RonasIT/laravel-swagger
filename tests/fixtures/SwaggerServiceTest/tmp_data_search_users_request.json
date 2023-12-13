@@ -96,7 +96,8 @@
         "security": [],
         "description": "",
         "summary": "test",
-        "consumes": []
+        "consumes": [],
+        "deprecated": false
       }
     }
   },

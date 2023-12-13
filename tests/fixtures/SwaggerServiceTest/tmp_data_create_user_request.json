@@ -39,7 +39,8 @@
         },
         "security": [],
         "description": "",
-        "summary": "test"
+        "summary": "test",
+        "deprecated": false
       }
     }
   },

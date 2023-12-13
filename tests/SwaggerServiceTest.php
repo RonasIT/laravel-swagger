@@ -3,6 +3,7 @@
 namespace RonasIT\Support\Tests;
 
 use Illuminate\Http\Testing\File;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
@@ -24,9 +25,9 @@ use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\Support\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
-use RonasIT\Support\Tests\Support\Mock\TestController;
 use RonasIT\Support\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
+use stdClass;
 
 class SwaggerServiceTest extends TestCase
 {
@@ -61,7 +62,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testConstructorDriverClassNotImplementsInterface()
     {
-        config(['auto-doc.drivers.local.class' => TestController::class]);
+        config(['auto-doc.drivers.local.class' => stdClass::class]);
 
         $this->expectException(InvalidDriverClassException::class);
 
@@ -82,7 +83,7 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class);
     }
 
-    public function getConstructorInvalidTmpData(): array
+    public static function getConstructorInvalidTmpData(): array
     {
         return [
             [
@@ -291,18 +292,13 @@ class SwaggerServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getConstructorInvalidTmpData
-     *
-     * @param string $docFilePath
-     * @param string $exception
-     * @param string $exceptionMessage
-     */
+    #[DataProvider('getConstructorInvalidTmpData')]
     public function testGetDocFileContentInvalidTmpData(
         string $docFilePath,
         string $exception,
         string $exceptionMessage
-    ) {
+    )
+    {
         $this->mockDriverGetDocumentation($this->getJsonFixture($docFilePath));
 
         $this->expectException($exception);
@@ -320,7 +316,7 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class);
     }
 
-    public function getAddEmptyData(): array
+    public static function getAddEmptyData(): array
     {
         return [
             [
@@ -334,12 +330,7 @@ class SwaggerServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getAddEmptyData
-     *
-     * @param string $security
-     * @param string $savedTmpDataFixture
-     */
+    #[DataProvider('getAddEmptyData')]
     public function testAddDataRequestWithEmptyDataLaravel(string $security, string $savedTmpDataFixture)
     {
         config([
@@ -375,7 +366,7 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class);
     }
 
-    public function getAddData(): array
+    public static function getAddData(): array
     {
         return [
             [
@@ -406,13 +397,7 @@ class SwaggerServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getAddData
-     *
-     * @param ?string $contentType
-     * @param string $requestFixture
-     * @param string $responseFixture
-     */
+    #[DataProvider('getAddData')]
     public function testAddData(?string $contentType, string $requestFixture, string $responseFixture)
     {
         $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture($requestFixture));
@@ -459,7 +444,7 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function addDataWithSecurity(): array
+    public static function addDataWithSecurity(): array
     {
         return [
             [
@@ -473,12 +458,7 @@ class SwaggerServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider addDataWithSecurity
-     *
-     * @param string $security
-     * @param string $requestFixture
-     */
+    #[DataProvider('addDataWithSecurity')]
     public function testAddDataWithJWTSecurity(string $security, string $requestFixture)
     {
         config(['auto-doc.security' => $security]);
@@ -691,5 +671,12 @@ class SwaggerServiceTest extends TestCase
         );
 
         app(SwaggerService::class);
+    }
+
+    public function testSaveProductionData()
+    {
+        $this->mockDriverSaveData();
+
+        app(SwaggerService::class)->saveProductionData();
     }
 }
