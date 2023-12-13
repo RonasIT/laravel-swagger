@@ -7,7 +7,7 @@ use RonasIT\Support\AutoDoc\Commands\PushDocumentationCommand;
 
 class AutoDocServiceProvider extends ServiceProvider
 {
-    public function boot()
+    public function boot(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/auto-doc.php', 'auto-doc');
 

@@ -6,7 +6,7 @@ use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 
 abstract class BaseDriver implements SwaggerDriverInterface
 {
-    protected $tempFilePath;
+    protected string $tempFilePath;
 
     public function __construct()
     {

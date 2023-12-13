@@ -20,9 +20,6 @@ use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderExce
 use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
 use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
-/**
- * @property array $doc
- */
 class SwaggerSpecValidator
 {
     public const SCHEMA_TYPES = [
@@ -77,7 +74,7 @@ class SwaggerSpecValidator
     public const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
     public const MIME_TYPE_APPLICATION_URLENCODED = 'application/x-www-form-urlencoded';
 
-    protected $doc;
+    protected array $doc;
 
     public function validate(array $doc): void
     {
@@ -125,7 +122,6 @@ class SwaggerSpecValidator
 
                 $this->validateFieldsPresent(self::REQUIRED_FIELDS['operation'], $operationId);
                 $this->validateFieldValue("{$operationId}.schemes", self::ALLOWED_VALUES['schemes']);
-
                 $this->validateParameters($operation, $path, $operationId);
 
                 foreach ($operation['responses'] as $statusCode => $response) {
@@ -154,7 +150,6 @@ class SwaggerSpecValidator
             $parentId = "securityDefinitions.{$index}";
 
             $this->validateFieldsPresent(self::REQUIRED_FIELDS['security_definition'], $parentId);
-
             $this->validateFieldValue("{$parentId}.type", self::ALLOWED_VALUES['security_definition_type']);
             $this->validateFieldValue("{$parentId}.in", self::ALLOWED_VALUES['security_definition_in']);
             $this->validateFieldValue("{$parentId}.flow", self::ALLOWED_VALUES['security_definition_flow']);

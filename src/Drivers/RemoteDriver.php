@@ -7,8 +7,8 @@ use RonasIT\Support\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
 
 class RemoteDriver extends BaseDriver
 {
-    protected $key;
-    protected $remoteUrl;
+    protected string $key;
+    protected string $remoteUrl;
 
     public function __construct()
     {
