@@ -464,13 +464,36 @@ class SwaggerServiceTest extends TestCase
                 'security' => 'jwt',
                 'requestFixture' => 'tmp_data_search_roles_request_jwt_security',
             ],
+            [
+                'security' => 'query',
+                'requestFixture' => 'tmp_data_search_roles_request_query_security',
+            ],
         ];
     }
 
     #[DataProvider('addDataWithSecurity')]
     public function testAddDataWithJWTSecurity(string $security, string $requestFixture)
     {
-        config(['auto-doc.security' => $security]);
+        config([
+            'auto-doc.security' => $security,
+            'auto-doc.security_drivers' => [
+                'laravel' => [
+                    'name' => 'laravel',
+                    'in' => 'cookie',
+                    'type' => 'apiKey'
+                ],
+                'jwt' => [
+                    'name' => 'Authorization',
+                    'in' => 'header',
+                    'type' => 'apiKey'
+                ],
+                'query' => [
+                    'name' => 'api_key',
+                    'in' => 'query',
+                    'type' => 'apiKey'
+                ]
+            ]
+        ]);
 
         $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture($requestFixture));
 
