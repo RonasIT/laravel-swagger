@@ -327,6 +327,10 @@ class SwaggerServiceTest extends TestCase
                 'security' => 'jwt',
                 'savedTmpDataFixture' => 'tmp_data_request_with_empty_data_jwt',
             ],
+            [
+                'security' => 'query',
+                'savedTmpDataFixture' => 'tmp_data_request_with_empty_data_query',
+            ],
         ];
     }
 
@@ -344,6 +348,11 @@ class SwaggerServiceTest extends TestCase
                 'jwt' => [
                     'name' => 'Authorization',
                     'in' => 'header',
+                    'type' => 'apiKey'
+                ],
+                'query' => [
+                    'name' => 'api_key',
+                    'in' => 'query',
                     'type' => 'apiKey'
                 ]
             ]
