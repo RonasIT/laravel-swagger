@@ -30,6 +30,7 @@
             "description": "Forbidden",
             "schema":
             {
+              "$ref": "#/definitions/postApiusers403ResponseObject",
               "example":
               {
                 "message": "This action is unauthorized."
@@ -67,6 +68,14 @@
       "example": {
         "first_name": "andrey",
         "last_name": "voronin"
+      }
+    },
+    "postApiusers403ResponseObject": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
       }
     }
   },

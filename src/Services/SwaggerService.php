@@ -69,7 +69,7 @@ class SwaggerService
 
         $this->setDriver();
 
-        if (config('app.env') == 'testing') {
+        if (config('app.env') === 'testing') {
             $this->container = $container;
 
             $this->security = $this->config['security'];
@@ -281,6 +281,60 @@ class SwaggerService
         $this->item['deprecated'] = Arr::get($annotations, 'deprecated', false);
     }
 
+    protected function saveResponseSchema(?array $content, string $definition): void
+    {
+        if (empty($content)) {
+            return;
+        }
+
+        $schemaProperties = [];
+        $schemaType = 'object';
+
+        if (array_is_list($content)) {
+            $this->saveListResponseDefinitions($content, $schemaProperties);
+
+            $schemaType = 'array';
+        } else {
+            $this->saveObjectResponseDefinitions($content, $schemaProperties, $definition);
+        }
+
+        $this->data['definitions'][$definition] = [
+            'type' => $schemaType,
+            'properties' => $schemaProperties
+        ];
+    }
+
+    protected function saveListResponseDefinitions(array $content, array &$schemaProperties): void
+    {
+        $types = [];
+
+        foreach ($content as $value) {
+            $type = gettype($value);
+
+            if (!in_array($type, $types)) {
+                $types[] = $type;
+                $schemaProperties['items']['allOf'][]['type'] = $type;
+            }
+        }
+    }
+
+    protected function saveObjectResponseDefinitions(array $content, array &$schemaProperties, string $definition): void
+    {
+        $properties = Arr::get($this->data['definitions'], $definition, []);
+
+        foreach ($content as $name => $value) {
+            $property = Arr::get($properties, $name, []);
+
+            if (is_null($value)) {
+                $property['nullable'] = true;
+            } else {
+                $property['type'] = gettype($value);
+            }
+
+            $schemaProperties[$name] = $property;
+        }
+    }
+
     protected function parseResponse($response)
     {
         $produceList = $this->data['paths'][$this->uri][$this->method]['produces'];
@@ -324,6 +378,15 @@ class SwaggerService
                 json_encode($content, JSON_PRETTY_PRINT),
                 $produce
             );
+        }
+
+        $action = Str::ucfirst($this->getActionName($this->uri));
+        $definition = "{$this->method}{$action}{$code}ResponseObject";
+
+        $this->saveResponseSchema($content, $definition);
+
+        if (is_array($this->item['responses'][$code])) {
+            $this->item['responses'][$code]['schema']['$ref'] = "#/definitions/{$definition}";
         }
     }
 
@@ -424,7 +487,7 @@ class SwaggerService
             }
 
             $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter) use ($parameter) {
-                return $existedParameter['name'] == $parameter;
+                return $existedParameter['name'] === $parameter;
             });
 
             if (empty($existedParameter)) {
@@ -542,7 +605,7 @@ class SwaggerService
         $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
 
         $bodyParamExisted = Arr::where($parameters, function ($value) {
-            return $value['name'] == 'body';
+            return $value['name'] === 'body';
         });
 
         return empty($bodyParamExisted);
@@ -552,7 +615,7 @@ class SwaggerService
     {
         $controller = $this->request->route()->getActionName();
 
-        if ($controller == 'Closure') {
+        if ($controller === 'Closure') {
             return null;
         }
 
@@ -735,7 +798,7 @@ class SwaggerService
         $ret = $matches[0];
 
         foreach ($ret as &$match) {
-            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+            $match = ($match === strtoupper($match)) ? strtolower($match) : lcfirst($match);
         }
 
         return implode('_', $ret);

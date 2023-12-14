@@ -53,7 +53,8 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "$ref": "#/definitions/postUsers200ResponseObject"
             }
           }
         },
@@ -93,6 +94,18 @@
         "notification_settings": "RonasIT\\Support\\Tests\\Support\\Mock\\TestNotificationSetting"
       },
       "required": ["query"]
+    },
+    "postUsers200ResponseObject": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "allOf": [
+            {
+              "type": "array"
+            }
+          ]
+        }
+      }
     }
   },
   "info": {
