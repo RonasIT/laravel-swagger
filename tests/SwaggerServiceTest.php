@@ -471,7 +471,7 @@ class SwaggerServiceTest extends TestCase
     }
 
     #[DataProvider('addDataWithSecurity')]
-    public function testAddDataWithJWTSecurity(string $security, string $requestFixture)
+    public function testAddDataWithSecurity(string $security, string $requestFixture)
     {
         config([
             'auto-doc.security' => $security,
