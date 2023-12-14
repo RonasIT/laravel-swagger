@@ -60,7 +60,8 @@
                                     "id": 2,
                                     "name": "client"
                                 }
-                            }
+                            },
+                            "$ref": "#/definitions/getUsers{id}assignRole{roleId}200ResponseObject"
                         }
                     }
                 },
@@ -71,7 +72,25 @@
             }
         }
     },
-    "definitions": {},
+    "definitions": {
+        "getUsers{id}assignRole{roleId}200ResponseObject": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "likes_count": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "array"
+                }
+            }
+        }
+    },
     "info": {
         "description": "This is automatically collected documentation",
         "version": "0.0.0",
