@@ -297,8 +297,7 @@ class SwaggerServiceTest extends TestCase
         string $docFilePath,
         string $exception,
         string $exceptionMessage
-    )
-    {
+    ) {
         $this->mockDriverGetDocumentation($this->getJsonFixture($docFilePath));
 
         $this->expectException($exception);
