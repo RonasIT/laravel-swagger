@@ -11,6 +11,16 @@
 [![Laravel Swagger](https://github.com/RonasIT/laravel-swagger/actions/workflows/laravel.yml/badge.svg?branch=master)](https://github.com/RonasIT/laravel-swagger/actions/workflows/laravel.yml)
 [![Coverage Status](https://coveralls.io/repos/github/RonasIT/laravel-swagger/badge.svg?branch=master)](https://coveralls.io/github/RonasIT/laravel-swagger?branch=master)
 
+## Comparison to another documentation generators
+
+| | LaravelSwagger | Scramble |
+|-|-|-|
+| Force developers to write tests | + | - |
+| Guarantee that API works | + | - |
+| Integrate without routes modification | + | - |
+| Generate response schema without using JSON Resource class | + | - |
+| Need a sorage to save generated documentation | + | - |
+
 ## Introduction
 
 This plugin is designed to generate documentation for your REST API during the 
