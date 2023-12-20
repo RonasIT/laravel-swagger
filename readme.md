@@ -13,13 +13,13 @@
 
 ## Comparison to another documentation generators
 
-| | LaravelSwagger | Scramble |
-|-|-|-|
-| Force developers to write tests | + | - |
-| Guarantee that API works | + | - |
-| Integrate without routes modification | + | - |
-| Generate response schema without using JSON Resource class | + | - |
-| Need a sorage to save generated documentation | + | - |
+| | LaravelSwagger         | [Scramble](https://github.com/dedoc/scramble) |
+|-|------------------------|----------------------------------------------|
+| Force developers to write tests | :white_check_mark:     | :x:                                          |
+| Guarantee that API works | :white_check_mark:     | :x:                                          |
+| Integrate without routes modification | :white_check_mark:     | :x:                                          |
+| Generate response schema using JSON Resource class | :x: | :white_check_mark:                             |
+| Runtime documentation generation | :x:                    | :white_check_mark:                        |
 
 ## Introduction
 
