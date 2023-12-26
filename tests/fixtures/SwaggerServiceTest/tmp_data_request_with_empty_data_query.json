@@ -15,10 +15,10 @@
         }
     },
     "securityDefinitions": {
-        "laravel": {
+        "query": {
             "type": "apiKey",
-            "name": "laravel",
-            "in": "cookie"
+            "name": "api_key",
+            "in": "query"
         }
     }
 }
