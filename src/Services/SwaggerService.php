@@ -317,7 +317,7 @@ class SwaggerService
         $properties = Arr::get($this->data['definitions'], $definition, []);
 
         foreach ($content as $name => $value) {
-            $property = Arr::get($properties, $name, []);
+            $property = Arr::get($properties, "properties.{$name}", []);
 
             if (is_null($value)) {
                 $property['nullable'] = true;

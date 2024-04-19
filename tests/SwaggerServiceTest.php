@@ -535,6 +535,27 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
+    public function testAddDataWithTypeNameInResponse()
+    {
+        $this->mockDriverGetTpmData($this->getJsonFixture('tmp_data_get_user_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest('get', 'users/{id}/assign-role/{role-id}', [
+            'with' => ['role'],
+            'with_likes_count' => true
+        ], [
+            'id' => 1,
+            'role-id' => 5
+        ]);
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json'
+        ]);
+
+        $service->addData($request, $response);
+    }
+
     public function testAddDataClosureRequest()
     {
         config(['auto-doc.security' => 'jwt']);

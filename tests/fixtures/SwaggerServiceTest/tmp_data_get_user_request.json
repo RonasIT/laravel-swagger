@@ -59,7 +59,8 @@
                                 "role": {
                                     "id": 2,
                                     "name": "client"
-                                }
+                                },
+                                "type": "reader"
                             },
                             "$ref": "#/definitions/getUsers{id}assignRole{roleId}200ResponseObject"
                         }
@@ -87,6 +88,9 @@
                 },
                 "role": {
                     "type": "array"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         }
