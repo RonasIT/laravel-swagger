@@ -690,7 +690,7 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', '/api/users', [], [], [], 'testRequestWithContract');
+        $request = $this->generateRequest('get', '/api/users', [], [], [], [], 'testRequestWithContract');
 
         $response = $this->generateResponse('example_success_users_response.json', 200, [
             'Content-type' => 'application/json'
@@ -730,5 +730,45 @@ class SwaggerServiceTest extends TestCase
         $this->mockDriverSaveData();
 
         app(SwaggerService::class)->saveProductionData();
+    }
+
+    public function testAddDataDescriptionForRouteConditionals()
+    {
+        $this->mockDriverGetEmptyAndSaveTpmData(
+            $this->getJsonFixture('tmp_data_get_route_parameters_description')
+        );
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'v{versions}/users/{id}/{some_string}/{uuid}/{withoutConditional}',
+            conditions: [
+                [
+                    'method' => 'whereNumber',
+                    'pathParam' => 'id',
+                ],
+                [
+                    'method' => 'whereIn',
+                    'pathParam' => 'some_string',
+                    'values' => [
+                        'first|second|last'
+                    ]
+                ],
+                [
+                    'method' => 'whereUuid',
+                    'pathParam' => 'uuid',
+                ],
+                [
+                    'method' => 'whereIn',
+                    'pathParam' => 'versions',
+                    'values' => [
+                        '0.2|1|3.1'
+                    ]
+                ],
+            ],
+        );
+
+        $response = $this->generateResponse('example_generate_path_param_description_response.json');
+
+        app(SwaggerService::class)->addData($request, $response);
     }
 }
