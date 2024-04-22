@@ -741,7 +741,7 @@ class SwaggerServiceTest extends TestCase
         $request = $this->generateRequest(
             type: 'get',
             uri: 'v{versions}/users/{id}/{some_string}/{uuid}/{withoutConditional}',
-            conditionals: [
+            conditions: [
                 [
                     'method' => 'whereNumber',
                     'pathParam' => 'id',
