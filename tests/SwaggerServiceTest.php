@@ -740,7 +740,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateRequest(
             type: 'get',
-            uri: 'v{versions}/users/{id}/{some_string}/{uuid}',
+            uri: 'v{versions}/users/{id}/{some_string}/{uuid}/{withoutConditional}',
             conditionals: [
                 [
                     'method' => 'whereNumber',
@@ -765,7 +765,6 @@ class SwaggerServiceTest extends TestCase
                     ]
                 ],
             ],
-            method: 'testRequestWithRouteConditionals'
         );
 
         $response = $this->generateResponse('example_generate_path_param_description_response.json');

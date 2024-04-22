@@ -4,7 +4,7 @@
     "basePath": "/",
     "schemes": [],
     "paths": {
-        "/v{versions}/users/{id}/{some_string}/{uuid}": {
+        "/v{versions}/users/{id}/{some_string}/{uuid}/{withoutConditional}": {
             "get": {
                 "tags": [
                     "v{versions}"
@@ -41,11 +41,37 @@
                         "description": "regexp: [\\da-fA-F]{8}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{12}",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "withoutConditional",
+                        "description": "",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "string, required",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "description": "integer, with_to_array_rule_string_name",
+                        "type": "integer"
+                    },
+                    {
+                        "in": "query",
+                        "name": "is_email_enabled",
+                        "description": "test_rule_without_to_string",
+                        "type": "string"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Operation successfully done",
                         "schema": {
                             "example": [
                                 {
@@ -73,17 +99,19 @@
                                     ]
                                 }
                             ],
-                            "$ref": "#/definitions/getV{versions}users{id}{someString}{uuid}200ResponseObject"
+                            "$ref": "#/definitions/getV{versions}users{id}{someString}{uuid}{withoutConditional}200ResponseObject"
                         }
                     }
                 },
                 "security": [],
-                "description": ""
+                "description": "",
+                "deprecated": false,
+                "summary": "test"
             }
         }
     },
     "definitions": {
-        "getV{versions}users{id}{someString}{uuid}200ResponseObject": {
+        "getV{versions}users{id}{someString}{uuid}{withoutConditional}200ResponseObject": {
             "type": "array",
             "properties": {
                 "items": {

@@ -251,6 +251,10 @@ class SwaggerService
 
     protected function generatePathDescription(string $key): string
     {
+        if (!Arr::exists($this->request->route()->wheres, $key)) {
+            return '';
+        }
+
         $expression = $this->request->route()->wheres[$key];
 
         $exploded = explode('|', $expression);
