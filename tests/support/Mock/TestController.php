@@ -19,4 +19,13 @@ class TestController
     public function testRequestWithContract(TestContract $contract)
     {
     }
+
+    public function testRequestWithRouteConditionals(
+        TestContract $contract,
+        int $id,
+        string $someString,
+        string $uuid,
+        float $versions
+    ) {
+    }
 }

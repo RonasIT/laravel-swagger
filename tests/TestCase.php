@@ -114,14 +114,25 @@ class TestCase extends BaseTest
         }
     }
 
-    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $method = 'test'): Request
+    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $conditionals = [], $method = 'test'): Request
     {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
-        return $request->setRouteResolver(function () use ($uri, $request, $method) {
-            return Route::get($uri)
-                ->setAction(['controller' =>  TestController::class . '@' . $method])
+        return $request->setRouteResolver(function () use ($uri, $request, $method, $conditionals) {
+            $route = Route::get($uri)
+                ->setAction(['controller' => TestController::class . '@' . $method])
                 ->bind($request);
+
+            foreach ($conditionals as $conditional) {
+                $method = $conditional['method'];
+
+                $route = match ($method) {
+                    'whereIn' => $route->whereIn($conditional['pathParam'], $conditional['values']),
+                     default => $route->{$method}($conditional['pathParam']),
+                };
+            }
+
+            return $route;
         });
     }
 
@@ -131,7 +142,7 @@ class TestCase extends BaseTest
             'with' => ['users']
         ], [], [
             'Content-type' => 'application/json'
-        ], $method);
+        ], [], $method);
     }
 
     protected function generateResponse($fixture, int $status = 200, array $headers = []): Response

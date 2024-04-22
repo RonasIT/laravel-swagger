@@ -1,0 +1,115 @@
+{
+    "swagger": "2.0",
+    "host": "localhost",
+    "basePath": "/",
+    "schemes": [],
+    "paths": {
+        "/v{versions}/users/{id}/{some_string}/{uuid}": {
+            "get": {
+                "tags": [
+                    "v{versions}"
+                ],
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "versions",
+                        "description": "in: 0.2|1|3.1",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "regexp: [0-9]+",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "some_string",
+                        "description": "in: first|second|last",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "path",
+                        "name": "uuid",
+                        "description": "regexp: [\\da-fA-F]{8}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{12}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "example": [
+                                {
+                                    "id": 1,
+                                    "name": "admin",
+                                    "users": [
+                                        {
+                                            "id": 1,
+                                            "name": "admin"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 2,
+                                    "name": "client",
+                                    "users": [
+                                        {
+                                            "id": 2,
+                                            "name": "first_client"
+                                        },
+                                        {
+                                            "id": 3,
+                                            "name": "second_client"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "$ref": "#/definitions/getV{versions}users{id}{someString}{uuid}200ResponseObject"
+                        }
+                    }
+                },
+                "security": [],
+                "description": ""
+            }
+        }
+    },
+    "definitions": {
+        "getV{versions}users{id}{someString}{uuid}200ResponseObject": {
+            "type": "array",
+            "properties": {
+                "items": {
+                    "allOf": [
+                        {
+                            "type": "array"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    },
+    "securityDefinitions": {
+        "jwt": {
+            "type": "apiKey",
+            "name": "authorization",
+            "in": "header"
+        }
+    }
+}
