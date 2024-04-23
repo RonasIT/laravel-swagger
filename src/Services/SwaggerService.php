@@ -265,6 +265,8 @@ class SwaggerService
             }
         }
 
+        $expression = str_replace('|', ', ', $expression);
+
         return "in: {$expression}";
     }
 
