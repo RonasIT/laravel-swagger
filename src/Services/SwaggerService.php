@@ -251,23 +251,20 @@ class SwaggerService
 
     protected function generatePathDescription(string $key): string
     {
-        if (!Arr::exists($this->request->route()->wheres, $key)) {
+        $expression = Arr::get($this->request->route()->wheres, $key);
+
+        if (empty($expression)) {
             return '';
         }
 
-        $expression = $this->request->route()->wheres[$key];
-
         $exploded = explode('|', $expression);
-
         foreach ($exploded as $value) {
             if (!preg_match('/^[a-zA-Z0-9\.]+$/', $value)) {
                 return  "regexp: {$expression}";
             }
         }
 
-        $expression = str_replace('|', ', ', $expression);
-
-        return "in: {$expression}";
+        return 'in: ' . implode(',', $exploded);
     }
 
     protected function parseRequest()

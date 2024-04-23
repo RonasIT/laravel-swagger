@@ -741,7 +741,7 @@ class SwaggerServiceTest extends TestCase
         $request = $this->generateRequest(
             type: 'get',
             uri: 'v{versions}/users/{id}/{some_string}/{uuid}/{withoutConditional}',
-            conditions: [
+            routeConditions: [
                 [
                     'method' => 'whereNumber',
                     'pathParam' => 'id',
@@ -767,7 +767,7 @@ class SwaggerServiceTest extends TestCase
             ],
         );
 
-        $response = $this->generateResponse('example_generate_path_param_description_response.json');
+        $response = $this->generateResponse('example_success_user_response.json');
 
         app(SwaggerService::class)->addData($request, $response);
     }

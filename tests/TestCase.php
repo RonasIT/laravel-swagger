@@ -114,21 +114,21 @@ class TestCase extends BaseTest
         }
     }
 
-    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $conditions = [], $method = 'test'): Request
+    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $routeConditions = [], $controllerMethod = 'test'): Request
     {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
-        return $request->setRouteResolver(function () use ($uri, $request, $method, $conditions) {
+        return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions) {
             $route = Route::get($uri)
-                ->setAction(['controller' => TestController::class . '@' . $method])
+                ->setAction(['controller' => TestController::class . '@' . $controllerMethod])
                 ->bind($request);
 
-            foreach ($conditions as $condition) {
-                $method = $condition['method'];
+            foreach ($routeConditions as $condition) {
+                $controllerMethod = $condition['method'];
 
-                $route = match ($method) {
+                $route = match ($controllerMethod) {
                     'whereIn' => $route->whereIn($condition['pathParam'], $condition['values']),
-                     default => $route->{$method}($condition['pathParam']),
+                     default => $route->{$controllerMethod}($condition['pathParam']),
                 };
             }
 
