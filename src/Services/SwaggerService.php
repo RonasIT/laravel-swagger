@@ -240,13 +240,32 @@ class SwaggerService
             $result[] = [
                 'in' => 'path',
                 'name' => $key,
-                'description' => '',
+                'description' => $this->generatePathDescription($key),
                 'required' => true,
                 'type' => 'string'
             ];
         }
 
         return $result;
+    }
+
+    protected function generatePathDescription(string $key): string
+    {
+        $expression = Arr::get($this->request->route()->wheres, $key);
+
+        if (empty($expression)) {
+            return '';
+        }
+
+        $exploded = explode('|', $expression);
+
+        foreach ($exploded as $value) {
+            if (!preg_match('/^[a-zA-Z0-9\.]+$/', $value)) {
+                return  "regexp: {$expression}";
+            }
+        }
+
+        return 'in: ' . implode(',', $exploded);
     }
 
     protected function parseRequest()
