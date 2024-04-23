@@ -258,6 +258,7 @@ class SwaggerService
         }
 
         $exploded = explode('|', $expression);
+
         foreach ($exploded as $value) {
             if (!preg_match('/^[a-zA-Z0-9\.]+$/', $value)) {
                 return  "regexp: {$expression}";
