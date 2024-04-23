@@ -17,7 +17,7 @@
                     {
                         "in": "path",
                         "name": "versions",
-                        "description": "in: 0.2|1|3.1",
+                        "description": "in: 0.2, 1, 3.1",
                         "required": true,
                         "type": "string"
                     },
@@ -31,7 +31,7 @@
                     {
                         "in": "path",
                         "name": "some_string",
-                        "description": "in: first|second|last",
+                        "description": "in: first, second, last",
                         "required": true,
                         "type": "string"
                     },
