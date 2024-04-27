@@ -296,14 +296,10 @@ class SwaggerService
 
     protected function saveResponseSchema(?array $content, string $definition): void
     {
-        if (empty($content)) {
-            return;
-        }
-
         $schemaProperties = [];
         $schemaType = 'object';
 
-        if (array_is_list($content)) {
+        if (!empty($content) && array_is_list($content)) {
             $this->saveListResponseDefinitions($content, $schemaProperties);
 
             $schemaType = 'array';
@@ -366,7 +362,7 @@ class SwaggerService
 
         $responseExampleLimitCount = config('auto-doc.response_example_limit_count');
 
-        $content = json_decode($response->getContent(), true);
+        $content = json_decode($response->getContent(), true) ?? [];
 
         if (!empty($responseExampleLimitCount)) {
             if (!empty($content['data'])) {
