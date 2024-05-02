@@ -103,7 +103,7 @@
           "204": {
             "description": "Operation successfully done",
             "schema": {
-              "example": null,
+              "example": [],
               "$ref": "#/definitions/patchUsers{id}204ResponseObject"
             }
           }
@@ -141,6 +141,10 @@
         "query": null
       },
       "required": ["query"]
+    },
+    "patchUsers{id}204ResponseObject": {
+      "type": "object",
+      "properties": []
     }
   },
   "info": {
