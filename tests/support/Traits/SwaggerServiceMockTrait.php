@@ -8,7 +8,7 @@ trait SwaggerServiceMockTrait
 {
     use MockTrait;
 
-    protected function mockDriverGetEmptyAndSaveTpmData(
+    protected function mockDriverGetEmptyAndSaveTmpData(
         $tmpData,
         $savedTmpData = null,
         $driverClass = LocalDriver::class
@@ -32,7 +32,7 @@ trait SwaggerServiceMockTrait
         $this->app->instance($driverClass, $driver);
     }
 
-    protected function mockDriverGetPreparedAndSaveTpmData(
+    protected function mockDriverGetPreparedAndSaveTmpData(
         $getTmpData,
         $saveTmpData,
         $driverClass = LocalDriver::class
@@ -52,7 +52,7 @@ trait SwaggerServiceMockTrait
         $this->app->instance($driverClass, $driver);
     }
 
-    protected function mockDriverGetTpmData($tmpData, $driverClass = LocalDriver::class): void
+    protected function mockDriverGetTmpData($tmpData, $driverClass = LocalDriver::class): void
     {
         $driver = $this->mockClass($driverClass, ['getTmpData']);
 
