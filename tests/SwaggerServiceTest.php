@@ -71,14 +71,14 @@ class SwaggerServiceTest extends TestCase
 
     public function testResponseHeaderWithItems()
     {
-        $this->mockDriverGetTpmData($this->getJsonFixture('documentation/array_response_header_with_items'));
+        $this->mockDriverGetTmpData($this->getJsonFixture('documentation/array_response_header_with_items'));
 
         app(SwaggerService::class);
     }
 
     public function testFormData()
     {
-        $this->mockDriverGetTpmData($this->getJsonFixture('documentation/formdata_request'));
+        $this->mockDriverGetTmpData($this->getJsonFixture('documentation/formdata_request'));
 
         app(SwaggerService::class);
     }
@@ -357,7 +357,7 @@ class SwaggerServiceTest extends TestCase
             ]
         ]);
 
-        $this->mockDriverGetEmptyAndSaveTpmData([], $this->getJsonFixture($savedTmpDataFixture));
+        $this->mockDriverGetEmptyAndSaveTmpData([], $this->getJsonFixture($savedTmpDataFixture));
 
         app(SwaggerService::class);
     }
@@ -366,7 +366,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.info' => []]);
 
-        $this->mockDriverGetEmptyAndSaveTpmData(
+        $this->mockDriverGetEmptyAndSaveTmpData(
             [],
             $this->getJsonFixture('tmp_data_request_with_empty_data_and_info')
         );
@@ -408,7 +408,7 @@ class SwaggerServiceTest extends TestCase
     #[DataProvider('getAddData')]
     public function testAddData(?string $contentType, string $requestFixture, string $responseFixture)
     {
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture($requestFixture));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture($requestFixture));
 
         $service = app(SwaggerService::class);
 
@@ -424,7 +424,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataRequestWithoutRuleType()
     {
-        $this->mockDriverGetEmptyAndSaveTpmData(
+        $this->mockDriverGetEmptyAndSaveTmpData(
             $this->getJsonFixture('tmp_data_search_roles_request_without_rule_type')
         );
 
@@ -439,7 +439,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataRequestWithAnnotations()
     {
-        $this->mockDriverGetEmptyAndSaveTpmData(
+        $this->mockDriverGetEmptyAndSaveTmpData(
             $this->getJsonFixture('tmp_data_search_roles_request_with_annotations')
         );
 
@@ -494,7 +494,7 @@ class SwaggerServiceTest extends TestCase
             ]
         ]);
 
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture($requestFixture));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture($requestFixture));
 
         $service = app(SwaggerService::class);
 
@@ -516,7 +516,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataWithPathParameters()
     {
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_get_user_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_get_user_request'));
 
         $service = app(SwaggerService::class);
 
@@ -537,7 +537,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataWithTypeNameInResponse()
     {
-        $this->mockDriverGetTpmData($this->getJsonFixture('tmp_data_get_user_request'));
+        $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_get_user_request'));
 
         $service = app(SwaggerService::class);
 
@@ -560,7 +560,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_closure_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_search_roles_closure_request'));
 
         $service = app(SwaggerService::class);
 
@@ -577,7 +577,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_post_user_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_post_user_request'));
 
         $service = app(SwaggerService::class);
 
@@ -597,7 +597,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetPreparedAndSaveTpmData(
+        $this->mockDriverGetPreparedAndSaveTmpData(
             $this->getJsonFixture('tmp_data_put_user_request'),
             $this->getJsonFixture('tmp_data_put_user_request_with_early_generated_doc')
         );
@@ -622,7 +622,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveTpmData(
+        $this->mockDriverGetEmptyAndSaveTmpData(
             $this->getJsonFixture('tmp_data_post_user_request_with_object_params')
         );
 
@@ -649,7 +649,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testCutExceptions()
     {
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_create_user_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_create_user_request'));
 
         $service = app(SwaggerService::class);
 
@@ -669,7 +669,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.response_example_limit_count' => 1]);
 
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_users_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_search_users_request'));
 
         $service = app(SwaggerService::class);
 
@@ -686,7 +686,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.response_example_limit_count' => 1]);
 
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_users_empty_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_search_users_empty_request'));
 
         $service = app(SwaggerService::class);
 
@@ -734,7 +734,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataDescriptionForRouteConditionals()
     {
-        $this->mockDriverGetEmptyAndSaveTpmData(
+        $this->mockDriverGetEmptyAndSaveTmpData(
             $this->getJsonFixture('tmp_data_get_route_parameters_description')
         );
 
