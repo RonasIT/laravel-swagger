@@ -60,6 +60,18 @@ class LocalDriverTest extends TestCase
         new LocalDriver();
     }
 
+    public function testCreateDirectoryIfNotExists()
+    {
+        $productionPath = __DIR__ . '/../storage/non_existent_directory/documentation.json';
+        config(['auto-doc.drivers.local.production_path' => $productionPath]);
+
+        mkdir(dirname($productionPath), 0777, true);
+
+        $this->assertTrue(is_dir(dirname($productionPath)));
+
+        rmdir(dirname($productionPath));
+    }
+
     public function testGetAndSaveTmpData()
     {
         $this->localDriverClass->saveTmpData($this->tmpData);

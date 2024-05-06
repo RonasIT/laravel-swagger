@@ -22,8 +22,8 @@ class StorageDriver extends BaseDriver
             throw new MissedProductionFilePathException();
         }
 
-        if (!is_dir(dirname($this->prodFilePath))) {
-            mkdir(dirname($this->prodFilePath),0777, true);
+        if (!Storage::exists(dirname($this->prodFilePath))) {
+            Storage::makeDirectory(dirname($this->prodFilePath));
         }
     }
 

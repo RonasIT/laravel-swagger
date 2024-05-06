@@ -20,7 +20,7 @@ class LocalDriver extends BaseDriver
         }
 
         if (!is_dir(dirname($this->prodFilePath))) {
-            mkdir(dirname($this->prodFilePath),0777, true);
+            mkdir(dirname($this->prodFilePath), 0777, true);
         }
     }
 

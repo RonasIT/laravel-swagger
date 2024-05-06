@@ -65,6 +65,17 @@ class StorageDriverTest extends TestCase
         new StorageDriver();
     }
 
+    public function testCreateDirectoryIfNotExists()
+    {
+        config(['auto-doc.drivers.storage.production_path' => 'non_existent_directory/documentation.json']);
+
+        Storage::disk('testing')->makeDirectory('non_existent_directory');
+
+        $this->assertTrue(Storage::disk('testing')->exists('non_existent_directory'));
+
+        Storage::disk('testing')->deleteDirectory('non_existent_directory');
+    }
+
     public function testGetAndSaveTmpData()
     {
         $this->storageDriverClass->saveTmpData($this->tmpData);
