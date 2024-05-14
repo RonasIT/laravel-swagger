@@ -11,7 +11,7 @@ class AutoDocMiddlewareTest extends TestCase
 
     public function testHandle()
     {
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_search_roles_request'));
 
         $request = $this->generateGetRolesRequest();
 
