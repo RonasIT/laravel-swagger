@@ -128,7 +128,8 @@ return [
     'drivers' => [
         'local' => [
             'class' => LocalDriver::class,
-            'production_path' => storage_path(env('SWAGGER_DOCUMENTATION_PATH', '/documentation').DIRECTORY_SEPARATOR.'documentation.json'),
+            'file_path' => env('SWAGGER_DOCUMENTATION_PATH', 'documentation'),
+            'file_name' => '/documentation.json',
         ],
         'remote' => [
             'class' => RemoteDriver::class,
@@ -146,7 +147,8 @@ return [
             | One of the filesystems.disks config value
             */
             'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
-            'production_path' => env('SWAGGER_DOCUMENTATION_PATH', '/swagger').DIRECTORY_SEPARATOR.'documentation.json',
+            'file_name' => '/documentation.json',
+            'file_path' => env('SWAGGER_DOCUMENTATION_PATH', 'documentation'),
         ]
     ],
 

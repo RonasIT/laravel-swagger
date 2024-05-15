@@ -12,6 +12,8 @@ class StorageDriverTest extends TestCase
     protected $storageDriverClass;
     protected $disk;
     protected $productionFilePath;
+    protected $fileName;
+    protected $filePath;
     protected $tmpDocumentationFilePath;
     protected $tmpData;
 
@@ -20,14 +22,18 @@ class StorageDriverTest extends TestCase
         parent::setUp();
 
         $this->disk = Storage::fake('testing');
-
-        $this->productionFilePath = 'documentation.json';
-        $this->tmpDocumentationFilePath = __DIR__ . '/../storage/temp_documentation.json';
+        $this->filePath = Storage::path('storage');
+        $this->fileName = '/documentation.json';
+        $this->productionFilePath = $this->filePath.$this->fileName;
+        $this->tmpDocumentationFilePath = storage_path('temp_documentation.json');
 
         $this->tmpData = $this->getJsonFixture('tmp_data');
 
         config(['auto-doc.drivers.storage.disk' => 'testing']);
-        config(['auto-doc.drivers.storage.production_path' => $this->productionFilePath]);
+        config([
+            'auto-doc.drivers.local.file_name' => $this->fileName,
+            'auto-doc.drivers.local.file_path' => $this->filePath,
+        ]);
 
         $this->storageDriverClass = new StorageDriver();
     }
@@ -60,14 +66,19 @@ class StorageDriverTest extends TestCase
     {
         $this->expectException(MissedProductionFilePathException::class);
 
-        config(['auto-doc.drivers.storage.production_path' => null]);
-
+        config([
+            'auto-doc.drivers.local.file_name' => null,
+            'auto-doc.drivers.local.file_path' => null,
+        ]);
         new StorageDriver();
     }
 
     public function testCreateDirectoryIfNotExists()
     {
-        config(['auto-doc.drivers.storage.production_path' => 'non_existent_directory/documentation.json']);
+        config([
+            'auto-doc.drivers.local.file_name' => '/documentation.json',
+            'auto-doc.drivers.local.file_path' => 'non_existent_directory',
+        ]);
 
         Storage::disk('testing')->makeDirectory('non_existent_directory');
 

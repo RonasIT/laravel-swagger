@@ -11,6 +11,8 @@ class LocalDriverTest extends TestCase
 {
     protected $localDriverClass;
     protected $productionFilePath;
+    protected $filePath;
+    protected $fileName;
     protected $tmpDocumentationFilePath;
     protected $tmpData;
 
@@ -18,12 +20,17 @@ class LocalDriverTest extends TestCase
     {
         parent::setUp();
 
-        $this->productionFilePath = __DIR__ . '/../storage/documentation.json';
-        $this->tmpDocumentationFilePath = __DIR__ . '/../storage/temp_documentation.json';
+        $this->filePath = Storage::path('storage');
+        $this->fileName = '/documentation.json';
+        $this->productionFilePath = storage_path($this->filePath.$this->fileName);
+        $this->tmpDocumentationFilePath = storage_path('temp_documentation.json');
 
         $this->tmpData = $this->getJsonFixture('tmp_data');
 
-        config(['auto-doc.drivers.local.production_path' => $this->productionFilePath]);
+        config([
+            'auto-doc.drivers.local.file_name' => $this->fileName,
+            'auto-doc.drivers.local.file_path' => $this->filePath,
+        ]);
 
         $this->localDriverClass = new LocalDriver();
     }
@@ -56,8 +63,10 @@ class LocalDriverTest extends TestCase
     {
         $this->expectException(MissedProductionFilePathException::class);
 
-        config(['auto-doc.drivers.local.production_path' => null]);
-
+        config([
+            'auto-doc.drivers.local.file_name' => null,
+            'auto-doc.drivers.local.file_path' => null,
+        ]);
         new LocalDriver();
     }
 
@@ -67,7 +76,10 @@ class LocalDriverTest extends TestCase
 
         Storage::makeDirectory($productionPath);
 
-        config(['auto-doc.drivers.local.production_path' => $productionPath]);
+        config([
+            'auto-doc.drivers.local.file_name' => '/documentation.json',
+            'auto-doc.drivers.local.file_path' => 'non_existent_directory',
+        ]);
 
         $this->assertTrue(Storage::exists($productionPath));
 
@@ -106,7 +118,10 @@ class LocalDriverTest extends TestCase
     {
         $this->expectException(FileNotFoundException::class);
 
-        config(['auto-doc.drivers.local.production_path' => 'not_exists_file']);
+        config([
+            'auto-doc.drivers.local.file_name' => 'not_exists_file',
+            'auto-doc.drivers.local.file_path' => 'not_exists_file',
+        ]);
 
         (new LocalDriver())->getDocumentation();
     }
