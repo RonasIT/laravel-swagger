@@ -26,7 +26,21 @@ class LocalDriver extends BaseDriver
 
     public function saveData(): void
     {
-        file_put_contents($this->prodFilePath, json_encode($this->getTmpData()));
+        $currentDocumentation = [];
+        $newData = $this->getTmpData();
+
+        if (file_exists($this->prodFilePath)) {
+            $currentDocumentation = $this->getDocumentation();
+        }
+
+        if (!empty($currentDocumentation) && $currentDocumentation !== $newData) {
+            $version = $this->getNextVersion();
+            $newFileName = str_replace('documentation.json', "documentation_$version.json", $this->prodFilePath);
+
+            copy($this->prodFilePath, $newFileName);
+        }
+
+        file_put_contents($this->prodFilePath, json_encode($newData));
 
         $this->clearTmpData();
     }
@@ -40,5 +54,14 @@ class LocalDriver extends BaseDriver
         $fileContent = file_get_contents($this->prodFilePath);
 
         return json_decode($fileContent, true);
+    }
+
+    protected function getNextVersion(): string
+    {
+        $currentVersion = config('auto-doc.config_version', '0.1');
+
+        [$major, $minor] = explode('.', $currentVersion);
+
+        return "{$major}_{$minor}";
     }
 }

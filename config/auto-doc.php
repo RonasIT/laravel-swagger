@@ -128,7 +128,7 @@ return [
     'drivers' => [
         'local' => [
             'class' => LocalDriver::class,
-            'production_path' => storage_path(env('SWAGGER_DOCUMENTATION_PATH', '/swagger').DIRECTORY_SEPARATOR.'documentation.json'),
+            'production_path' => storage_path(env('SWAGGER_DOCUMENTATION_PATH', '/documentation').DIRECTORY_SEPARATOR.'documentation.json'),
         ],
         'remote' => [
             'class' => RemoteDriver::class,

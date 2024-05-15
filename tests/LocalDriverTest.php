@@ -4,6 +4,7 @@ namespace RonasIT\Support\Tests;
 
 use RonasIT\Support\AutoDoc\Drivers\LocalDriver;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Facades\Storage;
 use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriverTest extends TestCase
@@ -62,14 +63,15 @@ class LocalDriverTest extends TestCase
 
     public function testCreateDirectoryIfNotExists()
     {
-        $productionPath = __DIR__ . '/../storage/non_existent_directory/documentation.json';
+        $productionPath = 'non_existent_directory/documentation.json';
+
+        Storage::makeDirectory($productionPath);
+
         config(['auto-doc.drivers.local.production_path' => $productionPath]);
 
-        mkdir(dirname($productionPath), 0777, true);
+        $this->assertTrue(Storage::exists($productionPath));
 
-        $this->assertTrue(is_dir(dirname($productionPath)));
-
-        rmdir(dirname($productionPath));
+        Storage::delete($productionPath);
     }
 
     public function testGetAndSaveTmpData()
