@@ -3,6 +3,7 @@
 namespace RonasIT\Support\Tests;
 
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use phpmock\phpunit\PHPMock;
 use RonasIT\Support\Tests\Support\Traits\MockTrait;
 
@@ -13,17 +14,24 @@ class AutoDocControllerTest extends TestCase
 
     protected $documentation;
     protected $localDriverFilePath;
+    protected $fileName;
+    protected $filePath;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->localDriverFilePath = __DIR__ . '/../storage/documentation.json';
+        $this->filePath = Storage::path('storage');
+        $this->fileName = '/documentation.json';
+        $this->localDriverFilePath = storage_path($this->filePath.$this->fileName);
         $this->documentation = $this->getJsonFixture('tmp_data');
 
         file_put_contents($this->localDriverFilePath, json_encode($this->documentation));
 
-        config(['auto-doc.drivers.local.production_path' => $this->localDriverFilePath]);
+        config([
+            'auto-doc.drivers.local.file_name' => $this->fileName,
+            'auto-doc.drivers.local.file_path' => $this->filePath,
+        ]);
     }
 
     public function tearDown(): void

@@ -16,10 +16,19 @@ class StorageDriver extends BaseDriver
         parent::__construct();
 
         $this->disk = Storage::disk(config('auto-doc.drivers.storage.disk'));
-        $this->prodFilePath = config('auto-doc.drivers.storage.production_path');
+        $this->prodFilePath = config('auto-doc.drivers.local.file_path').config('auto-doc.drivers.local.file_name');
 
-        if (empty($this->prodFilePath)) {
+        if (empty(config('auto-doc.drivers.local.file_path'))
+            ||
+            empty(config('auto-doc.drivers.local.file_name'))
+            ||
+            empty($this->prodFilePath)
+        ) {
             throw new MissedProductionFilePathException();
+        }
+
+        if (!Storage::exists(dirname($this->prodFilePath))) {
+            Storage::makeDirectory(dirname($this->prodFilePath));
         }
     }
 

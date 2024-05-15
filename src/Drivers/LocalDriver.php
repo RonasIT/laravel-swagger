@@ -13,16 +13,39 @@ class LocalDriver extends BaseDriver
     {
         parent::__construct();
 
-        $this->prodFilePath = config('auto-doc.drivers.local.production_path');
+        $this->prodFilePath = storage_path(config('auto-doc.drivers.local.file_path').config('auto-doc.drivers.local.file_name'));
 
-        if (empty($this->prodFilePath)) {
+        if (empty(config('auto-doc.drivers.local.file_path'))
+            ||
+            empty(config('auto-doc.drivers.local.file_name'))
+            ||
+            empty($this->prodFilePath)
+        ) {
             throw new MissedProductionFilePathException();
+        }
+
+        if (!is_dir(dirname($this->prodFilePath))) {
+            mkdir(dirname($this->prodFilePath), 0777, true);
         }
     }
 
     public function saveData(): void
     {
-        file_put_contents($this->prodFilePath, json_encode($this->getTmpData()));
+        $currentDocumentation = [];
+        $newData = $this->getTmpData();
+
+        if (file_exists($this->prodFilePath)) {
+            $currentDocumentation = $this->getDocumentation();
+        }
+
+        if (!empty($currentDocumentation) && $currentDocumentation !== $newData) {
+            $version = $this->getNextVersion();
+            $newFileName = str_replace('documentation.json', "documentation_$version.json", $this->prodFilePath);
+
+            copy($this->prodFilePath, $newFileName);
+        }
+
+        file_put_contents($this->prodFilePath, json_encode($newData));
 
         $this->clearTmpData();
     }
@@ -36,5 +59,14 @@ class LocalDriver extends BaseDriver
         $fileContent = file_get_contents($this->prodFilePath);
 
         return json_decode($fileContent, true);
+    }
+
+    protected function getNextVersion(): string
+    {
+        $currentVersion = config('auto-doc.config_version', '0.1');
+
+        [$major, $minor] = explode('.', $currentVersion);
+
+        return "{$major}_{$minor}";
     }
 }
