@@ -2,6 +2,7 @@
 
 namespace RonasIT\Support\AutoDoc\Drivers;
 
+use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
 
 abstract class BaseDriver implements SwaggerDriverInterface
@@ -10,7 +11,11 @@ abstract class BaseDriver implements SwaggerDriverInterface
 
     public function __construct()
     {
-        $this->tempFilePath = storage_path('temp_documentation.json');
+        $parallelTestingToken = ParallelTesting::token();
+
+        $this->tempFilePath = $parallelTestingToken
+            ? storage_path("temp_documentation_{$parallelTestingToken}.json")
+            : storage_path('temp_documentation.json');
     }
 
     public function saveTmpData($data): void
