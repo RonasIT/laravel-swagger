@@ -3,7 +3,9 @@
 namespace RonasIT\Support\AutoDoc\Drivers;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\Support\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
+use RonasIT\Support\AutoDoc\Services\SwaggerService;
 
 class RemoteDriver extends BaseDriver
 {
@@ -22,11 +24,50 @@ class RemoteDriver extends BaseDriver
         }
     }
 
+    private function addPaths(array &$data): void
+    {
+        foreach ($this->getTmpData()['paths'] as $tmpPathKey => $tmpPathValue) {
+            $data['paths'][$tmpPathKey] = array_key_exists($tmpPathKey, $data['paths'])
+                ? array_merge($data['paths'][$tmpPathKey], $tmpPathValue)
+                : $tmpPathValue;
+        }
+    }
+
+    private function addDefinitions(array &$data): void
+    {
+        foreach ($this->getTmpData()['definitions'] as $tmpDefKey => $tmpDefValue) {
+            $data['definitions'][$tmpDefKey] = $tmpDefValue;
+        }
+    }
+
     public function saveData(): void
     {
-        $this->makeHttpRequest('post', $this->getUrl(), $this->getTmpData(), [
-            'Content-Type: application/json'
-        ]);
+        if (ParallelTesting::token()) {
+            list($content, $statusCode) = $this->makeHttpRequest('get', $this->getUrl());
+
+            if (empty($content) || $statusCode !== 200) {
+                $emptyData = app(SwaggerService::class)->generateEmptyData();
+
+                $this->makeHttpRequest('post', $this->getUrl(), $emptyData, [
+                    'Content-Type: application/json'
+                ]);
+            }
+
+            list($content, $statusCode) = $this->makeHttpRequest('get', $this->getUrl());
+
+            $prodFileArrayContent = json_decode($content, true);
+
+            $this->addPaths($prodFileArrayContent);
+            $this->addDefinitions($prodFileArrayContent);
+
+            $this->makeHttpRequest('post', $this->getUrl(), $prodFileArrayContent, [
+                'Content-Type: application/json'
+            ]);
+        } else {
+            $this->makeHttpRequest('post', $this->getUrl(), $this->getTmpData(), [
+                'Content-Type: application/json'
+            ]);
+        }
 
         $this->clearTmpData();
     }
