@@ -294,11 +294,11 @@ class SwaggerServiceTest extends TestCase
 
     #[DataProvider('getConstructorInvalidTmpData')]
     public function testGetDocFileContentInvalidTmpData(
-        string $docFilePath,
+        string $tmpDoc,
         string $exception,
         string $exceptionMessage
     ) {
-        $this->mockDriverGetDocumentation($this->getJsonFixture($docFilePath));
+        $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
         $this->expectException($exception);
         $this->expectExceptionMessage($exceptionMessage);
