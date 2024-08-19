@@ -11,40 +11,40 @@ class RemoteDriverTest extends TestCase
 {
     use MockTrait;
 
-    protected $tmpData;
-    protected $remoteDriverClass;
-    protected $tmpDocumentationFilePath;
+    protected static mixed $tmpData;
+    protected static RemoteDriver $remoteDriverClass;
+    protected static string$tmpDocumentationFilePath;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->tmpData = $this->getJsonFixture('tmp_data');
-        $this->tmpDocumentationFilePath = __DIR__ . '/../storage/temp_documentation.json';
+        self::$tmpData ??= $this->getJsonFixture('tmp_data');
+        self::$tmpDocumentationFilePath ??= __DIR__ . '/../storage/temp_documentation.json';
 
-        $this->remoteDriverClass = new RemoteDriver();
+        self::$remoteDriverClass ??= new RemoteDriver();
     }
 
     public function testSaveTmpData()
     {
-        $this->remoteDriverClass->saveTmpData($this->tmpData);
+        self::$remoteDriverClass->saveTmpData(self::$tmpData);
 
-        $this->assertFileExists($this->tmpDocumentationFilePath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $this->tmpDocumentationFilePath);
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
     public function testGetTmpData()
     {
-        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
-        $result = $this->remoteDriverClass->getTmpData();
+        $result = self::$remoteDriverClass->getTmpData();
 
-        $this->assertEquals($this->tmpData, $result);
+        $this->assertEquals(self::$tmpData, $result);
     }
 
     public function testGetTmpDataNoFile()
     {
-        $result = $this->remoteDriverClass->getTmpData();
+        $result = self::$remoteDriverClass->getTmpData();
 
         $this->assertNull($result);
     }
@@ -68,16 +68,16 @@ class RemoteDriverTest extends TestCase
         $mock
             ->expects($this->once())
             ->method('makeHttpRequest')
-            ->with('post', 'mocked_url/documentations/mocked_key', $this->tmpData, [
-                'Content-Type: application/json'
+            ->with('post', 'mocked_url/documentations/mocked_key', self::$tmpData, [
+                'Content-Type: application/json',
             ])
             ->willReturn(['', 204]);
 
-        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
         $mock->saveData();
 
-        $this->assertFileDoesNotExist($this->tmpDocumentationFilePath);
+        $this->assertFileDoesNotExist(self::$tmpDocumentationFilePath);
     }
 
     public function testSaveDataWithoutTmpFile()
@@ -91,7 +91,7 @@ class RemoteDriverTest extends TestCase
             ->expects($this->once())
             ->method('makeHttpRequest')
             ->with('post', 'mocked_url/documentations/mocked_key', null, [
-                'Content-Type: application/json'
+                'Content-Type: application/json',
             ])
             ->willReturn(['', 204]);
 
@@ -113,7 +113,7 @@ class RemoteDriverTest extends TestCase
 
         $documentation = $mock->getDocumentation();
 
-        $this->assertEquals($this->tmpData, $documentation);
+        $this->assertEquals(self::$tmpData, $documentation);
     }
 
     public function testGetDocumentationNoFile()
@@ -133,6 +133,6 @@ class RemoteDriverTest extends TestCase
 
         $documentation = $mock->getDocumentation();
 
-        $this->assertEquals($this->tmpData, $documentation);
+        $this->assertEquals(self::$tmpData, $documentation);
     }
 }

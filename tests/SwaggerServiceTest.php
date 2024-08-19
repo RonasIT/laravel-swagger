@@ -367,8 +367,8 @@ class SwaggerServiceTest extends TestCase
         config(['auto-doc.info' => []]);
 
         $this->mockDriverGetEmptyAndSaveTmpData(
-            [],
-            $this->getJsonFixture('tmp_data_request_with_empty_data_and_info')
+            tmpData: [],
+            savedTmpData: $this->getJsonFixture('tmp_data_request_with_empty_data_and_info'),
         );
 
         app(SwaggerService::class);
@@ -575,7 +575,7 @@ class SwaggerServiceTest extends TestCase
         $service = app(SwaggerService::class);
 
         $request = $this->generateClosureRequest('get', 'users/roles', [
-            'with' => ['users']
+            'with' => ['users'],
         ]);
 
         $response = $this->generateResponse('example_success_roles_closure_response.json');
@@ -591,12 +591,17 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('post', 'users', [
-            'users' => [1,2],
-            'query' => null
-        ], [], [
-            'authorization' => 'Bearer some_token'
-        ]);
+        $request = $this->generateRequest(
+            type: 'post',
+            uri: 'users',
+            data: [
+                'users' => [1,2],
+                'query' => null,
+            ],
+            headers: [
+                'authorization' => 'Bearer some_token',
+            ],
+        );
 
         $response = $this->generateResponse('example_success_users_post_response.json');
 
@@ -608,20 +613,26 @@ class SwaggerServiceTest extends TestCase
         config(['auto-doc.security' => 'jwt']);
 
         $this->mockDriverGetPreparedAndSaveTmpData(
-            $this->getJsonFixture('tmp_data_put_user_request'),
-            $this->getJsonFixture('tmp_data_put_user_request_with_early_generated_doc')
+            getTmpData: $this->getJsonFixture('tmp_data_put_user_request'),
+            saveTmpData: $this->getJsonFixture('tmp_data_put_user_request_with_early_generated_doc'),
         );
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('patch', 'users/{id}', [
-            'name' => 'Ryan',
-            'query' => null
-        ], [
-            'id' => 1
-        ], [
-            'authorization' => 'Bearer some_token'
-        ]);
+        $request = $this->generateRequest(
+            type: 'patch',
+            uri: 'users/{id}',
+            data: [
+                'name' => 'Ryan',
+                'query' => null,
+            ],
+            pathParams: [
+                'id' => 1,
+            ],
+            headers: [
+                'authorization' => 'Bearer some_token',
+            ],
+        );
 
         $response = $this->generateResponse(null, 204);
 
@@ -638,19 +649,24 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('post', 'users', [
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'license' => File::create('license.pdf'),
-            'notification_settings' => new TestNotificationSetting([
-                'is_push_enabled' => true,
-                'is_email_enabled' => true,
-                'is_sms_enabled' => true
-            ]),
-            'query' => null
-        ], [], [
-            'authorization' => 'Bearer some_token'
-        ]);
+        $request = $this->generateRequest(
+            type: 'post',
+            uri: 'users',
+            data: [
+                'first_name' => 'John',
+                'last_name' => 'Doe',
+                'license' => File::create('license.pdf'),
+                'notification_settings' => new TestNotificationSetting([
+                    'is_push_enabled' => true,
+                    'is_email_enabled' => true,
+                    'is_sms_enabled' => true,
+                ]),
+                'query' => null,
+            ],
+            headers: [
+                'authorization' => 'Bearer some_token',
+            ],
+        );
 
         $response = $this->generateResponse('example_success_users_post_response.json');
 
@@ -665,11 +681,11 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateRequest('post', '/api/users', [
             'first_name' => 'andrey',
-            'last_name' => 'voronin'
+            'last_name' => 'voronin',
         ]);
 
         $response = $this->generateResponse('example_forbidden_user_response.json', 403, [
-            'Content-type' => 'application/json'
+            'Content-type' => 'application/json',
         ]);
 
         $service->addData($request, $response);
@@ -686,7 +702,7 @@ class SwaggerServiceTest extends TestCase
         $request = $this->generateRequest('get', '/api/users');
 
         $response = $this->generateResponse('example_success_users_response.json', 200, [
-            'Content-type' => 'application/json'
+            'Content-type' => 'application/json',
         ]);
 
         $service->addData($request, $response);
@@ -700,10 +716,14 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', '/api/users', [], [], [], [], 'testRequestWithContract');
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/api/users',
+            controllerMethod: 'testRequestWithContract',
+        );
 
         $response = $this->generateResponse('example_success_users_response.json', 200, [
-            'Content-type' => 'application/json'
+            'Content-type' => 'application/json',
         ]);
 
         $service->addData($request, $response);
@@ -760,8 +780,8 @@ class SwaggerServiceTest extends TestCase
                     'method' => 'whereIn',
                     'pathParam' => 'some_string',
                     'values' => [
-                        'first|second|last'
-                    ]
+                        'first|second|last',
+                    ],
                 ],
                 [
                     'method' => 'whereUuid',
@@ -771,8 +791,8 @@ class SwaggerServiceTest extends TestCase
                     'method' => 'whereIn',
                     'pathParam' => 'versions',
                     'values' => [
-                        '0.2|1|3.1'
-                    ]
+                        '0.2|1|3.1',
+                    ],
                 ],
             ],
         );
