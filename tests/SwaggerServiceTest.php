@@ -89,205 +89,205 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_version',
                 'exception' => InvalidSwaggerVersionException::class,
-                'exceptionMessage' => "Unrecognized Swagger version '1.0'. Expected 2.0."
+                'exceptionMessage' => "Unrecognized Swagger version '1.0'. Expected 2.0.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__array_parameter__no_items',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. paths./users.post.parameters.0 is an "
-                    . "array, so it must include an 'items' field."
+                    . "array, so it must include an 'items' field.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__array_response_body__no_items',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. paths./users.get.responses.200.schema is an array, "
-                    . "so it must include an 'items' field."
+                    . "so it must include an 'items' field.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__array_response_header__no_items',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. paths./users.get.responses.default.headers."
-                    . "Last-Modified is an array, so it must include an 'items' field."
+                    . "Last-Modified is an array, so it must include an 'items' field.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__body_and_form_params',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.post' "
-                    . "has body and formData parameters. Only one or the other is allowed."
+                    . "has body and formData parameters. Only one or the other is allowed.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_header_params',
                 'exception' => DuplicateParamException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.get' "
-                    . "has multiple in:header parameters with name:foo."
+                    . "has multiple in:header parameters with name:foo.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_path_params',
                 'exception' => DuplicateParamException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.get' has "
-                    . "multiple in:path parameters with name:username"
+                    . "multiple in:path parameters with name:username",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_path_placeholders',
                 'exception' => DuplicatePathPlaceholderException::class,
                 'exceptionMessage' => "Validation failed. Path '/users/{username}/profile/{username}/image/{img_id}' "
-                    . "has multiple path placeholders with name: username."
+                    . "has multiple path placeholders with name: username.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_operation_id',
                 'exception' => DuplicateFieldException::class,
                 'exceptionMessage' => "Validation failed. Found multiple fields 'paths.*.*.operationId' "
-                    . "with values: addPet."
+                    . "with values: addPet.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_tag',
                 'exception' => DuplicateFieldException::class,
-                'exceptionMessage' => "Validation failed. Found multiple fields 'tags.*.name' with values: user."
+                'exceptionMessage' => "Validation failed. Found multiple fields 'tags.*.name' with values: user.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__file_invalid_consumes',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/profile/image.post' "
-                    . "has body and formData parameters. Only one or the other is allowed."
+                    . "has body and formData parameters. Only one or the other is allowed.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__file_no_consumes',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/profile/image.post' "
-                    . "has body and formData parameters. Only one or the other is allowed."
+                    . "has body and formData parameters. Only one or the other is allowed.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__multiple_body_params',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.get' has 2 body "
-                    . "parameters. Only one is allowed."
+                    . "parameters. Only one is allowed.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__no_path_params',
                 'exception' => MissingPathParamException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/{foo}.get' has "
-                    . "no params for placeholders: username, foo."
+                    . "no params for placeholders: username, foo.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__path_param_no_placeholder',
                 'exception' => MissingPathPlaceholderException::class,
                 'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.post' has no "
-                    . "placeholders for params: foo."
+                    . "placeholders for params: foo.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_value__path',
                 'exception' => InvalidPathException::class,
                 'exceptionMessage' => "Validation failed. Incorrect 'paths.users'. Paths should only have path "
-                    . "names that starts with `/`."
+                    . "names that starts with `/`.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_value__status_code',
                 'exception' => InvalidStatusCodeException::class,
                 'exceptionMessage' => "Validation failed. Operation at 'paths./users.get.responses.8888' should "
-                    . "only have three-digit status codes, `default`, and vendor extensions (`x-*`) as properties."
+                    . "only have three-digit status codes, `default`, and vendor extensions (`x-*`) as properties.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_value__parameter_in',
                 'exception' => InvalidFieldValueException::class,
                 'exceptionMessage' => "Validation failed. Field 'paths./auth/login.post.parameters.0.in' "
-                    . "has an invalid value: invalid_in. Allowed values: body, formData, query, path, header."
+                    . "has an invalid value: invalid_in. Allowed values: body, formData, query, path, header.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__paths',
                 'exception' => MissingFieldException::class,
-                'exceptionMessage' => "Validation failed. '' should have required fields: paths."
+                'exceptionMessage' => "Validation failed. '' should have required fields: paths.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__operation_responses',
                 'exception' => MissingFieldException::class,
                 'exceptionMessage' => "Validation failed. 'paths./auth/login.post' should have required "
-                    . "fields: responses."
+                    . "fields: responses.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__parameter_in',
                 'exception' => MissingFieldException::class,
                 'exceptionMessage' => "Validation failed. 'paths./auth/login.post.parameters.0' should "
-                    . "have required fields: in."
+                    . "have required fields: in.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__response_description',
                 'exception' => MissingFieldException::class,
                 'exceptionMessage' => "Validation failed. 'paths./auth/login.post.responses.200' should "
-                    . "have required fields: description."
+                    . "have required fields: description.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__definition_type',
                 'exception' => MissingFieldException::class,
                 'exceptionMessage' => "Validation failed. 'definitions.authloginObject' should have "
-                    . "required fields: type."
+                    . "required fields: type.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__info_version',
                 'exception' => MissingFieldException::class,
-                'exceptionMessage' => "Validation failed. 'info' should have required fields: version."
+                'exceptionMessage' => "Validation failed. 'info' should have required fields: version.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__items_type',
                 'exception' => MissingFieldException::class,
                 'exceptionMessage' => "Validation failed. 'paths./pet/findByStatus.get.parameters.0.items' "
-                    . "should have required fields: type."
+                    . "should have required fields: type.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__header_type',
                 'exception' => MissingFieldException::class,
                 'exceptionMessage' => "Validation failed. 'paths./user/login.get.responses.200.headers.X-Rate-Limit' "
-                    . "should have required fields: type."
+                    . "should have required fields: type.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__tag_name',
                 'exception' => MissingFieldException::class,
-                'exceptionMessage' => "Validation failed. 'tags.0' should have required fields: name."
+                'exceptionMessage' => "Validation failed. 'tags.0' should have required fields: name.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
                 'exception' => MissingLocalRefException::class,
                 'exceptionMessage' => "Validation failed. Ref 'loginObject' is used in \$ref but not defined "
-                    . "in 'definitions' field."
+                    . "in 'definitions' field.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
                 'exception' => MissingExternalRefException::class,
                 'exceptionMessage' => "Validation failed. Ref 'authloginObject' is used in \$ref but not defined "
-                    . "in 'tests/fixtures/SwaggerServiceTest/documentation/with_definitions.json' file."
+                    . "in 'tests/fixtures/SwaggerServiceTest/documentation/with_definitions.json' file.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
                 'exception' => MissingRefFileException::class,
                 'exceptionMessage' => "Validation failed. Filename 'invalid-filename.json' is used in \$ref but "
-                    . "file doesn't exist."
+                    . "file doesn't exist.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_schema_type',
                 'exception' => InvalidFieldValueException::class,
                 'exceptionMessage' => "Validation failed. Field 'paths./users.get.responses.200.schema.type' "
                     . "has an invalid value: something. Allowed values: array, boolean, integer, number, "
-                    . "string, object, null, undefined, file."
+                    . "string, object, null, undefined, file.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_path_parameter',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. Path parameters cannot be optional. "
-                    . "Set required=true for the 'username' parameters at operation 'paths./users.get'."
+                    . "Set required=true for the 'username' parameters at operation 'paths./users.get'.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__type',
                 'exception' => InvalidSwaggerSpecException::class,
-                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.type' has an invalid value: invalid. Allowed values: basic, apiKey, oauth2."
+                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.type' has an invalid value: invalid. Allowed values: basic, apiKey, oauth2.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__flow',
                 'exception' => InvalidSwaggerSpecException::class,
-                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.flow' has an invalid value: invalid. Allowed values: implicit, password, application, accessCode."
+                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.flow' has an invalid value: invalid. Allowed values: implicit, password, application, accessCode.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__in',
                 'exception' => InvalidSwaggerSpecException::class,
-                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header."
+                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header.",
             ],
         ];
     }
@@ -296,7 +296,7 @@ class SwaggerServiceTest extends TestCase
     public function testGetDocFileContentInvalidTmpData(
         string $tmpDoc,
         string $exception,
-        string $exceptionMessage
+        string $exceptionMessage,
     ) {
         $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
@@ -342,18 +342,18 @@ class SwaggerServiceTest extends TestCase
                 'laravel' => [
                     'name' => 'laravel',
                     'in' => 'cookie',
-                    'type' => 'apiKey'
+                    'type' => 'apiKey',
                 ],
                 'jwt' => [
                     'name' => 'Authorization',
                     'in' => 'header',
-                    'type' => 'apiKey'
+                    'type' => 'apiKey',
                 ],
                 'query' => [
                     'name' => 'api_key',
                     'in' => 'query',
-                    'type' => 'apiKey'
-                ]
+                    'type' => 'apiKey',
+                ],
             ]
         ]);
 
@@ -416,7 +416,7 @@ class SwaggerServiceTest extends TestCase
 
         $response = $this->generateResponse($responseFixture, 200, [
             'Content-type' => $contentType,
-            'authorization' => 'Bearer some_token'
+            'authorization' => 'Bearer some_token',
         ]);
 
         $service->addData($request, $response);
@@ -479,17 +479,17 @@ class SwaggerServiceTest extends TestCase
                 'laravel' => [
                     'name' => 'laravel',
                     'in' => 'cookie',
-                    'type' => 'apiKey'
+                    'type' => 'apiKey',
                 ],
                 'jwt' => [
                     'name' => 'Authorization',
                     'in' => 'header',
-                    'type' => 'apiKey'
+                    'type' => 'apiKey',
                 ],
                 'query' => [
                     'name' => 'api_key',
                     'in' => 'query',
-                    'type' => 'apiKey'
+                    'type' => 'apiKey',
                 ]
             ]
         ]);
@@ -520,16 +520,21 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', 'users/{id}/assign-role/{role-id}', [
-            'with' => ['role'],
-            'with_likes_count' => true
-        ], [
-            'id' => 1,
-            'role-id' => 5
-        ]);
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users/{id}/assign-role/{role-id}',
+            data: [
+                'with' => ['role'],
+                'with_likes_count' => true,
+            ],
+            pathParams: [
+                'id' => 1,
+                'role-id' => 5,
+            ],
+        );
 
         $response = $this->generateResponse('example_success_user_response.json', 200, [
-            'Content-type' => 'application/json'
+            'Content-type' => 'application/json',
         ]);
 
         $service->addData($request, $response);
@@ -541,16 +546,21 @@ class SwaggerServiceTest extends TestCase
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('get', 'users/{id}/assign-role/{role-id}', [
-            'with' => ['role'],
-            'with_likes_count' => true
-        ], [
-            'id' => 1,
-            'role-id' => 5
-        ]);
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users/{id}/assign-role/{role-id}',
+            data: [
+                'with' => ['role'],
+                'with_likes_count' => true,
+            ],
+            pathParams: [
+                'id' => 1,
+                'role-id' => 5,
+            ],
+        );
 
         $response = $this->generateResponse('example_success_user_response.json', 200, [
-            'Content-type' => 'application/json'
+            'Content-type' => 'application/json',
         ]);
 
         $service->addData($request, $response);

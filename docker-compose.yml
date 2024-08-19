@@ -1,6 +1,6 @@
 services:
   nginx:
-    build: .
+    image: ghcr.io/ronasit/php-nginx-dev:8.2
     working_dir: /app
     ports:
       - 80:80
