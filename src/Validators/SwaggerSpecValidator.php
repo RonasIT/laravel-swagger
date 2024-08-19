@@ -57,7 +57,7 @@ class SwaggerSpecValidator
         'parameter' => ['in', 'name'],
         'response' => ['description'],
         'security_definition' => ['type'],
-        'tag' => ['name']
+        'tag' => ['name'],
     ];
 
     public const ALLOWED_VALUES = [
@@ -68,7 +68,7 @@ class SwaggerSpecValidator
         'schemes' => ['http', 'https', 'ws', 'wss'],
         'security_definition_flow' => ['implicit', 'password', 'application', 'accessCode'],
         'security_definition_in' => ['query', 'header'],
-        'security_definition_type' => ['basic', 'apiKey', 'oauth2']
+        'security_definition_type' => ['basic', 'apiKey', 'oauth2'],
     ];
 
     public const PATH_PARAM_REGEXP = '#(?<={)[^/}]+(?=})#';
