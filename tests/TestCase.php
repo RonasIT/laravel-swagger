@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TestCase extends BaseTest
 {
-    protected $globalExportMode = false;
+    protected bool $globalExportMode = false;
 
     public function setUp(): void
     {

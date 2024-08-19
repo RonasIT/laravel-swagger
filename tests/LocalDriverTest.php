@@ -11,7 +11,7 @@ class LocalDriverTest extends TestCase
     protected static LocalDriver $localDriverClass;
     protected static string $productionFilePath;
     protected static string $tmpDocumentationFilePath;
-    protected static mixed $tmpData;
+    protected static array $tmpData;
 
     public function setUp(): void
     {

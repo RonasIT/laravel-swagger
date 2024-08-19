@@ -11,7 +11,7 @@ class AutoDocControllerTest extends TestCase
     use MockTrait;
     use PHPMock;
 
-    protected static mixed $documentation;
+    protected static array $documentation;
     protected static string $localDriverFilePath;
 
     public function setUp(): void

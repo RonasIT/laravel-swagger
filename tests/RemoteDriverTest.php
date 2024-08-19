@@ -11,9 +11,9 @@ class RemoteDriverTest extends TestCase
 {
     use MockTrait;
 
-    protected static mixed $tmpData;
+    protected static array $tmpData;
     protected static RemoteDriver $remoteDriverClass;
-    protected static string$tmpDocumentationFilePath;
+    protected static string $tmpDocumentationFilePath;
 
     public function setUp(): void
     {
