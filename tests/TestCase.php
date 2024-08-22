@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TestCase extends BaseTest
 {
-    protected $globalExportMode = false;
+    protected bool $globalExportMode = false;
 
     public function setUp(): void
     {
@@ -38,7 +38,7 @@ class TestCase extends BaseTest
         ];
     }
 
-    protected function defineEnvironment($app)
+    protected function defineEnvironment($app): void
     {
         $app->setBasePath(__DIR__ . '/..');
     }
@@ -66,7 +66,7 @@ class TestCase extends BaseTest
         return base_path("tests/fixtures/{$className}/{$fixtureName}");
     }
 
-    protected function getJsonFixture(string $name)
+    protected function getJsonFixture(string $name): mixed
     {
         return json_decode($this->getFixture("{$name}.json"), true);
     }
@@ -89,7 +89,7 @@ class TestCase extends BaseTest
         $this->assertEquals($this->getFixture($fixtureName), $data);
     }
 
-    protected function getFixture($name)
+    protected function getFixture($name): false|string
     {
         return file_get_contents($this->generateFixturePath($name));
     }
@@ -101,7 +101,7 @@ class TestCase extends BaseTest
         return __DIR__ . "/fixtures/{$testClass}/{$name}";
     }
 
-    protected function clearDirectory($dirPath, $exceptPaths = [])
+    protected function clearDirectory($dirPath, $exceptPaths = []): void
     {
         $fileSystem = new Filesystem();
 
@@ -138,11 +138,17 @@ class TestCase extends BaseTest
 
     protected function generateGetRolesRequest($method = 'test'): Request
     {
-        return $this->generateRequest('get', 'users/roles', [
-            'with' => ['users']
-        ], [], [
-            'Content-type' => 'application/json'
-        ], [], $method);
+        return $this->generateRequest(
+            type: 'get',
+            uri: 'users/roles',
+            data: [
+                'with' => ['users'],
+            ],
+            headers:[
+                'Content-type' => 'application/json',
+            ],
+            controllerMethod: $method,
+        );
     }
 
     protected function generateResponse($fixture, int $status = 200, array $headers = []): Response
@@ -150,7 +156,7 @@ class TestCase extends BaseTest
         if (empty($headers)) {
             $headers = [
                 'Content-type' => 'application/json',
-                'authorization' => 'Bearer some_token'
+                'authorization' => 'Bearer some_token',
             ];
         }
 
@@ -175,12 +181,10 @@ class TestCase extends BaseTest
         }
 
         $symfonyRequest = SymfonyRequest::create(
-            $this->prepareUrlForRequest($realUri),
-            strtoupper($type),
-            $data,
-            [],
-            [],
-            $this->transformHeadersToServerVars($headers)
+            uri: $this->prepareUrlForRequest($realUri),
+            method: strtoupper($type),
+            parameters: $data,
+            server: $this->transformHeadersToServerVars($headers),
         );
 
         return Request::createFromBase($symfonyRequest);

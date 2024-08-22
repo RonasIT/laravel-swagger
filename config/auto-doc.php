@@ -128,12 +128,12 @@ return [
     'drivers' => [
         'local' => [
             'class' => LocalDriver::class,
-            'production_path' => storage_path('documentation.json')
+            'production_path' => storage_path('documentation.json'),
         ],
         'remote' => [
             'class' => RemoteDriver::class,
             'key' => env('SWAGGER_REMOTE_DRIVER_KEY', 'project_name'),
-            'url' => env('SWAGGER_REMOTE_DRIVER_URL', 'https://example.com')
+            'url' => env('SWAGGER_REMOTE_DRIVER_URL', 'https://example.com'),
         ],
         'storage' => [
             'class' => StorageDriver::class,
@@ -146,7 +146,7 @@ return [
             | One of the filesystems.disks config value
             */
             'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
-            'production_path' => 'documentation.json'
+            'production_path' => 'documentation.json',
         ]
     ],
 
@@ -181,8 +181,8 @@ return [
     */
     'display_environments' => [
         'local',
-        'development'
+        'development',
     ],
 
-    'config_version' => '2.7'
+    'config_version' => '2.7',
 ];

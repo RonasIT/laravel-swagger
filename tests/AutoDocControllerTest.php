@@ -11,19 +11,19 @@ class AutoDocControllerTest extends TestCase
     use MockTrait;
     use PHPMock;
 
-    protected $documentation;
-    protected $localDriverFilePath;
+    protected static array $documentation;
+    protected static string $localDriverFilePath;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->localDriverFilePath = __DIR__ . '/../storage/documentation.json';
-        $this->documentation = $this->getJsonFixture('tmp_data');
+        self::$localDriverFilePath ??= __DIR__ . '/../storage/documentation.json';
+        self::$documentation ??= $this->getJsonFixture('tmp_data');
 
-        file_put_contents($this->localDriverFilePath, json_encode($this->documentation));
+        file_put_contents(self::$localDriverFilePath, json_encode(self::$documentation));
 
-        config(['auto-doc.drivers.local.production_path' => $this->localDriverFilePath]);
+        config(['auto-doc.drivers.local.production_path' => self::$localDriverFilePath]);
     }
 
     public function tearDown(): void
@@ -39,13 +39,13 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson($this->documentation);
+        $response->assertJson(self::$documentation);
     }
 
     public function testGetJSONDocumentationWithAdditionalPaths()
     {
         config([
-            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/tmp_data_with_additional_paths.json']
+            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/tmp_data_with_additional_paths.json'],
         ]);
 
         $response = $this->json('get', '/auto-doc/documentation');
@@ -61,14 +61,14 @@ class AutoDocControllerTest extends TestCase
         $mock->expects($this->once());
 
         config([
-            'auto-doc.additional_paths' => ['invalid_path/non_existent_file.json']
+            'auto-doc.additional_paths' => ['invalid_path/non_existent_file.json'],
         ]);
 
         $response = $this->json('get', '/auto-doc/documentation');
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson($this->documentation);
+        $response->assertJson(self::$documentation);
     }
 
     public function testGetJSONDocumentationIsEmpty()
@@ -77,29 +77,29 @@ class AutoDocControllerTest extends TestCase
         $mock->expects($this->once());
 
         config([
-            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/documentation__non_json.txt']
+            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/documentation__non_json.txt'],
         ]);
 
         $response = $this->json('get', '/auto-doc/documentation');
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson($this->documentation);
+        $response->assertJson(self::$documentation);
     }
 
     public function testGetJSONDocumentationInvalidAdditionalDoc()
     {
         config([
             'auto-doc.additional_paths' => [
-                'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_field__paths.json'
-            ]
+                'tests/fixtures/AutoDocControllerTest/documentation__invalid_format__missing_field__paths.json',
+            ],
         ]);
 
         $response = $this->json('get', '/auto-doc/documentation');
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson($this->documentation);
+        $response->assertJson(self::$documentation);
     }
 
     public function testGetJSONDocumentationWithGlobalPrefix()
@@ -110,7 +110,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson($this->documentation);
+        $response->assertJson(self::$documentation);
     }
 
     public function testGetViewDocumentation()
@@ -128,7 +128,7 @@ class AutoDocControllerTest extends TestCase
     {
         config([
             'auto-doc.display_environments' => ['testing'],
-            'auto-doc.documentation_viewer' => 'elements'
+            'auto-doc.documentation_viewer' => 'elements',
         ]);
 
         $response = $this->get('/');
@@ -142,7 +142,7 @@ class AutoDocControllerTest extends TestCase
     {
         config([
             'auto-doc.display_environments' => ['testing'],
-            'auto-doc.documentation_viewer' => 'rapidoc'
+            'auto-doc.documentation_viewer' => 'rapidoc',
         ]);
 
         $response = $this->get('/');
@@ -194,8 +194,8 @@ class AutoDocControllerTest extends TestCase
         $response->assertStatus(Response::HTTP_OK);
 
         $this->assertEquals(
-            $response->getContent(),
-            file_get_contents(resource_path('/assets/elements/web-components.min.js'))
+            expected: $response->getContent(),
+            actual: file_get_contents(resource_path('/assets/elements/web-components.min.js')),
         );
 
         $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');

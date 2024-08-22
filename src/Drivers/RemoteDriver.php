@@ -7,8 +7,8 @@ use RonasIT\Support\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
 
 class RemoteDriver extends BaseDriver
 {
-    protected $key;
-    protected $remoteUrl;
+    protected string $key;
+    protected ?string $remoteUrl;
 
     public function __construct()
     {
@@ -25,7 +25,7 @@ class RemoteDriver extends BaseDriver
     public function saveData(): void
     {
         $this->makeHttpRequest('post', $this->getUrl(), $this->getTmpData(), [
-            'Content-Type: application/json'
+            'Content-Type: application/json',
         ]);
 
         $this->clearTmpData();
