@@ -89,7 +89,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_version',
                 'exception' => InvalidSwaggerVersionException::class,
-                'exceptionMessage' => "Unrecognized Swagger version '1.0'. Expected 2.0.",
+                'exceptionMessage' => "Unrecognized Swagger version '1.0'. Expected 3.1.0.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__array_parameter__no_items',

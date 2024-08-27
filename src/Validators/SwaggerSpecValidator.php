@@ -49,7 +49,7 @@ class SwaggerSpecValidator
 
     public const REQUIRED_FIELDS = [
         'definition' => ['type'],
-        'doc' => ['swagger', 'info', 'paths'],
+        'doc' => ['openapi', 'info', 'paths'],
         'info' => ['title', 'version'],
         'item' => ['type'],
         'header' => ['type'],
@@ -96,9 +96,9 @@ class SwaggerSpecValidator
 
     protected function validateVersion(): void
     {
-        $version = Arr::get($this->doc, 'swagger', '');
+        $version = Arr::get($this->doc, 'openapi', '');
 
-        if (version_compare($version, SwaggerService::SWAGGER_VERSION, '!=')) {
+        if (version_compare($version, SwaggerService::OPEN_API_VERSION, '!=')) {
             throw new InvalidSwaggerVersionException($version);
         }
     }
