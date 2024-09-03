@@ -12,12 +12,16 @@
             "name": "username",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "bar",
             "in": "header",
-            "type": "number",
+            "schema": {
+              "type": "number"
+            },
             "required": true
           },
           {
@@ -48,12 +52,16 @@
             "name": "username",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "bar",
             "in": "header",
-            "type": "number",
+            "schema": {
+              "type": "number"
+            },
             "required": true
           },
           {

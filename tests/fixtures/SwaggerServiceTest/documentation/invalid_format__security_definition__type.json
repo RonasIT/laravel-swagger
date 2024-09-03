@@ -1,8 +1,10 @@
 {
   "openapi": "3.1.0",
-  "host": "localhost",
-  "basePath": "\/",
-  "schemes": [],
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "\/api\/users":
     {
@@ -11,17 +13,18 @@
         "tags": ["api"],
         "consumes": ["application\/x-www-form-urlencoded"],
         "produces": ["application\/json"],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/apiusersObject"
+              }
+            },
             "required": true,
-           "schema": {
-             "$ref": "#/definitions/apiusersObject"
-           }
+            "description": ""
           }
-        ],
+        },
         "responses":
         {
           "403":

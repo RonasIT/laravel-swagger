@@ -46,7 +46,7 @@ class SwaggerService
     private $item;
     private $security;
 
-    protected $ruleToTypeMap = [
+    protected array $ruleToTypeMap = [
         'array' => 'object',
         'boolean' => 'boolean',
         'date' => 'date',
@@ -54,11 +54,11 @@ class SwaggerService
         'integer' => 'integer',
         'numeric' => 'double',
         'string' => 'string',
-        'int' => 'integer'
+        'int' => 'integer',
     ];
 
     protected $booleanAnnotations = [
-        'deprecated'
+        'deprecated',
     ];
 
     public function __construct(Container $container)
@@ -140,7 +140,7 @@ class SwaggerService
         $data = [
             'openapi' => self::OPEN_API_VERSION,
             'servers' => [
-                ['url' => $this->config['basePath']],
+                ['url' => $this->getAppUrl() . $this->config['basePath']],
             ],
             'paths' => [],
             'definitions' => $this->config['definitions'],
@@ -242,7 +242,9 @@ class SwaggerService
                 'name' => $key,
                 'description' => $this->generatePathDescription($key),
                 'required' => true,
-                'type' => 'string'
+                "schema" => [
+                    'type' => 'string'
+                ]
             ];
         }
 
@@ -504,7 +506,9 @@ class SwaggerService
                     'in' => 'query',
                     'name' => $parameter,
                     'description' => $description,
-                    'type' => $this->getParameterType($validation)
+                    'schema' => [
+                        'type' => $this->getParameterType($validation),
+                    ],
                 ];
                 if (in_array('required', $validation)) {
                     $parameterDefinition['required'] = true;
@@ -519,14 +523,18 @@ class SwaggerService
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
-                $this->item['requestBody'][] = [
-                    'in' => 'body',
-                    'name' => 'body',
+                $type = $this->request->header('Content-Type') ?? 'application/json';
+
+                $this->item['requestBody'] = [
+                    'content' => [
+                        $type => [
+                            'schema' => [
+                                "\$ref" => "#/definitions/{$actionName}Object",
+                            ],
+                        ],
+                    ],
                     'description' => '',
                     'required' => true,
-                    'schema' => [
-                        "\$ref" => "#/definitions/{$actionName}Object"
-                    ]
                 ];
             }
 

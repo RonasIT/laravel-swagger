@@ -1,8 +1,10 @@
 {
   "openapi": "3.1.0",
-  "host": "localhost",
-  "basePath": "\/",
-  "schemes": [],
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "\/auth\/login": {
       "post": {

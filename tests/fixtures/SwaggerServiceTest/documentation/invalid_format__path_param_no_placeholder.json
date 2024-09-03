@@ -12,7 +12,9 @@
             "name": "username",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "foo",
@@ -34,12 +36,16 @@
             "name": "username",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "foo",
             "in": "path",
-            "type": "number"
+            "schema": {
+              "type": "number"
+            }
           }
         ],
         "responses": {

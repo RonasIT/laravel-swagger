@@ -11,13 +11,17 @@
           {
             "name": "username",
             "in": "path",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": true
           },
           {
             "name": "image",
             "in": "formData",
-            "type": "file"
+            "schema": {
+              "type": "file"
+            }
           }
         ],
         "consumes": [

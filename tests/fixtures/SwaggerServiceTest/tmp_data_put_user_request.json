@@ -1,8 +1,10 @@
 {
   "openapi": "3.1.0",
-  "host": "localhost",
-  "basePath": "/",
-  "schemes": [],
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "/users/{id}": {
       "put": {
@@ -19,18 +21,22 @@
             "name": "id",
             "description": "",
             "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "",
-            "required": true,
             "schema": {
-              "$ref": "#/definitions/users{id}Object"
+              "type": "string"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/users{id}Object"
+              }
+            }
+          },
+          "required": true,
+          "description": ""
+        },
         "responses": {
           "204": {
             "description": "Operation successfully done",

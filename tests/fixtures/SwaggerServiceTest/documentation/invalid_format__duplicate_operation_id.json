@@ -11,11 +11,10 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "host": "petstore.swagger.io",
-  "basePath": "/v2",
-  "schemes": [
-    "https",
-    "http"
+  "servers": [
+    {
+      "url": "https://petstore.swagger.io/v2"
+    }
   ],
   "paths": {
     "/pet": {
@@ -34,17 +33,18 @@
           "application/xml",
           "application/json"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Pet object that needs to be added to the store",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Pet"
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Pet object that needs to be added to the store",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Pet"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "405": {
             "description": "Invalid input"
@@ -74,17 +74,18 @@
           "application/xml",
           "application/json"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Pet object that needs to be added to the store",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Pet"
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Pet object that needs to be added to the store",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Pet"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "400": {
             "description": "Invalid ID supplied"

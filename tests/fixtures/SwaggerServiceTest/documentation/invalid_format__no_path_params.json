@@ -12,7 +12,9 @@
             "name": "username",
             "in": "header",
             "required": true,
-            "type": "number"
+            "schema": {
+              "type": "number"
+            }
           },
           {
             "name": "foo",
@@ -34,7 +36,9 @@
             "name": "username",
             "in": "header",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {

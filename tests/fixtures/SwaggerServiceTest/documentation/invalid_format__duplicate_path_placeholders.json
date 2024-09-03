@@ -12,13 +12,17 @@
             "name": "username",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "img_id",
             "in": "path",
             "required": true,
-            "type": "number"
+            "schema": {
+              "type": "number"
+            }
           }
         ],
         "responses": {

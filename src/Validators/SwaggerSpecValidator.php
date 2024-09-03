@@ -55,6 +55,7 @@ class SwaggerSpecValidator
         'header' => ['type'],
         'operation' => ['responses'],
         'parameter' => ['in', 'name'],
+        'requestBody' => ['content'],
         'response' => ['description'],
         'security_definition' => ['type'],
         'tag' => ['name'],
@@ -76,6 +77,7 @@ class SwaggerSpecValidator
 
     public const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
     public const MIME_TYPE_APPLICATION_URLENCODED = 'application/x-www-form-urlencoded';
+    public const MIME_TYPE_APPLICATION_JSON = 'application/json';
 
     protected $doc;
 
@@ -127,6 +129,10 @@ class SwaggerSpecValidator
                 $this->validateFieldValue("{$operationId}.schemes", self::ALLOWED_VALUES['schemes']);
 
                 $this->validateParameters($operation, $path, $operationId);
+
+                if (!empty($operation['requestBody'])) {
+                    $this->validateRequestBody($operation, $path, $operationId);
+                }
 
                 foreach ($operation['responses'] as $statusCode => $response) {
                     $this->validateResponse($response, $statusCode, $operationId);
@@ -220,14 +226,46 @@ class SwaggerSpecValidator
 
             $this->validateParameterType($param, $operation, $paramId, $operationId);
 
-            if (!empty($param['items'])) {
-                $this->validateItems($param['items'], "{$paramId}.items");
+            if (!empty($param['schema']['items'])) {
+                $this->validateItems($param['schema']['items'], "{$paramId}.schema.items");
             }
         }
 
         $this->validateParamsUnique($parameters, $operationId);
         $this->validatePathParameters($parameters, $path, $operationId);
         $this->validateBodyParameters($parameters, $operationId);
+    }
+
+    protected function validateRequestBody(array $operation, string $path, string $operationId): void
+    {
+        $requestBody = Arr::get($operation, 'requestBody', []);
+
+        $this->validateFieldsPresent(self::REQUIRED_FIELDS['requestBody'], "{$operationId}.requestBody");
+
+        $this->validateRequestBodyContent($requestBody['content'], $operationId);
+    }
+
+    protected function validateRequestBodyContent(array $content, string $operationId): void
+    {
+        $allowedContentType = false;
+
+        $types = [
+            self::MIME_TYPE_APPLICATION_URLENCODED,
+            self::MIME_TYPE_MULTIPART_FORM_DATA,
+            self::MIME_TYPE_APPLICATION_JSON,
+        ];
+
+        foreach ($types as $type) {
+            if (!empty($content[$type])) {
+                $allowedContentType = true;
+            }
+        }
+
+        if (!$allowedContentType) {
+            throw new InvalidSwaggerSpecException(
+                "Operation '{$operationId}' has body parameters. Only one or the other is allowed."
+            );
+        }
     }
 
     protected function validateType(array $schema, array $validTypes, string $schemaId): void
@@ -313,12 +351,12 @@ class SwaggerSpecValidator
             case 'formData':
                 $this->validateFormDataConsumes($operation, $operationId);
 
-                $requiredFields = ['type'];
+                $requiredFields = ['schema'];
                 $validTypes = array_merge(self::PRIMITIVE_TYPES, ['file']);
 
                 break;
             default:
-                $requiredFields = ['type'];
+                $requiredFields = ['schema'];
                 $validTypes = self::PRIMITIVE_TYPES;
         }
 

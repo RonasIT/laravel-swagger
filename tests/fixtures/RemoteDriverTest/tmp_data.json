@@ -15,17 +15,18 @@
                 "produces": [
                     "application\/json"
                 ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/authloginObject"
+                            }
+                        },
                         "required": true,
-                        "schema": {
-                            "$ref": "#\/definitions\/authloginObject"
-                        }
+                        "description": ""
                     }
-                ],
+                },
                 "responses": {
                     "200": {
                         "description": "Operation successfully done",

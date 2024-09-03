@@ -229,7 +229,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__items_type',
                 'exception' => MissingFieldException::class,
-                'exceptionMessage' => "Validation failed. 'paths./pet/findByStatus.get.parameters.0.items' "
+                'exceptionMessage' => "Validation failed. 'paths./pet/findByStatus.get.parameters.0.schema.items' "
                     . "should have required fields: type.",
             ],
             [
