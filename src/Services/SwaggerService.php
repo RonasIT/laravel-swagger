@@ -29,7 +29,7 @@ class SwaggerService
 {
     use GetDependenciesTrait;
 
-    public const OPEN_API_VERSION = '3.1.0';
+    public const string OPEN_API_VERSION = '3.1.0';
 
     protected $driver;
     protected $openAPIValidator;
@@ -139,9 +139,9 @@ class SwaggerService
 
         $data = [
             'openapi' => self::OPEN_API_VERSION,
-            'host' => $this->getAppUrl(),
-            'basePath' => $this->config['basePath'],
-            'schemes' => $this->config['schemes'],
+            'servers' => [
+                ['url' => $this->config['basePath']],
+            ],
             'paths' => [],
             'definitions' => $this->config['definitions'],
             'info' => $this->prepareInfo($this->config['info'])
@@ -519,7 +519,7 @@ class SwaggerService
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
-                $this->item['parameters'][] = [
+                $this->item['requestBody'][] = [
                     'in' => 'body',
                     'name' => 'body',
                     'description' => '',

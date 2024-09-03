@@ -23,6 +23,19 @@
            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {"type": "string", "format": "uuid"},
+                  "profileImage": {"type": "string", "format": "binary"}
+                }
+              }
+            }
+          }
+        },
         "responses":
         {
           "403":
