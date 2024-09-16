@@ -90,18 +90,23 @@
                 "responses": {
                     "200": {
                         "description": "Operation successfully done",
-                        "schema": {
-                            "example": {
-                                "id": 2,
-                                "name": "first_client",
-                                "likes_count": 23,
-                                "role": {
-                                    "id": 2,
-                                    "name": "client"
-                                },
-                                "type": "reader"
-                            },
-                            "$ref": "#/definitions/getV{versions}users{id}{someString}{uuid}{withoutConditional}200ResponseObject"
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/definitions/getV{versions}users{id}{someString}{uuid}{withoutConditional}200ResponseObject",
+                                "schema": {
+                                    "example": {
+                                        "id": 2,
+                                        "name": "first_client",
+                                        "likes_count": 23,
+                                        "role": {
+                                            "id": 2,
+                                            "name": "client"
+                                        },
+                                        "type": "reader"
+                                    },
+                                    "type": "object"
+                                }
+                            }
                         }
                     }
                 },

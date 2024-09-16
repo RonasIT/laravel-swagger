@@ -397,7 +397,7 @@ class SwaggerService
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
-            $this->item['responses'][$code]['schema']['$ref'] = "#/definitions/{$definition}";
+            $this->item['responses'][$code]['content'][$produce]['$ref'] = "#/definitions/{$definition}";
         }
     }
 
@@ -420,17 +420,23 @@ class SwaggerService
 
     protected function makeResponseExample($content, $mimeType, $description = ''): array
     {
-        $responseExample = ['description' => $description];
+        $example = match ($mimeType) {
+            'application/json' => json_decode($content, true),
+            'application/pdf' => base64_encode($content),
+            default => $content,
+        };
 
-        if ($mimeType === 'application/json') {
-            $responseExample['schema'] = ['example' => json_decode($content, true)];
-        } elseif ($mimeType === 'application/pdf') {
-            $responseExample['schema'] = ['example' => base64_encode($content)];
-        } else {
-            $responseExample['examples']['example'] = $content;
-        }
-
-        return $responseExample;
+        return [
+            'description' => $description,
+            'content' => [
+                $mimeType => [
+                    'schema' => [
+                        'type' => 'object',
+                        'example' => $example,
+                    ],
+                ],
+            ],
+        ];
     }
 
     protected function saveParameters($request, array $annotations)

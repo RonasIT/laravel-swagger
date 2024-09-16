@@ -31,34 +31,39 @@
         "responses": {
           "200": {
             "description": "The operation was completed successfully",
-            "schema": {
-              "example": [
-                {
-                  "id": 1,
-                  "name": "admin",
-                  "users": [
+            "content": {
+              "application/json": {
+                "$ref": "#/definitions/getUsersroles200ResponseObject",
+                "schema": {
+                  "type": "object",
+                  "example": [
                     {
                       "id": 1,
-                      "name": "admin"
-                    }
-                  ]
-                },
-                {
-                  "id": 2,
-                  "name": "client",
-                  "users": [
-                    {
-                      "id": 2,
-                      "name": "first_client"
+                      "name": "admin",
+                      "users": [
+                        {
+                          "id": 1,
+                          "name": "admin"
+                        }
+                      ]
                     },
                     {
-                      "id": 3,
-                      "name": "second_client"
+                      "id": 2,
+                      "name": "client",
+                      "users": [
+                        {
+                          "id": 2,
+                          "name": "first_client"
+                        },
+                        {
+                          "id": 3,
+                          "name": "second_client"
+                        }
+                      ]
                     }
                   ]
                 }
-              ],
-              "$ref": "#/definitions/getUsersroles200ResponseObject"
+              }
             }
           }
         },

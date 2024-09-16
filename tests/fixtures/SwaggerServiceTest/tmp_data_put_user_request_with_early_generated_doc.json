@@ -40,33 +40,38 @@
         "responses": {
           "204": {
             "description": "Operation successfully done",
-            "schema": {
-              "example": [
-                {
-                  "id": 1,
-                  "name": "admin",
-                  "users": [
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
                     {
                       "id": 1,
-                      "name": "admin"
-                    }
-                  ]
-                },
-                {
-                  "id": 2,
-                  "name": "client",
-                  "users": [
-                    {
-                      "id": 2,
-                      "name": "first_client"
+                      "name": "admin",
+                      "users": [
+                        {
+                          "id": 1,
+                          "name": "admin"
+                        }
+                      ]
                     },
                     {
-                      "id": 3,
-                      "name": "second_client"
+                      "id": 2,
+                      "name": "client",
+                      "users": [
+                        {
+                          "id": 2,
+                          "name": "first_client"
+                        },
+                        {
+                          "id": 3,
+                          "name": "second_client"
+                        }
+                      ]
                     }
-                  ]
+                  ],
+                  "type": "object"
                 }
-              ]
+              }
             }
           }
         },
@@ -112,9 +117,14 @@
         "responses": {
           "204": {
             "description": "Operation successfully done",
-            "schema": {
-              "example": [],
-              "$ref": "#/definitions/patchUsers{id}204ResponseObject"
+            "content": {
+              "application/json": {
+                "$ref": "#/definitions/patchUsers{id}204ResponseObject",
+                "schema": {
+                  "example": [],
+                  "type": "object"
+                }
+              }
             }
           }
         },

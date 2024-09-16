@@ -30,52 +30,67 @@
                 "responses": {
                     "200": {
                         "description": "Operation successfully done",
-                        "schema": {
-                            "example": {
-                                "token": "some_token",
-                                "user": {
-                                    "id": 2,
-                                    "email": "user@test.com",
-                                    "deleted_at": null,
-                                    "created_at": "2017-11-16 06:08:34",
-                                    "updated_at": "2018-01-01 00:00:00",
-                                    "role_id": 2,
-                                    "state": "confirmed",
-                                    "reset_password_hash": null,
-                                    "failed_auth_attempts": 0,
-                                    "last_auth_attempt": "2018-01-01 00:00:00",
-                                    "first_name": "user",
-                                    "last_name": null,
-                                    "set_password_hash_created_at": null,
-                                    "full_name": "user",
-                                    "new_email": "new_email_test2@test.com",
-                                    "is_email_verified": true,
-                                    "role": {
-                                        "id": 2,
-                                        "name": "client",
-                                        "created_at": null,
-                                        "updated_at": null,
-                                        "settable": true
-                                    }
-                                },
-                                "ttl": 60,
-                                "refresh_ttl": 20160
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "token": "some_token",
+                                        "user": {
+                                            "id": 2,
+                                            "email": "user@test.com",
+                                            "deleted_at": null,
+                                            "created_at": "2017-11-16 06:08:34",
+                                            "updated_at": "2018-01-01 00:00:00",
+                                            "role_id": 2,
+                                            "state": "confirmed",
+                                            "reset_password_hash": null,
+                                            "failed_auth_attempts": 0,
+                                            "last_auth_attempt": "2018-01-01 00:00:00",
+                                            "first_name": "user",
+                                            "last_name": null,
+                                            "set_password_hash_created_at": null,
+                                            "full_name": "user",
+                                            "new_email": "new_email_test2@test.com",
+                                            "is_email_verified": true,
+                                            "role": {
+                                                "id": 2,
+                                                "name": "client",
+                                                "created_at": null,
+                                                "updated_at": null,
+                                                "settable": true
+                                            }
+                                        },
+                                        "ttl": 60,
+                                        "refresh_ttl": 20160
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "example": {
-                                "error": "You have entered an incorrect credentials."
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "error": "You have entered an incorrect credentials."
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "example": {
-                                "error": "The limit of failed authorization attempts has been reached. You can't login in next 50 minutes."
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "error": "The limit of failed authorization attempts has been reached. You can't login in next 50 minutes."
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     }
@@ -109,52 +124,67 @@
                 "responses": {
                     "200": {
                         "description": "Operation successfully done",
-                        "schema": {
-                            "example": {
-                                "token": "some_token",
-                                "user": {
-                                    "id": 2,
-                                    "email": "user@test.com",
-                                    "deleted_at": null,
-                                    "created_at": "2017-11-16 06:08:34",
-                                    "updated_at": "2018-01-01 00:00:00",
-                                    "role_id": 2,
-                                    "state": "confirmed",
-                                    "reset_password_hash": null,
-                                    "failed_auth_attempts": 0,
-                                    "last_auth_attempt": "2018-01-01 00:00:00",
-                                    "first_name": "user",
-                                    "last_name": null,
-                                    "set_password_hash_created_at": null,
-                                    "full_name": "user",
-                                    "new_email": "new_email_test2@test.com",
-                                    "is_email_verified": true,
-                                    "role": {
-                                        "id": 2,
-                                        "name": "client",
-                                        "created_at": null,
-                                        "updated_at": null,
-                                        "settable": true
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "token": "some_token",
+                                        "user": {
+                                            "id": 2,
+                                            "email": "user@test.com",
+                                            "deleted_at": null,
+                                            "created_at": "2017-11-16 06:08:34",
+                                            "updated_at": "2018-01-01 00:00:00",
+                                            "role_id": 2,
+                                            "state": "confirmed",
+                                            "reset_password_hash": null,
+                                            "failed_auth_attempts": 0,
+                                            "last_auth_attempt": "2018-01-01 00:00:00",
+                                            "first_name": "user",
+                                            "last_name": null,
+                                            "set_password_hash_created_at": null,
+                                            "full_name": "user",
+                                            "new_email": "new_email_test2@test.com",
+                                            "is_email_verified": true,
+                                            "role": {
+                                                "id": 2,
+                                                "name": "client",
+                                                "created_at": null,
+                                                "updated_at": null,
+                                                "settable": true
+                                            }
+                                        },
+                                        "ttl": 60,
+                                        "refresh_ttl": 20160
                                     }
                                 },
-                                "ttl": 60,
-                                "refresh_ttl": 20160
+                                "type": "object"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "example": {
-                                "error": "You have entered an incorrect credentials."
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "error": "You have entered an incorrect credentials."
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "example": {
-                                "error": "The limit of failed authorization attempts has been reached. You can't login in next 50 minutes."
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "error": "The limit of failed authorization attempts has been reached. You can't login in next 50 minutes."
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     }
@@ -190,9 +220,14 @@
                 "responses": {
                     "403": {
                         "description": "Forbidden",
-                        "schema": {
-                            "example": {
-                                "message": "This action is unauthorized."
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "message": "This action is unauthorized."
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     }
@@ -215,33 +250,38 @@
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {
-                            "example": [
-                                {
-                                    "id": 1,
-                                    "name": "admin",
-                                    "users": [
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": [
                                         {
                                             "id": 1,
-                                            "name": "admin"
+                                            "name": "admin",
+                                            "users": [
+                                                {
+                                                    "id": 1,
+                                                    "name": "admin"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": 2,
+                                            "name": "client",
+                                            "users": [
+                                                {
+                                                    "id": 2,
+                                                    "name": "first_client"
+                                                },
+                                                {
+                                                    "id": 3,
+                                                    "name": "second_client"
+                                                }
+                                            ]
                                         }
                                     ]
                                 },
-                                {
-                                    "id": 2,
-                                    "name": "client",
-                                    "users": [
-                                        {
-                                            "id": 2,
-                                            "name": "first_client"
-                                        },
-                                        {
-                                            "id": 3,
-                                            "name": "second_client"
-                                        }
-                                    ]
-                                }
-                            ]
+                                "type": "object"
+                            }
                         }
                     }
                 },

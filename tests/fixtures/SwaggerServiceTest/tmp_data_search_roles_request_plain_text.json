@@ -47,11 +47,14 @@
         "responses": {
           "200": {
             "description": "Operation successfully done",
-            "examples": {
-              "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
-            },
-            "schema": {
-              "$ref": "#/definitions/getUsersroles200ResponseObject"
+            "content": {
+              "text/plain": {
+                "$ref": "#/definitions/getUsersroles200ResponseObject",
+                "schema": {
+                  "type": "object",
+                  "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
+                }
+              }
             }
           }
         },
