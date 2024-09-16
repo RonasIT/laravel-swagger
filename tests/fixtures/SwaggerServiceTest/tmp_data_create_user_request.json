@@ -33,12 +33,12 @@
             "description": "Forbidden",
             "content": {
               "application/json": {
-                "$ref": "#/definitions/postApiusers403ResponseObject",
                 "schema": {
-                  "type": "object",
-                  "example": {
-                    "message": "This action is unauthorized."
-                  }
+                  "$ref": "#/definitions/postApiusers403ResponseObject",
+                  "type": "object"
+                },
+                "example": {
+                  "message": "This action is unauthorized."
                 }
               }
             }

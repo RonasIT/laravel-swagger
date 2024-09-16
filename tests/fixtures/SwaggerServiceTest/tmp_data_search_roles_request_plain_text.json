@@ -49,11 +49,11 @@
             "description": "Operation successfully done",
             "content": {
               "text/plain": {
-                "$ref": "#/definitions/getUsersroles200ResponseObject",
                 "schema": {
-                  "type": "object",
-                  "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
-                }
+                  "$ref": "#/definitions/getUsersroles200ResponseObject",
+                  "type": "object"
+                },
+                "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
               }
             }
           }

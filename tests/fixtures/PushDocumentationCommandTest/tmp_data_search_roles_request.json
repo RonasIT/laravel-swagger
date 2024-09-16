@@ -32,34 +32,34 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "example": [
-                                        {
-                                            "id": 1,
-                                            "name": "admin",
-                                            "users": [
-                                                {
-                                                    "id": 1,
-                                                    "name": "admin"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "id": 2,
-                                            "name": "client",
-                                            "users": [
-                                                {
-                                                    "id": 2,
-                                                    "name": "first_client"
-                                                },
-                                                {
-                                                    "id": 3,
-                                                    "name": "second_client"
-                                                }
-                                            ]
-                                        }
-                                    ],
                                     "type": "object"
-                                }
+                                },
+                                "example": [
+                                    {
+                                        "id": 1,
+                                        "name": "admin",
+                                        "users": [
+                                            {
+                                                "id": 1,
+                                                "name": "admin"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": 2,
+                                        "name": "client",
+                                        "users": [
+                                            {
+                                                "id": 2,
+                                                "name": "first_client"
+                                            },
+                                            {
+                                                "id": 3,
+                                                "name": "second_client"
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
                         }
                     }

@@ -65,19 +65,19 @@
                         "description": "Operation successfully done",
                         "content": {
                             "application/json": {
-                                "$ref": "#/definitions/getUsers{id}assignRole{roleId}200ResponseObject",
                                 "schema": {
-                                    "type": "object",
-                                    "example": {
+                                    "$ref": "#/definitions/getUsers{id}assignRole{roleId}200ResponseObject",
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "id": 2,
+                                    "name": "first_client",
+                                    "likes_count": 23,
+                                    "role": {
                                         "id": 2,
-                                        "name": "first_client",
-                                        "likes_count": 23,
-                                        "role": {
-                                            "id": 2,
-                                            "name": "client"
-                                        },
-                                        "type": "reader"
-                                    }
+                                        "name": "client"
+                                    },
+                                    "type": "reader"
                                 }
                             }
                         }

@@ -397,7 +397,7 @@ class SwaggerService
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
-            $this->item['responses'][$code]['content'][$produce]['$ref'] = "#/definitions/{$definition}";
+            $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/definitions/{$definition}";
         }
     }
 
@@ -432,8 +432,8 @@ class SwaggerService
                 $mimeType => [
                     'schema' => [
                         'type' => 'object',
-                        'example' => $example,
                     ],
+                    'example' => $example,
                 ],
             ],
         ];
