@@ -30,7 +30,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/definitions/users{id}Object"
+                "$ref": "#/components/schemas/users{id}Object"
               }
             }
           },
@@ -86,20 +86,22 @@
       }
     }
   },
-  "definitions": {
-    "users{id}Object": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": ""
-        }
-      },
-      "example": {
-        "name": "Ryan",
-        "query": null
-      },
-      "required": ["query"]
+  "components": {
+    "schemas": {
+      "users{id}Object": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": ""
+          }
+        },
+        "example": {
+          "name": "Ryan",
+          "query": null
+        },
+        "required": ["query"]
+      }
     }
   },
   "info": {

@@ -93,7 +93,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/definitions/getV{versions}users{id}{someString}{uuid}{withoutConditional}200ResponseObject",
+                                    "$ref": "#/components/schemas/getV{versions}users{id}{someString}{uuid}{withoutConditional}200ResponseObject",
                                     "type": "object"
                                 },
                                 "example": {
@@ -117,24 +117,26 @@
             }
         }
     },
-    "definitions": {
-        "getV{versions}users{id}{someString}{uuid}{withoutConditional}200ResponseObject": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "likes_count": {
-                    "type": "integer"
-                },
-                "role": {
-                    "type": "array"
-                },
-                "type": {
-                    "type": "string"
+    "components": {
+        "schemas": {
+            "getV{versions}users{id}{someString}{uuid}{withoutConditional}200ResponseObject": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "likes_count": {
+                        "type": "integer"
+                    },
+                    "role": {
+                        "type": "array"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
                 }
             }
         }

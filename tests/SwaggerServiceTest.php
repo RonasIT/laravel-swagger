@@ -218,7 +218,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__definition_type',
                 'exception' => MissingFieldException::class,
-                'exceptionMessage' => "Validation failed. 'definitions.authloginObject' should have "
+                'exceptionMessage' => "Validation failed. 'components.schemas.authloginObject' should have "
                     . "required fields: type.",
             ],
             [

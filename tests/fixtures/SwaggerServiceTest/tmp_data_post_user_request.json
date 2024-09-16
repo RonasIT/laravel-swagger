@@ -24,7 +24,7 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/definitions/usersObject"
+                "$ref": "#/components/schemas/usersObject"
               }
             }
           }
@@ -35,7 +35,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/definitions/postUsers200ResponseObject",
+                  "$ref": "#/components/schemas/postUsers200ResponseObject",
                   "type": "object"
                 },
                 "example": [
@@ -78,43 +78,45 @@
       }
     }
   },
-  "definitions": {
-    "usersObject": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": ""
+  "components": {
+    "schemas": {
+      "usersObject": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": ""
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "with_to_array_rule_string_name"
+          },
+          "is_email_enabled": {
+            "type": "string",
+            "description": "test_rule_without_to_string"
+          }
         },
-        "user_id": {
-          "type": "integer",
-          "description": "with_to_array_rule_string_name"
+        "example": {
+          "users": [
+            1,
+            2
+          ],
+          "query": null
         },
-        "is_email_enabled": {
-          "type": "string",
-          "description": "test_rule_without_to_string"
-        }
+        "required": [
+          "query"
+        ]
       },
-      "example": {
-        "users": [
-          1,
-          2
-        ],
-        "query": null
-      },
-      "required": [
-        "query"
-      ]
-    },
-    "postUsers200ResponseObject": {
-      "type": "array",
-      "properties": {
-        "items": {
-          "allOf": [
-            {
-              "type": "array"
-            }
-          ]
+      "postUsers200ResponseObject": {
+        "type": "array",
+        "properties": {
+          "items": {
+            "allOf": [
+              {
+                "type": "array"
+              }
+            ]
+          }
         }
       }
     }

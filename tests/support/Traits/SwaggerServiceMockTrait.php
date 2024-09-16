@@ -21,7 +21,7 @@ trait SwaggerServiceMockTrait
             ->willReturn(
                 empty($tmpData)
                 ? $tmpData
-                : array_merge($tmpData, ['paths' => [], 'definitions' => []])
+                : array_merge($tmpData, ['paths' => [], 'components' => []])
             );
 
         $driver

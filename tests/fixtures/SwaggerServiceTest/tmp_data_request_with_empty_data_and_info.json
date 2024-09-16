@@ -6,6 +6,8 @@
         }
     ],
     "paths": [],
-    "definitions": [],
+    "components": {
+        "schemas": []
+    },
     "info": []
 }

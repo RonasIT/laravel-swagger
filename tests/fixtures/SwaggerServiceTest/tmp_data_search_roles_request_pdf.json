@@ -50,7 +50,7 @@
             "content": {
               "application/pdf": {
                 "schema": {
-                  "$ref": "#/definitions/getUsersroles200ResponseObject",
+                  "$ref": "#/components/schemas/getUsersroles200ResponseObject",
                   "type": "object"
                 },
                 "example": "WwogICAgewogICAgICAgICJpZCI6IDEsCiAgICAgICAgIm5hbWUiOiAiYWRtaW4iLAogICAgICAgICJ1c2VycyI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImlkIjogMSwKICAgICAgICAgICAgICAgICJuYW1lIjogImFkbWluIgogICAgICAgICAgICB9CiAgICAgICAgXQogICAgfSwKICAgIHsKICAgICAgICAiaWQiOiAyLAogICAgICAgICJuYW1lIjogImNsaWVudCIsCiAgICAgICAgInVzZXJzIjogWwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAyLAogICAgICAgICAgICAgICAgIm5hbWUiOiAiZmlyc3RfY2xpZW50IgogICAgICAgICAgICB9LAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAzLAogICAgICAgICAgICAgICAgIm5hbWUiOiAic2Vjb25kX2NsaWVudCIKICAgICAgICAgICAgfQogICAgICAgIF0KICAgIH0KXQ=="
@@ -65,8 +65,9 @@
       }
     }
   },
-  "definitions": {
-    "getUsersroles200ResponseObject": {
+  "components": {
+    "schemas": {
+      "getUsersroles200ResponseObject": {
         "type": "array",
         "properties": {
           "items": {
@@ -78,6 +79,7 @@
           }
         }
       }
+    }
   },
   "info": {
     "description": "This is automatically collected documentation",

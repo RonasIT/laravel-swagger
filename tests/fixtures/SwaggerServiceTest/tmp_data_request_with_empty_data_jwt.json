@@ -6,7 +6,9 @@
         }
     ],
     "paths": [],
-    "definitions": [],
+    "components": {
+        "schemas": []
+    },
     "info": {
         "description": "This is automatically collected documentation",
         "version": "0.0.0",

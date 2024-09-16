@@ -48,7 +48,7 @@
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#/definitions/getApiusers200ResponseObject",
+                  "$ref": "#/components/schemas/getApiusers200ResponseObject",
                   "type": "object"
                 },
                 "example": {
@@ -113,48 +113,50 @@
       }
     }
   },
-  "definitions": {
-    "getApiusers200ResponseObject": {
-      "type": "object",
-      "properties": {
-        "current_page": {
-          "type": "integer"
-        },
-        "data": {
-          "type": "array"
-        },
-        "first_page_url": {
-          "type": "string"
-        },
-        "from": {
-          "type": "integer"
-        },
-        "last_page": {
-          "type": "integer"
-        },
-        "last_page_url": {
-          "type": "string"
-        },
-        "links": {
-          "type": "array"
-        },
-        "next_page_url": {
-          "nullable": true
-        },
-        "path": {
-          "type": "string"
-        },
-        "per_page": {
-          "type": "integer"
-        },
-        "prev_page_url": {
-          "nullable": true
-        },
-        "to": {
-          "type": "integer"
-        },
-        "total": {
-          "type": "integer"
+  "components": {
+    "schemas": {
+      "getApiusers200ResponseObject": {
+        "type": "object",
+        "properties": {
+          "current_page": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array"
+          },
+          "first_page_url": {
+            "type": "string"
+          },
+          "from": {
+            "type": "integer"
+          },
+          "last_page": {
+            "type": "integer"
+          },
+          "last_page_url": {
+            "type": "string"
+          },
+          "links": {
+            "type": "array"
+          },
+          "next_page_url": {
+            "nullable": true
+          },
+          "path": {
+            "type": "string"
+          },
+          "per_page": {
+            "type": "integer"
+          },
+          "prev_page_url": {
+            "nullable": true
+          },
+          "to": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          }
         }
       }
     }

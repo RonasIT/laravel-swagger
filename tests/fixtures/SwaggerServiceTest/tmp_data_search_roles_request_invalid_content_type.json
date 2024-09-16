@@ -54,16 +54,18 @@
       }
     }
   },
-  "definitions": {
-    "getUsersroles200ResponseObject": {
-      "type": "array",
-      "properties": {
-        "items": {
-          "allOf": [
-            {
-              "type": "array"
-            }
-          ]
+  "components": {
+    "schemas": {
+      "getUsersroles200ResponseObject": {
+        "type": "array",
+        "properties": {
+          "items": {
+            "allOf": [
+              {
+                "type": "array"
+              }
+            ]
+          }
         }
       }
     }

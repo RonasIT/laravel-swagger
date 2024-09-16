@@ -50,7 +50,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/definitions/getUsersroles200ResponseObject",
+                                    "$ref": "#/components/schemas/getUsersroles200ResponseObject",
                                     "type": "object"
                                 },
                                 "example": [
@@ -90,8 +90,9 @@
             }
         }
     },
-    "definitions": {
-        "getUsersroles200ResponseObject": {
+    "components": {
+        "schemas": {
+            "getUsersroles200ResponseObject": {
                 "type": "array",
                 "properties": {
                     "items": {
@@ -103,6 +104,7 @@
                     }
                 }
             }
+        }
     },
     "info": {
         "description": "This is automatically collected documentation",

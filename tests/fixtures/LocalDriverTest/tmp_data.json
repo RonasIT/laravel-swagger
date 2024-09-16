@@ -22,7 +22,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/definitions/authloginObject"
+                                "$ref": "#/components/schemas/authloginObject"
                             }
                         },
                         "required": true,
@@ -103,26 +103,28 @@
             }
         }
     },
-    "definitions": {
-        "authloginObject": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "description": "2"
+    "components": {
+        "schemas": {
+            "authloginObject": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "2"
+                    },
+                    "password": {
+                        "type": "string",
+                        "description": ""
+                    }
                 },
-                "password": {
-                    "type": "string",
-                    "description": ""
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "example": {
+                    "email": "admin@test.com",
+                    "password": "123"
                 }
-            },
-            "required": [
-                "email",
-                "password"
-            ],
-            "example": {
-                "email": "admin@test.com",
-                "password": "123"
             }
         }
     },

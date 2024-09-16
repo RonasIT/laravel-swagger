@@ -20,7 +20,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/definitions/authloginObject"
+                                "$ref": "#/components/schemas/authloginObject"
                             }
                         },
                         "required": true,
@@ -114,7 +114,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/definitions/authloginObject"
+                                "$ref": "#/components/schemas/authloginObject"
                             }
                         },
                         "required": true,
@@ -210,7 +210,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/definitions/apiusersObject"
+                                "$ref": "#/components/schemas/apiusersObject"
                             }
                         },
                         "required": true,
@@ -290,42 +290,44 @@
             }
         }
     },
-    "definitions": {
-        "authloginObject": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "description": "2"
+    "components": {
+        "schemas": {
+            "authloginObject": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "2"
+                    },
+                    "password": {
+                        "type": "string",
+                        "description": ""
+                    }
                 },
-                "password": {
-                    "type": "string",
-                    "description": ""
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "example": {
+                    "email": "admin@test.com",
+                    "password": "123"
                 }
             },
-            "required": [
-                "email",
-                "password"
-            ],
-            "example": {
-                "email": "admin@test.com",
-                "password": "123"
-            }
-        },
-        "apiusersObject": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string",
-                    "description": ""
+            "apiusersObject": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": ""
+                    }
+                },
+                "required": [
+                    "query"
+                ],
+                "example": {
+                    "first_name": "andrey",
+                    "last_name": "voronin"
                 }
-            },
-            "required": [
-                "query"
-            ],
-            "example": {
-                "first_name": "andrey",
-                "last_name": "voronin"
             }
         }
     },

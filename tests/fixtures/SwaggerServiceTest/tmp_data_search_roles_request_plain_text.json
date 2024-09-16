@@ -50,7 +50,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/definitions/getUsersroles200ResponseObject",
+                  "$ref": "#/components/schemas/getUsersroles200ResponseObject",
                   "type": "object"
                 },
                 "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
@@ -65,16 +65,18 @@
       }
     }
   },
-  "definitions": {
-    "getUsersroles200ResponseObject": {
-      "type": "array",
-      "properties": {
-        "items": {
-          "allOf": [
-            {
-              "type": "array"
-            }
-          ]
+  "components": {
+    "schemas": {
+      "getUsersroles200ResponseObject": {
+        "type": "array",
+        "properties": {
+          "items": {
+            "allOf": [
+              {
+                "type": "array"
+              }
+            ]
+          }
         }
       }
     }

@@ -30,7 +30,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/definitions/users{id}Object"
+                "$ref": "#/components/schemas/users{id}Object"
               }
             }
           },
@@ -107,7 +107,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/definitions/users{id}Object"
+                "$ref": "#/components/schemas/users{id}Object"
               }
             }
           },
@@ -120,7 +120,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/definitions/patchUsers{id}204ResponseObject",
+                  "$ref": "#/components/schemas/patchUsers{id}204ResponseObject",
                   "type": "object"
                 },
                 "example": []
@@ -139,32 +139,34 @@
       }
     }
   },
-  "definitions": {
-    "users{id}Object": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": ""
+  "components": {
+    "schemas": {
+      "users{id}Object": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": ""
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "with_to_array_rule_string_name"
+          },
+          "is_email_enabled": {
+            "type": "string",
+            "description": "test_rule_without_to_string"
+          }
         },
-        "user_id": {
-          "type": "integer",
-          "description": "with_to_array_rule_string_name"
+        "example": {
+          "name": "Ryan",
+          "query": null
         },
-        "is_email_enabled": {
-          "type": "string",
-          "description": "test_rule_without_to_string"
-        }
+        "required": ["query"]
       },
-      "example": {
-        "name": "Ryan",
-        "query": null
-      },
-      "required": ["query"]
-    },
-    "patchUsers{id}204ResponseObject": {
-      "type": "object",
-      "properties": []
+      "patchUsers{id}204ResponseObject": {
+        "type": "object",
+        "properties": []
+      }
     }
   },
   "info": {

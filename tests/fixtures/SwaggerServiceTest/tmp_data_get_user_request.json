@@ -66,7 +66,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/definitions/getUsers{id}assignRole{roleId}200ResponseObject",
+                                    "$ref": "#/components/schemas/getUsers{id}assignRole{roleId}200ResponseObject",
                                     "type": "object"
                                 },
                                 "example": {
@@ -90,24 +90,26 @@
             }
         }
     },
-    "definitions": {
-        "getUsers{id}assignRole{roleId}200ResponseObject": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "likes_count": {
-                    "type": "integer"
-                },
-                "role": {
-                    "type": "array"
-                },
-                "type": {
-                    "type": "string"
+    "components": {
+        "schemas": {
+            "getUsers{id}assignRole{roleId}200ResponseObject": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "likes_count": {
+                        "type": "integer"
+                    },
+                    "role": {
+                        "type": "array"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
                 }
             }
         }

@@ -24,7 +24,7 @@
             "description": "",
             "required": true,
             "schema": {
-              "$ref": "#\/definitions\/authloginObject"
+              "$ref": "#\/components\/schemas\/authloginObject"
             }
           }
         ],
@@ -87,25 +87,27 @@
       }
     }
   },
-  "definitions": {
-    "authloginObject": {
-      "properties": {
-        "email": {
-          "type": "string",
-          "description": "2"
+  "components": {
+    "schemas": {
+      "authloginObject": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "2"
+          },
+          "password": {
+            "type": "string",
+            "description": ""
+          }
         },
-        "password": {
-          "type": "string",
-          "description": ""
+        "required": [
+          "email",
+          "password"
+        ],
+        "example": {
+          "email": "admin@test.com",
+          "password": "123"
         }
-      },
-      "required": [
-        "email",
-        "password"
-      ],
-      "example": {
-        "email": "admin@test.com",
-        "password": "123"
       }
     }
   },

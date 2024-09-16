@@ -19,7 +19,7 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/definitions/apiusersObject"
+                "$ref": "#/components/schemas/apiusersObject"
               }
             }
           },
@@ -34,7 +34,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/definitions/postApiusers403ResponseObject",
+                  "$ref": "#/components/schemas/postApiusers403ResponseObject",
                   "type": "object"
                 },
                 "example": {
@@ -51,36 +51,38 @@
       }
     }
   },
-  "definitions": {
-    "apiusersObject": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": ""
+  "components": {
+    "schemas": {
+      "apiusersObject": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": ""
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "with_to_array_rule_string_name"
+          },
+          "is_email_enabled": {
+            "type": "string",
+            "description": "test_rule_without_to_string"
+          }
         },
-        "user_id": {
-          "type": "integer",
-          "description": "with_to_array_rule_string_name"
+        "required": {
+          "0": "query"
         },
-        "is_email_enabled": {
-          "type": "string",
-          "description": "test_rule_without_to_string"
+        "example": {
+          "first_name": "andrey",
+          "last_name": "voronin"
         }
       },
-      "required": {
-        "0": "query"
-      },
-      "example": {
-        "first_name": "andrey",
-        "last_name": "voronin"
-      }
-    },
-    "postApiusers403ResponseObject": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
+      "postApiusers403ResponseObject": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
         }
       }
     }

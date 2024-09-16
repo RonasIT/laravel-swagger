@@ -50,7 +50,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/definitions/getUsersroles200ResponseObject",
+                                    "$ref": "#/components/schemas/getUsersroles200ResponseObject",
                                     "type": "object"
                                 },
                                 "example": [
@@ -90,16 +90,18 @@
             }
         }
     },
-    "definitions": {
-        "getUsersroles200ResponseObject": {
-            "type": "array",
-            "properties": {
-                "items": {
-                    "allOf": [
-                        {
-                            "type": "array"
-                        }
-                    ]
+    "components": {
+        "schemas": {
+            "getUsersroles200ResponseObject": {
+                "type": "array",
+                "properties": {
+                    "items": {
+                        "allOf": [
+                            {
+                                "type": "array"
+                            }
+                        ]
+                    }
                 }
             }
         }

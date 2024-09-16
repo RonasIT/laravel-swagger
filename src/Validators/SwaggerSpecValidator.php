@@ -48,7 +48,7 @@ class SwaggerSpecValidator
     ];
 
     public const REQUIRED_FIELDS = [
-        'definition' => ['type'],
+        'components' => ['type'],
         'doc' => ['openapi', 'info', 'paths'],
         'info' => ['title', 'version'],
         'item' => ['type'],
@@ -145,10 +145,10 @@ class SwaggerSpecValidator
 
     protected function validateDefinitions(): void
     {
-        $definitions = Arr::get($this->doc, 'definitions', []);
+        $definitions = Arr::get($this->doc, 'components.schemas', []);
 
         foreach ($definitions as $index => $definition) {
-            $this->validateFieldsPresent(self::REQUIRED_FIELDS['definition'], "definitions.{$index}");
+            $this->validateFieldsPresent(self::REQUIRED_FIELDS['components'], "components.schemas.{$index}");
         }
     }
 
@@ -431,7 +431,7 @@ class SwaggerSpecValidator
                     !empty($refFilename)
                         ? json_decode(file_get_contents($refFilename), true)
                         : $this->doc,
-                    $refParentKey
+                    str_replace('/', '.', $refParentKey),
                 );
 
                 if (!empty($missingRefs)) {

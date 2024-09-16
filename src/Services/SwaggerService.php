@@ -143,7 +143,9 @@ class SwaggerService
                 ['url' => $this->getAppUrl() . $this->config['basePath']],
             ],
             'paths' => [],
-            'definitions' => $this->config['definitions'],
+            'components' => [
+                'schemas' => $this->config['definitions'],
+            ],
             'info' => $this->prepareInfo($this->config['info'])
         ];
 
@@ -309,7 +311,7 @@ class SwaggerService
             $this->saveObjectResponseDefinitions($content, $schemaProperties, $definition);
         }
 
-        $this->data['definitions'][$definition] = [
+        $this->data['components']['schemas'][$definition] = [
             'type' => $schemaType,
             'properties' => $schemaProperties
         ];
@@ -331,7 +333,9 @@ class SwaggerService
 
     protected function saveObjectResponseDefinitions(array $content, array &$schemaProperties, string $definition): void
     {
-        $properties = Arr::get($this->data['definitions'], $definition, []);
+        $definitions = (!empty($this->data['components']['schemas'])) ? $this->data['components']['schemas'] : [];
+
+        $properties = Arr::get($definitions, $definition, []);
 
         foreach ($content as $name => $value) {
             $property = Arr::get($properties, "properties.{$name}", []);
@@ -397,7 +401,7 @@ class SwaggerService
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
-            $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/definitions/{$definition}";
+            $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
     }
 
@@ -535,7 +539,7 @@ class SwaggerService
                     'content' => [
                         $type => [
                             'schema' => [
-                                "\$ref" => "#/definitions/{$actionName}Object",
+                                "\$ref" => "#/components/schemas/{$actionName}Object",
                             ],
                         ],
                     ],
@@ -573,7 +577,7 @@ class SwaggerService
         }
 
         $data['example'] = $this->generateExample($data['properties']);
-        $this->data['definitions'][$objectName . 'Object'] = $data;
+        $this->data['components']['schemas'][$objectName . 'Object'] = $data;
     }
 
     protected function getParameterType(array $validation): string
@@ -614,8 +618,8 @@ class SwaggerService
     {
         $requestParametersCount = count($this->request->all());
 
-        if (isset($this->data['definitions'][$actionName . 'Object']['properties'])) {
-            $objectParametersCount = count($this->data['definitions'][$actionName . 'Object']['properties']);
+        if (isset($this->data['components']['schemas'][$actionName . 'Object']['properties'])) {
+            $objectParametersCount = count($this->data['components']['schemas'][$actionName . 'Object']['properties']);
         } else {
             $objectParametersCount = 0;
         }
@@ -993,11 +997,11 @@ class SwaggerService
             }
         }
 
-        $definitions = array_keys($additionalDocumentation['definitions']);
+        $definitions = array_keys($additionalDocumentation['components']['schemas']);
 
         foreach ($definitions as $definition) {
-            if (empty($documentation['definitions'][$definition])) {
-                $documentation['definitions'][$definition] = $additionalDocumentation['definitions'][$definition];
+            if (empty($documentation['components']['schemas'][$definition])) {
+                $documentation['components']['schemas'][$definition] = $additionalDocumentation['components']['schemas'][$definition];
             }
         }
     }
