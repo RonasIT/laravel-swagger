@@ -202,10 +202,10 @@ class SwaggerSpecValidator
                 array_merge(self::SCHEMA_TYPES, ['file']),
                 "{$responseId}.schema"
             );
-        }
 
-        if (!empty($response['items'])) {
-            $this->validateItems($response['items'], "{$responseId}.items");
+            if (!empty($response['schema']['items'])) {
+                $this->validateItems($response['schema']['items'], "{$responseId}.schema.items");
+            }
         }
     }
 

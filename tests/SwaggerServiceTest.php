@@ -289,6 +289,16 @@ class SwaggerServiceTest extends TestCase
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header.",
             ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__request_body__invalid_content',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Operation 'paths./users/{id}.post' has body parameters. Only one or the other is allowed.",
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__response__invalid_items',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. 'paths./users/{id}.post.responses.200.schema.items' should have required fields: type.",
+            ],
         ];
     }
 
