@@ -1,8 +1,8 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
+namespace RonasIT\AutoDoc\Exceptions\SpecValidation;
 
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Services\SwaggerService;
 
 class InvalidSwaggerVersionException extends InvalidSwaggerSpecException
 {

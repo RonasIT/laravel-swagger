@@ -1,11 +1,11 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Tests\PhpUnitEventSubscribers;
+namespace RonasIT\AutoDoc\Tests\PhpUnitEventSubscribers;
 
 use Illuminate\Contracts\Console\Kernel;
 use PHPUnit\Event\Application\Finished;
 use PHPUnit\Event\Application\FinishedSubscriber;
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Services\SwaggerService;
 
 final class SwaggerSaveDocumentationSubscriber implements FinishedSubscriber
 {

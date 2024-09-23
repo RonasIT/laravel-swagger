@@ -1,10 +1,10 @@
 <?php
 
-namespace RonasIT\Support\Tests;
+namespace RonasIT\Tests;
 
 use Illuminate\Http\Response;
 use phpmock\phpunit\PHPMock;
-use RonasIT\Support\Tests\Support\Traits\MockTrait;
+use RonasIT\Tests\Support\Traits\MockTrait;
 
 class AutoDocControllerTest extends TestCase
 {
@@ -57,7 +57,7 @@ class AutoDocControllerTest extends TestCase
 
     public function testGetJSONDocumentationDoesntExist()
     {
-        $mock = $this->getFunctionMock('RonasIT\Support\AutoDoc\Services', 'report');
+        $mock = $this->getFunctionMock('RonasIT\AutoDoc\Services', 'report');
         $mock->expects($this->once());
 
         config([
@@ -73,7 +73,7 @@ class AutoDocControllerTest extends TestCase
 
     public function testGetJSONDocumentationIsEmpty()
     {
-        $mock = $this->getFunctionMock('RonasIT\Support\AutoDoc\Services', 'report');
+        $mock = $this->getFunctionMock('RonasIT\AutoDoc\Services', 'report');
         $mock->expects($this->once());
 
         config([

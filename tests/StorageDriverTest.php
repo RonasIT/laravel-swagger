@@ -1,12 +1,12 @@
 <?php
 
-namespace RonasIT\Support\Tests;
+namespace RonasIT\Tests;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
-use RonasIT\Support\AutoDoc\Drivers\StorageDriver;
-use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
+use RonasIT\AutoDoc\Drivers\StorageDriver;
+use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class StorageDriverTest extends TestCase
 {

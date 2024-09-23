@@ -1,9 +1,9 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Drivers;
+namespace RonasIT\AutoDoc\Drivers;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RonasIT\Support\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
+use RonasIT\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
 
 class RemoteDriver extends BaseDriver
 {
