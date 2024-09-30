@@ -15,18 +15,30 @@ abstract class BaseDriver implements SwaggerDriverInterface
 
     public function saveTmpData($data): void
     {
-        file_put_contents($this->tempFilePath, json_encode($data));
+        $handle = fopen($this->tempFilePath, 'c+');
+
+        flock($handle, LOCK_EX);
+
+        ftruncate($handle, 0);
+        rewind($handle);
+        fwrite($handle, json_encode($data, JSON_THROW_ON_ERROR));
+
+        flock($handle, LOCK_UN);
     }
 
     public function getTmpData(): ?array
     {
-        if (file_exists($this->tempFilePath)) {
-            $content = file_get_contents($this->tempFilePath);
+        $handle = @fopen($this->tempFilePath, 'r');
 
-            return json_decode($content, true);
+        if ($handle === false) {
+            return null;
         }
 
-        return null;
+        flock($handle, LOCK_SH);
+
+        $content = stream_get_contents($handle);
+
+        return json_decode($content, true);
     }
 
     protected function clearTmpData(): void
