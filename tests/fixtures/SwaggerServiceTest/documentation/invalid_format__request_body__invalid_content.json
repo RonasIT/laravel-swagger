@@ -5,25 +5,32 @@
     "title": "Invalid API"
   },
   "paths": {
-    "/users/{username}/profile/image": {
+    "/users/{id}": {
       "post": {
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
-            "name": "username",
             "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
             "schema": {
               "type": "string"
-            },
-            "required": true
-          },
-          {
-            "name": "image",
-            "in": "formData",
-            "schema": {
-              "type": "file"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "image/png": {
+              "items": []
+            }
+          },
+          "required": true,
+          "description": ""
+        },
         "responses": {
           "default": {
             "description": "hello world"

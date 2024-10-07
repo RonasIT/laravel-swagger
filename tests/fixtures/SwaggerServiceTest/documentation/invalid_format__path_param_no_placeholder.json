@@ -1,5 +1,5 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.1.0",
   "info": {
     "version": "1.0.0",
     "title": "Invalid API"
@@ -12,7 +12,9 @@
             "name": "username",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "foo",
@@ -34,12 +36,16 @@
             "name": "username",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "foo",
             "in": "path",
-            "type": "number"
+            "schema": {
+              "type": "number"
+            }
           }
         ],
         "responses": {

@@ -1,8 +1,10 @@
 {
-    "swagger": "2.0",
-    "host": "localhost",
-    "basePath": "/",
-    "schemes": [],
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "http:\/\/localhost"
+        }
+    ],
     "paths": {
         "/users/{id}/assign-role/{role-id}": {
             "get": {
@@ -19,50 +21,65 @@
                         "name": "id",
                         "description": "",
                         "required": true,
-                        "type": "string"
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
                         "in": "path",
                         "name": "role-id",
                         "description": "",
                         "required": true,
-                        "type": "string"
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
                         "in": "query",
                         "name": "query",
                         "description": "string, required",
-                        "type": "string",
+                        "schema": {
+                            "type": "string"
+                        },
                         "required": true
                     },
                     {
                         "in": "query",
                         "name": "user_id",
                         "description": "integer, with_to_array_rule_string_name",
-                        "type": "integer"
+                        "schema": {
+                            "type": "integer"
+                        }
                     },
                     {
                         "in": "query",
                         "name": "is_email_enabled",
-                        "type": "string",
+                        "schema": {
+                            "type": "string"
+                        },
                         "description": "test_rule_without_to_string"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Operation successfully done",
-                        "schema": {
-                            "example": {
-                                "id": 2,
-                                "name": "first_client",
-                                "likes_count": 23,
-                                "role": {
-                                    "id": 2,
-                                    "name": "client"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getUsers{id}assignRole{roleId}200ResponseObject",
+                                    "type": "object"
                                 },
-                                "type": "reader"
-                            },
-                            "$ref": "#/definitions/getUsers{id}assignRole{roleId}200ResponseObject"
+                                "example": {
+                                    "id": 2,
+                                    "name": "first_client",
+                                    "likes_count": 23,
+                                    "role": {
+                                        "id": 2,
+                                        "name": "client"
+                                    },
+                                    "type": "reader"
+                                }
+                            }
                         }
                     }
                 },
@@ -73,24 +90,26 @@
             }
         }
     },
-    "definitions": {
-        "getUsers{id}assignRole{roleId}200ResponseObject": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "likes_count": {
-                    "type": "integer"
-                },
-                "role": {
-                    "type": "array"
-                },
-                "type": {
-                    "type": "string"
+    "components": {
+        "schemas": {
+            "getUsers{id}assignRole{roleId}200ResponseObject": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "likes_count": {
+                        "type": "integer"
+                    },
+                    "role": {
+                        "type": "array"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
                 }
             }
         }

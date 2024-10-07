@@ -1,8 +1,10 @@
 {
-  "swagger": "2.0",
-  "host": "localhost",
-  "basePath": "\/",
-  "schemes": [],
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "\/auth\/login": {
       "post": {
@@ -15,17 +17,18 @@
         "produces": [
           "application\/json"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/loginObject"
+              }
+            },
             "required": true,
-            "schema": {
-              "$ref": "#\/definitions\/loginObject"
-            }
+            "description": ""
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Operation successfully done",

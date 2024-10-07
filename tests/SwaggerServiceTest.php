@@ -89,7 +89,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_version',
                 'exception' => InvalidSwaggerVersionException::class,
-                'exceptionMessage' => "Unrecognized Swagger version '1.0'. Expected 2.0.",
+                'exceptionMessage' => "Unrecognized Swagger version '1.0'. Expected 3.1.0.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__array_parameter__no_items',
@@ -218,7 +218,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__definition_type',
                 'exception' => MissingFieldException::class,
-                'exceptionMessage' => "Validation failed. 'definitions.authloginObject' should have "
+                'exceptionMessage' => "Validation failed. 'components.schemas.authloginObject' should have "
                     . "required fields: type.",
             ],
             [
@@ -229,7 +229,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__items_type',
                 'exception' => MissingFieldException::class,
-                'exceptionMessage' => "Validation failed. 'paths./pet/findByStatus.get.parameters.0.items' "
+                'exceptionMessage' => "Validation failed. 'paths./pet/findByStatus.get.parameters.0.schema.items' "
                     . "should have required fields: type.",
             ],
             [
@@ -288,6 +288,16 @@ class SwaggerServiceTest extends TestCase
                 'tmpDoc' => 'documentation/invalid_format__security_definition__in',
                 'exception' => InvalidSwaggerSpecException::class,
                 'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header.",
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__request_body__invalid_content',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. Operation 'paths./users/{id}.post' has body parameters. Only one or the other is allowed.",
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__response__invalid_items',
+                'exception' => InvalidSwaggerSpecException::class,
+                'exceptionMessage' => "Validation failed. 'paths./users/{id}.post.responses.200.schema.items' should have required fields: type.",
             ],
         ];
     }
