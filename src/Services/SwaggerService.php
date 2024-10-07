@@ -244,7 +244,7 @@ class SwaggerService
                 'name' => $key,
                 'description' => $this->generatePathDescription($key),
                 'required' => true,
-                "schema" => [
+                'schema' => [
                     'type' => 'string'
                 ]
             ];
