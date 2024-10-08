@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Tests\Support\Traits;
+namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 

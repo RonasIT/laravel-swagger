@@ -1,10 +1,10 @@
 <?php
 
-namespace RonasIT\Tests;
+namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Response;
 use phpmock\phpunit\PHPMock;
-use RonasIT\Tests\Support\Traits\MockTrait;
+use RonasIT\AutoDoc\Tests\Support\Traits\MockTrait;
 
 class AutoDocControllerTest extends TestCase
 {

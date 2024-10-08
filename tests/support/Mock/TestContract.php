@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Tests\Support\Mock;
+namespace RonasIT\AutoDoc\Tests\Support\Mock;
 
 interface TestContract
 {

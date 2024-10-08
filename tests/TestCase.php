@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Tests;
+namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\AutoDoc\AutoDocServiceProvider;
-use RonasIT\Tests\Support\Mock\TestController;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestController;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 

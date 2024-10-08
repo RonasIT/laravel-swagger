@@ -36,8 +36,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "RonasIT\\Tests\\": "tests/",
-      "RonasIT\\Tests\\Support\\": "tests/support/"
+      "RonasIT\\AutoDoc\\Tests\\": "tests/",
+      "RonasIT\\AutoDoc\\Tests\\Support\\": "tests/support/"
     }
   },
   "extra": {

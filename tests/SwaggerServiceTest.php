@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Tests;
+namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -25,8 +25,8 @@ use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Services\SwaggerService;
-use RonasIT\Tests\Support\Mock\TestNotificationSetting;
-use RonasIT\Tests\Support\Traits\SwaggerServiceMockTrait;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
+use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use stdClass;
 
 class SwaggerServiceTest extends TestCase

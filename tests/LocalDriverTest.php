@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Tests;
+namespace RonasIT\AutoDoc\Tests;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
