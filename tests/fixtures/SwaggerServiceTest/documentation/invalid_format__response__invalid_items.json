@@ -33,8 +33,8 @@
     "http"
   ],
   "paths": {
-    "/pet/findByStatus": {
-      "get": {
+    "/users/{id}": {
+      "post": {
         "tags": [
           "pet"
         ],
@@ -47,17 +47,13 @@
         ],
         "parameters": [
           {
-            "name": "status",
-            "in": "query",
-            "description": "Status values that need to be considered for filter",
+            "in": "path",
+            "name": "id",
+            "description": "",
             "required": true,
             "schema": {
-              "type": "array",
-              "items": {
-                "collectionFormat": "multi"
-              }
-            },
-            "collectionFormat": "multi"
+              "type": "string"
+            }
           }
         ],
         "responses": {

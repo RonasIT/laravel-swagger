@@ -1,10 +1,14 @@
 {
-    "swagger": "2.0",
-    "host": "localhost",
-    "basePath": "\/",
-    "schemes": [],
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "localhost/"
+        }
+    ],
     "paths": [],
-    "definitions": [],
+    "components": {
+        "schemas": []
+    },
     "info": {
         "description": "This is automatically collected documentation",
         "version": "0.0.0",

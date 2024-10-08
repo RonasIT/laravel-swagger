@@ -1,8 +1,10 @@
 {
-  "swagger": "2.0",
-  "host": "localhost",
-  "basePath": "/",
-  "schemes": [],
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "/users/roles": {
       "get": {
@@ -20,30 +22,39 @@
             "in": "query",
             "name": "query",
             "description": "string, required",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": true
           },
           {
             "in": "query",
             "name": "user_id",
             "description": "integer, with_to_array_rule_string_name",
-            "type": "integer"
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "in": "query",
             "name": "is_email_enabled",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "description": "test_rule_without_to_string"
           }
         ],
         "responses": {
           "200": {
             "description": "Operation successfully done",
-            "examples": {
-              "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
-            },
-            "schema": {
-              "$ref": "#/definitions/getUsersroles200ResponseObject"
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUsersroles200ResponseObject",
+                  "type": "object"
+                },
+                "example": "[\n    {\n        \"id\": 1,\n        \"name\": \"admin\",\n        \"users\": [\n            {\n                \"id\": 1,\n                \"name\": \"admin\"\n            }\n        ]\n    }\n]"
+              }
             }
           }
         },
@@ -54,16 +65,18 @@
       }
     }
   },
-  "definitions": {
-    "getUsersroles200ResponseObject": {
-      "type": "array",
-      "properties": {
-        "items": {
-          "allOf": [
-            {
-              "type": "array"
-            }
-          ]
+  "components": {
+    "schemas": {
+      "getUsersroles200ResponseObject": {
+        "type": "array",
+        "properties": {
+          "items": {
+            "allOf": [
+              {
+                "type": "array"
+              }
+            ]
+          }
         }
       }
     }

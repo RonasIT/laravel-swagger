@@ -1,8 +1,10 @@
 {
-  "swagger": "2.0",
-  "host": "localhost",
-  "basePath": "/",
-  "schemes": [],
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "/users/{id}": {
       "put": {
@@ -19,48 +21,57 @@
             "name": "id",
             "description": "",
             "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "",
-            "required": true,
             "schema": {
-              "$ref": "#/definitions/users{id}Object"
+              "type": "string"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/users{id}Object"
+              }
+            }
+          },
+          "required": true,
+          "description": ""
+        },
         "responses": {
           "204": {
             "description": "Operation successfully done",
-            "schema": {
-              "example": [
-                {
-                  "id": 1,
-                  "name": "admin",
-                  "users": [
-                    {
-                      "id": 1,
-                      "name": "admin"
-                    }
-                  ]
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
                 },
-                {
-                  "id": 2,
-                  "name": "client",
-                  "users": [
-                    {
-                      "id": 2,
-                      "name": "first_client"
-                    },
-                    {
-                      "id": 3,
-                      "name": "second_client"
-                    }
-                  ]
-                }
-              ]
+                "example": [
+                  {
+                    "id": 1,
+                    "name": "admin",
+                    "users": [
+                      {
+                        "id": 1,
+                        "name": "admin"
+                      }
+                    ]
+                  },
+                  {
+                    "id": 2,
+                    "name": "client",
+                    "users": [
+                      {
+                        "id": 2,
+                        "name": "first_client"
+                      },
+                      {
+                        "id": 3,
+                        "name": "second_client"
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           }
         },
@@ -87,24 +98,33 @@
             "name": "id",
             "description": "",
             "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "",
-            "required": true,
             "schema": {
-              "$ref": "#/definitions/users{id}Object"
+              "type": "string"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/users{id}Object"
+              }
+            }
+          },
+          "required": true,
+          "description": ""
+        },
         "responses": {
           "204": {
             "description": "Operation successfully done",
-            "schema": {
-              "example": [],
-              "$ref": "#/definitions/patchUsers{id}204ResponseObject"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/patchUsers{id}204ResponseObject",
+                  "type": "object"
+                },
+                "example": []
+              }
             }
           }
         },
@@ -119,32 +139,34 @@
       }
     }
   },
-  "definitions": {
-    "users{id}Object": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": ""
+  "components": {
+    "schemas": {
+      "users{id}Object": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": ""
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "with_to_array_rule_string_name"
+          },
+          "is_email_enabled": {
+            "type": "string",
+            "description": "test_rule_without_to_string"
+          }
         },
-        "user_id": {
-          "type": "integer",
-          "description": "with_to_array_rule_string_name"
+        "example": {
+          "name": "Ryan",
+          "query": null
         },
-        "is_email_enabled": {
-          "type": "string",
-          "description": "test_rule_without_to_string"
-        }
+        "required": ["query"]
       },
-      "example": {
-        "name": "Ryan",
-        "query": null
-      },
-      "required": ["query"]
-    },
-    "patchUsers{id}204ResponseObject": {
-      "type": "object",
-      "properties": []
+      "patchUsers{id}204ResponseObject": {
+        "type": "object",
+        "properties": []
+      }
     }
   },
   "info": {
