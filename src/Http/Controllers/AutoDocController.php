@@ -1,10 +1,10 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Http\Controllers;
+namespace RonasIT\AutoDoc\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Services\SwaggerService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AutoDocController extends BaseController

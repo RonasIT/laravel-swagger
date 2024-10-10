@@ -39,20 +39,20 @@ passing PHPUnit tests.
     > ```php
     > 'providers' => [
     >    // ...
-    >    RonasIT\Support\AutoDoc\AutoDocServiceProvider::class,
+    >    RonasIT\AutoDoc\AutoDocServiceProvider::class,
     > ],
     > ```
 
  1. Run `php artisan vendor:publish`
- 2. Add `\RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware stack in `Http/Kernel.php`.
- 3. Add `\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait` trait to `tests/TestCase.php`
+ 2. Add `\RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware stack in `Http/Kernel.php`.
+ 3. Add `\RonasIT\AutoDoc\Tests\AutoDocTestCaseTrait` trait to `tests/TestCase.php`
  4. Configure documentation saving using one of the next ways:
    - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
     **Please note that this way will be removed after updating**
     **PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)**
         ```xml
         <extensions>
-            <extension class="RonasIT\Support\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
+            <extension class="RonasIT\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
         </extensions>
         <testsuites>
             <testsuite name="Feature">

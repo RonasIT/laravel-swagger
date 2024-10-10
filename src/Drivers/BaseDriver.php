@@ -1,8 +1,8 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Drivers;
+namespace RonasIT\AutoDoc\Drivers;
 
-use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
+use RonasIT\AutoDoc\Interfaces\SwaggerDriverInterface;
 
 abstract class BaseDriver implements SwaggerDriverInterface
 {

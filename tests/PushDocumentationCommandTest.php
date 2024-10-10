@@ -1,8 +1,8 @@
 <?php
 
-namespace RonasIT\Support\Tests;
+namespace RonasIT\AutoDoc\Tests;
 
-use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
+use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 
 class PushDocumentationCommandTest extends TestCase
 {

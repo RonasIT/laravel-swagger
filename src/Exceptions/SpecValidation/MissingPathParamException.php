@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Exceptions\SpecValidation;
+namespace RonasIT\AutoDoc\Exceptions\SpecValidation;
 
 class MissingPathParamException extends InvalidSwaggerSpecException
 {

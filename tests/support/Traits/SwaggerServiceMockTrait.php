@@ -1,8 +1,8 @@
 <?php
 
-namespace RonasIT\Support\Tests\Support\Traits;
+namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
-use RonasIT\Support\AutoDoc\Drivers\LocalDriver;
+use RonasIT\AutoDoc\Drivers\LocalDriver;
 
 trait SwaggerServiceMockTrait
 {

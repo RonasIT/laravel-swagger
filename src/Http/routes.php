@@ -1,6 +1,6 @@
 <?php
 
-use RonasIT\Support\AutoDoc\Http\Controllers\AutoDocController;
+use RonasIT\AutoDoc\Http\Controllers\AutoDocController;
 
 Route::group(['prefix' => config('auto-doc.global_prefix')], function () {
     Route::get('/auto-doc/documentation', ['uses' => AutoDocController::class . '@documentation']);

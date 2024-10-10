@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Support\Tests\Support\Mock;
+namespace RonasIT\AutoDoc\Tests\Support\Mock;
 
 use Closure;
 

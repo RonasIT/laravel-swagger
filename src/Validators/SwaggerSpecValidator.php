@@ -1,24 +1,24 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Validators;
+namespace RonasIT\AutoDoc\Validators;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicateFieldException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicateParamException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicatePathPlaceholderException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidPathException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidStatusCodeException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingExternalRefException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateFieldException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateParamException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicatePathPlaceholderException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidPathException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidStatusCodeException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingExternalRefException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
+use RonasIT\AutoDoc\Services\SwaggerService;
 
 /**
  * @property array $doc

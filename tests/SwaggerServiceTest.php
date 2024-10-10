@@ -1,32 +1,32 @@
 <?php
 
-namespace RonasIT\Support\Tests;
+namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
 use PHPUnit\Framework\Attributes\DataProvider;
-use RonasIT\Support\AutoDoc\Exceptions\EmptyContactEmailException;
-use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
-use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicateFieldException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicateParamException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\DuplicatePathPlaceholderException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidPathException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidStatusCodeException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingExternalRefException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
-use RonasIT\Support\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
-use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
-use RonasIT\Support\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
-use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
-use RonasIT\Support\Tests\Support\Mock\TestNotificationSetting;
-use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
+use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
+use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
+use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateFieldException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateParamException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicatePathPlaceholderException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidPathException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidStatusCodeException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingExternalRefException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
+use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
+use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
+use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
+use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use stdClass;
 
 class SwaggerServiceTest extends TestCase
