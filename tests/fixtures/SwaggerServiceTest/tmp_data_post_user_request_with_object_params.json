@@ -103,7 +103,6 @@
         },
         "required": ["query"]
       },
-
       "postUsers200ResponseObject": {
         "type": "array",
         "properties": {
