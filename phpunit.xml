@@ -18,7 +18,6 @@
     </include>
     <exclude>
       <file>./app/Http/routes.php</file>
-      <directory suffix=".php">./src/Tests</directory>
     </exclude>
   </source>
 </phpunit>
