@@ -205,7 +205,7 @@ You can use the following annotations in your request classes to customize docum
 
 ### Custom driver
 
-You can specify the way to collect documentation by creating your own custom driver.
+You can specify the way to collect and view documentation by creating your own custom driver.
 
 You can find example of drivers [here](https://github.com/RonasIT/laravel-swagger/tree/master/src/Drivers).
 
