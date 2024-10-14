@@ -10,4 +10,6 @@ The base namespace of the package had also been changed, so you need to use new 
 - `tests/TestCase.php`, change namespace of `\RonasIT\Support\AutoDoc\Tests\AutoDocTestCaseTrait` to
   `\RonasIT\AutoDoc\Traits\AutoDocTestCaseTrait`;
 - `phpunit.xml`, change namespace of extension from `RonasIT\Support\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension` to
-  `RonasIT\AutoDoc\Support\PHPUnit\Extensions\SwaggerExtension`
+  `RonasIT\AutoDoc\Support\PHPUnit\Extensions\SwaggerExtension`;
+- your custom documentation drivers, change interface from `RonasIT\AutoDoc\Interfaces\SwaggerDriverInterface` to
+  `RonasIT\AutoDoc\Contracts\SwaggerDriverContract`.

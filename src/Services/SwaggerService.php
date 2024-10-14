@@ -17,13 +17,13 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\AutoDoc\Interfaces\SwaggerDriverInterface;
+use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @property SwaggerDriverInterface $driver
+ * @property SwaggerDriverContract $driver
  */
 class SwaggerService
 {
@@ -124,7 +124,7 @@ class SwaggerService
             $this->driver = app($className);
         }
 
-        if (!$this->driver instanceof SwaggerDriverInterface) {
+        if (!$this->driver instanceof SwaggerDriverContract) {
             throw new InvalidDriverClassException($driver);
         }
     }

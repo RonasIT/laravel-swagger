@@ -2,9 +2,9 @@
 
 namespace RonasIT\AutoDoc\Drivers;
 
-use RonasIT\AutoDoc\Interfaces\SwaggerDriverInterface;
+use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 
-abstract class BaseDriver implements SwaggerDriverInterface
+abstract class BaseDriver implements SwaggerDriverContract
 {
     protected string $tempFilePath;
 
