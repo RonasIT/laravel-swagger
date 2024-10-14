@@ -1,12 +1,12 @@
 <?php
 
-namespace RonasIT\AutoDoc\Tests\PhpUnitExtensions;
+namespace RonasIT\AutoDoc\Support\PHPUnit\Extensions;
 
 use PHPUnit\Runner\Extension\Extension as PhpunitExtension;
 use PHPUnit\Runner\Extension\Facade as EventFacade;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\TextUI\Configuration\Configuration;
-use RonasIT\AutoDoc\Tests\PhpUnitEventSubscribers\SwaggerSaveDocumentationSubscriber;
+use RonasIT\AutoDoc\Support\PHPUnit\EventSubscribers\SwaggerSaveDocumentationSubscriber;
 
 final class SwaggerExtension implements PhpunitExtension
 {

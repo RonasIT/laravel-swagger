@@ -30,37 +30,51 @@ passing PHPUnit tests.
 
 1. Install the package using the following command: `composer require ronasit/laravel-swagger`
 
-    > ***Note***
-    > 
-    > For Laravel 5.5 or later the package will be auto-discovered.
-    > For older versions add the `AutoDocServiceProvider` to the
-    > providers array in `config/app.php` as follow:
-    > 
-    > ```php
-    > 'providers' => [
-    >    // ...
-    >    RonasIT\AutoDoc\AutoDocServiceProvider::class,
-    > ],
-    > ```
+> ***Note***
+> 
+> For Laravel 5.5 or later the package will be auto-discovered.
+> For older versions add the `AutoDocServiceProvider` to the
+> providers array in `config/app.php` as follow:
+> 
+> ```php
+> 'providers' => [
+>     ...
+>     RonasIT\AutoDoc\AutoDocServiceProvider::class,
+> ],
+> ```
 
- 1. Run `php artisan vendor:publish`
- 2. Add `\RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware stack in `Http/Kernel.php`.
- 3. Add `\RonasIT\AutoDoc\Tests\AutoDocTestCaseTrait` trait to `tests/TestCase.php`
- 4. Configure documentation saving using one of the next ways:
-   - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
-    **Please note that this way will be removed after updating**
-    **PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)**
-        ```xml
-        <extensions>
-            <extension class="RonasIT\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
-        </extensions>
-        <testsuites>
-            <testsuite name="Feature">
-                <directory suffix="Test.php">./tests/Feature</directory>
-            </testsuite>
-        </testsuites>
-        ```
-   - Call `php artisan swagger:push-documentation` console command after
+2. Run `php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider`
+1. Add `\RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware list `bootstrap\app.php`:
+
+```php
+    return Application::configure(basePath: dirname(__DIR__))
+        ->withMiddleware(function (Middleware $middleware) {
+            $middleware->use([
+                ...
+                \RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class,
+            ]);
+        });
+```
+
+4. Add `\RonasIT\AutoDoc\Traits\AutoDocTestCaseTrait` trait to `tests/TestCase.php`
+1. Configure documentation saving using one of the next ways:
+  - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
+  **Please note that this way will be removed after updating**
+  **PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)**
+
+  ```xml
+  <phpunit>
+      <extensions>
+          <bootstrap class="RonasIT\AutoDoc\Support\PHPUnit\Extensions\SwaggerExtension"/>
+      </extensions>
+      <testsuites>
+          <testsuite name="Feature">
+              <directory suffix="Test.php">./tests/Feature</directory>
+          </testsuite>
+      </testsuites>
+  </phpunit>
+  ```
+  - Call `php artisan swagger:push-documentation` console command after
     the `tests` stage in your CI/CD configuration
 
 ## Usage
@@ -120,7 +134,7 @@ passing PHPUnit tests.
     > 
     > For correct working of plugin you'll have to dispose all the validation rules 
     > in the `rules()` method of your request class. Also, your request class
-    > must be connected to the controller via [dependency injection](https://laravel.com/docs/9.x/container#introduction).
+    > must be connected to the controller via [dependency injection](https://laravel.com/docs/11.x/container#introduction).
     > Plugin will take validation rules from the request class and generate fields description
     > of input parameter.
 
@@ -191,7 +205,7 @@ You can use the following annotations in your request classes to customize docum
 
 ### Custom driver
 
-You can specify the way to collect documentation by creating your own custom driver.
+You can specify the way to collect and view documentation by creating your own custom driver.
 
 You can find example of drivers [here](https://github.com/RonasIT/laravel-swagger/tree/master/src/Drivers).
 
@@ -205,6 +219,10 @@ This change is reflected immediately, without the need to rebuild the documentat
 
 The package supports the integration of the primary documentation with additional valid
 OpenAPI files specified in the `additional_paths` configuration.
+
+## Migration guides
+
+[3.0.1-beta](MIGRATION-GUIDES.md#301-beta)
 
 ## Contributing
 

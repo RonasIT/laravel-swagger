@@ -51,8 +51,8 @@ return [
         ],
         'license' => [
             'name' => '',
-            'url' => ''
-        ]
+            'url' => '',
+        ],
     ],
 
     /*
@@ -80,13 +80,13 @@ return [
         'jwt' => [
             'type' => 'apiKey',
             'name' => 'Authorization',
-            'in' => 'header'
+            'in' => 'header',
         ],
         'laravel' => [
             'type' => 'apiKey',
             'name' => '__ym_uid',
-            'in' => 'cookie'
-        ]
+            'in' => 'cookie',
+        ],
     ],
 
     'defaults' => [
@@ -99,8 +99,8 @@ return [
         'code-descriptions' => [
             '200' => 'Operation successfully done',
             '204' => 'Operation successfully done',
-            '404' => 'This entity not found'
-        ]
+            '404' => 'This entity not found',
+        ],
     ],
 
     /*
@@ -110,7 +110,7 @@ return [
     |
     | The name of driver, which will collect and save documentation
     | Feel free to use your own driver class which should be inherited from
-    | `RonasIT\AutoDoc\Interfaces\SwaggerDriverInterface` interface,
+    | `RonasIT\AutoDoc\Contracts\SwaggerDriverContract` interface,
     | or one of our drivers from the `drivers` config:
     */
     'driver' => env('SWAGGER_DRIVER', 'local'),
@@ -147,7 +147,7 @@ return [
             */
             'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
             'production_path' => 'documentation.json',
-        ]
+        ],
     ],
 
     /*
@@ -184,5 +184,5 @@ return [
         'development',
     ],
 
-    'config_version' => '2.7',
+    'config_version' => '2.8',
 ];
