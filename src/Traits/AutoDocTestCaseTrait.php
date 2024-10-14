@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\AutoDoc\Tests;
+namespace RonasIT\AutoDoc\Traits;
 
 use RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware;
 

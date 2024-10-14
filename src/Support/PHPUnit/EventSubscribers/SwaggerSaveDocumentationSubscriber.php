@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\AutoDoc\Tests\PhpUnitEventSubscribers;
+namespace RonasIT\AutoDoc\Support\PHPUnit\EventSubscribers;
 
 use Illuminate\Contracts\Console\Kernel;
 use PHPUnit\Event\Application\Finished;

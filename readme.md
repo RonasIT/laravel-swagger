@@ -56,7 +56,7 @@ passing PHPUnit tests.
         });
 ```
 
-4. Add `\RonasIT\AutoDoc\Tests\AutoDocTestCaseTrait` trait to `tests/TestCase.php`
+4. Add `\RonasIT\AutoDoc\Traits\AutoDocTestCaseTrait` trait to `tests/TestCase.php`
 1. Configure documentation saving using one of the next ways:
   - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
   **Please note that this way will be removed after updating**
@@ -65,7 +65,7 @@ passing PHPUnit tests.
   ```xml
   <phpunit>
       <extensions>
-          <bootstrap class="RonasIT\AutoDoc\Tests\PhpUnitExtensions\SwaggerExtension"/>
+          <bootstrap class="RonasIT\AutoDoc\Support\PHPUnit\Extensions\SwaggerExtension"/>
       </extensions>
       <testsuites>
           <testsuite name="Feature">
@@ -134,7 +134,7 @@ passing PHPUnit tests.
     > 
     > For correct working of plugin you'll have to dispose all the validation rules 
     > in the `rules()` method of your request class. Also, your request class
-    > must be connected to the controller via [dependency injection](https://laravel.com/docs/9.x/container#introduction).
+    > must be connected to the controller via [dependency injection](https://laravel.com/docs/11.x/container#introduction).
     > Plugin will take validation rules from the request class and generate fields description
     > of input parameter.
 
