@@ -26,6 +26,7 @@
         </include>
         <exclude>
             <file>./app/Http/routes.php</file>
+            <directory suffix=".php">./src/Support/PHPUnit</directory>
         </exclude>
     </source>
 </phpunit>
