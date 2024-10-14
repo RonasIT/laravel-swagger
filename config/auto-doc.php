@@ -51,8 +51,8 @@ return [
         ],
         'license' => [
             'name' => '',
-            'url' => ''
-        ]
+            'url' => '',
+        ],
     ],
 
     /*
@@ -80,13 +80,13 @@ return [
         'jwt' => [
             'type' => 'apiKey',
             'name' => 'Authorization',
-            'in' => 'header'
+            'in' => 'header',
         ],
         'laravel' => [
             'type' => 'apiKey',
             'name' => '__ym_uid',
-            'in' => 'cookie'
-        ]
+            'in' => 'cookie',
+        ],
     ],
 
     'defaults' => [
@@ -99,8 +99,8 @@ return [
         'code-descriptions' => [
             '200' => 'Operation successfully done',
             '204' => 'Operation successfully done',
-            '404' => 'This entity not found'
-        ]
+            '404' => 'This entity not found',
+        ],
     ],
 
     /*
@@ -147,7 +147,7 @@ return [
             */
             'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
             'production_path' => 'documentation.json',
-        ]
+        ],
     ],
 
     /*
