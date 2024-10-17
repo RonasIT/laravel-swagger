@@ -24,10 +24,10 @@
                             "schema": {
                                 "$ref": "#/components/schemas/authloginObject"
                             }
-                        },
-                        "required": true,
-                        "description": ""
-                    }
+                        }
+                    },
+                    "required": true,
+                    "description": ""
                 },
                 "responses": {
                     "200": {

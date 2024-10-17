@@ -292,7 +292,7 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_format__request_body__invalid_content',
                 'exception' => InvalidSwaggerSpecException::class,
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{id}.post' has body parameters. Only one or the other is allowed.",
+                'exceptionMessage' => "Validation failed. Operation 'paths./users/{id}.post' has invalid content types: image/png.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__response__invalid_items',

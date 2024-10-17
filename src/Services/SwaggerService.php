@@ -333,9 +333,7 @@ class SwaggerService
 
     protected function saveObjectResponseDefinitions(array $content, array &$schemaProperties, string $definition): void
     {
-        $definitions = (!empty($this->data['components']['schemas'])) ? $this->data['components']['schemas'] : [];
-
-        $properties = Arr::get($definitions, $definition, []);
+        $properties = Arr::get($this->data, "components.schemas.{$definition}", []);
 
         foreach ($content as $name => $value) {
             $property = Arr::get($properties, "properties.{$name}", []);
@@ -533,13 +531,13 @@ class SwaggerService
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
-                $type = $this->request->header('Content-Type') ?? 'application/json';
+                $type = $this->request->header('Content-Type', 'application/json');
 
                 $this->item['requestBody'] = [
                     'content' => [
                         $type => [
                             'schema' => [
-                                "\$ref" => "#/components/schemas/{$actionName}Object",
+                                '$ref' => "#/components/schemas/{$actionName}Object",
                             ],
                         ],
                     ],
@@ -577,7 +575,7 @@ class SwaggerService
         }
 
         $data['example'] = $this->generateExample($data['properties']);
-        $this->data['components']['schemas'][$objectName . 'Object'] = $data;
+        $this->data['components']['schemas']["{$objectName}Object"] = $data;
     }
 
     protected function getParameterType(array $validation): string
@@ -618,11 +616,8 @@ class SwaggerService
     {
         $requestParametersCount = count($this->request->all());
 
-        if (isset($this->data['components']['schemas'][$actionName . 'Object']['properties'])) {
-            $objectParametersCount = count($this->data['components']['schemas'][$actionName . 'Object']['properties']);
-        } else {
-            $objectParametersCount = 0;
-        }
+        $properties = Arr::get($this->data, "components.schemas.{$actionName}Object.properties", []);
+        $objectParametersCount = count($properties);
 
         return $requestParametersCount > $objectParametersCount;
     }
@@ -1000,9 +995,11 @@ class SwaggerService
         $definitions = array_keys($additionalDocumentation['components']['schemas']);
 
         foreach ($definitions as $definition) {
-            if (empty($documentation['components']['schemas'][$definition])) {
-                $documentation['components']['schemas'][$definition] = $additionalDocumentation['components']['schemas'][$definition];
-            }
+            $documentation = Arr::add(
+                array: $documentation,
+                key: "components.schemas.{$definition}",
+                value: $additionalDocumentation['components']['schemas'][$definition],
+            );
         }
     }
 }
