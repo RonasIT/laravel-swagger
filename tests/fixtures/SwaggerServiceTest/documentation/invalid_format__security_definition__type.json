@@ -20,10 +20,10 @@
               "schema": {
                 "$ref": "#/definitions/apiusersObject"
               }
-            },
-            "required": true,
-            "description": ""
-          }
+            }
+          },
+          "required": true,
+          "description": ""
         },
         "responses":
         {

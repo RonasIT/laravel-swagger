@@ -72,6 +72,12 @@ class SwaggerSpecValidator
         'security_definition_type' => ['basic', 'apiKey', 'oauth2'],
     ];
 
+    public const ALLOWED_TYPES = [
+        self::MIME_TYPE_APPLICATION_URLENCODED,
+        self::MIME_TYPE_MULTIPART_FORM_DATA,
+        self::MIME_TYPE_APPLICATION_JSON,
+    ];
+
     public const PATH_PARAM_REGEXP = '#(?<={)[^/}]+(?=})#';
     public const PATH_REGEXP = '/^x-/';
 
@@ -247,23 +253,13 @@ class SwaggerSpecValidator
 
     protected function validateRequestBodyContent(array $content, string $operationId): void
     {
-        $allowedContentType = false;
+        $invalidContentTypes = array_diff(array_keys($content), self::ALLOWED_TYPES);
 
-        $types = [
-            self::MIME_TYPE_APPLICATION_URLENCODED,
-            self::MIME_TYPE_MULTIPART_FORM_DATA,
-            self::MIME_TYPE_APPLICATION_JSON,
-        ];
+        if (!empty($invalidContentTypes)) {
+            $invalidTypes = implode(', ', $invalidContentTypes);
 
-        foreach ($types as $type) {
-            if (!empty($content[$type])) {
-                $allowedContentType = true;
-            }
-        }
-
-        if (!$allowedContentType) {
             throw new InvalidSwaggerSpecException(
-                "Operation '{$operationId}' has body parameters. Only one or the other is allowed."
+                "Operation '{$operationId}' has invalid content types: {$invalidTypes}."
             );
         }
     }

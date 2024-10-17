@@ -22,10 +22,10 @@
                             "schema": {
                                 "$ref": "#/components/schemas/authloginObject"
                             }
-                        },
-                        "required": true,
-                        "description": ""
-                    }
+                        }
+                    },
+                    "required": true,
+                    "description": ""
                 },
                 "responses": {
                     "200": {
@@ -116,10 +116,10 @@
                             "schema": {
                                 "$ref": "#/components/schemas/authloginObject"
                             }
-                        },
-                        "required": true,
-                        "description": ""
-                    }
+                        }
+                    },
+                    "required": true,
+                    "description": ""
                 },
                 "responses": {
                     "200": {
@@ -212,10 +212,10 @@
                             "schema": {
                                 "$ref": "#/components/schemas/apiusersObject"
                             }
-                        },
-                        "required": true,
-                        "description": ""
-                    }
+                        }
+                    },
+                    "required": true,
+                    "description": ""
                 },
                 "responses": {
                     "403": {
