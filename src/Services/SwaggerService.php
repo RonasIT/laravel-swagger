@@ -140,7 +140,7 @@ class SwaggerService
         $data = [
             'openapi' => self::OPEN_API_VERSION,
             'servers' => [
-                ['url' => $this->getAppUrl() . $this->config['basePath']],
+                ['url' => ''],
             ],
             'paths' => [],
             'components' => [

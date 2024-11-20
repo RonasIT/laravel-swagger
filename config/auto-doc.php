@@ -123,7 +123,7 @@ return [
     | Tool for rendering API documentation in HTML format.
     | Available values: "swagger", "elements", "rapidoc"
     */
-    'documentation_viewer' => env('SWAGGER_SPEC_VIEWER', 'swagger'),
+    'documentation_viewer' => env('SWAGGER_SPEC_VIEWER', 'rapidoc'),
 
     'drivers' => [
         'local' => [
