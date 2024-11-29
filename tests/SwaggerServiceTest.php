@@ -16,8 +16,8 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidStatusCodeException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingExternalRefException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
@@ -810,5 +810,20 @@ class SwaggerServiceTest extends TestCase
         $response = $this->generateResponse('example_success_user_response.json');
 
         app(SwaggerService::class)->addData($request, $response);
+    }
+
+    public function testMergeTempDocumentation()
+    {
+        $this->mockDriverGetTmpDataAndGetSharedTmpData(
+            tmpData: $this->getJsonFixture('tmp_data_search_users_empty_request'),
+            sharedTmpData: $this->getJsonFixture('tmp_data_post_user_request'),
+        );
+
+        $service = app(SwaggerService::class);
+
+        $service->mergeTempDocumentation();
+
+        $this->assertFileExists(storage_path('temp_documentation.json'));
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), storage_path('temp_documentation.json'));
     }
 }

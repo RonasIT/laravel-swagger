@@ -2,6 +2,7 @@
 
 namespace RonasIT\AutoDoc\Tests;
 
+use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
@@ -35,6 +36,28 @@ class LocalDriverTest extends TestCase
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
+    public function testSaveTmpDataCheckTokenBasedPath()
+    {
+        $token = 'workerID';
+
+        ParallelTesting::resolveTokenUsing(fn () => $token);
+
+        $tmpDocPath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
+
+        app(LocalDriver::class)->saveTmpData(self::$tmpData);
+
+        $this->assertFileExists($tmpDocPath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $tmpDocPath);
+    }
+
+    public function testSaveSharedTmpData()
+    {
+        self::$localDriverClass->saveSharedTmpData(fn () => self::$tmpData);
+
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
+    }
+
     public function testGetTmpData()
     {
         file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
@@ -47,6 +70,22 @@ class LocalDriverTest extends TestCase
     public function testGetTmpDataNoFile()
     {
         $result = self::$localDriverClass->getTmpData();
+
+        $this->assertNull($result);
+    }
+
+    public function testGetSharedTmpData()
+    {
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+
+        $result = self::$localDriverClass->getSharedTmpData();
+
+        $this->assertEquals(self::$tmpData, $result);
+    }
+
+    public function testGetSharedTmpDataNoFile()
+    {
+        $result = self::$localDriverClass->getSharedTmpData();
 
         $this->assertNull($result);
     }

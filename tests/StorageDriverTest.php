@@ -41,6 +41,14 @@ class StorageDriverTest extends TestCase
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
+    public function testSaveSharedTmpData()
+    {
+        self::$storageDriverClass->saveSharedTmpData(fn () => self::$tmpData);
+
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
+    }
+
     public function testGetTmpData()
     {
         file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
@@ -53,6 +61,22 @@ class StorageDriverTest extends TestCase
     public function testGetTmpDataNoFile()
     {
         $result = self::$storageDriverClass->getTmpData();
+
+        $this->assertNull($result);
+    }
+
+    public function testGetSharedTmpData()
+    {
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+
+        $result = self::$storageDriverClass->getSharedTmpData();
+
+        $this->assertEquals(self::$tmpData, $result);
+    }
+
+    public function testGetSharedTmpDataNoFile()
+    {
+        $result = self::$storageDriverClass->getSharedTmpData();
 
         $this->assertNull($result);
     }
