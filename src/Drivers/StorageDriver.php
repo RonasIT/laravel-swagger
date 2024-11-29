@@ -26,7 +26,7 @@ class StorageDriver extends BaseDriver
 
     public function saveData(): void
     {
-        $this->disk->put($this->prodFilePath, json_encode($this->getTmpData()));
+        $this->disk->put($this->prodFilePath, json_encode($this->getSharedTmpData()));
 
         $this->clearTmpData();
     }

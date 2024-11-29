@@ -24,7 +24,7 @@ class RemoteDriver extends BaseDriver
 
     public function saveData(): void
     {
-        $this->makeHttpRequest('post', $this->getUrl(), $this->getTmpData(), [
+        $this->makeHttpRequest('post', $this->getUrl(), $this->getSharedTmpData(), [
             'Content-Type: application/json',
         ]);
 
