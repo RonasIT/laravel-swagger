@@ -25,6 +25,8 @@ use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestImplementation;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use stdClass;
@@ -679,6 +681,61 @@ class SwaggerServiceTest extends TestCase
         );
 
         $response = $this->generateResponse('example_success_users_post_response.json');
+
+        $service->addData($request, $response);
+    }
+
+    public function testAddDataWithNotExistsMethodOnController()
+    {
+        $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_get_user_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users/{id}/assign-role/{role-id}',
+            data: [
+                'with' => ['role'],
+                'with_likes_count' => true,
+            ],
+            pathParams: [
+                'id' => 1,
+                'role-id' => 5,
+            ],
+            controllerMethod: 'notExists'
+        );
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json',
+        ]);
+
+        $service->addData($request, $response);
+    }
+
+    public function testAddDataWithBindingInterface()
+    {
+        $this->app->bind(TestContract::class,TestImplementation::class);
+        $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_get_user_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users/{id}/assign-role/{role-id}',
+            data: [
+                'with' => ['role'],
+                'with_likes_count' => true,
+            ],
+            pathParams: [
+                'id' => 1,
+                'role-id' => 5,
+            ],
+            controllerMethod: 'testRequestWithContract'
+        );
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json',
+        ]);
 
         $service->addData($request, $response);
     }
