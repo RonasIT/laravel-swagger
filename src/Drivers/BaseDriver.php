@@ -32,29 +32,13 @@ abstract class BaseDriver implements SwaggerDriverContract
 
     public function saveSharedTmpData(callable $callback): void
     {
-        $this->handleFileWithLock(
-            filePath: $this->sharedTempFilePath,
-            mode: 'c+',
-            operation: LOCK_EX | LOCK_NB,
-            callback: function ($handle) use ($callback) {
-                $data = $callback($this->readJsonFromStream($handle));
-
-                $this->writeJsonToStream($handle, $data);
-            },
-        );
+        $this->writeFileWithLock($this->sharedTempFilePath, $callback);
     }
 
     public function getSharedTmpData(): ?array
     {
         if (file_exists($this->sharedTempFilePath)) {
-            return $this->handleFileWithLock(
-                filePath: $this->sharedTempFilePath,
-                mode: 'r',
-                operation: LOCK_SH,
-                callback: function ($handle) {
-                    return $this->readJsonFromStream($handle);
-                },
-            );
+            return $this->readFileWithLock($this->sharedTempFilePath);
         }
 
         return null;
@@ -83,19 +67,30 @@ abstract class BaseDriver implements SwaggerDriverContract
         return null;
     }
 
-    protected function handleFileWithLock(
-        string $filePath,
-        string $mode,
-        int $operation,
-        callable $callback,
-    ): mixed
+    protected function readFileWithLock(string $filePath): array
     {
-        $handle = fopen($filePath, $mode);
+        $handle = fopen($filePath, 'r');
 
         try {
-            $this->acquireLock($handle, $operation);
+            $this->acquireLock($handle, LOCK_SH);
 
-            return $callback($handle);
+            return $this->readJsonFromStream($handle);
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
+
+    protected function writeFileWithLock(string $filePath, callable $callback): void
+    {
+        $handle = fopen($filePath, 'c+');
+
+        try {
+            $this->acquireLock($handle, LOCK_EX | LOCK_NB);
+
+            $data = $callback($this->readJsonFromStream($handle));
+
+            $this->writeJsonToStream($handle, $data);
         } finally {
             flock($handle, LOCK_UN);
             fclose($handle);
