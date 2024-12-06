@@ -26,8 +26,8 @@ use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Services\SwaggerService;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
-use RonasIT\AutoDoc\Tests\Support\Mock\TestImplementation;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use stdClass;
 
@@ -714,7 +714,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataWithBindingInterface()
     {
-        $this->app->bind(TestContract::class,TestImplementation::class);
+        $this->app->bind(TestContract::class,TestRequest::class);
         $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_get_user_request'));
 
         $service = app(SwaggerService::class);
