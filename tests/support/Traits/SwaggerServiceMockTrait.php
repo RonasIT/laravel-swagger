@@ -64,6 +64,23 @@ trait SwaggerServiceMockTrait
         $this->app->instance($driverClass, $driver);
     }
 
+    protected function mockDriverGetTmpDataAndGetSharedTmpData(array $tmpData, array $sharedTmpData, string $driverClass = LocalDriver::class): void
+    {
+        $driver = $this->mockClass($driverClass, ['getTmpData', 'readJsonFromStream']);
+
+        $driver
+            ->expects($this->exactly(1))
+            ->method('getTmpData')
+            ->willReturn($tmpData);
+
+        $driver
+            ->expects($this->exactly(1))
+            ->method('readJsonFromStream')
+            ->willReturn($sharedTmpData);
+
+        $this->app->instance($driverClass, $driver);
+    }
+
     protected function mockDriverGetDocumentation($data, $driverClass = LocalDriver::class): void
     {
         $driver = $this->mockClass($driverClass, ['getDocumentation']);
