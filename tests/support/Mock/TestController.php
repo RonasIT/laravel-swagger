@@ -16,7 +16,7 @@ class TestController
     {
     }
 
-    public function testRequestWithContract(TestContract $contract)
+    public function testRequestWithContract(TestContract $contract, string $param)
     {
     }
 }
