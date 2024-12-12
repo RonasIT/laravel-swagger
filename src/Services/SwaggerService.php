@@ -647,10 +647,8 @@ class SwaggerService
         $method = $explodedController[1];
 
         $instance = app($class);
-        $route = $this->request->route();
 
         $parameters = $this->resolveClassMethodDependencies(
-            $route->parametersWithoutNulls(),
             $instance,
             $method
         );
