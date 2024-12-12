@@ -11,10 +11,10 @@ use Illuminate\Container\Container;
 
 trait GetDependenciesTrait
 {
-    protected function resolveClassMethodDependencies(array $parameters, $instance, $method)
+    protected function resolveClassMethodDependencies($instance, $method)
     {
         if (!method_exists($instance, $method)) {
-            return $parameters;
+            return [];
         }
 
         return $this->getDependencies(
