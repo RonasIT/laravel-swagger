@@ -23,6 +23,9 @@ class AutoDocControllerTest extends TestCase
         self::$localDriverFilePath ??= 'documentation.json';
         self::$documentation ??= $this->getJsonFixture('tmp_data');
 
+        if (!is_dir(self::$documentationDirectory)) {
+            mkdir(self::$documentationDirectory);
+        }
         file_put_contents(self::$documentationDirectory.self::$localDriverFilePath, json_encode(self::$documentation));
 
         config(['auto-doc.drivers.local.production_path' => self::$localDriverFilePath]);
