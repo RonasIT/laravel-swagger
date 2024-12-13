@@ -12,10 +12,9 @@ class LocalDriver extends BaseDriver
     public function __construct()
     {
         parent::__construct();
+        $this->prodFilePath = config('auto-doc.documentation_directory').DIRECTORY_SEPARATOR.config('auto-doc.drivers.local.production_path');
 
-        $this->prodFilePath = config('auto-doc.drivers.local.production_path');
-
-        if (empty($this->prodFilePath)) {
+        if (!preg_match('/\/[\w]+\.json/ms',$this->prodFilePath)) {
             throw new MissedProductionFilePathException();
         }
     }
