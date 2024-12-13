@@ -17,6 +17,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Documentation Directory
+    |--------------------------------------------------------------------------
+    |
+    | Documentation file will be stored in the determined directory
+    */
+    'documentation_directory' => storage_path('documentations'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Global application prefix
     |--------------------------------------------------------------------------
     |
@@ -128,7 +137,7 @@ return [
     'drivers' => [
         'local' => [
             'class' => LocalDriver::class,
-            'production_path' => storage_path('documentation.json'),
+            'production_path' => 'documentation.json',
         ],
         'remote' => [
             'class' => RemoteDriver::class,
