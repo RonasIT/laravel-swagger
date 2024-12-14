@@ -22,7 +22,7 @@ class LocalDriver extends BaseDriver
 
     public function saveData(): void
     {
-        file_put_contents($this->prodFilePath, json_encode($this->getTmpData()));
+        file_put_contents($this->prodFilePath, json_encode($this->getSharedTmpData()));
 
         $this->clearTmpData();
     }
