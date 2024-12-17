@@ -687,7 +687,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataWithNotExistsMethodOnController()
     {
-        $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_get_user_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_get_user_request_without_request_class'));
 
         $service = app(SwaggerService::class);
 
