@@ -11,33 +11,22 @@ use Illuminate\Container\Container;
 
 trait GetDependenciesTrait
 {
-    protected function resolveClassMethodDependencies($instance, $method)
-    {
-        if (!method_exists($instance, $method)) {
-            return [];
-        }
-
-        return $this->getDependencies(
-            new ReflectionMethod($instance, $method)
-        );
-    }
-
-    public function getDependencies(ReflectionFunctionAbstract $reflector)
+    public function resolveClassMethodDependencies(object $instance, string $method): array
     {
         return array_map(function ($parameter) {
             return $this->transformDependency($parameter);
-        }, $reflector->getParameters());
+        }, (new ReflectionMethod($instance, $method))->getParameters());
     }
 
     protected function transformDependency(ReflectionParameter $parameter)
     {
-        $class = $parameter->getClass();
+        $class = $parameter->getType();
 
         if (empty($class)) {
             return null;
         }
 
-        return interface_exists($class->name) ? $this->getClassByInterface($class->name) : $class->name;
+        return interface_exists($class->getName()) ? $this->getClassByInterface($class->getName()) : $class->getName();
     }
 
     protected function getClassByInterface($interfaceName)
