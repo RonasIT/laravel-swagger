@@ -17,15 +17,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Documentation Directory
-    |--------------------------------------------------------------------------
-    |
-    | Documentation file will be stored in the determined directory
-    */
-    'documentation_directory' => storage_path('documentations'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Global application prefix
     |--------------------------------------------------------------------------
     |
@@ -137,6 +128,7 @@ return [
     'drivers' => [
         'local' => [
             'class' => LocalDriver::class,
+            'directory' => 'documentations',
             'production_path' => 'documentation.json',
         ],
         'remote' => [
@@ -155,6 +147,7 @@ return [
             | One of the filesystems.disks config value
             */
             'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
+            'directory' => 'documentations',
             'production_path' => 'documentation.json',
         ],
     ],
