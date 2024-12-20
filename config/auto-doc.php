@@ -129,7 +129,7 @@ return [
         'local' => [
             'class' => LocalDriver::class,
             'directory' => 'documentations',
-            'production_path' => 'documentation.json',
+            'base_file_name' => 'documentation',
         ],
         'remote' => [
             'class' => RemoteDriver::class,
@@ -148,7 +148,7 @@ return [
             */
             'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
             'directory' => 'documentations',
-            'production_path' => 'documentation.json',
+            'base_file_name' => 'documentation',
         ],
     ],
 
