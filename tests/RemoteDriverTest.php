@@ -13,6 +13,7 @@ class RemoteDriverTest extends TestCase
 
     protected static array $tmpData;
     protected static RemoteDriver $remoteDriverClass;
+    protected static string $documentationDirectory;
     protected static string $tmpDocumentationFilePath;
 
     public function setUp(): void
@@ -20,7 +21,8 @@ class RemoteDriverTest extends TestCase
         parent::setUp();
 
         self::$tmpData ??= $this->getJsonFixture('tmp_data');
-        self::$tmpDocumentationFilePath ??= __DIR__ . '/../storage/temp_documentation.json';
+        self::$documentationDirectory ??= config('auto-doc.documentation_directory').DIRECTORY_SEPARATOR;
+        self::$tmpDocumentationFilePath ??= 'temp_documentation.json';
 
         self::$remoteDriverClass ??= new RemoteDriver();
     }
@@ -29,13 +31,13 @@ class RemoteDriverTest extends TestCase
     {
         self::$remoteDriverClass->saveTmpData(self::$tmpData);
 
-        $this->assertFileExists(self::$tmpDocumentationFilePath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
+        $this->assertFileExists(self::$documentationDirectory.self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$documentationDirectory.self::$tmpDocumentationFilePath);
     }
 
     public function testGetTmpData()
     {
-        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+        file_put_contents(self::$documentationDirectory.self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
         $result = self::$remoteDriverClass->getTmpData();
 
@@ -73,11 +75,11 @@ class RemoteDriverTest extends TestCase
             ])
             ->willReturn(['', 204]);
 
-        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+        file_put_contents(self::$documentationDirectory.self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
         $mock->saveData();
 
-        $this->assertFileDoesNotExist(self::$tmpDocumentationFilePath);
+        $this->assertFileDoesNotExist(self::$documentationDirectory.self::$tmpDocumentationFilePath);
     }
 
     public function testSaveDataWithoutTmpFile()
