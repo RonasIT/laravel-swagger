@@ -26,7 +26,7 @@ trait GetDependenciesTrait
             return null;
         }
 
-        return interface_exists($class->getName()) ? $this->getClassByInterface($class->getName()) : $class->getName();
+        return interface_exists($type->getName()) ? $this->getClassByInterface($type->getName()) : $type->getName();
     }
 
     protected function getClassByInterface($interfaceName)
