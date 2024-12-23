@@ -20,9 +20,9 @@ trait GetDependenciesTrait
 
     protected function transformDependency(ReflectionParameter $parameter)
     {
-        $class = $parameter->getType();
+        $type = $parameter->getType();
 
-        if (empty($class)) {
+        if (empty($type)) {
             return null;
         }
 
