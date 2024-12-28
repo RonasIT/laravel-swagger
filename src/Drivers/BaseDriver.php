@@ -10,11 +10,7 @@ abstract class BaseDriver implements SwaggerDriverContract
 
     public function __construct()
     {
-        $prodDir = config('auto-doc.documentation_directory');
-        if (!is_dir($prodDir)) {
-            mkdir($prodDir);
-        }
-        $this->tempFilePath = $prodDir.DIRECTORY_SEPARATOR.'temp_documentation.json';
+        $this->tempFilePath = storage_path('temp_documentation.json');
     }
 
     public function saveTmpData($data): void
