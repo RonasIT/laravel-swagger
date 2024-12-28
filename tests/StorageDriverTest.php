@@ -12,8 +12,8 @@ class StorageDriverTest extends TestCase
 {
     protected static StorageDriver $storageDriverClass;
     protected Filesystem $disk;
-    protected static string $documentationDirectory;
-    protected static string $productionFilePath;
+    protected static string $baseFileName;
+    protected static string $baseFile;
     protected static string $tmpDocumentationFilePath;
     protected static array $tmpData;
 
@@ -23,14 +23,19 @@ class StorageDriverTest extends TestCase
 
         $this->disk = Storage::fake('testing');
 
-        self::$documentationDirectory ??= config('auto-doc.documentation_directory').DIRECTORY_SEPARATOR;
-        self::$productionFilePath ??= 'documentation.json';
-        self::$tmpDocumentationFilePath ??= 'temp_documentation.json';
+        $documentationDirectory = config('auto-doc.drivers.storage.directory');
+        if (!str_ends_with($documentationDirectory, DIRECTORY_SEPARATOR)) {
+            $documentationDirectory .= DIRECTORY_SEPARATOR;
+        }
+
+        self::$baseFileName ??= 'documentation';
+        self::$baseFile ??= $documentationDirectory.self::$baseFileName.'.json';
+        self::$tmpDocumentationFilePath ??= storage_path('temp_documentation.json');
 
         self::$tmpData ??= $this->getJsonFixture('tmp_data');
 
         config(['auto-doc.drivers.storage.disk' => 'testing']);
-        config(['auto-doc.drivers.storage.production_path' => self::$productionFilePath]);
+        config(['auto-doc.drivers.storage.base_file_name' => self::$baseFileName]);
 
         self::$storageDriverClass = new StorageDriver();
     }
@@ -39,13 +44,13 @@ class StorageDriverTest extends TestCase
     {
         self::$storageDriverClass->saveTmpData(self::$tmpData);
 
-        $this->assertFileExists(self::$documentationDirectory.self::$tmpDocumentationFilePath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$documentationDirectory.self::$tmpDocumentationFilePath);
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
     public function testGetTmpData()
     {
-        file_put_contents(self::$documentationDirectory.self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
         $result = self::$storageDriverClass->getTmpData();
 
@@ -63,7 +68,7 @@ class StorageDriverTest extends TestCase
     {
         $this->expectException(MissedProductionFilePathException::class);
 
-        config(['auto-doc.drivers.storage.production_path' => null]);
+        config(['auto-doc.drivers.storage.base_file_name' => null]);
 
         new StorageDriver();
     }
@@ -77,19 +82,19 @@ class StorageDriverTest extends TestCase
 
     public function testSaveData()
     {
-        file_put_contents(self::$documentationDirectory.self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
         self::$storageDriverClass->saveData();
 
-        $this->disk->assertExists(self::$productionFilePath);
-        $this->assertEqualsFixture('tmp_data_non_formatted.json', $this->disk->get(self::$productionFilePath));
+        $this->disk->assertExists(self::$baseFile);
+        $this->assertEqualsFixture('tmp_data_non_formatted.json', $this->disk->get(self::$baseFile));
 
-        $this->assertFileDoesNotExist(self::$documentationDirectory.self::$tmpDocumentationFilePath);
+        $this->assertFileDoesNotExist(self::$tmpDocumentationFilePath);
     }
 
     public function testGetDocumentation()
     {
-        $this->disk->put(self::$productionFilePath, $this->getFixture('tmp_data_non_formatted.json'));
+        $this->disk->put(self::$baseFile, $this->getFixture('tmp_data_non_formatted.json'));
 
         $documentation = self::$storageDriverClass->getDocumentation();
 
