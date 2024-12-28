@@ -18,7 +18,7 @@ class LocalDriverTest extends TestCase
     {
         parent::setUp();
 
-        $documentationDirectory ??= config('auto-doc.drivers.local.directory');
+        $documentationDirectory = config('auto-doc.drivers.local.directory');
         if (!str_ends_with($documentationDirectory, DIRECTORY_SEPARATOR)) {
             $documentationDirectory .= DIRECTORY_SEPARATOR;
         }
