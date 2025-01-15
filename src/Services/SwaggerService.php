@@ -137,10 +137,13 @@ class SwaggerService
             throw new EmptyContactEmailException();
         }
 
+
+        $basePath = ltrim($this->config['basePath'], '/');
+        $basePath = blank($basePath) ? '' : '/'.$basePath;
         $data = [
             'openapi' => self::OPEN_API_VERSION,
             'servers' => [
-                ['url' => $this->getAppUrl() . $this->config['basePath']],
+                ['url' => $this->getAppUrl() . $basePath],
             ],
             'paths' => [],
             'components' => [
@@ -160,9 +163,13 @@ class SwaggerService
 
     protected function getAppUrl(): string
     {
-        $url = config('app.url');
+        $url = rtrim(config('app.url'), '/');
 
-        return str_replace(['http://', 'https://', '/'], '', $url);
+        if (!str_starts_with( $url, 'http://') && !str_starts_with($url,'https://')) {
+            $url = "http://$url";
+        }
+
+        return $url;
     }
 
     protected function generateSecurityDefinition(): ?array
