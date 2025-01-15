@@ -333,21 +333,25 @@ class SwaggerServiceTest extends TestCase
             [
                 'security' => 'laravel',
                 'savedTmpDataFixture' => 'tmp_data_request_with_empty_data_laravel',
+                'appUrl' => 'http://localhost//',
             ],
             [
                 'security' => 'jwt',
                 'savedTmpDataFixture' => 'tmp_data_request_with_empty_data_jwt',
+                'appUrl' => 'localhost//',
             ],
             [
                 'security' => 'query',
                 'savedTmpDataFixture' => 'tmp_data_request_with_empty_data_query',
+                'appUrl' => 'https://localhost//',
             ],
         ];
     }
 
     #[DataProvider('getAddEmptyData')]
-    public function testAddDataRequestWithEmptyDataLaravel(string $security, string $savedTmpDataFixture)
+    public function testAddDataRequestWithEmptyDataLaravel(string $security, string $savedTmpDataFixture, string $appUrl)
     {
+        config()->set('app.url', $appUrl);
         config([
             'auto-doc.security' => $security,
             'auto-doc.security_drivers' => [
