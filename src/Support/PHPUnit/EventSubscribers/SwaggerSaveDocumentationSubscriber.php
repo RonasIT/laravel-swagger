@@ -2,26 +2,13 @@
 
 namespace RonasIT\AutoDoc\Support\PHPUnit\EventSubscribers;
 
-use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Foundation\Application;
-use PHPUnit\Event\Application\Finished;
-use PHPUnit\Event\Application\FinishedSubscriber;
-use RonasIT\AutoDoc\Services\SwaggerService;
+use PHPUnit\Event\TestRunner\ExecutionFinished;
+use PHPUnit\Event\TestRunner\ExecutionFinishedSubscriber;
 
-final class SwaggerSaveDocumentationSubscriber implements FinishedSubscriber
+final class SwaggerSaveDocumentationSubscriber implements ExecutionFinishedSubscriber
 {
-    public function notify(Finished $event): void
+    public function notify(ExecutionFinished $event): void
     {
-        $this->createApplication();
-
-        app(SwaggerService::class)->saveProductionData();
-    }
-
-    protected function createApplication(): void
-    {
-        $app = require Application::inferBasePath() . '/bootstrap/app.php';
-
-        $app->loadEnvironmentFrom('.env.testing');
-        $app->make(Kernel::class)->bootstrap();
+        shell_exec('php artisan swagger:push-documentation');
     }
 }
