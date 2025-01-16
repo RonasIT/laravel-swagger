@@ -1,0 +1,67 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Invalid API"
+  },
+  "paths": {
+    "/users/{username}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "username",
+            "in": "body",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "hello world"
+          }
+        }
+      },
+      "post": {
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "foo",
+            "in": "body",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "bar",
+            "in": "formData",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "hello world"
+          }
+        }
+      }
+    }
+  }
+}

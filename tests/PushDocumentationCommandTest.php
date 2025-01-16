@@ -1,17 +1,17 @@
 <?php
 
-namespace RonasIT\Support\Tests;
+namespace RonasIT\AutoDoc\Tests;
+
+use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 
 class PushDocumentationCommandTest extends TestCase
 {
+    use SwaggerServiceMockTrait;
+
     public function testHandle()
     {
+        $this->mockDriverSaveData();
+
         $this->artisan('swagger:push-documentation')->assertExitCode(0);
-
-        $this->assertFileExists(storage_path('documentation.json'));
-
-        $docContent = file_get_contents(storage_path('documentation.json'));
-
-        $this->assertEqualsJsonFixture('documentation', json_decode($docContent, true));
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace RonasIT\Support\Tests;
+namespace RonasIT\AutoDoc\Tests;
 
-use RonasIT\Support\AutoDoc\Http\Middleware\AutoDocMiddleware;
-use RonasIT\Support\Tests\Support\Traits\SwaggerServiceMockTrait;
+use RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware;
+use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 
 class AutoDocMiddlewareTest extends TestCase
 {
@@ -11,9 +11,7 @@ class AutoDocMiddlewareTest extends TestCase
 
     public function testHandle()
     {
-        config(['auto-doc.security' => 'laravel']);
-
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_search_roles_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_search_roles_request'));
 
         $request = $this->generateGetRolesRequest();
 

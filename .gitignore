@@ -16,3 +16,4 @@ bootstrap/cache/
 .rocketeer/
 
 .phpunit.result.cache
+.phpunit.cache

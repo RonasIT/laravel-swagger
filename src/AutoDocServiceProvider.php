@@ -1,9 +1,9 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc;
+namespace RonasIT\AutoDoc;
 
 use Illuminate\Support\ServiceProvider;
-use RonasIT\Support\AutoDoc\Commands\PushDocumentationCommand;
+use RonasIT\AutoDoc\Commands\PushDocumentationCommand;
 
 class AutoDocServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,7 @@ class AutoDocServiceProvider extends ServiceProvider
         ], 'config');
 
         $this->publishes([
-            __DIR__ . '/../resources/views/swagger-description.blade.php' => resource_path('views/swagger-description.blade.php'),
+            __DIR__ . '/../resources/views/swagger-description.blade.php' => resource_path('views/vendor/auto-doc/swagger-description.blade.php'),
         ], 'view');
 
         if (!$this->app->routesAreCached()) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Support\Tests\Support\Mock;
+namespace RonasIT\AutoDoc\Tests\Support\Mock;
 
 class TestController
 {
@@ -16,7 +16,7 @@ class TestController
     {
     }
 
-    public function testRequestWithContract(TestContract $contract)
+    public function testRequestWithContract(TestContract $contract, string $param)
     {
     }
 }

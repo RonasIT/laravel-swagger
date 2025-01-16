@@ -1,0 +1,85 @@
+{
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "localhost/"
+        }
+    ],
+    "paths": {
+        "/users/roles": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "string, required",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operation successfully done",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": [
+                                    {
+                                        "id": 1,
+                                        "name": "admin",
+                                        "users": [
+                                            {
+                                                "id": 1,
+                                                "name": "admin"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": 2,
+                                        "name": "client",
+                                        "users": [
+                                            {
+                                                "id": 2,
+                                                "name": "first_client"
+                                            },
+                                            {
+                                                "id": 3,
+                                                "name": "second_client"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "description": "",
+                "summary": "test"
+            }
+        }
+    },
+    "components": {
+        "schemas": {}
+    },
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    }
+}

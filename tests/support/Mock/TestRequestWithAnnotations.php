@@ -1,10 +1,11 @@
 <?php
 
-namespace RonasIT\Support\Tests\Support\Mock;
+namespace RonasIT\AutoDoc\Tests\Support\Mock;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
+ * @deprecated
  * @summary Request class to validate input data
  * @description Description of the request class
  * @_200 The operation was completed successfully

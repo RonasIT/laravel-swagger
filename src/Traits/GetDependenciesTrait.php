@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Traits;
+namespace RonasIT\AutoDoc\Traits;
 
 use ReflectionMethod;
 use ReflectionFunction;
@@ -11,33 +11,22 @@ use Illuminate\Container\Container;
 
 trait GetDependenciesTrait
 {
-    protected function resolveClassMethodDependencies(array $parameters, $instance, $method)
-    {
-        if (!method_exists($instance, $method)) {
-            return $parameters;
-        }
-
-        return $this->getDependencies(
-            new ReflectionMethod($instance, $method)
-        );
-    }
-
-    public function getDependencies(ReflectionFunctionAbstract $reflector)
+    public function resolveClassMethodDependencies(object $instance, string $method): array
     {
         return array_map(function ($parameter) {
             return $this->transformDependency($parameter);
-        }, $reflector->getParameters());
+        }, (new ReflectionMethod($instance, $method))->getParameters());
     }
 
     protected function transformDependency(ReflectionParameter $parameter)
     {
-        $class = $parameter->getClass();
+        $type = $parameter->getType();
 
-        if (empty($class)) {
+        if (empty($type)) {
             return null;
         }
 
-        return interface_exists($class->name) ? $this->getClassByInterface($class->name) : $class->name;
+        return interface_exists($type->getName()) ? $this->getClassByInterface($type->getName()) : $type->getName();
     }
 
     protected function getClassByInterface($interfaceName)

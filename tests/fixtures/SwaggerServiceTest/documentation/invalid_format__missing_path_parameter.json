@@ -1,0 +1,50 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Invalid API"
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bar",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "username",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "username",
+            "in": "body",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "hello world"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Services;
+namespace RonasIT\AutoDoc\Services;
 
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
@@ -8,22 +8,31 @@ use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use RonasIT\Support\AutoDoc\Exceptions\InvalidDriverClassException;
-use RonasIT\Support\AutoDoc\Exceptions\LegacyConfigException;
-use RonasIT\Support\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
-use RonasIT\Support\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
-use RonasIT\Support\AutoDoc\Traits\GetDependenciesTrait;
+use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
+use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
+use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
+use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
+use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
+use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
+use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
+use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
+use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
+use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @property SwaggerDriverInterface $driver
+ * @property SwaggerDriverContract $driver
  */
 class SwaggerService
 {
     use GetDependenciesTrait;
 
+    public const string OPEN_API_VERSION = '3.1.0';
+
     protected $driver;
+    protected $openAPIValidator;
 
     protected $data;
     protected $config;
@@ -37,7 +46,7 @@ class SwaggerService
     private $item;
     private $security;
 
-    protected $ruleToTypeMap = [
+    protected array $ruleToTypeMap = [
         'array' => 'object',
         'boolean' => 'boolean',
         'date' => 'date',
@@ -45,16 +54,22 @@ class SwaggerService
         'integer' => 'integer',
         'numeric' => 'double',
         'string' => 'string',
-        'int' => 'integer'
+        'int' => 'integer',
+    ];
+
+    protected $booleanAnnotations = [
+        'deprecated',
     ];
 
     public function __construct(Container $container)
     {
+        $this->openAPIValidator = app(SwaggerSpecValidator::class);
+
         $this->initConfig();
 
         $this->setDriver();
 
-        if (config('app.env') == 'testing') {
+        if (config('app.env') === 'testing') {
             $this->container = $container;
 
             $this->security = $this->config['security'];
@@ -84,6 +99,18 @@ class SwaggerService
         if (version_compare($packageConfigs['config_version'], $version, '>')) {
             throw new LegacyConfigException();
         }
+
+        $documentationViewer = (string) Arr::get($this->config, 'documentation_viewer');
+
+        if (!view()->exists("auto-doc::documentation-{$documentationViewer}")) {
+            throw new UnsupportedDocumentationViewerException($documentationViewer);
+        }
+
+        $securityDriver = Arr::get($this->config, 'security');
+
+        if ($securityDriver && !array_key_exists($securityDriver, Arr::get($this->config, 'security_drivers'))) {
+            throw new WrongSecurityConfigException();
+        }
     }
 
     protected function setDriver()
@@ -97,27 +124,30 @@ class SwaggerService
             $this->driver = app($className);
         }
 
-        if (!$this->driver instanceof SwaggerDriverInterface) {
+        if (!$this->driver instanceof SwaggerDriverContract) {
             throw new InvalidDriverClassException($driver);
         }
     }
 
     protected function generateEmptyData(): array
     {
-        $data = [
-            'swagger' => Arr::get($this->config, 'swagger.version'),
-            'host' => $this->getAppUrl(),
-            'basePath' => $this->config['basePath'],
-            'schemes' => $this->config['schemes'],
-            'paths' => [],
-            'definitions' => $this->config['definitions']
-        ];
-
-        $info = $this->prepareInfo($this->config['info']);
-
-        if (!empty($info)) {
-            $data['info'] = $info;
+        // client must enter at least `contact.email` to generate a default `info` block
+        // otherwise an exception will be called
+        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
+            throw new EmptyContactEmailException();
         }
+
+        $data = [
+            'openapi' => self::OPEN_API_VERSION,
+            'servers' => [
+                ['url' => $this->getAppUrl() . $this->config['basePath']],
+            ],
+            'paths' => [],
+            'components' => [
+                'schemas' => $this->config['definitions'],
+            ],
+            'info' => $this->prepareInfo($this->config['info'])
+        ];
 
         $securityDefinitions = $this->generateSecurityDefinition();
 
@@ -125,24 +155,20 @@ class SwaggerService
             $data['securityDefinitions'] = $securityDefinitions;
         }
 
-        if (!empty($data['info']['description'])) {
-            $data['info']['description'] = view($data['info']['description'])->render();
-        }
-
         return $data;
     }
 
-    protected function getAppUrl()
+    protected function getAppUrl(): string
     {
         $url = config('app.url');
 
         return str_replace(['http://', 'https://', '/'], '', $url);
     }
 
-    protected function generateSecurityDefinition()
+    protected function generateSecurityDefinition(): ?array
     {
         if (empty($this->security)) {
-            return '';
+            return null;
         }
 
         return [
@@ -152,23 +178,11 @@ class SwaggerService
 
     protected function generateSecurityDefinitionObject($type): array
     {
-        switch ($type) {
-            case 'jwt':
-                return [
-                    'type' => 'apiKey',
-                    'name' => 'authorization',
-                    'in' => 'header'
-                ];
-
-            case 'laravel':
-                return [
-                    'type' => 'apiKey',
-                    'name' => 'Cookie',
-                    'in' => 'header'
-                ];
-            default:
-                throw new WrongSecurityConfigException();
-        }
+        return [
+            'type' => $this->config['security_drivers'][$type]['type'],
+            'name' => $this->config['security_drivers'][$type]['name'],
+            'in' => $this->config['security_drivers'][$type]['in']
+        ];
     }
 
     public function addData(Request $request, $response)
@@ -228,13 +242,34 @@ class SwaggerService
             $result[] = [
                 'in' => 'path',
                 'name' => $key,
-                'description' => '',
+                'description' => $this->generatePathDescription($key),
                 'required' => true,
-                'type' => 'string'
+                'schema' => [
+                    'type' => 'string'
+                ]
             ];
         }
 
         return $result;
+    }
+
+    protected function generatePathDescription(string $key): string
+    {
+        $expression = Arr::get($this->request->route()->wheres, $key);
+
+        if (empty($expression)) {
+            return '';
+        }
+
+        $exploded = explode('|', $expression);
+
+        foreach ($exploded as $value) {
+            if (!preg_match('/^[a-zA-Z0-9\.]+$/', $value)) {
+                return  "regexp: {$expression}";
+            }
+        }
+
+        return 'in: ' . implode(',', $exploded);
     }
 
     protected function parseRequest()
@@ -253,8 +288,64 @@ class SwaggerService
 
         $annotations = $this->getClassAnnotations($concreteRequest);
 
+        $this->markAsDeprecated($annotations);
         $this->saveParameters($concreteRequest, $annotations);
         $this->saveDescription($concreteRequest, $annotations);
+    }
+
+    protected function markAsDeprecated(array $annotations)
+    {
+        $this->item['deprecated'] = Arr::get($annotations, 'deprecated', false);
+    }
+
+    protected function saveResponseSchema(?array $content, string $definition): void
+    {
+        $schemaProperties = [];
+        $schemaType = 'object';
+
+        if (!empty($content) && array_is_list($content)) {
+            $this->saveListResponseDefinitions($content, $schemaProperties);
+
+            $schemaType = 'array';
+        } else {
+            $this->saveObjectResponseDefinitions($content, $schemaProperties, $definition);
+        }
+
+        $this->data['components']['schemas'][$definition] = [
+            'type' => $schemaType,
+            'properties' => $schemaProperties
+        ];
+    }
+
+    protected function saveListResponseDefinitions(array $content, array &$schemaProperties): void
+    {
+        $types = [];
+
+        foreach ($content as $value) {
+            $type = gettype($value);
+
+            if (!in_array($type, $types)) {
+                $types[] = $type;
+                $schemaProperties['items']['allOf'][]['type'] = $type;
+            }
+        }
+    }
+
+    protected function saveObjectResponseDefinitions(array $content, array &$schemaProperties, string $definition): void
+    {
+        $properties = Arr::get($this->data, "components.schemas.{$definition}", []);
+
+        foreach ($content as $name => $value) {
+            $property = Arr::get($properties, "properties.{$name}", []);
+
+            if (is_null($value)) {
+                $property['nullable'] = true;
+            } else {
+                $property['type'] = gettype($value);
+            }
+
+            $schemaProperties[$name] = $property;
+        }
     }
 
     protected function parseResponse($response)
@@ -275,7 +366,7 @@ class SwaggerService
 
         $responseExampleLimitCount = config('auto-doc.response_example_limit_count');
 
-        $content = json_decode($response->getContent(), true);
+        $content = json_decode($response->getContent(), true) ?? [];
 
         if (!empty($responseExampleLimitCount)) {
             if (!empty($content['data'])) {
@@ -301,6 +392,15 @@ class SwaggerService
                 $produce
             );
         }
+
+        $action = Str::ucfirst($this->getActionName($this->uri));
+        $definition = "{$this->method}{$action}{$code}ResponseObject";
+
+        $this->saveResponseSchema($content, $definition);
+
+        if (is_array($this->item['responses'][$code])) {
+            $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
+        }
     }
 
     protected function saveExample($code, $content, $produce)
@@ -308,7 +408,8 @@ class SwaggerService
         $description = $this->getResponseDescription($code);
         $availableContentTypes = [
             'application',
-            'text'
+            'text',
+            'image',
         ];
         $explodedContentType = explode('/', $produce);
 
@@ -321,17 +422,23 @@ class SwaggerService
 
     protected function makeResponseExample($content, $mimeType, $description = ''): array
     {
-        $responseExample = ['description' => $description];
+        $example = match ($mimeType) {
+            'application/json' => json_decode($content, true),
+            'application/pdf' => base64_encode($content),
+            default => $content,
+        };
 
-        if ($mimeType === 'application/json') {
-            $responseExample['schema'] = ['example' => json_decode($content, true)];
-        } elseif ($mimeType === 'application/pdf') {
-            $responseExample['schema'] = ['example' => base64_encode($content)];
-        } else {
-            $responseExample['examples']['example'] = $content;
-        }
-
-        return $responseExample;
+        return [
+            'description' => $description,
+            'content' => [
+                $mimeType => [
+                    'schema' => [
+                        'type' => 'object',
+                    ],
+                    'example' => $example,
+                ],
+            ],
+        ];
     }
 
     protected function saveParameters($request, array $annotations)
@@ -399,7 +506,7 @@ class SwaggerService
             }
 
             $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter) use ($parameter) {
-                return $existedParameter['name'] == $parameter;
+                return $existedParameter['name'] === $parameter;
             });
 
             if (empty($existedParameter)) {
@@ -407,7 +514,9 @@ class SwaggerService
                     'in' => 'query',
                     'name' => $parameter,
                     'description' => $description,
-                    'type' => $this->getParameterType($validation)
+                    'schema' => [
+                        'type' => $this->getParameterType($validation),
+                    ],
                 ];
                 if (in_array('required', $validation)) {
                     $parameterDefinition['required'] = true;
@@ -422,14 +531,18 @@ class SwaggerService
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
-                $this->item['parameters'][] = [
-                    'in' => 'body',
-                    'name' => 'body',
+                $type = $this->request->header('Content-Type', 'application/json');
+
+                $this->item['requestBody'] = [
+                    'content' => [
+                        $type => [
+                            'schema' => [
+                                '$ref' => "#/components/schemas/{$actionName}Object",
+                            ],
+                        ],
+                    ],
                     'description' => '',
                     'required' => true,
-                    'schema' => [
-                        "\$ref" => "#/definitions/{$actionName}Object"
-                    ]
                 ];
             }
 
@@ -462,7 +575,7 @@ class SwaggerService
         }
 
         $data['example'] = $this->generateExample($data['properties']);
-        $this->data['definitions'][$objectName . 'Object'] = $data;
+        $this->data['components']['schemas']["{$objectName}Object"] = $data;
     }
 
     protected function getParameterType(array $validation): string
@@ -503,11 +616,8 @@ class SwaggerService
     {
         $requestParametersCount = count($this->request->all());
 
-        if (isset($this->data['definitions'][$actionName . 'Object']['properties'])) {
-            $objectParametersCount = count($this->data['definitions'][$actionName . 'Object']['properties']);
-        } else {
-            $objectParametersCount = 0;
-        }
+        $properties = Arr::get($this->data, "components.schemas.{$actionName}Object.properties", []);
+        $objectParametersCount = count($properties);
 
         return $requestParametersCount > $objectParametersCount;
     }
@@ -517,7 +627,7 @@ class SwaggerService
         $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
 
         $bodyParamExisted = Arr::where($parameters, function ($value) {
-            return $value['name'] == 'body';
+            return $value['name'] === 'body';
         });
 
         return empty($bodyParamExisted);
@@ -527,7 +637,7 @@ class SwaggerService
     {
         $controller = $this->request->route()->getActionName();
 
-        if ($controller == 'Closure') {
+        if ($controller === 'Closure') {
             return null;
         }
 
@@ -536,12 +646,12 @@ class SwaggerService
         $class = $explodedController[0];
         $method = $explodedController[1];
 
-        $instance = app($class);
-        $route = $this->request->route();
+        if (!method_exists($class, $method)) {
+            return null;
+        }
 
         $parameters = $this->resolveClassMethodDependencies(
-            $route->parametersWithoutNulls(),
-            $instance,
+            app($class),
             $method
         );
 
@@ -615,16 +725,27 @@ class SwaggerService
 
     protected function requestSupportAuth(): bool
     {
-        switch ($this->security) {
-            case 'jwt':
-                $header = $this->request->header('authorization');
+        $security = Arr::get($this->config, 'security');
+        $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
+
+        switch (Arr::get($securityDriver, 'in')) {
+            case 'header':
+                // TODO Change this logic after migration on Swagger 3.0
+                // Swagger 2.0 does not support cookie authorization.
+                $securityToken = $this->request->hasHeader($securityDriver['name'])
+                    ? $this->request->header($securityDriver['name'])
+                    : $this->request->cookie($securityDriver['name']);
+
                 break;
-            case 'laravel':
-                $header = $this->request->cookie('__ym_uid');
+            case 'query':
+                $securityToken = $this->request->query($securityDriver['name']);
+
                 break;
+            default:
+                $securityToken = null;
         }
 
-        return !empty($header);
+        return !empty($securityToken);
     }
 
     protected function parseRequestName($request)
@@ -666,6 +787,10 @@ class SwaggerService
         return Str::camel($action);
     }
 
+    /**
+     * @deprecated method is not in use
+     * @codeCoverageIgnore
+     */
     protected function saveTempData()
     {
         $exportFile = Arr::get($this->config, 'files.temporary');
@@ -683,41 +808,20 @@ class SwaggerService
     {
         $documentation = $this->driver->getDocumentation();
 
+        $this->openAPIValidator->validate($documentation);
+
         $additionalDocs = config('auto-doc.additional_paths', []);
 
         foreach ($additionalDocs as $filePath) {
-            $fullFilePath = base_path($filePath);
+            try {
+                $additionalDocContent = $this->getOpenAPIFileContent(base_path($filePath));
+            } catch (DocFileNotExistsException|EmptyDocFileException|InvalidSwaggerSpecException $exception) {
+                report($exception);
 
-            if (file_exists($fullFilePath)) {
-                $fileContent = json_decode(file_get_contents($fullFilePath), true);
-
-                $paths = array_keys($fileContent['paths']);
-
-                foreach ($paths as $path) {
-                    $additionalDocPath = $fileContent['paths'][$path];
-
-                    if (empty($documentation['paths'][$path])) {
-                        $documentation['paths'][$path] = $additionalDocPath;
-                    } else {
-                        $methods = array_keys($documentation['paths'][$path]);
-                        $additionalDocMethods = array_keys($additionalDocPath);
-
-                        foreach ($additionalDocMethods as $method) {
-                            if (!in_array($method, $methods)) {
-                                $documentation['paths'][$path][$method] = $additionalDocPath[$method];
-                            }
-                        }
-                    }
-                }
-
-                $definitions = array_keys($fileContent['definitions']);
-
-                foreach ($definitions as $definition) {
-                    if (empty($documentation['definitions'][$definition])) {
-                        $documentation['definitions'][$definition] = $fileContent['definitions'][$definition];
-                    }
-                }
+                continue;
             }
+
+            $this->mergeOpenAPIDocs($documentation, $additionalDocContent);
         }
 
         return $documentation;
@@ -729,7 +833,7 @@ class SwaggerService
         $ret = $matches[0];
 
         foreach ($ret as &$match) {
-            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+            $match = ($match === strtoupper($match)) ? strtolower($match) : lcfirst($match);
         }
 
         return implode('_', $ret);
@@ -786,6 +890,10 @@ class SwaggerService
                 $paramName = str_replace('@', '', array_shift($exploded));
                 $paramValue = implode(' ', $exploded);
 
+                if (in_array($paramName, $this->booleanAnnotations)) {
+                    $paramValue = true;
+                }
+
                 $result[$paramName] = $paramValue;
             }
         }
@@ -825,11 +933,7 @@ class SwaggerService
         return $values[$type];
     }
 
-    /**
-     * @param $info
-     * @return mixed
-     */
-    protected function prepareInfo($info)
+    protected function prepareInfo(array $info): array
     {
         if (empty($info)) {
             return $info;
@@ -840,10 +944,64 @@ class SwaggerService
                 unset($info['license'][$key]);
             }
         }
+
         if (empty($info['license'])) {
             unset($info['license']);
         }
 
+        if (!empty($info['description'])) {
+            $info['description'] = view($info['description'])->render();
+        }
+
         return $info;
+    }
+
+    protected function getOpenAPIFileContent(string $filePath): array
+    {
+        if (!file_exists($filePath)) {
+            throw new DocFileNotExistsException($filePath);
+        }
+
+        $fileContent = json_decode(file_get_contents($filePath), true);
+
+        if (empty($fileContent)) {
+            throw new EmptyDocFileException($filePath);
+        }
+
+        $this->openAPIValidator->validate($fileContent);
+
+        return $fileContent;
+    }
+
+    protected function mergeOpenAPIDocs(array &$documentation, array $additionalDocumentation): void
+    {
+        $paths = array_keys($additionalDocumentation['paths']);
+
+        foreach ($paths as $path) {
+            $additionalDocPath = $additionalDocumentation['paths'][$path];
+
+            if (empty($documentation['paths'][$path])) {
+                $documentation['paths'][$path] = $additionalDocPath;
+            } else {
+                $methods = array_keys($documentation['paths'][$path]);
+                $additionalDocMethods = array_keys($additionalDocPath);
+
+                foreach ($additionalDocMethods as $method) {
+                    if (!in_array($method, $methods)) {
+                        $documentation['paths'][$path][$method] = $additionalDocPath[$method];
+                    }
+                }
+            }
+        }
+
+        $definitions = array_keys($additionalDocumentation['components']['schemas']);
+
+        foreach ($definitions as $definition) {
+            $documentation = Arr::add(
+                array: $documentation,
+                key: "components.schemas.{$definition}",
+                value: $additionalDocumentation['components']['schemas'][$definition],
+            );
+        }
     }
 }

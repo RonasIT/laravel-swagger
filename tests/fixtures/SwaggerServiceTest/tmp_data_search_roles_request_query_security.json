@@ -1,0 +1,125 @@
+{
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "localhost/"
+        }
+    ],
+    "paths": {
+        "/users/roles": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "string, required",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "description": "integer, with_to_array_rule_string_name",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "is_email_enabled",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "test_rule_without_to_string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operation successfully done",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getUsersroles200ResponseObject",
+                                    "type": "object"
+                                },
+                                "example": [
+                                    {
+                                        "id": 1,
+                                        "name": "admin",
+                                        "users": [
+                                            {
+                                                "id": 1,
+                                                "name": "admin"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": 2,
+                                        "name": "client",
+                                        "users": [
+                                            {
+                                                "id": 2,
+                                                "name": "first_client"
+                                            },
+                                            {
+                                                "id": 3,
+                                                "name": "second_client"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "description": "",
+                "summary": "test",
+                "deprecated": false
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "getUsersroles200ResponseObject": {
+                "type": "array",
+                "properties": {
+                    "items": {
+                        "allOf": [
+                            {
+                                "type": "array"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    },
+    "securityDefinitions": {
+        "query": {
+            "type": "apiKey",
+            "name": "authorization",
+            "in": "header"
+        }
+    }
+}

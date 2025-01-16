@@ -1,12 +1,12 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Drivers;
+namespace RonasIT\AutoDoc\Drivers;
 
-use RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface;
+use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 
-abstract class BaseDriver implements SwaggerDriverInterface
+abstract class BaseDriver implements SwaggerDriverContract
 {
-    protected $tempFilePath;
+    protected string $tempFilePath;
 
     public function __construct()
     {

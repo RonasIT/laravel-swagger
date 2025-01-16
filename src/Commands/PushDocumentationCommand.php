@@ -1,9 +1,9 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Commands;
+namespace RonasIT\AutoDoc\Commands;
 
 use Illuminate\Console\Command;
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Services\SwaggerService;
 
 class PushDocumentationCommand extends Command
 {

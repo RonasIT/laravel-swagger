@@ -1,8 +1,10 @@
 {
-  "swagger": "2.0",
-  "host": "localhost",
-  "basePath": "/",
-  "schemes": [],
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "/users": {
       "post": {
@@ -13,47 +15,53 @@
         "produces": [
           "application/json"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/usersObject"
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/usersObject"
+              }
             }
-          }
-        ],
+          },
+          "required": true,
+          "description": ""
+        },
         "responses": {
           "200": {
             "description": "Operation successfully done",
-            "schema": {
-              "example": [
-                {
-                  "id": 1,
-                  "name": "admin",
-                  "users": [
-                    {
-                      "id": 1,
-                      "name": "admin"
-                    }
-                  ]
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postUsers200ResponseObject",
+                  "type": "object"
                 },
-                {
-                  "id": 2,
-                  "name": "client",
-                  "users": [
-                    {
-                      "id": 2,
-                      "name": "first_client"
-                    },
-                    {
-                      "id": 3,
-                      "name": "second_client"
-                    }
-                  ]
-                }
-              ]
+                "example": [
+                  {
+                    "id": 1,
+                    "name": "admin",
+                    "users": [
+                      {
+                        "id": 1,
+                        "name": "admin"
+                      }
+                    ]
+                  },
+                  {
+                    "id": 2,
+                    "name": "client",
+                    "users": [
+                      {
+                        "id": 2,
+                        "name": "first_client"
+                      },
+                      {
+                        "id": 3,
+                        "name": "second_client"
+                      }
+                    ]
+                  }
+                ]}
             }
           }
         },
@@ -63,35 +71,50 @@
           }
         ],
         "description": "",
-        "summary": "test"
+        "summary": "test",
+        "deprecated": false
       }
     }
   },
-  "definitions": {
-    "usersObject": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": ""
+  "components": {
+    "schemas": {
+      "usersObject": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": ""
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "with_to_array_rule_string_name"
+          },
+          "is_email_enabled": {
+            "type": "string",
+            "description": "test_rule_without_to_string"
+          }
         },
-        "user_id": {
-          "type": "integer",
-          "description": "with_to_array_rule_string_name"
+        "example": {
+          "query": null,
+          "first_name": "John",
+          "last_name": "Doe",
+          "license": "[uploaded_file]",
+          "notification_settings": "RonasIT\\AutoDoc\\Tests\\Support\\Mock\\TestNotificationSetting"
         },
-        "is_email_enabled": {
-          "type": "string",
-          "description": "test_rule_without_to_string"
+        "required": ["query"]
+      },
+      "postUsers200ResponseObject": {
+        "type": "array",
+        "properties": {
+          "items": {
+            "allOf": [
+              {
+                "type": "array"
+              }
+            ]
+          }
         }
-      },
-      "example": {
-        "query": null,
-        "first_name": "John",
-        "last_name": "Doe",
-        "license": "[uploaded_file]",
-        "notification_settings": "RonasIT\\Support\\Tests\\Support\\Mock\\TestNotificationSetting"
-      },
-      "required": ["query"]
+      }
     }
   },
   "info": {

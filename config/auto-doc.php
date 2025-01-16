@@ -1,8 +1,8 @@
 <?php
 
-use RonasIT\Support\AutoDoc\Drivers\LocalDriver;
-use RonasIT\Support\AutoDoc\Drivers\RemoteDriver;
-use RonasIT\Support\AutoDoc\Drivers\StorageDriver;
+use RonasIT\AutoDoc\Drivers\LocalDriver;
+use RonasIT\AutoDoc\Drivers\RemoteDriver;
+use RonasIT\AutoDoc\Drivers\StorageDriver;
 
 return [
 
@@ -40,22 +40,19 @@ return [
         | Documentation Template
         |--------------------------------------------------------------------------
         |
-        | You can use your custom documentation view
+        | You can use your custom documentation view.
         */
         'description' => 'auto-doc::swagger-description',
         'version' => '0.0.0',
-        'title' => 'Name of Your Application',
+        'title' => env('APP_NAME', 'Name of Your Application'),
         'termsOfService' => '',
         'contact' => [
-            'email' => 'your@email.com'
+            'email' => null
         ],
         'license' => [
             'name' => '',
-            'url' => ''
-        ]
-    ],
-    'swagger' => [
-        'version' => '2.0'
+            'url' => '',
+        ],
     ],
 
     /*
@@ -76,9 +73,22 @@ return [
     |--------------------------------------------------------------------------
     |
     | Library name, which used to secure the project.
-    | Available values: "jwt", "laravel", "null"
+    | Should have one of the key from the `security_drivers` config
     */
     'security' => '',
+    'security_drivers' => [
+        'jwt' => [
+            'type' => 'apiKey',
+            'name' => 'Authorization',
+            'in' => 'header',
+        ],
+        'laravel' => [
+            'type' => 'apiKey',
+            'name' => '__ym_uid',
+            'in' => 'cookie',
+        ],
+    ],
+
     'defaults' => [
 
         /*
@@ -89,8 +99,8 @@ return [
         'code-descriptions' => [
             '200' => 'Operation successfully done',
             '204' => 'Operation successfully done',
-            '404' => 'This entity not found'
-        ]
+            '404' => 'This entity not found',
+        ],
     ],
 
     /*
@@ -100,20 +110,30 @@ return [
     |
     | The name of driver, which will collect and save documentation
     | Feel free to use your own driver class which should be inherited from
-    | `RonasIT\Support\AutoDoc\Interfaces\SwaggerDriverInterface` interface,
+    | `RonasIT\AutoDoc\Contracts\SwaggerDriverContract` interface,
     | or one of our drivers from the `drivers` config:
     */
     'driver' => env('SWAGGER_DRIVER', 'local'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAPI Spec viewer
+    |--------------------------------------------------------------------------
+    |
+    | Tool for rendering API documentation in HTML format.
+    | Available values: "swagger", "elements", "rapidoc"
+    */
+    'documentation_viewer' => env('SWAGGER_SPEC_VIEWER', 'swagger'),
+
     'drivers' => [
         'local' => [
             'class' => LocalDriver::class,
-            'production_path' => storage_path('documentation.json')
+            'production_path' => storage_path('documentation.json'),
         ],
         'remote' => [
             'class' => RemoteDriver::class,
             'key' => env('SWAGGER_REMOTE_DRIVER_KEY', 'project_name'),
-            'url' => env('SWAGGER_REMOTE_DRIVER_URL', 'https://example.com')
+            'url' => env('SWAGGER_REMOTE_DRIVER_URL', 'https://example.com'),
         ],
         'storage' => [
             'class' => StorageDriver::class,
@@ -126,8 +146,8 @@ return [
             | One of the filesystems.disks config value
             */
             'disk' => env('SWAGGER_STORAGE_DRIVER_DISK', 'public'),
-            'production_path' => 'documentation.json'
-        ]
+            'production_path' => 'documentation.json',
+        ],
     ],
 
     /*
@@ -161,8 +181,8 @@ return [
     */
     'display_environments' => [
         'local',
-        'development'
+        'development',
     ],
 
-    'config_version' => '2.4'
+    'config_version' => '2.8',
 ];

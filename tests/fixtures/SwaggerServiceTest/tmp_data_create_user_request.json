@@ -1,8 +1,10 @@
 {
-  "swagger": "2.0",
-  "host": "localhost",
-  "basePath": "\/",
-  "schemes": [],
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths":
   {
     "\/api\/users":
@@ -12,60 +14,76 @@
         "tags": ["api"],
         "consumes": ["application\/x-www-form-urlencoded"],
         "produces": ["application\/json"],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "",
-            "required": true,
-           "schema": {
-             "$ref": "#/definitions/apiusersObject"
-           }
-          }
-        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/apiusersObject"
+              }
+            }
+          },
+          "required": true,
+          "description": ""
+        },
         "responses":
         {
           "403":
           {
             "description": "Forbidden",
-            "schema":
-            {
-              "example":
-              {
-                "message": "This action is unauthorized."
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postApiusers403ResponseObject",
+                  "type": "object"
+                },
+                "example": {
+                  "message": "This action is unauthorized."
+                }
               }
             }
           }
         },
         "security": [],
         "description": "",
-        "summary": "test"
+        "summary": "test",
+        "deprecated": false
       }
     }
   },
-  "definitions": {
-    "apiusersObject": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": ""
+  "components": {
+    "schemas": {
+      "apiusersObject": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": ""
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "with_to_array_rule_string_name"
+          },
+          "is_email_enabled": {
+            "type": "string",
+            "description": "test_rule_without_to_string"
+          }
         },
-        "user_id": {
-          "type": "integer",
-          "description": "with_to_array_rule_string_name"
+        "required": {
+          "0": "query"
         },
-        "is_email_enabled": {
-          "type": "string",
-          "description": "test_rule_without_to_string"
+        "example": {
+          "first_name": "andrey",
+          "last_name": "voronin"
         }
       },
-      "required": {
-        "0": "query"
-      },
-      "example": {
-        "first_name": "andrey",
-        "last_name": "voronin"
+      "postApiusers403ResponseObject": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
       }
     }
   },

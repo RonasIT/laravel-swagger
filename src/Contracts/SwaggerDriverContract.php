@@ -1,8 +1,8 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Interfaces;
+namespace RonasIT\AutoDoc\Contracts;
 
-interface SwaggerDriverInterface
+interface SwaggerDriverContract
 {
     /**
      * Save temporary data

@@ -1,52 +1,52 @@
 <?php
 
-namespace RonasIT\Support\Tests;
+namespace RonasIT\AutoDoc\Tests;
 
-use RonasIT\Support\AutoDoc\Drivers\LocalDriver;
+use RonasIT\AutoDoc\Drivers\LocalDriver;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RonasIT\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
+use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriverTest extends TestCase
 {
-    protected $localDriverClass;
-    protected $productionFilePath;
-    protected $tmpDocumentationFilePath;
-    protected $tmpData;
+    protected static LocalDriver $localDriverClass;
+    protected static string $productionFilePath;
+    protected static string $tmpDocumentationFilePath;
+    protected static array $tmpData;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->productionFilePath = __DIR__ . '/../storage/documentation.json';
-        $this->tmpDocumentationFilePath = __DIR__ . '/../storage/temp_documentation.json';
+        self::$productionFilePath ??= __DIR__ . '/../storage/documentation.json';
+        self::$tmpDocumentationFilePath ??= __DIR__ . '/../storage/temp_documentation.json';
 
-        $this->tmpData = $this->getJsonFixture('tmp_data');
+        self::$tmpData ??= $this->getJsonFixture('tmp_data');
 
-        config(['auto-doc.drivers.local.production_path' => $this->productionFilePath]);
+        config(['auto-doc.drivers.local.production_path' => self::$productionFilePath]);
 
-        $this->localDriverClass = new LocalDriver();
+        self::$localDriverClass ??= new LocalDriver();
     }
 
     public function testSaveTmpData()
     {
-        $this->localDriverClass->saveTmpData($this->tmpData);
+        self::$localDriverClass->saveTmpData(self::$tmpData);
 
-        $this->assertFileExists($this->tmpDocumentationFilePath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $this->tmpDocumentationFilePath);
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
     public function testGetTmpData()
     {
-        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
-        $result = $this->localDriverClass->getTmpData();
+        $result = self::$localDriverClass->getTmpData();
 
-        $this->assertEquals($this->tmpData, $result);
+        $this->assertEquals(self::$tmpData, $result);
     }
 
     public function testGetTmpDataNoFile()
     {
-        $result = $this->localDriverClass->getTmpData();
+        $result = self::$localDriverClass->getTmpData();
 
         $this->assertNull($result);
     }
@@ -62,28 +62,28 @@ class LocalDriverTest extends TestCase
 
     public function testGetAndSaveTmpData()
     {
-        $this->localDriverClass->saveTmpData($this->tmpData);
+        self::$localDriverClass->saveTmpData(self::$tmpData);
 
-        $this->assertEqualsJsonFixture('tmp_data', $this->localDriverClass->getTmpData());
+        $this->assertEqualsJsonFixture('tmp_data', self::$localDriverClass->getTmpData());
     }
 
     public function testSaveData()
     {
-        file_put_contents($this->tmpDocumentationFilePath, json_encode($this->tmpData));
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
-        $this->localDriverClass->saveData();
+        self::$localDriverClass->saveData();
 
-        $this->assertFileExists($this->productionFilePath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $this->productionFilePath);
+        $this->assertFileExists(self::$productionFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$productionFilePath);
 
-        $this->assertFileDoesNotExist($this->tmpDocumentationFilePath);
+        $this->assertFileDoesNotExist(self::$tmpDocumentationFilePath);
     }
 
     public function testGetDocumentation()
     {
-        file_put_contents($this->productionFilePath, json_encode($this->tmpData));
+        file_put_contents(self::$productionFilePath, json_encode(self::$tmpData));
 
-        $documentation = $this->localDriverClass->getDocumentation();
+        $documentation = self::$localDriverClass->getDocumentation();
 
         $this->assertEqualsJsonFixture('tmp_data', $documentation);
     }

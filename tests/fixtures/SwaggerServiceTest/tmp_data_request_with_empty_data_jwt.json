@@ -1,0 +1,28 @@
+{
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "localhost/"
+        }
+    ],
+    "paths": [],
+    "components": {
+        "schemas": []
+    },
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@mail.com"
+        }
+    },
+    "securityDefinitions": {
+        "jwt": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

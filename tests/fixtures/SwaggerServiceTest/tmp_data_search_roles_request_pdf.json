@@ -1,8 +1,10 @@
 {
-  "swagger": "2.0",
-  "host": "localhost",
-  "basePath": "/",
-  "schemes": [],
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "/users/roles": {
       "get": {
@@ -20,37 +22,65 @@
             "in": "query",
             "name": "query",
             "description": "string, required",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": true
           },
           {
             "in": "query",
             "name": "user_id",
             "description": "integer, with_to_array_rule_string_name",
-            "type": "integer"
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "in": "query",
             "name": "is_email_enabled",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "description": "test_rule_without_to_string"
           }
         ],
         "responses": {
           "200": {
             "description": "Operation successfully done",
-            "schema": {
-              "example": "WwogICAgewogICAgICAgICJpZCI6IDEsCiAgICAgICAgIm5hbWUiOiAiYWRtaW4iLAogICAgICAgICJ1c2VycyI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImlkIjogMSwKICAgICAgICAgICAgICAgICJuYW1lIjogImFkbWluIgogICAgICAgICAgICB9CiAgICAgICAgXQogICAgfSwKICAgIHsKICAgICAgICAiaWQiOiAyLAogICAgICAgICJuYW1lIjogImNsaWVudCIsCiAgICAgICAgInVzZXJzIjogWwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAyLAogICAgICAgICAgICAgICAgIm5hbWUiOiAiZmlyc3RfY2xpZW50IgogICAgICAgICAgICB9LAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAzLAogICAgICAgICAgICAgICAgIm5hbWUiOiAic2Vjb25kX2NsaWVudCIKICAgICAgICAgICAgfQogICAgICAgIF0KICAgIH0KXQ=="
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUsersroles200ResponseObject",
+                  "type": "object"
+                },
+                "example": "WwogICAgewogICAgICAgICJpZCI6IDEsCiAgICAgICAgIm5hbWUiOiAiYWRtaW4iLAogICAgICAgICJ1c2VycyI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImlkIjogMSwKICAgICAgICAgICAgICAgICJuYW1lIjogImFkbWluIgogICAgICAgICAgICB9CiAgICAgICAgXQogICAgfSwKICAgIHsKICAgICAgICAiaWQiOiAyLAogICAgICAgICJuYW1lIjogImNsaWVudCIsCiAgICAgICAgInVzZXJzIjogWwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAyLAogICAgICAgICAgICAgICAgIm5hbWUiOiAiZmlyc3RfY2xpZW50IgogICAgICAgICAgICB9LAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAiaWQiOiAzLAogICAgICAgICAgICAgICAgIm5hbWUiOiAic2Vjb25kX2NsaWVudCIKICAgICAgICAgICAgfQogICAgICAgIF0KICAgIH0KXQ=="
+              }
             }
           }
         },
         "security": [],
         "description": "",
-        "summary": "test"
+        "summary": "test",
+        "deprecated": false
       }
     }
   },
-  "definitions": {},
+  "components": {
+    "schemas": {
+      "getUsersroles200ResponseObject": {
+        "type": "array",
+        "properties": {
+          "items": {
+            "allOf": [
+              {
+                "type": "array"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
   "info": {
     "description": "This is automatically collected documentation",
     "version": "0.0.0",

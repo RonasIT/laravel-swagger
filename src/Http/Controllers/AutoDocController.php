@@ -1,19 +1,21 @@
 <?php
 
-namespace RonasIT\Support\AutoDoc\Http\Controllers;
+namespace RonasIT\AutoDoc\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use RonasIT\Support\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Services\SwaggerService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AutoDocController extends BaseController
 {
     protected $service;
+    protected $documentationViewer;
 
     public function __construct()
     {
         $this->service = app(SwaggerService::class);
+        $this->documentationViewer = config('auto-doc.documentation_viewer');
     }
 
     public function documentation()
@@ -28,7 +30,7 @@ class AutoDocController extends BaseController
         $currentEnvironment = config('app.env');
 
         if (in_array($currentEnvironment, config('auto-doc.display_environments'))) {
-            return view('auto-doc::documentation');
+            return view("auto-doc::documentation-{$this->documentationViewer}");
         }
 
         return response('Forbidden.', 403);
@@ -36,7 +38,7 @@ class AutoDocController extends BaseController
 
     public function getFile(Request $request, $file)
     {
-        $filePath = __DIR__ . '/../../../resources/assets/swagger/' . $file;
+        $filePath = __DIR__ . "/../../../resources/assets/{$this->documentationViewer}/" . $file;
 
         if (!file_exists($filePath)) {
             throw new NotFoundHttpException();
