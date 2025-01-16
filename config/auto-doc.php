@@ -121,7 +121,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Tool for rendering API documentation in HTML format.
-    | Available values: "swagger", "elements", "rapidoc"
+    | Available values: "swagger", "elements", "rapidoc", "scalar"
     */
     'documentation_viewer' => env('SWAGGER_SPEC_VIEWER', 'swagger'),
 
