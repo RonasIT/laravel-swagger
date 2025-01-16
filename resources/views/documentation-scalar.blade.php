@@ -12,6 +12,6 @@
         data-url="{{ config('auto-doc.global_prefix') }}/auto-doc/documentation"
         data-proxy-url="https://proxy.scalar.com"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+<script src="{{ config('auto-doc.global_prefix') }}/auto-doc/scalar-min.js"></script>
 </body>
 </html>
