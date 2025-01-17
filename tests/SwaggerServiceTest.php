@@ -626,11 +626,36 @@ class SwaggerServiceTest extends TestCase
 
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveTpmData($this->getJsonFixture('tmp_data_global_post_user_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_global_post_user_request'));
 
         $service = app(SwaggerService::class);
 
-        $request = $this->generateRequest('post', '/global/users', [
+        $request = $this->generateRequest(
+            type: 'post',
+            uri: '/global/users',
+            data: [
+                'users' => [1,2],
+                'query' => null,
+            ],
+            headers: ['authorization' => 'Bearer some_token'],
+        );
+
+        $response = $this->generateResponse('example_success_users_post_response.json');
+
+        $service->addData($request, $response);
+    }
+
+    public function testAddDataGlobalPostGlobalURIRequest()
+    {
+        $this->addGlobalPrefix();
+
+        config(['auto-doc.security' => 'jwt']);
+
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_global_post_global_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest('post', '/global', [
             'users' => [1,2],
             'query' => null
         ], [], [

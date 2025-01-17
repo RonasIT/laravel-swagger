@@ -137,7 +137,7 @@ class SwaggerSpecValidator
                 $this->validateParameters($operation, $path, $operationId);
 
                 if (!empty($operation['requestBody'])) {
-                    $this->validateRequestBody($operation, $path, $operationId);
+                    $this->validateRequestBody($operation, $operationId);
                 }
 
                 foreach ($operation['responses'] as $statusCode => $response) {
@@ -242,7 +242,7 @@ class SwaggerSpecValidator
         $this->validateBodyParameters($parameters, $operationId);
     }
 
-    protected function validateRequestBody(array $operation, string $path, string $operationId): void
+    protected function validateRequestBody(array $operation, string $operationId): void
     {
         $requestBody = Arr::get($operation, 'requestBody', []);
 
