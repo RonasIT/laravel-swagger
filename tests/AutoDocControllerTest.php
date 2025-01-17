@@ -152,6 +152,20 @@ class AutoDocControllerTest extends TestCase
         $this->assertEqualsFixture('rendered_rapidoc_documentation.html', $response->getContent());
     }
 
+    public function testGetViewScalarDocumentation()
+    {
+        config([
+            'auto-doc.display_environments' => ['testing'],
+            'auto-doc.documentation_viewer' => 'scalar',
+        ]);
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+
+        $this->assertEqualsFixture('rendered_scalar_documentation.html', $response->getContent());
+    }
+
     public function testGetViewDocumentationEnvironmentDisable()
     {
         $response = $this->get('/');
