@@ -651,7 +651,7 @@ class SwaggerServiceTest extends TestCase
 
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_global_post_global_urI_request'));
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_global_post_global_uri_request'));
 
         $service = app(SwaggerService::class);
 
