@@ -6,10 +6,10 @@
     }
   ],
   "paths": {
-    "/global/users": {
+    "/global/global": {
       "post": {
         "tags": [
-          "users"
+          "global"
         ],
         "consumes": [
           "application/x-www-form-urlencoded"
@@ -24,7 +24,7 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/globalusersObject"
+                "$ref": "#/components/schemas/globalglobalObject"
               }
             }
           }
@@ -35,7 +35,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/postGlobalusers200ResponseObject",
+                  "$ref": "#/components/schemas/postGlobalglobal200ResponseObject",
                   "type": "object"
                 },
                 "example": [
@@ -80,7 +80,7 @@
   },
   "components": {
     "schemas": {
-      "globalusersObject": {
+      "globalglobalObject": {
         "type": "object",
         "properties": {
           "query": {
@@ -107,7 +107,7 @@
           "query"
         ]
       },
-      "postGlobalusers200ResponseObject": {
+      "postGlobalglobal200ResponseObject": {
         "type": "array",
         "properties": {
           "items": {
