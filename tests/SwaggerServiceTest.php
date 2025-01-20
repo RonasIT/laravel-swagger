@@ -607,7 +607,7 @@ class SwaggerServiceTest extends TestCase
             type: 'post',
             uri: 'users',
             data: [
-                'users' => [1,2],
+                'users' => [1, 2],
                 'query' => null,
             ],
             headers: [
@@ -634,7 +634,7 @@ class SwaggerServiceTest extends TestCase
             type: 'post',
             uri: '/global/users',
             data: [
-                'users' => [1,2],
+                'users' => [1, 2],
                 'query' => null,
             ],
             headers: ['authorization' => 'Bearer some_token'],
@@ -659,7 +659,7 @@ class SwaggerServiceTest extends TestCase
             type: 'post',
             uri: '/global/global/',
             data: [
-                'users' => [1,2],
+                'users' => [1, 2],
                 'query' => null,
             ],
             headers: [
