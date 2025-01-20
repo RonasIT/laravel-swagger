@@ -676,8 +676,7 @@ class SwaggerService
         $globalPrefix = Str::after($globalPrefix, '/');
 
         $explodedUri = explode('/', $this->uri);
-
-        array_shift($explodedUri);
+        $explodedUri = array_filter($explodedUri);
 
         $tag = array_shift($explodedUri);
 
