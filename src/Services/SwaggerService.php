@@ -6,6 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
@@ -137,13 +138,10 @@ class SwaggerService
             throw new EmptyContactEmailException();
         }
 
-
-        $basePath = ltrim($this->config['basePath'], '/');
-        $basePath = blank($basePath) ? '' : '/'.$basePath;
         $data = [
             'openapi' => self::OPEN_API_VERSION,
             'servers' => [
-                ['url' => $this->getAppUrl() . $basePath],
+                ['url' => URL::query($this->config['basePath'])],
             ],
             'paths' => [],
             'components' => [
@@ -159,17 +157,6 @@ class SwaggerService
         }
 
         return $data;
-    }
-
-    protected function getAppUrl(): string
-    {
-        $url = rtrim(config('app.url'), '/');
-
-        if (!str_starts_with( $url, 'http://') && !str_starts_with($url,'https://')) {
-            $url = "http://$url";
-        }
-
-        return $url;
     }
 
     protected function generateSecurityDefinition(): ?array

@@ -22,7 +22,7 @@ trait GetDependenciesTrait
     {
         $type = $parameter->getType();
 
-        if (empty($type)) {
+        if (empty($type) || !$type instanceof \ReflectionNamedType) {
             return null;
         }
 
