@@ -7,45 +7,45 @@ use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriver extends BaseDriver
 {
-    protected ?string $baseFileName;
+    protected ?string $mainFilePath;
     private ?array $config;
 
     public function __construct()
     {
         parent::__construct();
+
         $this->config = config('auto-doc.drivers.local');
 
-        $directory = $this->config['directory'];
-        if (!str_ends_with($directory, DIRECTORY_SEPARATOR)) {
-            $directory .= DIRECTORY_SEPARATOR;
-        }
+        $directory = str_ends_with($this->config['directory'], DIRECTORY_SEPARATOR)
+            ? $this->config['directory']
+            : $this->config['directory'] . DIRECTORY_SEPARATOR;
 
-        $this->baseFileName = storage_path($directory.$this->config['base_file_name'].'.json');
+        $this->mainFilePath = storage_path("$directory{$this->config['base_file_name']}.json");
 
-        if (!preg_match('/\/[\w]+\.json/ms', $this->baseFileName)) {
+        if (!preg_match('/\/[\w]+\.json/ms', $this->mainFilePath)) {
             throw new MissedProductionFilePathException();
         }
     }
 
     public function saveData(): void
     {
-        $prodDir = storage_path($this->config['directory']);
-        if (!is_dir($prodDir)) {
-            mkdir($prodDir);
+        $documentationDirectory = storage_path($this->config['directory']);
+        if (!is_dir($documentationDirectory)) {
+            mkdir($documentationDirectory);
         }
 
-        file_put_contents($this->baseFileName, json_encode($this->getTmpData()));
+        file_put_contents($this->mainFilePath, json_encode($this->getTmpData()));
 
         $this->clearTmpData();
     }
 
     public function getDocumentation(): array
     {
-        if (!file_exists($this->baseFileName)) {
+        if (!file_exists($this->mainFilePath)) {
             throw new FileNotFoundException();
         }
 
-        $fileContent = file_get_contents($this->baseFileName);
+        $fileContent = file_get_contents($this->mainFilePath);
 
         return json_decode($fileContent, true);
     }

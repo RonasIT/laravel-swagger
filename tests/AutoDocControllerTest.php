@@ -12,7 +12,6 @@ class AutoDocControllerTest extends TestCase
     use PHPMock;
 
     protected static array $documentation;
-    protected static string $baseFileName;
     protected static string $baseFile;
 
     public function setUp(): void
@@ -24,16 +23,16 @@ class AutoDocControllerTest extends TestCase
             $documentationDirectory .= DIRECTORY_SEPARATOR;
         }
 
-        self::$baseFileName ??= 'documentation';
-        self::$baseFile ??= $documentationDirectory.self::$baseFileName.'.json';
+        self::$baseFile ??= $documentationDirectory.'documentation.json';
         self::$documentation ??= $this->getJsonFixture('tmp_data');
 
         if (!is_dir(storage_path($documentationDirectory))) {
             mkdir(storage_path($documentationDirectory));
         }
+
         file_put_contents(storage_path(self::$baseFile), json_encode(self::$documentation));
 
-        config(['auto-doc.drivers.local.base_file_name' => self::$baseFileName]);
+        config(['auto-doc.drivers.local.base_file_name' => 'documentation']);
     }
 
     public function tearDown(): void

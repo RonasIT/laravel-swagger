@@ -10,7 +10,7 @@ use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 class StorageDriver extends BaseDriver
 {
     protected Filesystem $disk;
-    protected ?string $baseFileName;
+    protected ?string $mainFilePath;
     protected array $config;
 
     public function __construct()
@@ -19,31 +19,32 @@ class StorageDriver extends BaseDriver
 
         $this->config = config('auto-doc.drivers.storage');
         $this->disk = Storage::disk($this->config['disk']);
-        $directory = $this->config['directory'];
-        if (!str_ends_with($directory, DIRECTORY_SEPARATOR)) {
-            $directory .= DIRECTORY_SEPARATOR;
-        }
-        $this->baseFileName = $directory.$this->config['base_file_name'].'.json';
 
-        if (!preg_match('/\/[\w]+\.json/ms', $this->baseFileName)) {
+        $directory = str_ends_with($this->config['directory'], DIRECTORY_SEPARATOR)
+            ? $this->config['directory']
+            : $this->config['directory'] . DIRECTORY_SEPARATOR;
+
+        $this->mainFilePath = "$directory{$this->config['base_file_name']}.json";
+
+        if (!preg_match('/\/[\w]+\.json/ms', $this->mainFilePath)) {
             throw new MissedProductionFilePathException();
         }
     }
 
     public function saveData(): void
     {
-        $this->disk->put($this->baseFileName, json_encode($this->getTmpData()));
+        $this->disk->put($this->mainFilePath, json_encode($this->getTmpData()));
 
         $this->clearTmpData();
     }
 
     public function getDocumentation(): array
     {
-        if (!$this->disk->exists($this->baseFileName)) {
+        if (!$this->disk->exists($this->mainFilePath)) {
             throw new FileNotFoundException();
         }
 
-        $fileContent = $this->disk->get($this->baseFileName);
+        $fileContent = $this->disk->get($this->mainFilePath);
 
         return json_decode($fileContent, true);
     }

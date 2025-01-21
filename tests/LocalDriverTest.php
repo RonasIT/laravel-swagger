@@ -24,7 +24,7 @@ class LocalDriverTest extends TestCase
         }
 
         self::$baseFileName ??= 'documentation';
-        self::$baseFile ??= storage_path($documentationDirectory.self::$baseFileName.'.json');
+        self::$baseFile ??= storage_path($documentationDirectory . self::$baseFileName . '.json');
         self::$tmpDocumentationFilePath ??= storage_path('temp_documentation.json');
 
         self::$tmpData ??= $this->getJsonFixture('tmp_data');
