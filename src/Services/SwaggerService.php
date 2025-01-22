@@ -6,6 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
@@ -140,7 +141,7 @@ class SwaggerService
         $data = [
             'openapi' => self::OPEN_API_VERSION,
             'servers' => [
-                ['url' => $this->getAppUrl() . $this->config['basePath']],
+                ['url' => URL::query($this->config['basePath'])],
             ],
             'paths' => [],
             'components' => [
@@ -156,13 +157,6 @@ class SwaggerService
         }
 
         return $data;
-    }
-
-    protected function getAppUrl(): string
-    {
-        $url = config('app.url');
-
-        return str_replace(['http://', 'https://', '/'], '', $url);
     }
 
     protected function generateSecurityDefinition(): ?array
