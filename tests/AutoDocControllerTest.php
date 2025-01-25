@@ -19,11 +19,8 @@ class AutoDocControllerTest extends TestCase
         parent::setUp();
 
         $documentationDirectory = config('auto-doc.drivers.local.directory');
-        if (!str_ends_with($documentationDirectory, DIRECTORY_SEPARATOR)) {
-            $documentationDirectory .= DIRECTORY_SEPARATOR;
-        }
 
-        self::$baseFile ??= $documentationDirectory.'documentation.json';
+        self::$baseFile ??= $documentationDirectory.'/documentation.json';
         self::$documentation ??= $this->getJsonFixture('tmp_data');
 
         if (!is_dir(storage_path($documentationDirectory))) {

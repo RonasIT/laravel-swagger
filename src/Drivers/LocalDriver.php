@@ -22,7 +22,7 @@ class LocalDriver extends BaseDriver
 
         $this->mainFilePath = storage_path("$directory{$this->config['base_file_name']}.json");
 
-        if (!preg_match('/\/[\w]+\.json/ms', $this->mainFilePath)) {
+        if (empty($this->config['base_file_name']) || !str_ends_with($this->mainFilePath, '.json')) {
             throw new MissedProductionFilePathException();
         }
     }
