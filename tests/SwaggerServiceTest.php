@@ -868,4 +868,23 @@ class SwaggerServiceTest extends TestCase
 
         app(SwaggerService::class)->addData($request, $response);
     }
+
+    public function testAddDataWhenInvokableClass()
+    {
+        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users',
+            isInvokeController: true,
+        );
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json',
+        ]);
+
+        $service->addData($request, $response);
+    }
 }

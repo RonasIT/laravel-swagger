@@ -10,6 +10,7 @@ use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\AutoDoc\AutoDocServiceProvider;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestController;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestInvokableController;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -114,13 +115,25 @@ class TestCase extends BaseTest
         }
     }
 
-    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $routeConditions = [], $controllerMethod = 'test'): Request
-    {
+    protected function generateRequest(
+        $type,
+        $uri,
+        $data = [],
+        $pathParams = [],
+        $headers = [],
+        $routeConditions = [],
+        $controllerMethod = 'test',
+        $isInvokeController = false,
+    ): Request {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
-        return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions) {
+        return $request->setRouteResolver(function () use ($isInvokeController, $uri, $request, $controllerMethod, $routeConditions) {
+            $action = $isInvokeController
+                ? TestInvokableController::class . '@__invoke'
+                : TestController::class . '@' . $controllerMethod;
+
             $route = Route::get($uri)
-                ->setAction(['controller' => TestController::class . '@' . $controllerMethod])
+                ->setAction(['controller' => $action])
                 ->bind($request);
 
             foreach ($routeConditions as $condition) {
