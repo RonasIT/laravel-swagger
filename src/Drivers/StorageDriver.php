@@ -20,13 +20,13 @@ class StorageDriver extends BaseDriver
         $this->config = config('auto-doc.drivers.storage');
         $this->disk = Storage::disk($this->config['disk']);
 
-        $directory = str_ends_with($this->config['directory'], DIRECTORY_SEPARATOR)
+        $directory = (str_ends_with($this->config['directory'], DIRECTORY_SEPARATOR))
             ? $this->config['directory']
             : $this->config['directory'] . DIRECTORY_SEPARATOR;
 
-        $this->mainFilePath = "$directory{$this->config['base_file_name']}.json";
+        $this->mainFilePath = "{$directory}{$this->config['base_file_name']}.json";
 
-        if (!preg_match('/\/[\w]+\.json/ms', $this->mainFilePath)) {
+        if (empty($this->config['base_file_name']) || !str_ends_with($this->mainFilePath, '.json')) {
             throw new MissedProductionFilePathException();
         }
     }

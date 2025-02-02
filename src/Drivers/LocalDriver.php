@@ -16,11 +16,11 @@ class LocalDriver extends BaseDriver
 
         $this->config = config('auto-doc.drivers.local');
 
-        $directory = str_ends_with($this->config['directory'], DIRECTORY_SEPARATOR)
+        $directory = (str_ends_with($this->config['directory'], DIRECTORY_SEPARATOR))
             ? $this->config['directory']
             : $this->config['directory'] . DIRECTORY_SEPARATOR;
 
-        $this->mainFilePath = storage_path("$directory{$this->config['base_file_name']}.json");
+        $this->mainFilePath = storage_path("{$directory}{$this->config['base_file_name']}.json");
 
         if (empty($this->config['base_file_name']) || !str_ends_with($this->mainFilePath, '.json')) {
             throw new MissedProductionFilePathException();
@@ -30,6 +30,7 @@ class LocalDriver extends BaseDriver
     public function saveData(): void
     {
         $documentationDirectory = storage_path($this->config['directory']);
+
         if (!is_dir($documentationDirectory)) {
             mkdir($documentationDirectory);
         }
