@@ -19,12 +19,9 @@ class AutoDocControllerTest extends TestCase
 
         self::$documentation ??= $this->getJsonFixture('tmp_data');
 
-        if (!is_dir(storage_path('documentations'))) {
-            mkdir(storage_path('documentations'));
-        }
+        file_put_contents(storage_path('documentation.json'), json_encode(self::$documentation));
 
-        file_put_contents(storage_path('documentations/documentation.json'), json_encode(self::$documentation));
-
+        config(['auto-doc.drivers.local.directory' => '']);
         config(['auto-doc.drivers.local.base_file_name' => 'documentation']);
     }
 
@@ -37,6 +34,21 @@ class AutoDocControllerTest extends TestCase
 
     public function testGetJSONDocumentation()
     {
+        $response = $this->json('get', '/auto-doc/documentation');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $response->assertJson(self::$documentation);
+    }
+
+    public function testGetJSONDocumentationWithFilledDirectory()
+    {
+        if (!is_dir(storage_path('documentations'))) {
+            mkdir(storage_path('documentations'));
+        }
+        file_put_contents(storage_path('documentations/documentation.json'), json_encode(self::$documentation));
+        config(['auto-doc.drivers.local.directory' => 'documentations']);
+
         $response = $this->json('get', '/auto-doc/documentation');
 
         $response->assertStatus(Response::HTTP_OK);
