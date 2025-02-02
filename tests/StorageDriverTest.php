@@ -5,6 +5,7 @@ namespace RonasIT\AutoDoc\Tests;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
+use RonasIT\AutoDoc\Drivers\LocalDriver;
 use RonasIT\AutoDoc\Drivers\StorageDriver;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 
@@ -38,6 +39,16 @@ class StorageDriverTest extends TestCase
         config(['auto-doc.drivers.storage.base_file_name' => self::$baseFileName]);
 
         self::$storageDriverClass = new StorageDriver();
+    }
+    public function testDirectoryEndsWithDirectorySeparator()
+    {
+        config(['auto-doc.drivers.storage.directory' => config('auto-doc.drivers.storage.directory').DIRECTORY_SEPARATOR]);
+
+        $driver = new StorageDriver();
+        $driver->saveTmpData(self::$tmpData);
+
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
     public function testSaveTmpData()

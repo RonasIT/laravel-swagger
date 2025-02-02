@@ -34,6 +34,18 @@ class LocalDriverTest extends TestCase
         self::$localDriverClass ??= new LocalDriver();
     }
 
+    public function testDirectoryEndsWithDirectorySeparator()
+    {
+        config(['auto-doc.drivers.local.directory' => config('auto-doc.drivers.local.directory').DIRECTORY_SEPARATOR]);
+        config(['auto-doc.drivers.local.base_file_name' => self::$baseFileName]);
+
+        $driver = new LocalDriver();
+        $driver->saveTmpData(self::$tmpData);
+
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
+    }
+
     public function testSaveTmpData()
     {
         self::$localDriverClass->saveTmpData(self::$tmpData);
@@ -77,6 +89,21 @@ class LocalDriverTest extends TestCase
     public function testSaveData()
     {
         file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+
+        self::$localDriverClass->saveData();
+
+        $this->assertFileExists(self::$baseFile);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$baseFile);
+
+        $this->assertFileDoesNotExist(self::$tmpDocumentationFilePath);
+    }
+
+    public function testSaveDataWhenDirectoryNotExists()
+    {
+        $documentationDirectory = config('auto-doc.drivers.local.directory');
+        rmdir(storage_path($documentationDirectory));
+
+        self::$localDriverClass->saveTmpData(self::$tmpData);
 
         self::$localDriverClass->saveData();
 
