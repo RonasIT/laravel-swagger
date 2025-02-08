@@ -5,7 +5,6 @@ namespace RonasIT\AutoDoc\Tests;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
-use RonasIT\AutoDoc\Drivers\LocalDriver;
 use RonasIT\AutoDoc\Drivers\StorageDriver;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 
@@ -13,7 +12,6 @@ class StorageDriverTest extends TestCase
 {
     protected static StorageDriver $storageDriverClass;
     protected Filesystem $disk;
-    protected static string $baseFileName;
     protected static string $baseFile;
     protected static string $tmpDocumentationFilePath;
     protected static array $tmpData;
@@ -25,24 +23,20 @@ class StorageDriverTest extends TestCase
         $this->disk = Storage::fake('testing');
 
         $documentationDirectory = config('auto-doc.drivers.storage.directory');
-        if (!str_ends_with($documentationDirectory, DIRECTORY_SEPARATOR)) {
-            $documentationDirectory .= DIRECTORY_SEPARATOR;
-        }
 
-        self::$baseFileName ??= 'documentation';
-        self::$baseFile ??= $documentationDirectory.self::$baseFileName.'.json';
+        self::$baseFile ??= "{$documentationDirectory}/documentation.json";
         self::$tmpDocumentationFilePath ??= storage_path('temp_documentation.json');
 
         self::$tmpData ??= $this->getJsonFixture('tmp_data');
 
         config(['auto-doc.drivers.storage.disk' => 'testing']);
-        config(['auto-doc.drivers.storage.base_file_name' => self::$baseFileName]);
+        config(['auto-doc.drivers.storage.base_file_name' => 'documentation']);
 
         self::$storageDriverClass = new StorageDriver();
     }
     public function testDirectoryEndsWithDirectorySeparator()
     {
-        config(['auto-doc.drivers.storage.directory' => config('auto-doc.drivers.storage.directory').DIRECTORY_SEPARATOR]);
+        config(['auto-doc.drivers.storage.directory' => 'documentations'.DIRECTORY_SEPARATOR]);
 
         $driver = new StorageDriver();
         $driver->saveTmpData(self::$tmpData);

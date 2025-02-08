@@ -46,6 +46,7 @@ class AutoDocControllerTest extends TestCase
         if (!is_dir(storage_path('documentations'))) {
             mkdir(storage_path('documentations'));
         }
+
         file_put_contents(storage_path('documentations/documentation.json'), json_encode(self::$documentation));
         config(['auto-doc.drivers.local.directory' => 'documentations']);
 

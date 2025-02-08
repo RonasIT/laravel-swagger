@@ -8,13 +8,13 @@ use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 class LocalDriver extends BaseDriver
 {
     protected ?string $mainFilePath;
-    private ?array $config;
+    protected array $config;
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->config = config('auto-doc.drivers.local');
+        $this->config = config('auto-doc.drivers.local', []);
 
         $directory = (str_ends_with($this->config['directory'], DIRECTORY_SEPARATOR))
             ? $this->config['directory']
