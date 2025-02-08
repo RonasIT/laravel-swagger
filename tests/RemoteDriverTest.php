@@ -20,7 +20,7 @@ class RemoteDriverTest extends TestCase
         parent::setUp();
 
         self::$tmpData ??= $this->getJsonFixture('tmp_data');
-        self::$tmpDocumentationFilePath ??= __DIR__ . '/../storage/temp_documentation.json';
+        self::$tmpDocumentationFilePath ??= storage_path('temp_documentation.json');
 
         self::$remoteDriverClass ??= new RemoteDriver();
     }
