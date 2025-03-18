@@ -28,7 +28,11 @@ passing PHPUnit tests.
 
 ## Installation
 
-1. Install the package using the following command: `composer require ronasit/laravel-swagger`
+1. Install the package using the following command:
+
+```shell
+composer require ronasit/laravel-swagger
+```
 
 > ***Note***
 > 
@@ -43,45 +47,39 @@ passing PHPUnit tests.
 > ],
 > ```
 
-2. Run `php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider`
+2. Run `php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider` to publish necessary files
 1. Add `\RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware list `bootstrap\app.php`:
 
 ```php
     return Application::configure(basePath: dirname(__DIR__))
         ->withMiddleware(function (Middleware $middleware) {
             $middleware->use([
-                ...
+                //...
                 \RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class,
             ]);
         });
 ```
 
-4. Add `\RonasIT\AutoDoc\Traits\AutoDocTestCaseTrait` trait to `tests/TestCase.php`
+4. Add `\RonasIT\AutoDoc\Traits\AutoDocTestCaseTrait` trait to your `tests/TestCase.php` class
 1. Configure documentation saving using one of the next ways:
   - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
-  **Please note that this way will be removed after updating**
-  **PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)**
 
   ```xml
   <phpunit>
+      //...
       <extensions>
           <bootstrap class="RonasIT\AutoDoc\Support\PHPUnit\Extensions\SwaggerExtension"/>
       </extensions>
-      <testsuites>
-          <testsuite name="Feature">
-              <directory suffix="Test.php">./tests/Feature</directory>
-          </testsuite>
-      </testsuites>
   </phpunit>
   ```
-  - Call `php artisan swagger:push-documentation` console command after
-    the `tests` stage in your CI/CD configuration
+  - Call `php artisan swagger:push-documentation` console command manually after
+    the `tests` stage done.
 
 ## Usage
 
 ### Basic usage
 
-1. Create request class:
+1. First, Create a request class:
 
     ```php
     <?php
@@ -130,6 +128,7 @@ passing PHPUnit tests.
     }
 
     ```
+   
     > ***Note***
     > 
     > For correct working of plugin you'll have to dispose all the validation rules 
@@ -138,7 +137,7 @@ passing PHPUnit tests.
     > Plugin will take validation rules from the request class and generate fields description
     > of input parameter.
 
-2. Create a controller and a method for your route:
+2. Then, lets handle the request in the corresponding controller class:
 
     ```php
     <?php
@@ -160,10 +159,10 @@ passing PHPUnit tests.
 
     > ***Note***
     > 
-    > Dependency injection of request class is optional but if it not presents,
-    > the "Parameters" block in the API documentation will be empty.
+    > Dependency injection of the request class is optional, but if it is not present, 
+    > the 'Parameters' block in the API documentation will be empty.
 
-3. Create test for API endpoint:
+3. Next, create a test for the API endpoint:
 
     ```php
     public function testUpdate()
@@ -178,15 +177,15 @@ passing PHPUnit tests.
     }
     ```
 
-4. Run tests
-5. Go to route defined in the `auto-doc.route` config
+4. Now, run the tests
+5. And, go to the route which is defined in the `auto-doc.route` config
 6. Profit!
 
     ![img.png](resources/assets/images/img.png)
 
 ### Annotations
 
-You can use the following annotations in your request classes to customize documentation of your API endpoints:
+You can use the following annotations in your request class to customize documentation of your API endpoints:
 
 - **@summary** - short description of request
 - **@description** - implementation notes
@@ -198,11 +197,6 @@ You can use the following annotations in your request classes to customize docum
 > 
 > If you do not use request class, the summary and description and parameters will be empty.
 
-### Configs
-
-- `auto-doc.route` - route for generated documentation
-- `auto-doc.basePath` - root of your API
-
 ### Custom driver
 
 You can specify the way to collect and view documentation by creating your own custom driver.
@@ -212,8 +206,9 @@ You can find example of drivers [here](https://github.com/RonasIT/laravel-swagge
 ### Viewing OpenAPI documentation
 
 As of version 2.2, the package includes the ability to switch between OpenAPI documentation
-viewers. To access different viewers, modify the `documentation_viewer` configuration.
-This change is reflected immediately, without the need to rebuild the documentation file.
+viewers. To access different viewers, modify the `documentation_viewer` configuration or set the viewer using
+the `SWAGGER_SPEC_VIEWER` env. This change is reflected immediately, without the need to rebuild the documentation file.
+The available viewers are: "swagger", "elements", "rapidoc"
 
 ### Merging additional documentations
 
