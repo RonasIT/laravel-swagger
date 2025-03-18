@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
@@ -18,7 +19,6 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
@@ -1001,5 +1001,16 @@ class SwaggerService
                 value: $additionalDocumentation['components']['schemas'][$definition],
             );
         }
+    }
+
+    public function mergeTempDocumentation(): void
+    {
+        $this->driver->saveSharedTmpData(function ($sharedTmpData) {
+            $resultDocContent = $sharedTmpData ?? $this->generateEmptyData();
+
+            $this->mergeOpenAPIDocs($resultDocContent, $this->data);
+
+            return $resultDocContent;
+        });
     }
 }
