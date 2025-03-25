@@ -9,7 +9,7 @@ use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 class LocalDriverTest extends TestCase
 {
     protected static LocalDriver $localDriverClass;
-    protected static string $productionFilePath;
+    protected static string $baseFile;
     protected static string $tmpDocumentationFilePath;
     protected static array $tmpData;
 
@@ -17,14 +17,27 @@ class LocalDriverTest extends TestCase
     {
         parent::setUp();
 
-        self::$productionFilePath ??= __DIR__ . '/../storage/documentation.json';
-        self::$tmpDocumentationFilePath ??= __DIR__ . '/../storage/temp_documentation.json';
+        $documentationDirectory = config('auto-doc.drivers.local.directory');
+
+        self::$baseFile ??= storage_path("{$documentationDirectory}/documentation.json");
+        self::$tmpDocumentationFilePath ??= storage_path('temp_documentation.json');
 
         self::$tmpData ??= $this->getJsonFixture('tmp_data');
 
-        config(['auto-doc.drivers.local.production_path' => self::$productionFilePath]);
+        config(['auto-doc.drivers.local.base_file_name' => 'documentation']);
 
         self::$localDriverClass ??= new LocalDriver();
+    }
+
+    public function testDirectoryEndsWithDirectorySeparator()
+    {
+        config(['auto-doc.drivers.local.directory' => 'documentations'.DIRECTORY_SEPARATOR]);
+
+        $driver = new LocalDriver();
+        $driver->saveTmpData(self::$tmpData);
+
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
     public function testSaveTmpData()
@@ -55,7 +68,7 @@ class LocalDriverTest extends TestCase
     {
         $this->expectException(MissedProductionFilePathException::class);
 
-        config(['auto-doc.drivers.local.production_path' => null]);
+        config(['auto-doc.drivers.local.base_file_name' => null]);
 
         new LocalDriver();
     }
@@ -73,15 +86,32 @@ class LocalDriverTest extends TestCase
 
         self::$localDriverClass->saveData();
 
-        $this->assertFileExists(self::$productionFilePath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$productionFilePath);
+        $this->assertFileExists(self::$baseFile);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$baseFile);
+
+        $this->assertFileDoesNotExist(self::$tmpDocumentationFilePath);
+    }
+
+    public function testSaveDataWhenDirectoryNotExists()
+    {
+        $documentationDirectory = 'test_directory';
+        if (is_dir($documentationDirectory)) {
+            rmdir(storage_path($documentationDirectory));
+        }
+
+        self::$localDriverClass->saveTmpData(self::$tmpData);
+
+        self::$localDriverClass->saveData();
+
+        $this->assertFileExists(self::$baseFile);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$baseFile);
 
         $this->assertFileDoesNotExist(self::$tmpDocumentationFilePath);
     }
 
     public function testGetDocumentation()
     {
-        file_put_contents(self::$productionFilePath, json_encode(self::$tmpData));
+        file_put_contents(self::$baseFile, json_encode(self::$tmpData));
 
         $documentation = self::$localDriverClass->getDocumentation();
 
@@ -92,7 +122,7 @@ class LocalDriverTest extends TestCase
     {
         $this->expectException(FileNotFoundException::class);
 
-        config(['auto-doc.drivers.local.production_path' => 'not_exists_file']);
+        config(['auto-doc.drivers.local.base_file_name' => 'not_exists_file.json']);
 
         (new LocalDriver())->getDocumentation();
     }
