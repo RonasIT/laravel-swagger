@@ -4,12 +4,13 @@ namespace RonasIT\AutoDoc\Drivers;
 
 use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
-use RuntimeException;
+use RonasIT\AutoDoc\Support\Mutex;
 
 abstract class BaseDriver implements SwaggerDriverContract
 {
     protected string $tempFilePath;
     protected string $sharedTempFilePath;
+    protected Mutex $mutex;
 
     public function __construct()
     {
@@ -18,6 +19,8 @@ abstract class BaseDriver implements SwaggerDriverContract
         $this->tempFilePath = ($token = ParallelTesting::token())
             ? storage_path("temp_documentation_{$token}.json")
             : $this->sharedTempFilePath;
+
+        $this->mutex = app(Mutex::class);
     }
 
     public function saveTmpData(array $data): void
@@ -32,13 +35,13 @@ abstract class BaseDriver implements SwaggerDriverContract
 
     public function saveSharedTmpData(callable $callback): void
     {
-        $this->writeFileWithLock($this->sharedTempFilePath, $callback);
+        $this->mutex->writeFileWithLock($this->sharedTempFilePath, $callback);
     }
 
     public function getSharedTmpData(): ?array
     {
         if (file_exists($this->sharedTempFilePath)) {
-            return $this->readFileWithLock($this->sharedTempFilePath);
+            return $this->mutex->readFileWithLock($this->sharedTempFilePath);
         }
 
         return null;
@@ -65,73 +68,5 @@ abstract class BaseDriver implements SwaggerDriverContract
         }
 
         return null;
-    }
-
-    protected function readFileWithLock(string $filePath): array
-    {
-        $handle = fopen($filePath, 'r');
-
-        try {
-            $this->acquireLock($handle, LOCK_SH);
-
-            return $this->readJsonFromStream($handle);
-        } finally {
-            flock($handle, LOCK_UN);
-            fclose($handle);
-        }
-    }
-
-    protected function writeFileWithLock(string $filePath, callable $callback): void
-    {
-        $handle = fopen($filePath, 'c+');
-
-        try {
-            $this->acquireLock($handle, LOCK_EX | LOCK_NB);
-
-            $data = $callback($this->readJsonFromStream($handle));
-
-            $this->writeJsonToStream($handle, $data);
-        } finally {
-            flock($handle, LOCK_UN);
-            fclose($handle);
-        }
-    }
-
-    protected function writeJsonToStream($handle, array $data): void
-    {
-        ftruncate($handle, 0);
-        rewind($handle);
-        fwrite($handle, json_encode($data));
-        fflush($handle);
-    }
-
-    protected function readJsonFromStream($handle): ?array
-    {
-        $content = stream_get_contents($handle);
-
-        return ($content === false) ? null : json_decode($content, true);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function acquireLock(
-        $handle,
-        int $operation,
-        int $maxRetries = 20,
-        int $minWaitTime = 100,
-        int $maxWaitTime = 1000,
-    ): void {
-        $retryCounter = 0;
-
-        while (!flock($handle, $operation)) {
-            if ($retryCounter >= $maxRetries) {
-                throw new RuntimeException('Unable to lock file');
-            }
-
-            usleep(rand($minWaitTime, $maxWaitTime));
-
-            $retryCounter++;
-        }
     }
 }

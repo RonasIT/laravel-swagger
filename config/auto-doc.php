@@ -184,5 +184,19 @@ return [
         'development',
     ],
 
-    'config_version' => '2.8',
+    /*
+    |--------------------------------------------------------------------------
+    | Paratests config
+    |--------------------------------------------------------------------------
+    |
+    | The config for parallel tests execution setup
+    */
+    'paratests' => [
+        'acquire_lock' => [
+            'max_retries' => 20,
+            'wait_time' => 500,
+        ]
+    ],
+
+    'config_version' => '2.9',
 ];

@@ -6,6 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
@@ -799,6 +800,10 @@ class SwaggerService
 
     public function saveProductionData()
     {
+        if (ParallelTesting::token()) {
+            $this->mergeTempDocumentation();
+        }
+
         $this->driver->saveData();
     }
 

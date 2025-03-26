@@ -4,7 +4,6 @@ namespace RonasIT\AutoDoc\Support\PHPUnit\EventSubscribers;
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\ParallelTesting;
 use PHPUnit\Event\Application\Finished;
 use PHPUnit\Event\Application\FinishedSubscriber;
 use RonasIT\AutoDoc\Services\SwaggerService;
@@ -16,10 +15,6 @@ final class SwaggerSaveDocumentationSubscriber implements FinishedSubscriber
         $this->createApplication();
 
         $swaggerService = app(SwaggerService::class);
-
-        if (ParallelTesting::token()) {
-            $swaggerService->mergeTempDocumentation();
-        }
 
         $swaggerService->saveProductionData();
     }
