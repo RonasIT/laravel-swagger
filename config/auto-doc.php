@@ -192,8 +192,10 @@ return [
     | The config for parallel tests execution setup
     */
     'paratests' => [
-        'acquire_lock' => [
+        'tmp_file_lock' => [
+            // The maximum number of attempts to append data to a temporary documentation file
             'max_retries' => 20,
+            // The waiting time between attempts to write to the temporary documentation file while the file is locked
             'wait_time' => 500,
         ]
     ],

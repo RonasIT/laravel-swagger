@@ -27,7 +27,7 @@ class RemoteDriverTest extends TestCase
 
     public function testSaveTmpData()
     {
-        self::$remoteDriverClass->saveTmpData(self::$tmpData);
+        self::$remoteDriverClass->saveProcessTmpData(self::$tmpData);
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
@@ -35,7 +35,7 @@ class RemoteDriverTest extends TestCase
 
     public function testSaveSharedTmpData()
     {
-        self::$remoteDriverClass->saveSharedTmpData(fn () => self::$tmpData);
+        self::$remoteDriverClass->appendProcessDataToTmpFile(fn () => self::$tmpData);
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
@@ -45,14 +45,14 @@ class RemoteDriverTest extends TestCase
     {
         file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
-        $result = self::$remoteDriverClass->getTmpData();
+        $result = self::$remoteDriverClass->getProcessTmpData();
 
         $this->assertEquals(self::$tmpData, $result);
     }
 
     public function testGetTmpDataNoFile()
     {
-        $result = self::$remoteDriverClass->getTmpData();
+        $result = self::$remoteDriverClass->getProcessTmpData();
 
         $this->assertNull($result);
     }
@@ -61,14 +61,14 @@ class RemoteDriverTest extends TestCase
     {
         file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
-        $result = self::$remoteDriverClass->getSharedTmpData();
+        $result = self::$remoteDriverClass->getTmpData();
 
         $this->assertEquals(self::$tmpData, $result);
     }
 
     public function testGetSharedTmpDataNoFile()
     {
-        $result = self::$remoteDriverClass->getSharedTmpData();
+        $result = self::$remoteDriverClass->getTmpData();
 
         $this->assertNull($result);
     }

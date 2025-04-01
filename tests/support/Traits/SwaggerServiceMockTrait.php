@@ -8,26 +8,26 @@ trait SwaggerServiceMockTrait
 {
     use MockTrait;
 
-    protected function mockDriverGetEmptyAndSaveTmpData(
-        $tmpData,
-        $savedTmpData = null,
-        $driverClass = LocalDriver::class
+    protected function mockDriverGetEmptyAndSaveProcessTmpData(
+        $processTmpData,
+        $savedProcessTmpData = null,
+        $driverClass = LocalDriver::class,
     ): void {
-        $driver = $this->mockClass($driverClass, ['getTmpData', 'saveTmpData']);
+        $driver = $this->mockClass($driverClass, ['getProcessTmpData', 'saveProcessTmpData']);
 
         $driver
             ->expects($this->exactly(1))
-            ->method('getTmpData')
+            ->method('getProcessTmpData')
             ->willReturn(
-                empty($tmpData)
-                ? $tmpData
-                : array_merge($tmpData, ['paths' => [], 'components' => []])
+                empty($processTmpData)
+                ? $processTmpData
+                : array_merge($processTmpData, ['paths' => [], 'components' => []])
             );
 
         $driver
             ->expects($this->exactly(1))
-            ->method('saveTmpData')
-            ->with($savedTmpData ?? $tmpData);
+            ->method('saveProcessTmpData')
+            ->with($savedProcessTmpData ?? $processTmpData);
 
         $this->app->instance($driverClass, $driver);
     }
@@ -54,24 +54,24 @@ trait SwaggerServiceMockTrait
 
     protected function mockDriverGetTmpData($tmpData, $driverClass = LocalDriver::class): void
     {
-        $driver = $this->mockClass($driverClass, ['getTmpData']);
+        $driver = $this->mockClass($driverClass, ['getProcessTmpData']);
 
         $driver
             ->expects($this->exactly(1))
-            ->method('getTmpData')
+            ->method('getProcessTmpData')
             ->willReturn($tmpData);
 
         $this->app->instance($driverClass, $driver);
     }
 
-    protected function mockDriverGetTmpDataAndGetSharedTmpData(array $tmpData, array $sharedTmpData, string $driverClass = LocalDriver::class): void
+    protected function mockDriverGetProcessTmpDataAndGetSharedTmpData(array $processTmpData, array $sharedTmpData, string $driverClass = LocalDriver::class): void
     {
-        $driver = $this->mockClass($driverClass, ['getTmpData']);
+        $driver = $this->mockClass($driverClass, ['getProcessTmpData']);
 
         $driver
             ->expects($this->exactly(1))
-            ->method('getTmpData')
-            ->willReturn($tmpData);
+            ->method('getProcessTmpData')
+            ->willReturn($processTmpData);
 
         $this->app->instance($driverClass, $driver);
     }

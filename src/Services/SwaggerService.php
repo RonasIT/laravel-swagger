@@ -75,12 +75,12 @@ class SwaggerService
 
             $this->security = $this->config['security'];
 
-            $this->data = $this->driver->getTmpData();
+            $this->data = $this->driver->getProcessTmpData();
 
             if (empty($this->data)) {
                 $this->data = $this->generateEmptyData();
 
-                $this->driver->saveTmpData($this->data);
+                $this->driver->saveProcessTmpData($this->data);
             }
         }
     }
@@ -195,7 +195,7 @@ class SwaggerService
         $this->parseRequest();
         $this->parseResponse($response);
 
-        $this->driver->saveTmpData($this->data);
+        $this->driver->saveProcessTmpData($this->data);
     }
 
     protected function prepareItem()
@@ -1010,7 +1010,7 @@ class SwaggerService
 
     public function mergeTempDocumentation(): void
     {
-        $this->driver->saveSharedTmpData(function ($sharedTmpData) {
+        $this->driver->appendProcessDataToTmpFile(function ($sharedTmpData) {
             $resultDocContent = $sharedTmpData ?? $this->generateEmptyData();
 
             $this->mergeOpenAPIDocs($resultDocContent, $this->data);

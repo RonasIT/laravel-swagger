@@ -33,20 +33,36 @@ class StorageDriverTest extends TestCase
         self::$storageDriverClass = new StorageDriver();
     }
 
-    public function testSaveTmpData()
+    public function testSaveProcessTmpData()
     {
-        self::$storageDriverClass->saveTmpData(self::$tmpData);
+        self::$storageDriverClass->saveProcessTmpData(self::$tmpData);
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
-    public function testSaveSharedTmpData()
+    public function testSaveTmpData()
     {
-        self::$storageDriverClass->saveSharedTmpData(fn () => self::$tmpData);
+        self::$storageDriverClass->appendProcessDataToTmpFile(fn () => self::$tmpData);
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
+    }
+
+    public function testGetProcessTmpData()
+    {
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+
+        $result = self::$storageDriverClass->getProcessTmpData();
+
+        $this->assertEquals(self::$tmpData, $result);
+    }
+
+    public function testGetProcessTmpDataNoFile()
+    {
+        $result = self::$storageDriverClass->getProcessTmpData();
+
+        $this->assertNull($result);
     }
 
     public function testGetTmpData()
@@ -65,22 +81,6 @@ class StorageDriverTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testGetSharedTmpData()
-    {
-        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
-
-        $result = self::$storageDriverClass->getSharedTmpData();
-
-        $this->assertEquals(self::$tmpData, $result);
-    }
-
-    public function testGetSharedTmpDataNoFile()
-    {
-        $result = self::$storageDriverClass->getSharedTmpData();
-
-        $this->assertNull($result);
-    }
-
     public function testCreateClassConfigEmpty()
     {
         $this->expectException(MissedProductionFilePathException::class);
@@ -90,11 +90,11 @@ class StorageDriverTest extends TestCase
         new StorageDriver();
     }
 
-    public function testGetAndSaveTmpData()
+    public function testGetAndSaveProcessTmpData()
     {
-        self::$storageDriverClass->saveTmpData(self::$tmpData);
+        self::$storageDriverClass->saveProcessTmpData(self::$tmpData);
 
-        $this->assertEqualsJsonFixture('tmp_data', self::$storageDriverClass->getTmpData());
+        $this->assertEqualsJsonFixture('tmp_data', self::$storageDriverClass->getProcessTmpData());
     }
 
     public function testSaveData()

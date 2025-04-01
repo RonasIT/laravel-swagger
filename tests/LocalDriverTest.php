@@ -28,15 +28,15 @@ class LocalDriverTest extends TestCase
         self::$localDriverClass ??= new LocalDriver();
     }
 
-    public function testSaveTmpData()
+    public function testSaveProcessTmpData()
     {
-        self::$localDriverClass->saveTmpData(self::$tmpData);
+        self::$localDriverClass->saveProcessTmpData(self::$tmpData);
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
-    public function testSaveTmpDataCheckTokenBasedPath()
+    public function testSaveProcessTmpDataCheckTokenBasedPath()
     {
         $token = 'workerID';
 
@@ -44,18 +44,34 @@ class LocalDriverTest extends TestCase
 
         $tmpDocPath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
 
-        app(LocalDriver::class)->saveTmpData(self::$tmpData);
+        app(LocalDriver::class)->saveProcessTmpData(self::$tmpData);
 
         $this->assertFileExists($tmpDocPath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $tmpDocPath);
     }
 
-    public function testSaveSharedTmpData()
+    public function testSaveTmpData()
     {
-        self::$localDriverClass->saveSharedTmpData(fn () => self::$tmpData);
+        self::$localDriverClass->appendProcessDataToTmpFile(fn () => self::$tmpData);
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
+    }
+
+    public function testGetProcessTmpData()
+    {
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+
+        $result = self::$localDriverClass->getProcessTmpData();
+
+        $this->assertEquals(self::$tmpData, $result);
+    }
+
+    public function testGetProcessTmpDataNoFile()
+    {
+        $result = self::$localDriverClass->getProcessTmpData();
+
+        $this->assertNull($result);
     }
 
     public function testGetTmpData()
@@ -74,22 +90,6 @@ class LocalDriverTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testGetSharedTmpData()
-    {
-        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
-
-        $result = self::$localDriverClass->getSharedTmpData();
-
-        $this->assertEquals(self::$tmpData, $result);
-    }
-
-    public function testGetSharedTmpDataNoFile()
-    {
-        $result = self::$localDriverClass->getSharedTmpData();
-
-        $this->assertNull($result);
-    }
-
     public function testCreateClassConfigEmpty()
     {
         $this->expectException(MissedProductionFilePathException::class);
@@ -99,11 +99,11 @@ class LocalDriverTest extends TestCase
         new LocalDriver();
     }
 
-    public function testGetAndSaveTmpData()
+    public function testGetAndSaveProcessTmpData()
     {
-        self::$localDriverClass->saveTmpData(self::$tmpData);
+        self::$localDriverClass->saveProcessTmpData(self::$tmpData);
 
-        $this->assertEqualsJsonFixture('tmp_data', self::$localDriverClass->getTmpData());
+        $this->assertEqualsJsonFixture('tmp_data', self::$localDriverClass->getProcessTmpData());
     }
 
     public function testSaveData()

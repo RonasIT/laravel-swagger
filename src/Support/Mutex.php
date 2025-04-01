@@ -9,8 +9,8 @@ class Mutex
 {
     protected array $config;
 
-    protected static string $MODE_FILE_READ_WRITE = 'c+';
-    protected static string $MODE_FILE_READ = 'r';
+    protected const string MODE_FILE_READ_WRITE = 'c+';
+    protected const string MODE_FILE_READ = 'r';
 
     public function __construct()
     {
@@ -26,7 +26,7 @@ class Mutex
 
     public function readFileWithLock(string $filePath): array
     {
-        $handle = fopen($filePath, self::$MODE_FILE_READ);
+        $handle = fopen($filePath, self::MODE_FILE_READ);
 
         try {
             $this->acquireLock($handle, LOCK_SH);
@@ -40,7 +40,7 @@ class Mutex
 
     public function writeFileWithLock(string $filePath, callable $callback): void
     {
-        $fileReadWriteMode = self::$MODE_FILE_READ_WRITE;
+        $fileReadWriteMode = self::MODE_FILE_READ_WRITE;
 
         $fileResource = fopen($filePath, $fileReadWriteMode);
 
@@ -73,8 +73,8 @@ class Mutex
     ): void {
         $retryCounter = 0;
 
-        $maxRetries = Arr::get($this->config, 'acquire_lock.max_retries');
-        $waitTime = Arr::get($this->config, 'acquire_lock.wait_time');
+        $maxRetries = Arr::get($this->config, 'tmp_file_lock.max_retries');
+        $waitTime = Arr::get($this->config, 'tmp_file_lock.wait_time');
 
         while (!flock($handle, $operation)) {
             if ($retryCounter >= $maxRetries) {
