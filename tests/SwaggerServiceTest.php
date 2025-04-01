@@ -814,10 +814,8 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeTempDocumentation()
     {
-        $this->mockDriverGetProcessTmpDataAndGetSharedTmpData(
-            processTmpData: $this->getJsonFixture('tmp_data_search_users_empty_request'),
-            sharedTmpData: $this->getJsonFixture('tmp_data_post_user_request'),
-        );
+        $this->mockMutexReadJsonFromStream($this->getJsonFixture('tmp_data_post_user_request'));
+        $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_search_users_empty_request'));
 
         $service = app(SwaggerService::class);
 

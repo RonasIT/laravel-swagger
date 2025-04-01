@@ -3,6 +3,7 @@
 namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
+use RonasIT\AutoDoc\Support\Mutex;
 
 trait SwaggerServiceMockTrait
 {
@@ -37,16 +38,16 @@ trait SwaggerServiceMockTrait
         $saveTmpData,
         $driverClass = LocalDriver::class
     ): void {
-        $driver = $this->mockClass($driverClass, ['getTmpData', 'saveTmpData']);
+        $driver = $this->mockClass($driverClass, ['getProcessTmpData', 'saveProcessTmpData']);
 
         $driver
             ->expects($this->exactly(1))
-            ->method('getTmpData')
+            ->method('getProcessTmpData')
             ->willReturn($getTmpData);
 
         $driver
             ->expects($this->exactly(1))
-            ->method('saveTmpData')
+            ->method('saveProcessTmpData')
             ->with($saveTmpData);
 
         $this->app->instance($driverClass, $driver);
@@ -64,16 +65,18 @@ trait SwaggerServiceMockTrait
         $this->app->instance($driverClass, $driver);
     }
 
-    protected function mockDriverGetProcessTmpDataAndGetSharedTmpData(array $processTmpData, array $sharedTmpData, string $driverClass = LocalDriver::class): void
+    protected function mockMutexReadJsonFromStream(array $sharedTmpData): void
     {
-        $driver = $this->mockClass($driverClass, ['getProcessTmpData']);
+        $mutexClass = Mutex::class;
 
-        $driver
+        $mutex = $this->mockClass($mutexClass, ['readJsonFromStream']);
+
+        $mutex
             ->expects($this->exactly(1))
-            ->method('getProcessTmpData')
-            ->willReturn($processTmpData);
+            ->method('readJsonFromStream')
+            ->willReturn($sharedTmpData);
 
-        $this->app->instance($driverClass, $driver);
+        $this->app->instance($mutexClass, $mutex);
     }
 
     protected function mockDriverGetDocumentation($data, $driverClass = LocalDriver::class): void
