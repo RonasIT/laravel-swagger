@@ -10,6 +10,7 @@ use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\AutoDoc\AutoDocServiceProvider;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestController;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestInvokableController;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -114,8 +115,15 @@ class TestCase extends BaseTest
         }
     }
 
-    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $routeConditions = [], $controllerMethod = 'test'): Request
-    {
+    protected function generateRequest(
+        $type,
+        $uri,
+        $data = [],
+        $pathParams = [],
+        $headers = [],
+        $routeConditions = [],
+        $controllerMethod = 'test',
+    ): Request {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
         return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions) {
