@@ -123,17 +123,12 @@ class TestCase extends BaseTest
         $headers = [],
         $routeConditions = [],
         $controllerMethod = 'test',
-        $isInvokeController = false,
     ): Request {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
-        return $request->setRouteResolver(function () use ($isInvokeController, $uri, $request, $controllerMethod, $routeConditions) {
-            $action = $isInvokeController
-                ? TestInvokableController::class . '@__invoke'
-                : TestController::class . '@' . $controllerMethod;
-
+        return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions) {
             $route = Route::get($uri)
-                ->setAction(['controller' => $action])
+                ->setAction(['controller' => TestController::class . '@' . $controllerMethod])
                 ->bind($request);
 
             foreach ($routeConditions as $condition) {

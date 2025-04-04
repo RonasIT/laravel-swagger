@@ -638,7 +638,7 @@ class SwaggerService
         $explodedController = explode('@', $controller);
 
         $class = $explodedController[0];
-        $method = $explodedController[1] ?? '__invoke';
+        $method = Arr::get($explodedController, 1, '__invoke');
 
         if (!method_exists($class, $method)) {
             return null;

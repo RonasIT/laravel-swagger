@@ -929,7 +929,7 @@ class SwaggerServiceTest extends TestCase
         $request = $this->generateRequest(
             type: 'get',
             uri: 'users',
-            isInvokeController: true,
+            controllerMethod: '__invoke',
         );
 
         $response = $this->generateResponse('example_success_user_response.json', 200, [
