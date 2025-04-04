@@ -17,13 +17,6 @@ class Mutex
         $this->config = config('auto-doc.paratests');
     }
 
-    protected function readJsonFromStream($handle): ?array
-    {
-        $content = stream_get_contents($handle);
-
-        return ($content === false) ? null : json_decode($content, true);
-    }
-
     public function readFileWithLock(string $filePath): array
     {
         $handle = fopen($filePath, self::MODE_FILE_READ);
@@ -40,9 +33,7 @@ class Mutex
 
     public function writeFileWithLock(string $filePath, callable $callback): void
     {
-        $fileReadWriteMode = self::MODE_FILE_READ_WRITE;
-
-        $fileResource = fopen($filePath, $fileReadWriteMode);
+        $fileResource = fopen($filePath, self::MODE_FILE_READ_WRITE);
 
         try {
             $this->acquireLock($fileResource, LOCK_EX | LOCK_NB);
@@ -54,6 +45,13 @@ class Mutex
             flock($fileResource, LOCK_UN);
             fclose($fileResource);
         }
+    }
+
+    protected function readJsonFromStream($handle): ?array
+    {
+        $content = stream_get_contents($handle);
+
+        return ($content === false) ? null : json_decode($content, true);
     }
 
     protected function writeJsonToStream($handle, array $data): void

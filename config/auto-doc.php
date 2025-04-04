@@ -193,9 +193,19 @@ return [
     */
     'paratests' => [
         'tmp_file_lock' => [
-            // The maximum number of attempts to append data to a temporary documentation file
+            /*
+            |--------------------------------------------------------------------------
+            | Maximum attempts count, int
+            |--------------------------------------------------------------------------
+            | The maximum number of attempts to append data to a temporary documentation file
+            */
             'max_retries' => 20,
-            // The waiting time between attempts to write to the temporary documentation file while the file is locked
+            /*
+            |--------------------------------------------------------------------------
+            | Wait time between attempts, microseconds
+            |--------------------------------------------------------------------------
+            | The waiting time between attempts to write to the temporary documentation file while the file is locked
+            */
             'wait_time' => 500,
         ]
     ],

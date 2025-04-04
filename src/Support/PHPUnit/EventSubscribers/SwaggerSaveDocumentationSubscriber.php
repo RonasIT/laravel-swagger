@@ -14,9 +14,7 @@ final class SwaggerSaveDocumentationSubscriber implements FinishedSubscriber
     {
         $this->createApplication();
 
-        $swaggerService = app(SwaggerService::class);
-
-        $swaggerService->saveProductionData();
+        app(SwaggerService::class)->saveProductionData();
     }
 
     protected function createApplication(): void
