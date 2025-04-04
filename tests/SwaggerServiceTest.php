@@ -25,7 +25,9 @@ use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
+use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use stdClass;
 
@@ -605,13 +607,64 @@ class SwaggerServiceTest extends TestCase
             type: 'post',
             uri: 'users',
             data: [
-                'users' => [1,2],
+                'users' => [1, 2],
                 'query' => null,
             ],
             headers: [
                 'authorization' => 'Bearer some_token',
             ],
         );
+
+        $response = $this->generateResponse('example_success_users_post_response.json');
+
+        $service->addData($request, $response);
+    }
+
+    public function testAddDataGlobalPostRequest()
+    {
+        $this->addGlobalPrefix();
+
+        config(['auto-doc.security' => 'jwt']);
+
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_global_post_user_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest(
+            type: 'post',
+            uri: '/global/users',
+            data: [
+                'users' => [1, 2],
+                'query' => null,
+            ],
+            headers: ['authorization' => 'Bearer some_token'],
+        );
+
+        $response = $this->generateResponse('example_success_users_post_response.json');
+
+        $service->addData($request, $response);
+    }
+
+    public function testAddDataGlobalPostGlobalURIRequest()
+    {
+        $this->addGlobalPrefix();
+
+        config(['auto-doc.security' => 'jwt']);
+
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_global_post_global_uri_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest(
+            type: 'post',
+            uri: '/global/global/',
+            data: [
+                'users' => [1, 2],
+                'query' => null,
+            ],
+            headers: [
+                'authorization' => 'Bearer some_token',
+            ]);
 
         $response = $this->generateResponse('example_success_users_post_response.json');
 
@@ -679,6 +732,61 @@ class SwaggerServiceTest extends TestCase
         );
 
         $response = $this->generateResponse('example_success_users_post_response.json');
+
+        $service->addData($request, $response);
+    }
+
+    public function testAddDataWithNotExistsMethodOnController()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_without_request_class'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users/{id}/assign-role/{role-id}',
+            data: [
+                'with' => ['role'],
+                'with_likes_count' => true,
+            ],
+            pathParams: [
+                'id' => 1,
+                'role-id' => 5,
+            ],
+            controllerMethod: 'notExists'
+        );
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json',
+        ]);
+
+        $service->addData($request, $response);
+    }
+
+    public function testAddDataWithBindingInterface()
+    {
+        $this->app->bind(TestContract::class, TestRequest::class);
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request'));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users/{id}/assign-role/{role-id}',
+            data: [
+                'with' => ['role'],
+                'with_likes_count' => true,
+            ],
+            pathParams: [
+                'id' => 1,
+                'role-id' => 5,
+            ],
+            controllerMethod: 'testRequestWithContract'
+        );
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json',
+        ]);
 
         $service->addData($request, $response);
     }

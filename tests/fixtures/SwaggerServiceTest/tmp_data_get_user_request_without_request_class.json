@@ -1,0 +1,99 @@
+{
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "http:\/\/localhost"
+        }
+    ],
+    "paths": {
+        "/users/{id}/assign-role/{role-id}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "role-id",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getUsers{id}assignRole{roleId}200ResponseObject",
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "id": 2,
+                                    "name": "first_client",
+                                    "likes_count": 23,
+                                    "role": {
+                                        "id": 2,
+                                        "name": "client"
+                                    },
+                                    "type": "reader"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "description": ""
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "getUsers{id}assignRole{roleId}200ResponseObject": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "likes_count": {
+                        "type": "integer"
+                    },
+                    "role": {
+                        "type": "array"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    }
+}
