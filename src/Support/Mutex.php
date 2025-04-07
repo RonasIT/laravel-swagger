@@ -26,35 +26,33 @@ class Mutex
 
             return $this->readJsonFromStream($handle);
         } finally {
-            flock($handle, LOCK_UN);
-            fclose($handle);
+            $this->unlockFile($handle);
         }
     }
 
-    public function writeFileWithLock(string $filePath, callable $callback): void
+    public function lockFile(string $filePath)
     {
         $fileResource = fopen($filePath, self::MODE_FILE_READ_WRITE);
 
-        try {
-            $this->acquireLock($fileResource, LOCK_EX | LOCK_NB);
+        $this->acquireLock($fileResource, LOCK_EX | LOCK_NB);
 
-            $data = $callback($this->readJsonFromStream($fileResource));
-
-            $this->writeJsonToStream($fileResource, $data);
-        } finally {
-            flock($fileResource, LOCK_UN);
-            fclose($fileResource);
-        }
+        return $fileResource;
     }
 
-    protected function readJsonFromStream($handle): ?array
+    public function unlockFile($fileResource): void
+    {
+        flock($fileResource, LOCK_UN);
+        fclose($fileResource);
+    }
+
+    public function readJsonFromStream($handle): ?array
     {
         $content = stream_get_contents($handle);
 
         return ($content === false) ? null : json_decode($content, true);
     }
 
-    protected function writeJsonToStream($handle, array $data): void
+    public function writeJsonToStream($handle, array $data): void
     {
         ftruncate($handle, 0);
         rewind($handle);

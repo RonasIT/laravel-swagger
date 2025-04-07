@@ -20,6 +20,7 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\AutoDoc\Support\Mutex;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +35,7 @@ class SwaggerService
     public const string OPEN_API_VERSION = '3.1.0';
 
     protected $driver;
+    protected Mutex $mutex;
     protected $openAPIValidator;
 
     protected $data;
@@ -66,6 +68,7 @@ class SwaggerService
     public function __construct(Container $container)
     {
         $this->openAPIValidator = app(SwaggerSpecValidator::class);
+        $this->mutex = app(Mutex::class);
 
         $this->initConfig();
 
@@ -804,7 +807,7 @@ class SwaggerService
             $this->mergeTempDocumentation();
         }
 
-        $this->driver->saveData();
+        $this->driver->saveData($this->getTmpData());
     }
 
     public function getDocFileContent()
@@ -1008,14 +1011,29 @@ class SwaggerService
         }
     }
 
-    public function mergeTempDocumentation(): void
+    protected function mergeTempDocumentation(): void
     {
-        $this->driver->appendProcessDataToTmpFile(function ($sharedTmpData) {
+        try {
+            $fileResource = $this->mutex->lockFile($this->driver->tempFilePath);
+
+            $sharedTmpData = $this->mutex->readJsonFromStream($fileResource);
+
             $resultDocContent = $sharedTmpData ?? $this->generateEmptyData();
 
             $this->mergeOpenAPIDocs($resultDocContent, $this->data);
 
-            return $resultDocContent;
-        });
+            $this->mutex->writeJsonToStream($fileResource, $resultDocContent);
+        } finally {
+            $this->mutex->unlockFile($fileResource);
+        }
+    }
+
+    protected function getTmpData(): ?array
+    {
+        if (file_exists($this->driver->tempFilePath)) {
+            return $this->mutex->readFileWithLock($this->driver->tempFilePath);
+        }
+
+        return null;
     }
 }

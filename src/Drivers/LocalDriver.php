@@ -20,9 +20,9 @@ class LocalDriver extends BaseDriver
         }
     }
 
-    public function saveData(): void
+    public function saveData(array $data): void
     {
-        file_put_contents($this->prodFilePath, json_encode($this->getTmpData()));
+        file_put_contents($this->prodFilePath, json_encode($data));
 
         $this->clearProcessTmpData();
     }

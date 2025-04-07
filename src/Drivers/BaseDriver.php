@@ -4,13 +4,11 @@ namespace RonasIT\AutoDoc\Drivers;
 
 use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
-use RonasIT\AutoDoc\Support\Mutex;
 
 abstract class BaseDriver implements SwaggerDriverContract
 {
-    protected string $tempFilePath;
-    protected string $processTempFilePath;
-    protected Mutex $mutex;
+    public string $tempFilePath;
+    public string $processTempFilePath;
 
     public function __construct()
     {
@@ -19,8 +17,6 @@ abstract class BaseDriver implements SwaggerDriverContract
         $this->processTempFilePath = ($token = ParallelTesting::token())
             ? storage_path("temp_documentation_{$token}.json")
             : $this->tempFilePath;
-
-        $this->mutex = app(Mutex::class);
     }
 
     public function saveProcessTmpData(array $data): void
@@ -34,20 +30,6 @@ abstract class BaseDriver implements SwaggerDriverContract
             $content = file_get_contents($this->processTempFilePath);
 
             return json_decode($content, true);
-        }
-
-        return null;
-    }
-
-    public function appendProcessDataToTmpFile(callable $callback): void
-    {
-        $this->mutex->writeFileWithLock($this->tempFilePath, $callback);
-    }
-
-    public function getTmpData(): ?array
-    {
-        if (file_exists($this->tempFilePath)) {
-            return $this->mutex->readFileWithLock($this->tempFilePath);
         }
 
         return null;
