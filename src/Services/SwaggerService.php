@@ -138,17 +138,8 @@ class SwaggerService
             throw new EmptyContactEmailException();
         }
 
-        $data = [
-            'openapi' => self::OPEN_API_VERSION,
-            'servers' => [
-                ['url' => URL::query($this->config['basePath'])],
-            ],
-            'paths' => [],
-            'components' => [
-                'schemas' => $this->config['definitions'],
-            ],
-            'info' => $this->prepareInfo($this->config['info'])
-        ];
+        $data = $this->generateBaseDataObject();
+        $data['info'] = $this->prepareInfo($this->config['info']);
 
         $securityDefinitions = $this->generateSecurityDefinition();
 
@@ -157,6 +148,20 @@ class SwaggerService
         }
 
         return $data;
+    }
+
+    protected function generateBaseDataObject(): array
+    {
+        return [
+            'openapi' => self::OPEN_API_VERSION,
+            'servers' => [
+                ['url' => URL::query($this->config['basePath'])],
+            ],
+            'paths' => [],
+            'components' => [
+                'schemas' => $this->config['definitions'],
+            ],
+        ];
     }
 
     protected function generateSecurityDefinition(): ?array
@@ -804,9 +809,19 @@ class SwaggerService
 
     public function getDocFileContent()
     {
-        $documentation = $this->driver->getDocumentation();
+        try {
+            $documentation = $this->driver->getDocumentation();
 
-        $this->openAPIValidator->validate($documentation);
+            $this->openAPIValidator->validate($documentation);
+        } catch (\Exception $exception) {
+            $data = $this->generateBaseDataObject();
+
+            $this->config['info'] = Arr::set($this->config, 'info.description', Arr::get($this->config, 'defaults.error'));
+
+            $data['info'] = $this->prepareInfo($this->config['info'], ['message' => $exception->getMessage()]);
+
+            return $data;
+        }
 
         $additionalDocs = config('auto-doc.additional_paths', []);
 
@@ -931,7 +946,7 @@ class SwaggerService
         return $values[$type];
     }
 
-    protected function prepareInfo(array $info): array
+    protected function prepareInfo(array $info, array $descriptionData = []): array
     {
         if (empty($info)) {
             return $info;
@@ -948,7 +963,7 @@ class SwaggerService
         }
 
         if (!empty($info['description'])) {
-            $info['description'] = view($info['description'])->render();
+            $info['description'] = view($info['description'], $descriptionData)->render();
         }
 
         return $info;

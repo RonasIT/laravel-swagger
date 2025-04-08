@@ -36,7 +36,7 @@ class RemoteDriver extends BaseDriver
         list($content, $statusCode) = $this->makeHttpRequest('get', $this->getUrl());
 
         if (empty($content) || $statusCode !== 200) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException('Documentation file not found.');
         }
 
         return json_decode($content, true);
