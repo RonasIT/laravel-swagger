@@ -801,7 +801,15 @@ class SwaggerService
     public function saveProductionData()
     {
         if (ParallelTesting::token()) {
-            $this->mergeTempDocumentation();
+            $this->driver->appendProcessDataToTmpFile(function ($sharedTmpData) {
+                $resultDocContent = empty($sharedTmpData)
+                    ? $this->generateEmptyData()
+                    : json_decode($sharedTmpData, true);
+
+                $this->mergeOpenAPIDocs($resultDocContent, $this->data);
+
+                return json_encode($resultDocContent);
+            });
         }
 
         $this->driver->saveData();
@@ -1006,16 +1014,5 @@ class SwaggerService
                 value: $additionalDocumentation['components']['schemas'][$definition],
             );
         }
-    }
-
-    public function mergeTempDocumentation(): void
-    {
-        $this->driver->appendProcessDataToTmpFile(function ($sharedTmpData) {
-            $resultDocContent = $sharedTmpData ?? $this->generateEmptyData();
-
-            $this->mergeOpenAPIDocs($resultDocContent, $this->data);
-
-            return $resultDocContent;
-        });
     }
 }

@@ -3,6 +3,7 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\ParallelTesting;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
@@ -922,12 +923,18 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeTempDocumentation()
     {
-        $this->mockMutexReadJsonFromStream($this->getJsonFixture('tmp_data_post_user_request'));
+        ParallelTesting::resolveTokenUsing(fn () => 'testWorkerID');
+
+        $this->mockWriteFileWithLockStreamAndReadFileWithLockStreamGetContents(
+            $this->getJsonFixture('tmp_data_post_user_request'),
+            $this->getJsonFixture('tmp_data_search_users_empty_request'),
+        );
+
         $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_search_users_empty_request'));
 
         $service = app(SwaggerService::class);
 
-        $service->mergeTempDocumentation();
+        $service->saveProductionData();
 
         $this->assertFileExists(storage_path('temp_documentation.json'));
         $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), storage_path('temp_documentation.json'));

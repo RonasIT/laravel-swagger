@@ -3,7 +3,6 @@
 namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
-use RonasIT\AutoDoc\Support\Mutex;
 
 trait SwaggerServiceMockTrait
 {
@@ -65,18 +64,12 @@ trait SwaggerServiceMockTrait
         $this->app->instance($driverClass, $driver);
     }
 
-    protected function mockMutexReadJsonFromStream(array $sharedTmpData): void
+    protected function mockWriteFileWithLockStreamAndReadFileWithLockStreamGetContents(array $sharedTmpData, array $tmpData): void
     {
-        $mutexClass = Mutex::class;
-
-        $mutex = $this->mockClass($mutexClass, ['readJsonFromStream']);
-
-        $mutex
-            ->expects($this->exactly(1))
-            ->method('readJsonFromStream')
-            ->willReturn($sharedTmpData);
-
-        $this->app->instance($mutexClass, $mutex);
+        $this->mockNativeFunction('RonasIT\AutoDoc\Support', [
+            $this->functionCall('stream_get_contents', [], json_encode($sharedTmpData)),
+            $this->functionCall('stream_get_contents', [], json_encode($tmpData)),
+        ]);
     }
 
     protected function mockDriverGetDocumentation($data, $driverClass = LocalDriver::class): void

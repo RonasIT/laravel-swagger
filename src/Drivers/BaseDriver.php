@@ -47,7 +47,9 @@ abstract class BaseDriver implements SwaggerDriverContract
     public function getTmpData(): ?array
     {
         if (file_exists($this->tempFilePath)) {
-            return $this->mutex->readFileWithLock($this->tempFilePath);
+            $data = $this->mutex->readFileWithLock($this->tempFilePath);
+
+            return empty($data) ? null : json_decode($data, true);
         }
 
         return null;

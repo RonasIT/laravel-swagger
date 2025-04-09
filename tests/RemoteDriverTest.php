@@ -35,7 +35,7 @@ class RemoteDriverTest extends TestCase
 
     public function testSaveSharedTmpData()
     {
-        self::$remoteDriverClass->appendProcessDataToTmpFile(fn () => self::$tmpData);
+        self::$remoteDriverClass->appendProcessDataToTmpFile(fn () => json_encode(self::$tmpData));
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
