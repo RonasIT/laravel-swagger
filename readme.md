@@ -44,8 +44,9 @@ passing PHPUnit tests.
 > ```
 
 2. Run
+
 ```
-   php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
+php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
 ```
 
 3. Add `\RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware list `bootstrap\app.php`:
