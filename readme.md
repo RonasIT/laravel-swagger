@@ -43,8 +43,12 @@ passing PHPUnit tests.
 > ],
 > ```
 
-2. Run `php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider`
-1. Add `\RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware list `bootstrap\app.php`:
+2. Run
+```
+   php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
+```
+
+3. Add `\RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class` middleware to the global HTTP middleware list `bootstrap\app.php`:
 
 ```php
     return Application::configure(basePath: dirname(__DIR__))
@@ -57,7 +61,8 @@ passing PHPUnit tests.
 ```
 
 4. Add `\RonasIT\AutoDoc\Traits\AutoDocTestCaseTrait` trait to `tests/TestCase.php`
-1. Configure documentation saving using one of the next ways:
+
+5. Configure documentation saving using one of the next ways:
   - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
   **Please note that this way will be removed after updating**
   **PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)**
@@ -232,4 +237,3 @@ can be found in the [Contributing guide](CONTRIBUTING.md).
 ## License
 
 Laravel Swagger plugin is open-sourced software licensed under the [MIT license](LICENSE).
- 
