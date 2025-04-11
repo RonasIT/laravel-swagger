@@ -49,7 +49,7 @@ abstract class BaseDriver implements SwaggerDriverContract
         if (file_exists($this->tempFilePath)) {
             $data = $this->mutex->readFileWithLock($this->tempFilePath);
 
-            return empty($data) ? null : json_decode($data, true);
+            return (empty($data)) ? null : json_decode($data, true);
         }
 
         return null;
