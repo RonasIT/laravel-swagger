@@ -55,10 +55,8 @@ class Mutex
     /**
      * @codeCoverageIgnore
      */
-    protected function acquireLock(
-        $handle,
-        int $operation,
-    ): void {
+    protected function acquireLock($handle, int $operation): void
+    {
         $retryCounter = 0;
 
         $maxRetries = Arr::get($this->config, 'tmp_file_lock.max_retries');
