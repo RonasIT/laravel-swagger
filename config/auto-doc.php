@@ -200,6 +200,7 @@ return [
             | The maximum number of attempts to append data to a temporary documentation file
             */
             'max_retries' => 20,
+
             /*
             |--------------------------------------------------------------------------
             | Wait time between attempts, microseconds
