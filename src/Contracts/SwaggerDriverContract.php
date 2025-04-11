@@ -5,16 +5,28 @@ namespace RonasIT\AutoDoc\Contracts;
 interface SwaggerDriverContract
 {
     /**
-     * Save temporary data
+     * Save (result) temporary data
+     *
+     * @param callable $callback
+     */
+    public function appendProcessDataToTmpFile(callable $appendDataCallback): void;
+
+    /**
+     * Get (result) temporary data
+     */
+    public function getTmpData(): ?array;
+
+    /**
+     * Save current process temporary data
      *
      * @param array $data
      */
-    public function saveTmpData($data);
+    public function saveProcessTmpData(array $data): void;
 
     /**
-     * Get temporary data
+     * Get current process temporary data
      */
-    public function getTmpData();
+    public function getProcessTmpData(): ?array;
 
     /**
      * Save production data

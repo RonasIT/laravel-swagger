@@ -28,7 +28,7 @@ class StorageDriver extends BaseDriver
     {
         $this->disk->put($this->prodFilePath, json_encode($this->getTmpData()));
 
-        $this->clearTmpData();
+        $this->clearProcessTmpData();
     }
 
     public function getDocumentation(): array
