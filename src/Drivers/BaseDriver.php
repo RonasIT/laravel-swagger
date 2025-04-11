@@ -39,9 +39,13 @@ abstract class BaseDriver implements SwaggerDriverContract
         return null;
     }
 
-    public function appendProcessDataToTmpFile(callable $callback): void
+    public function appendProcessDataToTmpFile(callable $appendDataCallback): void
     {
-        $this->mutex->writeFileWithLock($this->tempFilePath, $callback);
+        $this->mutex->writeFileWithLock($this->tempFilePath, function ($sharedData) use ($appendDataCallback) {
+            $resultDocContent = $appendDataCallback(json_decode($sharedData, true));
+
+            return json_encode($resultDocContent);
+        });
     }
 
     public function getTmpData(): ?array

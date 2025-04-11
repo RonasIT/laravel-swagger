@@ -17,16 +17,14 @@ class Mutex
         $this->config = config('auto-doc.paratests');
     }
 
-    public function readFileWithLock(string $filePath): ?string
+    public function readFileWithLock(string $filePath): string
     {
         $handle = fopen($filePath, self::MODE_FILE_READ);
 
         try {
             $this->acquireLock($handle, LOCK_SH);
 
-            $content = stream_get_contents($handle);
-
-            return ($content === false) ? null : $content;
+            return (string) stream_get_contents($handle);
         } finally {
             flock($handle, LOCK_UN);
             fclose($handle);

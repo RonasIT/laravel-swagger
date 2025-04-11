@@ -9,7 +9,7 @@ interface SwaggerDriverContract
      *
      * @param callable $callback
      */
-    public function appendProcessDataToTmpFile(callable $callback): void;
+    public function appendProcessDataToTmpFile(callable $appendDataCallback): void;
 
     /**
      * Get (result) temporary data

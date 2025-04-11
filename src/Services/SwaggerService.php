@@ -804,11 +804,11 @@ class SwaggerService
             $this->driver->appendProcessDataToTmpFile(function ($sharedTmpData) {
                 $resultDocContent = empty($sharedTmpData)
                     ? $this->generateEmptyData()
-                    : json_decode($sharedTmpData, true);
+                    : $sharedTmpData;
 
                 $this->mergeOpenAPIDocs($resultDocContent, $this->data);
 
-                return json_encode($resultDocContent);
+                return $resultDocContent;
             });
         }
 
