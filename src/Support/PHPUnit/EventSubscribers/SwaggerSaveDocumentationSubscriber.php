@@ -2,13 +2,14 @@
 
 namespace RonasIT\AutoDoc\Support\PHPUnit\EventSubscribers;
 
-use PHPUnit\Event\TestRunner\ExecutionFinished;
-use PHPUnit\Event\TestRunner\ExecutionFinishedSubscriber;
+use PHPUnit\Event\Application\Finished;
+use PHPUnit\Event\Application\FinishedSubscriber;
+use RonasIT\AutoDoc\Services\SwaggerService;
 
-final class SwaggerSaveDocumentationSubscriber implements ExecutionFinishedSubscriber
+final class SwaggerSaveDocumentationSubscriber implements FinishedSubscriber
 {
-    public function notify(ExecutionFinished $event): void
+    public function notify(Finished $event): void
     {
-        shell_exec('php artisan swagger:push-documentation');
+        app(SwaggerService::class)->saveProductionData();
     }
 }
