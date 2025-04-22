@@ -30,7 +30,7 @@ class LocalDriver extends BaseDriver
     public function getDocumentation(): array
     {
         if (!file_exists($this->prodFilePath)) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("Documentation file not found :{$this->prodFilePath}");
         }
 
         $fileContent = file_get_contents($this->prodFilePath);

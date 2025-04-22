@@ -34,7 +34,7 @@ class StorageDriver extends BaseDriver
     public function getDocumentation(): array
     {
         if (!$this->disk->exists($this->prodFilePath)) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("Documentation file not found :{$this->prodFilePath}");
         }
 
         $fileContent = $this->disk->get($this->prodFilePath);

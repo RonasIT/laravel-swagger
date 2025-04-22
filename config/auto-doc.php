@@ -101,6 +101,15 @@ return [
             '204' => 'Operation successfully done',
             '404' => 'This entity not found',
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Error Template
+        |--------------------------------------------------------------------------
+        |
+        | You can use your custom description view for errors.
+        */
+        'error' => 'auto-doc::swagger-error',
     ],
 
     /*
@@ -184,5 +193,5 @@ return [
         'development',
     ],
 
-    'config_version' => '2.8',
+    'config_version' => '2.9',
 ];
