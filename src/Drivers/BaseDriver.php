@@ -2,7 +2,6 @@
 
 namespace RonasIT\AutoDoc\Drivers;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Support\Mutex;

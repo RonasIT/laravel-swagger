@@ -2,7 +2,6 @@
 
 namespace RonasIT\AutoDoc\Support;
 
-use Illuminate\Support\Arr;
 use RuntimeException;
 
 class Mutex
