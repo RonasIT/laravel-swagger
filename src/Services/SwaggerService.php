@@ -801,8 +801,8 @@ class SwaggerService
     public function saveProductionData()
     {
         if (ParallelTesting::token()) {
-            $this->driver->appendProcessDataToTmpFile(function ($sharedTmpData) {
-                $resultDocContent = empty($sharedTmpData)
+            $this->driver->appendProcessDataToTmpFile(function (array $sharedTmpData) {
+                $resultDocContent = (empty($sharedTmpData))
                     ? $this->generateEmptyData()
                     : $sharedTmpData;
 
