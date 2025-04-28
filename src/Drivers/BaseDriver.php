@@ -2,6 +2,7 @@
 
 namespace RonasIT\AutoDoc\Drivers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Support\Mutex;
@@ -20,7 +21,10 @@ abstract class BaseDriver implements SwaggerDriverContract
             ? storage_path("temp_documentation_{$token}.json")
             : $this->tempFilePath;
 
-        $this->mutex = app(Mutex::class);
+        $this->mutex = new Mutex(
+            maxRetries: config('auto-doc.paratests.tmp_file_lock.max_retries'),
+            waitTime: config('auto-doc.paratests.tmp_file_lock.wait_time'),
+        );
     }
 
     public function saveProcessTmpData(array $data): void

@@ -12,9 +12,10 @@ class Mutex
     protected const string MODE_FILE_READ_WRITE = 'c+';
     protected const string MODE_FILE_READ = 'r';
 
-    public function __construct()
-    {
-        $this->config = config('auto-doc.paratests');
+    public function __construct(
+        protected int $maxRetries,
+        protected int $waitTime,
+    ) {
     }
 
     public function readFileWithLock(string $filePath): string
@@ -57,8 +58,8 @@ class Mutex
     {
         $retryCounter = 0;
 
-        $maxRetries = Arr::get($this->config, 'tmp_file_lock.max_retries');
-        $waitTime = Arr::get($this->config, 'tmp_file_lock.wait_time');
+        $maxRetries = $this->maxRetries;
+        $waitTime = $this->waitTime;
 
         while (!flock($handle, $operation)) {
             if ($retryCounter >= $maxRetries) {
