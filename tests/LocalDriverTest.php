@@ -42,7 +42,7 @@ class LocalDriverTest extends TestCase
 
         ParallelTesting::resolveTokenUsing(fn () => $token);
 
-        $tmpDocPath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
+        $processTempFilePath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
 
         app(LocalDriver::class)->saveProcessTmpData(self::$tmpData);
 
@@ -50,7 +50,7 @@ class LocalDriverTest extends TestCase
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $tmpDocPath);
     }
 
-    public function testSaveTmpData()
+    public function testAppendProcessTempDataToTempFile()
     {
         self::$localDriverClass->appendProcessDataToTmpFile(fn () => json_encode(self::$tmpData));
 
