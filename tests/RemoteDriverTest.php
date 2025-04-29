@@ -25,7 +25,7 @@ class RemoteDriverTest extends TestCase
         self::$remoteDriverClass ??= new RemoteDriver();
     }
 
-    public function testSaveTmpData()
+    public function testSaveProcessTempData()
     {
         self::$remoteDriverClass->saveProcessTmpData(self::$tmpData);
 
