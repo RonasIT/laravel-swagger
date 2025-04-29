@@ -7,7 +7,7 @@ interface SwaggerDriverContract
     /**
      * Add current process tmp data to the temp documentation file
      *
-     * @param callable $callback with 1 array argument, containing the current temp file content as array
+     * @param callable $appendDataCallback with 1 array argument, containing the current temp file content as array
      */
     public function appendProcessDataToTmpFile(callable $appendDataCallback): void;
 
