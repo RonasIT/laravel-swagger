@@ -6,8 +6,6 @@ use RuntimeException;
 
 class Mutex
 {
-    protected array $config;
-
     protected const string MODE_FILE_READ_WRITE = 'c+';
     protected const string MODE_FILE_READ = 'r';
 
