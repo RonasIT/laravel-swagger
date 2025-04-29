@@ -41,7 +41,7 @@ class StorageDriverTest extends TestCase
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
-    public function testSaveTmpData()
+    public function testAppendProcessDataToTempFile()
     {
         self::$storageDriverClass->appendProcessDataToTmpFile(fn () => json_encode(self::$tmpData));
 
