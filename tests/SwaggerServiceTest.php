@@ -26,7 +26,6 @@ use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Services\SwaggerService;
-use RonasIT\AutoDoc\Support\Mutex;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
@@ -926,8 +925,8 @@ class SwaggerServiceTest extends TestCase
     {
         ParallelTesting::resolveTokenUsing(fn () => 'testWorkerID');
 
-        $this->mockClass(
-            class: Mutex::class,
+        $this->mockNativeFunction(
+            namespace: 'RonasIT\AutoDoc\Support',
             callChain: [
                 $this->functionCall(
                     name: 'stream_get_contents',
