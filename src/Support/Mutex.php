@@ -55,15 +55,12 @@ class Mutex
     {
         $retryCounter = 0;
 
-        $maxRetries = $this->maxRetries;
-        $waitTime = $this->waitTime;
-
         while (!flock($fileResource, $operation)) {
-            if ($retryCounter >= $maxRetries) {
+            if ($retryCounter >= $this->maxRetries) {
                 throw new RuntimeException('Unable to lock file');
             }
 
-            usleep($waitTime);
+            usleep($this->waitTime);
 
             $retryCounter++;
         }
