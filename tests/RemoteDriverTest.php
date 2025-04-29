@@ -33,7 +33,7 @@ class RemoteDriverTest extends TestCase
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
-    public function testSaveSharedTmpData()
+    public function testAppendProcessDataToTempFile()
     {
         self::$remoteDriverClass->appendProcessDataToTmpFile(fn () => json_encode(self::$tmpData));
 
@@ -41,7 +41,7 @@ class RemoteDriverTest extends TestCase
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
     }
 
-    public function testGetTmpData()
+    public function testGetProcessTempData()
     {
         file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
@@ -50,14 +50,14 @@ class RemoteDriverTest extends TestCase
         $this->assertEquals(self::$tmpData, $result);
     }
 
-    public function testGetTmpDataNoFile()
+    public function testGetProcessTempDataNoFile()
     {
         $result = self::$remoteDriverClass->getProcessTmpData();
 
         $this->assertNull($result);
     }
 
-    public function testGetSharedTmpData()
+    public function testGetTempData()
     {
         file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
@@ -66,7 +66,7 @@ class RemoteDriverTest extends TestCase
         $this->assertEquals(self::$tmpData, $result);
     }
 
-    public function testGetSharedTmpDataNoFile()
+    public function testGetTempDataNoFile()
     {
         $result = self::$remoteDriverClass->getTmpData();
 
