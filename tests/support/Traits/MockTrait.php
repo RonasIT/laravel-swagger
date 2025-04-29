@@ -89,32 +89,6 @@ trait MockTrait
         }
     }
 
-    protected function mockNoCalls(
-        string $className,
-        Closure $mockCallback = null,
-        $disableConstructor = false
-    ): MockObject {
-        $mock = $this->getMockBuilder($className);
-
-        if (!empty($mockCallback)) {
-            $mockCallback($mock);
-        }
-
-        if ($disableConstructor) {
-            $mock->disableOriginalConstructor();
-        }
-
-        $mock = $mock->getMock();
-
-        $mock
-            ->expects($this->never())
-            ->method($this->anything());
-
-        $this->app->instance($className, $mock);
-
-        return $mock;
-    }
-
     public function functionCall(string $name, array $arguments = [], $result = true): array
     {
         return [

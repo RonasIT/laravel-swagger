@@ -26,6 +26,7 @@ use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Services\SwaggerService;
+use RonasIT\AutoDoc\Support\Mutex;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
@@ -925,9 +926,18 @@ class SwaggerServiceTest extends TestCase
     {
         ParallelTesting::resolveTokenUsing(fn () => 'testWorkerID');
 
-        $this->mockWriteFileWithLockStreamAndReadFileWithLockStreamGetContents(
-            $this->getJsonFixture('tmp_data_post_user_request'),
-            $this->getJsonFixture('tmp_data_search_users_empty_request'),
+        $this->mockClass(
+            class: Mutex::class,
+            callChain: [
+                $this->functionCall(
+                    name: 'stream_get_contents',
+                    result: $this->getJsonFixture('tmp_data_post_user_request')
+                ),
+                $this->functionCall(
+                    name: 'stream_get_contents',
+                    result: $this->getJsonFixture('tmp_data_search_users_empty_request')
+                ),
+            ]
         );
 
         $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_search_users_empty_request'));
