@@ -17,15 +17,15 @@ class Mutex
 
     public function readFileWithLock(string $filePath): string
     {
-        $handle = fopen($filePath, self::MODE_FILE_READ);
+        $fileResource = fopen($filePath, self::MODE_FILE_READ);
 
         try {
-            $this->acquireLock($handle, LOCK_SH);
+            $this->acquireLock($fileResource, LOCK_SH);
 
-            return (string) stream_get_contents($handle);
+            return (string) stream_get_contents($fileResource);
         } finally {
-            flock($handle, LOCK_UN);
-            fclose($handle);
+            flock($fileResource, LOCK_UN);
+            fclose($fileResource);
         }
     }
 
@@ -51,14 +51,14 @@ class Mutex
     /**
      * @codeCoverageIgnore
      */
-    protected function acquireLock($handle, int $operation): void
+    protected function acquireLock($fileResource, int $operation): void
     {
         $retryCounter = 0;
 
         $maxRetries = $this->maxRetries;
         $waitTime = $this->waitTime;
 
-        while (!flock($handle, $operation)) {
+        while (!flock($fileResource, $operation)) {
             if ($retryCounter >= $maxRetries) {
                 throw new RuntimeException('Unable to lock file');
             }
