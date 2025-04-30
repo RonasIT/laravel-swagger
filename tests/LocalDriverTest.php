@@ -46,8 +46,8 @@ class LocalDriverTest extends TestCase
 
         app(LocalDriver::class)->saveProcessTmpData(self::$tmpData);
 
-        $this->assertFileExists($tmpDocPath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $tmpDocPath);
+        $this->assertFileExists($processTempFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $processTempFilePath);
     }
 
     public function testAppendProcessTempDataToTempFile()

@@ -14,7 +14,7 @@ trait SwaggerServiceMockTrait
         $savedProcessTmpData = null,
         $driverClass = LocalDriver::class,
     ): void {
-        $driver = $this->mockClass(
+        $this->mockClass(
             class: $driverClass,
             callChain: [
                 $this->functionCall(
@@ -28,8 +28,6 @@ trait SwaggerServiceMockTrait
                     arguments: [$savedProcessTmpData ?? $processTmpData],
                 ),
             ]);
-
-        $this->app->instance($driverClass, $driver);
     }
 
     protected function mockDriverGetPreparedAndSaveTmpData(
@@ -37,46 +35,38 @@ trait SwaggerServiceMockTrait
         $saveTmpData,
         $driverClass = LocalDriver::class
     ): void {
-        $driver = $this->mockClass(
+        $this->mockClass(
             class: $driverClass,
             callChain: [
                 $this->functionCall(name: 'getProcessTmpData', result: $getTmpData),
                 $this->functionCall(name: 'saveProcessTmpData', arguments: [$saveTmpData]),
             ]);
-
-        $this->app->instance($driverClass, $driver);
     }
 
     protected function mockDriverGetTmpData($tmpData, $driverClass = LocalDriver::class): void
     {
-        $driver = $this->mockClass(
+        $this->mockClass(
             class: $driverClass,
             callChain: [
                 $this->functionCall(name: 'getProcessTmpData', result: $tmpData),
             ]);
-
-        $this->app->instance($driverClass, $driver);
     }
 
     protected function mockDriverGetDocumentation($data, $driverClass = LocalDriver::class): void
     {
-        $driver = $this->mockClass(
+        $this->mockClass(
             class: $driverClass,
             callChain: [
                 $this->functionCall(name: 'getDocumentation', result: $data),
             ]);
-
-        $this->app->instance($driverClass, $driver);
     }
 
     protected function mockDriverSaveData($driverClass = LocalDriver::class): void
     {
-        $driver = $this->mockClass(
+        $this->mockClass(
             class: $driverClass,
             callChain: [
                 $this->functionCall(name: 'saveData'),
             ]);
-
-        $this->app->instance($driverClass, $driver);
     }
 }
