@@ -23,7 +23,10 @@ trait SwaggerServiceMockTrait
                         ? $processTmpData
                         : array_merge($processTmpData, ['paths' => [], 'components' => []])
                 ),
-                $this->functionCall(name: 'saveProcessTmpData', arguments: [$savedProcessTmpData ?? $processTmpData]),
+                $this->functionCall(
+                    name: 'saveProcessTmpData',
+                    arguments: [$savedProcessTmpData ?? $processTmpData],
+                ),
             ]);
 
         $this->app->instance($driverClass, $driver);
