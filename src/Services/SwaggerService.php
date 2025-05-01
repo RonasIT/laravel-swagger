@@ -888,6 +888,8 @@ class SwaggerService
 
         $annotations = $reflection->getDocComment();
 
+        $annotations = Str::of($annotations)->remove("\r");
+
         $blocks = explode("\n", $annotations);
 
         $result = [];

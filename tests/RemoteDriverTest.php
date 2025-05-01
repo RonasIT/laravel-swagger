@@ -35,7 +35,7 @@ class RemoteDriverTest extends TestCase
 
     public function testAppendProcessDataToTempFile()
     {
-        self::$remoteDriverClass->appendProcessDataToTmpFile(fn () => json_encode(self::$tmpData));
+        self::$remoteDriverClass->appendProcessDataToTmpFile(fn () => self::$tmpData);
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
@@ -87,22 +87,18 @@ class RemoteDriverTest extends TestCase
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);
 
-        $mock = $this->mockClass(
-            class: RemoteDriver::class,
-            callChain: [
-                $this->functionCall(
-                    name: 'makeHttpRequest',
-                    arguments: [
-                        'post',
-                        'mocked_url/documentations/mocked_key',
-                        self::$tmpData,
-                        [
-                            'Content-Type: application/json',
-                        ],
-                    ],
-                    result: ['', 204],
-                ),
-            ]);
+        $mock = $this->mockClass(RemoteDriver::class, [
+            $this->functionCall(
+                name: 'makeHttpRequest',
+                arguments: [
+                    'post',
+                    'mocked_url/documentations/mocked_key',
+                    self::$tmpData,
+                    ['Content-Type: application/json'],
+                ],
+                result: ['', 204],
+            ),
+        ]);
 
         file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
 
@@ -116,22 +112,18 @@ class RemoteDriverTest extends TestCase
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);
 
-        $mock = $this->mockClass(
-            class: RemoteDriver::class,
-            callChain: [
-                $this->functionCall(
-                    name: 'makeHttpRequest',
-                    arguments: [
-                        'post',
-                        'mocked_url/documentations/mocked_key',
-                        null,
-                        [
-                            'Content-Type: application/json',
-                        ],
-                    ],
-                    result: ['', 204],
-                ),
-            ]);
+        $mock = $this->mockClass(RemoteDriver::class, [
+            $this->functionCall(
+                name: 'makeHttpRequest',
+                arguments: [
+                    'post',
+                    'mocked_url/documentations/mocked_key',
+                    null,
+                    ['Content-Type: application/json'],
+                ],
+                result: ['', 204],
+            ),
+        ]);
 
         $mock->saveData();
     }
@@ -141,18 +133,16 @@ class RemoteDriverTest extends TestCase
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);
 
-        $mock = $this->mockClass(
-            class: RemoteDriver::class,
-            callChain: [
-                $this->functionCall(
-                    name: 'makeHttpRequest',
-                    arguments: [
-                        'get',
-                        'mocked_url/documentations/mocked_key',
-                    ],
-                    result: [$this->getFixture('tmp_data_non_formatted.json'), 200],
-                ),
-            ]);
+        $mock = $this->mockClass(RemoteDriver::class, [
+            $this->functionCall(
+                name: 'makeHttpRequest',
+                arguments: [
+                    'get',
+                    'mocked_url/documentations/mocked_key',
+                ],
+                result: [$this->getFixture('tmp_data_non_formatted.json'), 200],
+            ),
+        ]);
 
         $documentation = $mock->getDocumentation();
 
@@ -166,18 +156,16 @@ class RemoteDriverTest extends TestCase
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);
 
-        $mock = $this->mockClass(
-            class: RemoteDriver::class,
-            callChain: [
-                $this->functionCall(
-                    name: 'makeHttpRequest',
-                    arguments: [
-                        'get',
-                        'mocked_url/documentations/mocked_key',
-                    ],
-                    result: [json_encode(['error' => 'Not found.']), 404],
-                ),
-            ]);
+        $mock = $this->mockClass(RemoteDriver::class, [
+            $this->functionCall(
+                name: 'makeHttpRequest',
+                arguments: [
+                    'get',
+                    'mocked_url/documentations/mocked_key',
+                ],
+                result: [json_encode(['error' => 'Not found.']), 404],
+            ),
+        ]);
 
         $documentation = $mock->getDocumentation();
 

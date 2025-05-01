@@ -14,20 +14,18 @@ trait SwaggerServiceMockTrait
         $savedProcessTmpData = null,
         $driverClass = LocalDriver::class,
     ): void {
-        $this->mockClass(
-            class: $driverClass,
-            callChain: [
-                $this->functionCall(
-                    name: 'getProcessTmpData',
-                    result: empty($processTmpData)
-                        ? $processTmpData
-                        : array_merge($processTmpData, ['paths' => [], 'components' => []])
-                ),
-                $this->functionCall(
-                    name: 'saveProcessTmpData',
-                    arguments: [$savedProcessTmpData ?? $processTmpData],
-                ),
-            ]);
+        $this->mockClass($driverClass, [
+            $this->functionCall(
+                name: 'getProcessTmpData',
+                result: empty($processTmpData)
+                    ? $processTmpData
+                    : array_merge($processTmpData, ['paths' => [], 'components' => []])
+            ),
+            $this->functionCall(
+                name: 'saveProcessTmpData',
+                arguments: [$savedProcessTmpData ?? $processTmpData],
+            ),
+        ]);
     }
 
     protected function mockDriverGetPreparedAndSaveTmpData(
@@ -35,38 +33,30 @@ trait SwaggerServiceMockTrait
         $saveTmpData,
         $driverClass = LocalDriver::class
     ): void {
-        $this->mockClass(
-            class: $driverClass,
-            callChain: [
-                $this->functionCall(name: 'getProcessTmpData', result: $getTmpData),
-                $this->functionCall(name: 'saveProcessTmpData', arguments: [$saveTmpData]),
-            ]);
+        $this->mockClass($driverClass, [
+            $this->functionCall(name: 'getProcessTmpData', result: $getTmpData),
+            $this->functionCall(name: 'saveProcessTmpData', arguments: [$saveTmpData]),
+        ]);
     }
 
     protected function mockDriverGetTmpData($tmpData, $driverClass = LocalDriver::class): void
     {
-        $this->mockClass(
-            class: $driverClass,
-            callChain: [
-                $this->functionCall(name: 'getProcessTmpData', result: $tmpData),
-            ]);
+        $this->mockClass($driverClass, [
+            $this->functionCall(name: 'getProcessTmpData', result: $tmpData),
+        ]);
     }
 
     protected function mockDriverGetDocumentation($data, $driverClass = LocalDriver::class): void
     {
-        $this->mockClass(
-            class: $driverClass,
-            callChain: [
-                $this->functionCall(name: 'getDocumentation', result: $data),
-            ]);
+        $this->mockClass($driverClass, [
+            $this->functionCall(name: 'getDocumentation', result: $data),
+        ]);
     }
 
     protected function mockDriverSaveData($driverClass = LocalDriver::class): void
     {
-        $this->mockClass(
-            class: $driverClass,
-            callChain: [
-                $this->functionCall(name: 'saveData'),
-            ]);
+        $this->mockClass($driverClass, [
+            $this->functionCall(name: 'saveData'),
+        ]);
     }
 }

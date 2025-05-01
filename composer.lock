@@ -9304,16 +9304,16 @@
         },
         {
             "name": "ronasit/laravel-helpers",
-            "version": "3.4",
+            "version": "3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RonasIT/laravel-helpers.git",
-                "reference": "5a454cc9cdb215639b1bbddeaf392625c021c296"
+                "reference": "997141b533877508e074263a1cf92fa1664816a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RonasIT/laravel-helpers/zipball/5a454cc9cdb215639b1bbddeaf392625c021c296",
-                "reference": "5a454cc9cdb215639b1bbddeaf392625c021c296",
+                "url": "https://api.github.com/repos/RonasIT/laravel-helpers/zipball/997141b533877508e074263a1cf92fa1664816a9",
+                "reference": "997141b533877508e074263a1cf92fa1664816a9",
                 "shasum": ""
             },
             "require": {
@@ -9379,9 +9379,9 @@
             ],
             "support": {
                 "issues": "https://github.com/RonasIT/laravel-helpers/issues",
-                "source": "https://github.com/RonasIT/laravel-helpers/tree/3.4"
+                "source": "https://github.com/RonasIT/laravel-helpers/tree/3.4.1"
             },
-            "time": "2025-04-04T09:44:50+00:00"
+            "time": "2025-04-30T14:00:55+00:00"
         },
         {
             "name": "symfony/config",

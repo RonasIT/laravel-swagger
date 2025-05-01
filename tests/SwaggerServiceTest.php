@@ -925,19 +925,16 @@ class SwaggerServiceTest extends TestCase
     {
         ParallelTesting::resolveTokenUsing(fn () => 'testWorkerID');
 
-        $this->mockNativeFunction(
-            namespace: 'RonasIT\AutoDoc\Support',
-            callChain: [
-                $this->functionCall(
-                    name: 'stream_get_contents',
-                    result: $this->getJsonFixture('tmp_data_post_user_request')
-                ),
-                $this->functionCall(
-                    name: 'stream_get_contents',
-                    result: $this->getJsonFixture('tmp_data_search_users_empty_request')
-                ),
-            ]
-        );
+        $this->mockNativeFunction('RonasIT\AutoDoc\Support', [
+            $this->functionCall(
+                name: 'stream_get_contents',
+                result: json_encode($this->getJsonFixture('tmp_data_post_user_request'))
+            ),
+            $this->functionCall(
+                name: 'stream_get_contents',
+                result: json_encode($this->getJsonFixture('tmp_data_search_users_empty_request'))
+            ),
+        ]);
 
         $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_search_users_empty_request'));
 
