@@ -14,12 +14,10 @@ abstract class BaseDriver implements SwaggerDriverContract
 
     public function __construct()
     {
-        $this->tempFilePath = ($token = ParallelTesting::token())
-            ? storage_path("temp_documentation_{$token}.json")
-            : storage_path("temp_documentation.json");
+        $this->tempFilePath = storage_path('temp_documentation.json');
 
         $this->processTempFilePath = ($token = ParallelTesting::token())
-            ? storage_path("process_temp_documentation_{$token}.json")
+            ? storage_path("temp_documentation_{$token}.json")
             : $this->tempFilePath;
 
         $this->mutex = new Mutex(
