@@ -5,7 +5,6 @@ namespace RonasIT\AutoDoc\Tests;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\ParallelTesting;
 use PHPUnit\Framework\Attributes\DataProvider;
-use RonasIT\AutoDoc\Drivers\LocalDriver;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
@@ -928,16 +927,14 @@ class SwaggerServiceTest extends TestCase
 
         ParallelTesting::resolveTokenUsing(fn () => $token);
 
-        $filePath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
+        $processTempFilePath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
 
-        app(LocalDriver::class)->saveProcessTmpData($this->getJsonFixture('tmp_data'));
-
-        $readWriteStream = fopen($filePath, 'c+');
-        $readStream = fopen($filePath, 'r');
+        $readWriteStream = fopen($processTempFilePath, 'c+');
+        $readStream = fopen($processTempFilePath, 'r');
 
         $this->mockNativeFunction('RonasIT\AutoDoc\Support', [
-            $this->functionCall('fopen', [$filePath, 'c+'], $readWriteStream),
-            $this->functionCall('fopen', [$filePath, 'r'], $readStream),
+            $this->functionCall('fopen', [$processTempFilePath, 'c+'], $readWriteStream),
+            $this->functionCall('fopen', [$processTempFilePath, 'r'], $readStream),
             $this->functionCall(
                 name: 'stream_get_contents',
                 arguments: [$readWriteStream],
@@ -956,7 +953,7 @@ class SwaggerServiceTest extends TestCase
 
         $service->saveProductionData();
 
-        $this->assertFileExists(__DIR__ . "/../storage/temp_documentation_{$token}.json");
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), __DIR__ . "/../storage/temp_documentation_{$token}.json");
+        $this->assertFileExists($processTempFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), $processTempFilePath);
     }
 }
