@@ -44,7 +44,7 @@ abstract class BaseDriver implements SwaggerDriverContract
 
     public function appendProcessDataToTmpFile(callable $appendDataCallback): void
     {
-        $this->mutex->writeFileWithLock($this->tempFilePath, function (string $tempFileContent) use ($appendDataCallback) {
+        $this->mutex->writeFileWithLock($this->processTempFilePath, function (string $tempFileContent) use ($appendDataCallback) {
             $resultDocContent = $appendDataCallback(json_decode($tempFileContent, true));
 
             return json_encode($resultDocContent);

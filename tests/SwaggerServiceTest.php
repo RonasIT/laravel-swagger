@@ -5,6 +5,7 @@ namespace RonasIT\AutoDoc\Tests;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\ParallelTesting;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RonasIT\AutoDoc\Drivers\LocalDriver;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
@@ -923,15 +924,28 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeTempDocumentation()
     {
-        ParallelTesting::resolveTokenUsing(fn () => 'testWorkerID');
+        $token = 'workerID';
+
+        ParallelTesting::resolveTokenUsing(fn () => $token);
+
+        $filePath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
+
+        app(LocalDriver::class)->saveProcessTmpData($this->getJsonFixture('tmp_data'));
+
+        $readWriteStream = fopen($filePath, 'c+');
+        $readStream = fopen($filePath, 'r');
 
         $this->mockNativeFunction('RonasIT\AutoDoc\Support', [
+            $this->functionCall('fopen', [$filePath, 'c+'], $readWriteStream),
+            $this->functionCall('fopen', [$filePath, 'r'], $readStream),
             $this->functionCall(
                 name: 'stream_get_contents',
+                arguments: [$readWriteStream],
                 result: json_encode($this->getJsonFixture('tmp_data_post_user_request'))
             ),
             $this->functionCall(
                 name: 'stream_get_contents',
+                arguments: [$readStream],
                 result: json_encode($this->getJsonFixture('tmp_data_search_users_empty_request'))
             ),
         ]);
@@ -942,7 +956,7 @@ class SwaggerServiceTest extends TestCase
 
         $service->saveProductionData();
 
-        $this->assertFileExists(storage_path('temp_documentation.json'));
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), storage_path('temp_documentation.json'));
+        $this->assertFileExists(__DIR__ . "/../storage/temp_documentation_{$token}.json");
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), __DIR__ . "/../storage/temp_documentation_{$token}.json");
     }
 }
