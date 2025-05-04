@@ -10,34 +10,39 @@ use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 class StorageDriver extends BaseDriver
 {
     protected Filesystem $disk;
-    protected ?string $prodFilePath;
+    protected ?string $mainFilePath;
+    protected array $config;
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->disk = Storage::disk(config('auto-doc.drivers.storage.disk'));
-        $this->prodFilePath = config('auto-doc.drivers.storage.production_path');
+        $this->config = config('auto-doc.drivers.storage');
+        $this->disk = Storage::disk($this->config['disk']);
 
-        if (empty($this->prodFilePath)) {
+        $directory = $this->config['directory'] . DIRECTORY_SEPARATOR;
+
+        $this->mainFilePath = "{$directory}{$this->config['base_file_name']}.json";
+
+        if (empty($this->config['base_file_name']) || !str_ends_with($this->mainFilePath, '.json')) {
             throw new MissedProductionFilePathException();
         }
     }
 
     public function saveData(): void
     {
-        $this->disk->put($this->prodFilePath, json_encode($this->getTmpData()));
+        $this->disk->put($this->mainFilePath, json_encode($this->getTmpData()));
 
         $this->clearTmpData();
     }
 
     public function getDocumentation(): array
     {
-        if (!$this->disk->exists($this->prodFilePath)) {
+        if (!$this->disk->exists($this->mainFilePath)) {
             throw new FileNotFoundException();
         }
 
-        $fileContent = $this->disk->get($this->prodFilePath);
+        $fileContent = $this->disk->get($this->mainFilePath);
 
         return json_decode($fileContent, true);
     }
