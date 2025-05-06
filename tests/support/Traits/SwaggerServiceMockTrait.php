@@ -17,7 +17,7 @@ trait SwaggerServiceMockTrait
         $this->mockClass($driverClass, [
             $this->functionCall(
                 name: 'getProcessTmpData',
-                result: empty($processTmpData)
+                result: (empty($processTmpData))
                     ? $processTmpData
                     : array_merge($processTmpData, ['paths' => [], 'components' => []])
             ),
