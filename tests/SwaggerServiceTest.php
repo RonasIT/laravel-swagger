@@ -937,7 +937,7 @@ class SwaggerServiceTest extends TestCase
 
         $service->saveProductionData();
 
-        $this->assertFileExists($processTempFilePath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), $processTempFilePath);
+        $this->assertFileExists($tempFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), $tempFilePath);
     }
 }
