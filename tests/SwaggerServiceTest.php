@@ -927,25 +927,9 @@ class SwaggerServiceTest extends TestCase
 
         ParallelTesting::resolveTokenUsing(fn () => $token);
 
-        $processTempFilePath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
+        $tempFilePath = __DIR__ . "/../storage/temp_documentation.json";
 
-        $readWriteStream = fopen($processTempFilePath, 'c+');
-        $readStream = fopen($processTempFilePath, 'r');
-
-        $this->mockNativeFunction('RonasIT\AutoDoc\Support', [
-            $this->functionCall('fopen', [$processTempFilePath, 'c+'], $readWriteStream),
-            $this->functionCall('fopen', [$processTempFilePath, 'r'], $readStream),
-            $this->functionCall(
-                name: 'stream_get_contents',
-                arguments: [$readWriteStream],
-                result: json_encode($this->getJsonFixture('tmp_data_post_user_request'))
-            ),
-            $this->functionCall(
-                name: 'stream_get_contents',
-                arguments: [$readStream],
-                result: json_encode($this->getJsonFixture('tmp_data_search_users_empty_request'))
-            ),
-        ]);
+        file_put_contents($tempFilePath, json_encode($this->getJsonFixture('tmp_data_post_user_request')));
 
         $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_search_users_empty_request'));
 
