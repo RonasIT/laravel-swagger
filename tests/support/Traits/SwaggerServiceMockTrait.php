@@ -49,7 +49,7 @@ trait SwaggerServiceMockTrait
     protected function mockDriverGetDocumentation($data, $driverClass = LocalDriver::class): void
     {
         $this->mockClass($driverClass, [
-            $this->functionCall(name: 'getDocumentation', result: $data),
+            $this->functionCall('getDocumentation', $data),
         ]);
     }
 
