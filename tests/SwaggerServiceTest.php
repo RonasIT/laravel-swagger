@@ -927,7 +927,7 @@ class SwaggerServiceTest extends TestCase
 
         ParallelTesting::resolveTokenUsing(fn () => $token);
 
-        $tempFilePath = __DIR__ . "/../storage/temp_documentation.json";
+        $tempFilePath = __DIR__ . '/../storage/temp_documentation.json';
 
         file_put_contents($tempFilePath, json_encode($this->getJsonFixture('tmp_data_post_user_request')));
 
