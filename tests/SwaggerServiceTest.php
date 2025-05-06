@@ -923,9 +923,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeTempDocumentation()
     {
-        $token = 'workerID';
-
-        ParallelTesting::resolveTokenUsing(fn () => $token);
+        $this->mockParallelTestingToken();
 
         $tempFilePath = __DIR__ . '/../storage/temp_documentation.json';
 

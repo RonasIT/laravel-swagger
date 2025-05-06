@@ -38,11 +38,9 @@ class LocalDriverTest extends TestCase
 
     public function testSaveProcessTmpDataCheckTokenBasedPath()
     {
-        $token = 'workerID';
+        $this->mockParallelTestingToken();
 
-        ParallelTesting::resolveTokenUsing(fn () => $token);
-
-        $processTempFilePath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
+        $processTempFilePath = __DIR__ . '/../storage/temp_documentation_workerID.json';
 
         app(LocalDriver::class)->saveProcessTmpData(self::$tmpData);
 
