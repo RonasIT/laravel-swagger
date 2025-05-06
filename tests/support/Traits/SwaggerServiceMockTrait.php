@@ -34,7 +34,10 @@ trait SwaggerServiceMockTrait
         $driverClass = LocalDriver::class
     ): void {
         $this->mockClass($driverClass, [
-            $this->functionCall('getProcessTmpData', $getTmpData),
+            $this->functionCall(
+                name: 'getProcessTmpData',
+                result: $getTmpData
+            ),
             $this->functionCall('saveProcessTmpData', [$saveTmpData]),
         ]);
     }
@@ -42,14 +45,20 @@ trait SwaggerServiceMockTrait
     protected function mockDriverGetTmpData($tmpData, $driverClass = LocalDriver::class): void
     {
         $this->mockClass($driverClass, [
-            $this->functionCall('getProcessTmpData', $tmpData),
+            $this->functionCall(
+                name: 'getProcessTmpData',
+                result: $tmpData
+            ),
         ]);
     }
 
     protected function mockDriverGetDocumentation($data, $driverClass = LocalDriver::class): void
     {
         $this->mockClass($driverClass, [
-            $this->functionCall('getDocumentation', $data),
+            $this->functionCall(
+                name: 'getDocumentation',
+                result: $data
+            ),
         ]);
     }
 
