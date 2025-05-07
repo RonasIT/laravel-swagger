@@ -3,33 +3,29 @@
 namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
+use RonasIT\Support\Traits\MockTrait;
 
 trait SwaggerServiceMockTrait
 {
     use MockTrait;
 
-    protected function mockDriverGetEmptyAndSaveTmpData(
-        $tmpData,
-        $savedTmpData = null,
-        $driverClass = LocalDriver::class
+    protected function mockDriverGetEmptyAndSaveProcessTmpData(
+        $processTmpData,
+        $savedProcessTmpData = null,
+        $driverClass = LocalDriver::class,
     ): void {
-        $driver = $this->mockClass($driverClass, ['getTmpData', 'saveTmpData']);
-
-        $driver
-            ->expects($this->exactly(1))
-            ->method('getTmpData')
-            ->willReturn(
-                empty($tmpData)
-                ? $tmpData
-                : array_merge($tmpData, ['paths' => [], 'components' => []])
-            );
-
-        $driver
-            ->expects($this->exactly(1))
-            ->method('saveTmpData')
-            ->with($savedTmpData ?? $tmpData);
-
-        $this->app->instance($driverClass, $driver);
+        $this->mockClass($driverClass, [
+            $this->functionCall(
+                name: 'getProcessTmpData',
+                result: (empty($processTmpData))
+                    ? $processTmpData
+                    : array_merge($processTmpData, ['paths' => [], 'components' => []])
+            ),
+            $this->functionCall(
+                name: 'saveProcessTmpData',
+                arguments: [$savedProcessTmpData ?? $processTmpData],
+            ),
+        ]);
     }
 
     protected function mockDriverGetPreparedAndSaveTmpData(
@@ -37,53 +33,39 @@ trait SwaggerServiceMockTrait
         $saveTmpData,
         $driverClass = LocalDriver::class
     ): void {
-        $driver = $this->mockClass($driverClass, ['getTmpData', 'saveTmpData']);
-
-        $driver
-            ->expects($this->exactly(1))
-            ->method('getTmpData')
-            ->willReturn($getTmpData);
-
-        $driver
-            ->expects($this->exactly(1))
-            ->method('saveTmpData')
-            ->with($saveTmpData);
-
-        $this->app->instance($driverClass, $driver);
+        $this->mockClass($driverClass, [
+            $this->functionCall(
+                name: 'getProcessTmpData',
+                result: $getTmpData
+            ),
+            $this->functionCall('saveProcessTmpData', [$saveTmpData]),
+        ]);
     }
 
     protected function mockDriverGetTmpData($tmpData, $driverClass = LocalDriver::class): void
     {
-        $driver = $this->mockClass($driverClass, ['getTmpData']);
-
-        $driver
-            ->expects($this->exactly(1))
-            ->method('getTmpData')
-            ->willReturn($tmpData);
-
-        $this->app->instance($driverClass, $driver);
+        $this->mockClass($driverClass, [
+            $this->functionCall(
+                name: 'getProcessTmpData',
+                result: $tmpData
+            ),
+        ]);
     }
 
     protected function mockDriverGetDocumentation($data, $driverClass = LocalDriver::class): void
     {
-        $driver = $this->mockClass($driverClass, ['getDocumentation']);
-
-        $driver
-            ->expects($this->exactly(1))
-            ->method('getDocumentation')
-            ->willReturn($data);
-
-        $this->app->instance($driverClass, $driver);
+        $this->mockClass($driverClass, [
+            $this->functionCall(
+                name: 'getDocumentation',
+                result: $data
+            ),
+        ]);
     }
 
     protected function mockDriverSaveData($driverClass = LocalDriver::class): void
     {
-        $driver = $this->mockClass($driverClass, ['saveData']);
-
-        $driver
-            ->expects($this->exactly(1))
-            ->method('saveData');
-
-        $this->app->instance($driverClass, $driver);
+        $this->mockClass($driverClass, [
+            $this->functionCall('saveData'),
+        ]);
     }
 }
