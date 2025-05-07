@@ -2,7 +2,6 @@
 
 namespace RonasIT\AutoDoc\Tests;
 
-use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
