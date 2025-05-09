@@ -47,7 +47,7 @@ return [
         'title' => env('APP_NAME', 'Name of Your Application'),
         'termsOfService' => '',
         'contact' => [
-            'email' => null
+            'email' => null,
         ],
         'license' => [
             'name' => '',
@@ -208,7 +208,7 @@ return [
             | The waiting time between attempts to write to the temporary documentation file while the file is locked
             */
             'wait_time' => 500,
-        ]
+        ],
     ],
 
     'config_version' => '2.9',

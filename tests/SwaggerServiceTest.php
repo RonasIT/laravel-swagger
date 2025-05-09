@@ -3,7 +3,6 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
-use Illuminate\Support\Facades\ParallelTesting;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
@@ -923,9 +922,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeTempDocumentation()
     {
-        $token = 'workerID';
-
-        ParallelTesting::resolveTokenUsing(fn () => $token);
+        $this->mockParallelTestingToken();
 
         $tempFilePath = __DIR__ . '/../storage/temp_documentation.json';
 

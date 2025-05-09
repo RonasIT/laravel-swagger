@@ -2,7 +2,6 @@
 
 namespace RonasIT\AutoDoc\Tests;
 
-use Illuminate\Support\Facades\ParallelTesting;
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
@@ -38,11 +37,9 @@ class LocalDriverTest extends TestCase
 
     public function testSaveProcessTmpDataCheckTokenBasedPath()
     {
-        $token = 'workerID';
+        $this->mockParallelTestingToken();
 
-        ParallelTesting::resolveTokenUsing(fn () => $token);
-
-        $processTempFilePath = __DIR__ . "/../storage/temp_documentation_{$token}.json";
+        $processTempFilePath = __DIR__ . '/../storage/temp_documentation_workerID.json';
 
         app(LocalDriver::class)->saveProcessTmpData(self::$tmpData);
 
