@@ -23,6 +23,7 @@ use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
+use Exception;
 
 /**
  * @property SwaggerDriverContract $driver
@@ -826,12 +827,13 @@ class SwaggerService
             $documentation = $this->driver->getDocumentation();
 
             $this->openAPIValidator->validate($documentation);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $data = $this->generateBaseDataObject();
 
-            $this->config['info'] = Arr::set($this->config, 'info.description', Arr::get($this->config, 'defaults.error'));
+            $infoConfig = $this->config['info'];
+            $infoConfig['description'] = Arr::get($this->config, 'defaults.error');
 
-            $data['info'] = $this->prepareInfo($this->config['info'], ['message' => $exception->getMessage()]);
+            $data['info'] = $this->prepareInfo($infoConfig, ['message' => $exception->getMessage()]);
 
             return $data;
         }

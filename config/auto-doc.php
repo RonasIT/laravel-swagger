@@ -109,7 +109,7 @@ return [
         |
         | You can use your custom description view for errors.
         */
-        'error' => 'auto-doc::swagger-error',
+        'error' => 'auto-doc::error',
     ],
 
     /*

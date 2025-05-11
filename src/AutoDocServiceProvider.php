@@ -20,7 +20,7 @@ class AutoDocServiceProvider extends ServiceProvider
         ], 'view');
 
         $this->publishes([
-            __DIR__ . '/../resources/views/swagger-error.blade.php' => resource_path('views/vendor/auto-doc/swagger-error.blade.php'),
+            __DIR__ . '/../resources/views/error.blade.php' => resource_path('views/vendor/auto-doc/error.blade.php'),
         ], 'view');
 
         if (!$this->app->routesAreCached()) {

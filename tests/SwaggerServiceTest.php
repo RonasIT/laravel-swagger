@@ -3,26 +3,11 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\View;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateFieldException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateParamException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicatePathPlaceholderException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidPathException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidStatusCodeException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingExternalRefException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
@@ -276,11 +261,13 @@ class SwaggerServiceTest extends TestCase
     ) {
         $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
-        $content = app(SwaggerService::class)->getDocFileContent();
+        app(SwaggerService::class)->getDocFileContent($exceptionMessage);
 
-        $description = Arr::get($content, 'info.description');
+        View::addLocation(__DIR__ . '/../resources/views');
 
-        $this->assertEquals($exceptionMessage, Str::replace('&#039;', "'", $description));
+        $rendered = view('error', ['message' => $exceptionMessage])->render();
+
+        $this->assertStringContainsString($exceptionMessage,  html_entity_decode($rendered));
     }
 
     public function testEmptyContactEmail()
