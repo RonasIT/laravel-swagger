@@ -140,8 +140,17 @@ class SwaggerService
             throw new EmptyContactEmailException();
         }
 
-        $data = $this->generateBaseDataObject();
-        $data['info'] = $this->prepareInfo($this->config['info']);
+        $data = [
+            'openapi' => self::OPEN_API_VERSION,
+            'servers' => [
+                ['url' => URL::query($this->config['basePath'])],
+            ],
+            'paths' => [],
+            'components' => [
+                'schemas' => $this->config['definitions'],
+            ],
+            'info' => $this->prepareInfo($this->config['info'])
+        ];
 
         $securityDefinitions = $this->generateSecurityDefinition();
 
