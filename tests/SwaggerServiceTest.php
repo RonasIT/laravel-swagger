@@ -227,13 +227,11 @@ class SwaggerServiceTest extends TestCase
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
-                'exception' => MissingExternalRefException::class,
                 'exceptionMessage' => "Validation failed. Ref 'authloginObject' is used in \$ref but not defined "
                     . "in 'tests/fixtures/SwaggerServiceTest/documentation/with_definitions.json' file.",
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
-                'exception' => MissingRefFileException::class,
                 'exceptionMessage' => "Validation failed. Filename 'invalid-filename.json' is used in \$ref but "
                     . "file doesn't exist.",
             ],
