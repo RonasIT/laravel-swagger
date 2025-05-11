@@ -261,7 +261,7 @@ class SwaggerServiceTest extends TestCase
     ) {
         $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
-        app(SwaggerService::class)->getDocFileContent($exceptionMessage);
+        app(SwaggerService::class)->getDocFileContent();
 
         View::addLocation(__DIR__ . '/../resources/views');
 
