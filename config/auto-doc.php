@@ -47,7 +47,7 @@ return [
         'title' => env('APP_NAME', 'Name of Your Application'),
         'termsOfService' => '',
         'contact' => [
-            'email' => null
+            'email' => null,
         ],
         'license' => [
             'name' => '',
@@ -184,5 +184,32 @@ return [
         'development',
     ],
 
-    'config_version' => '2.8',
+    /*
+    |--------------------------------------------------------------------------
+    | Paratests
+    |--------------------------------------------------------------------------
+    |
+    | The config for parallel tests execution setup
+    */
+    'paratests' => [
+        'tmp_file_lock' => [
+            /*
+            |--------------------------------------------------------------------------
+            | Maximum attempts count, int
+            |--------------------------------------------------------------------------
+            | The maximum number of attempts to append data to a temporary documentation file
+            */
+            'max_retries' => 20,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Wait time between attempts, microseconds
+            |--------------------------------------------------------------------------
+            | The waiting time between attempts to write to the temporary documentation file while the file is locked
+            */
+            'wait_time' => 500,
+        ],
+    ],
+
+    'config_version' => '2.9',
 ];
