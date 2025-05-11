@@ -420,7 +420,7 @@ class SwaggerServiceTest extends TestCase
     #[DataProvider('getAddData')]
     public function testAddData(?string $contentType, string $requestFixture, string $responseFixture)
     {
-        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture($requestFixture));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture($requestFixture));
 
         $service = app(SwaggerService::class);
 
@@ -882,7 +882,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataDescriptionForRouteConditionals()
     {
-        $this->mockDriverGetEmptyAndSaveTmpData(
+        $this->mockDriverGetEmptyAndSaveProcessTmpData(
             $this->getJsonFixture('tmp_data_get_route_parameters_description')
         );
 
@@ -940,7 +940,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataWhenInvokableClass()
     {
-        $this->mockDriverGetEmptyAndSaveTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke'));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke'));
 
         $service = app(SwaggerService::class);
 
