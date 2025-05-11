@@ -27,12 +27,48 @@ class LocalDriverTest extends TestCase
         self::$localDriverClass ??= new LocalDriver();
     }
 
-    public function testSaveTmpData()
+    public function testSaveProcessTmpData()
     {
-        self::$localDriverClass->saveTmpData(self::$tmpData);
+        self::$localDriverClass->saveProcessTmpData(self::$tmpData);
 
         $this->assertFileExists(self::$tmpDocumentationFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
+    }
+
+    public function testSaveProcessTmpDataCheckTokenBasedPath()
+    {
+        $this->mockParallelTestingToken();
+
+        $processTempFilePath = __DIR__ . '/../storage/temp_documentation_workerID.json';
+
+        app(LocalDriver::class)->saveProcessTmpData(self::$tmpData);
+
+        $this->assertFileExists($processTempFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), $processTempFilePath);
+    }
+
+    public function testAppendProcessTempDataToTempFile()
+    {
+        self::$localDriverClass->appendProcessDataToTmpFile(fn () => self::$tmpData);
+
+        $this->assertFileExists(self::$tmpDocumentationFilePath);
+        $this->assertFileEquals($this->generateFixturePath('tmp_data_non_formatted.json'), self::$tmpDocumentationFilePath);
+    }
+
+    public function testGetProcessTmpData()
+    {
+        file_put_contents(self::$tmpDocumentationFilePath, json_encode(self::$tmpData));
+
+        $result = self::$localDriverClass->getProcessTmpData();
+
+        $this->assertEquals(self::$tmpData, $result);
+    }
+
+    public function testGetProcessTmpDataNoFile()
+    {
+        $result = self::$localDriverClass->getProcessTmpData();
+
+        $this->assertNull($result);
     }
 
     public function testGetTmpData()
@@ -60,11 +96,11 @@ class LocalDriverTest extends TestCase
         new LocalDriver();
     }
 
-    public function testGetAndSaveTmpData()
+    public function testGetAndSaveProcessTmpData()
     {
-        self::$localDriverClass->saveTmpData(self::$tmpData);
+        self::$localDriverClass->saveProcessTmpData(self::$tmpData);
 
-        $this->assertEqualsJsonFixture('tmp_data', self::$localDriverClass->getTmpData());
+        $this->assertEqualsJsonFixture('tmp_data', self::$localDriverClass->getProcessTmpData());
     }
 
     public function testSaveData()

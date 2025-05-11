@@ -28,7 +28,7 @@ class RemoteDriver extends BaseDriver
             'Content-Type: application/json',
         ]);
 
-        $this->clearTmpData();
+        $this->clearProcessTmpData();
     }
 
     public function getDocumentation(): array

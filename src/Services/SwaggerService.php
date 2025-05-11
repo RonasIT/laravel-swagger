@@ -6,9 +6,11 @@ use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
@@ -18,7 +20,6 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,12 +76,12 @@ class SwaggerService
 
             $this->security = $this->config['security'];
 
-            $this->data = $this->driver->getTmpData();
+            $this->data = $this->driver->getProcessTmpData();
 
             if (empty($this->data)) {
                 $this->data = $this->generateEmptyData();
 
-                $this->driver->saveTmpData($this->data);
+                $this->driver->saveProcessTmpData($this->data);
             }
         }
     }
@@ -193,7 +194,7 @@ class SwaggerService
         $this->parseRequest();
         $this->parseResponse($response);
 
-        $this->driver->saveTmpData($this->data);
+        $this->driver->saveProcessTmpData($this->data);
     }
 
     protected function prepareItem()
@@ -804,6 +805,18 @@ class SwaggerService
 
     public function saveProductionData()
     {
+        if (ParallelTesting::token()) {
+            $this->driver->appendProcessDataToTmpFile(function (array $sharedTmpData) {
+                $resultDocContent = (empty($sharedTmpData))
+                    ? $this->generateEmptyData()
+                    : $sharedTmpData;
+
+                $this->mergeOpenAPIDocs($resultDocContent, $this->data);
+
+                return $resultDocContent;
+            });
+        }
+
         $this->driver->saveData();
     }
 
@@ -889,6 +902,8 @@ class SwaggerService
         $reflection = new ReflectionClass($class);
 
         $annotations = $reflection->getDocComment();
+
+        $annotations = Str::of($annotations)->remove("\r");
 
         $blocks = explode("\n", $annotations);
 

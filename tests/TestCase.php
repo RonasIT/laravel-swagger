@@ -5,6 +5,7 @@ namespace RonasIT\AutoDoc\Tests;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTest;
@@ -197,5 +198,10 @@ class TestCase extends BaseTest
         putenv("SWAGGER_GLOBAL_PREFIX={$prefix}");
 
         $this->setUp();
+    }
+
+    protected function mockParallelTestingToken(string $token = 'workerID'): void
+    {
+        ParallelTesting::resolveTokenUsing(fn () => $token);
     }
 }
