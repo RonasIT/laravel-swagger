@@ -942,8 +942,6 @@ class SwaggerServiceTest extends TestCase
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke'));
 
-        $service = app(SwaggerService::class);
-
         $request = $this->generateRequest(
             type: 'get',
             uri: 'users',
@@ -954,6 +952,6 @@ class SwaggerServiceTest extends TestCase
             'Content-type' => 'application/json',
         ]);
 
-        $service->addData($request, $response);
+        app(SwaggerService::class)->addData($request, $response);
     }
 }
