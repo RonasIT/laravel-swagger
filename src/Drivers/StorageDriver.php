@@ -2,7 +2,7 @@
 
 namespace RonasIT\AutoDoc\Drivers;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
@@ -34,7 +34,7 @@ class StorageDriver extends BaseDriver
     public function getDocumentation(): array
     {
         if (!$this->disk->exists($this->prodFilePath)) {
-            throw new FileNotFoundException("Documentation file not found :{$this->prodFilePath}");
+            throw new FileNotFoundException($this->prodFilePath);
         }
 
         $fileContent = $this->disk->get($this->prodFilePath);

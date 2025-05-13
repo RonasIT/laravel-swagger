@@ -132,8 +132,11 @@ class SwaggerService
         }
     }
 
-    protected function generateEmptyData(): array
+    protected function generateEmptyData(array $info = [], $decriptionData = []): array
     {
+        if(empty($info)){
+            $info = $this->config['info'];
+        }
         // client must enter at least `contact.email` to generate a default `info` block
         // otherwise an exception will be called
         if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
@@ -149,7 +152,7 @@ class SwaggerService
             'components' => [
                 'schemas' => $this->config['definitions'],
             ],
-            'info' => $this->prepareInfo($this->config['info'])
+            'info' => $this->prepareInfo($info, $decriptionData),
         ];
 
         $securityDefinitions = $this->generateSecurityDefinition();
@@ -837,14 +840,10 @@ class SwaggerService
 
             $this->openAPIValidator->validate($documentation);
         } catch (Exception $exception) {
-            $data = $this->generateBaseDataObject();
-
             $infoConfig = $this->config['info'];
             $infoConfig['description'] = Arr::get($this->config, 'defaults.error');
 
-            $data['info'] = $this->prepareInfo($infoConfig, ['message' => $exception->getMessage()]);
-
-            return $data;
+            return $this->generateEmptyData($infoConfig, ['message' => $exception->getMessage()]);
         }
 
         $additionalDocs = config('auto-doc.additional_paths', []);

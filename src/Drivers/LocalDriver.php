@@ -2,7 +2,7 @@
 
 namespace RonasIT\AutoDoc\Drivers;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriver extends BaseDriver

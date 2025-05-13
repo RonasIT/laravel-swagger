@@ -220,5 +220,5 @@ return [
         ],
     ],
 
-    'config_version' => '2.9',
+    'config_version' => '2.10',
 ];
