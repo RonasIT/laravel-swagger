@@ -937,4 +937,21 @@ class SwaggerServiceTest extends TestCase
         $this->assertFileExists($tempFilePath);
         $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), $tempFilePath);
     }
+
+    public function testAddDataWhenInvokableClass()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users',
+            controllerMethod: '__invoke',
+        );
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json',
+        ]);
+
+        app(SwaggerService::class)->addData($request, $response);
+    }
 }
