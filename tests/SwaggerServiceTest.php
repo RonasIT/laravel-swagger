@@ -77,179 +77,151 @@ class SwaggerServiceTest extends TestCase
         return [
             [
                 'tmpDoc' => 'documentation/invalid_version',
-                'exceptionMessage' => "Validation failed. Unrecognized Swagger version '1.0'. Expected 3.1.0.",
+                'fixture' => 'invalid_version.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__array_parameter__no_items',
-                'exceptionMessage' => "Validation failed. paths./users.post.parameters.0 is an "
-                    . "array, so it must include an 'items' field.",
+                'fixture' => 'invalid_format_array_parameter_no_items.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__array_response_body__no_items',
-                'exceptionMessage' => "Validation failed. paths./users.get.responses.200.schema is an array, "
-                    . "so it must include an 'items' field.",
+                'fixture' => 'invalid_format_array_response_body_no_items.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__array_response_header__no_items',
-                'exceptionMessage' => "Validation failed. paths./users.get.responses.default.headers."
-                    . "Last-Modified is an array, so it must include an 'items' field.",
+                'fixture' => 'invalid_format_array_response_header_no_items.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__body_and_form_params',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.post' "
-                    . "has body and formData parameters. Only one or the other is allowed.",
+                'fixture' => 'invalid_format_body_and_form_params.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_header_params',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.get' "
-                    . "has multiple in:header parameters with name:foo.",
+                'fixture' => 'invalid_format_duplicate_header_params.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_path_params',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.get' has "
-                    . "multiple in:path parameters with name:username.",
+                'fixture' => 'invalid_format_duplicate_path_params.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_path_placeholders',
-                'exceptionMessage' => "Validation failed. Path '/users/{username}/profile/{username}/image/{img_id}' "
-                    . "has multiple path placeholders with name: username.",
+                'fixture' => 'invalid_format_duplicate_path_placeholders.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_operation_id',
-                'exceptionMessage' => "Validation failed. Found multiple fields 'paths.*.*.operationId' "
-                    . "with values: addPet.",
+                'fixture' => 'invalid_format_duplicate_operation_id.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_tag',
-                'exceptionMessage' => "Validation failed. Found multiple fields 'tags.*.name' with values: user.",
+                'fixture' => 'invalid_format_duplicate_tag.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__file_invalid_consumes',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/profile/image.post' "
-                    . "has body and formData parameters. Only one or the other is allowed.",
+                'fixture' => 'invalid_format_file_invalid_consumes.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__file_no_consumes',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/profile/image.post' "
-                    . "has body and formData parameters. Only one or the other is allowed.",
+                'fixture' => 'invalid_format_file_no_consumes.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__multiple_body_params',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.get' has 2 body "
-                    . "parameters. Only one is allowed.",
+                'fixture' => 'invalid_format_multiple_body_params.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__no_path_params',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}/{foo}.get' has "
-                    . "no params for placeholders: username, foo.",
+                'fixture' => 'invalid_format_no_path_params.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__path_param_no_placeholder',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{username}.post' has no "
-                    . "placeholders for params: foo.",
+                'fixture' => 'invalid_format_path_param_no_placeholder.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_value__path',
-                'exceptionMessage' => "Validation failed. Incorrect 'paths.users'. Paths should only have path "
-                    . "names that starts with `/`.",
+                'fixture' => 'invalid_format_invalid_value_path.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_value__status_code',
-                'exceptionMessage' => "Validation failed. Operation at 'paths./users.get.responses.8888' should "
-                    . "only have three-digit status codes, `default`, and vendor extensions (`x-*`) as properties.",
+                'fixture' => 'invalid_format_invalid_value_status_code.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_value__parameter_in',
-                'exceptionMessage' => "Validation failed. Field 'paths./auth/login.post.parameters.0.in' "
-                    . "has an invalid value: invalid_in. Allowed values: body, formData, query, path, header.",
+                'fixture' => 'invalid_format_invalid_value_parameter_in.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__paths',
-                'exceptionMessage' => "Validation failed. '' should have required fields: paths.",
+                'fixture' => 'invalid_format_missing_field_paths.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__operation_responses',
-                'exceptionMessage' => "Validation failed. 'paths./auth/login.post' should have required "
-                    . "fields: responses.",
+                'fixture' => 'invalid_format_missing_field_operation_responses.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__parameter_in',
-                'exceptionMessage' => "Validation failed. 'paths./auth/login.post.parameters.0' should "
-                    . "have required fields: in.",
+                'fixture' => 'invalid_format_missing_field_parameter_in.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__response_description',
-                'exceptionMessage' => "Validation failed. 'paths./auth/login.post.responses.200' should "
-                    . "have required fields: description.",
+                'fixture' => 'invalid_format_missing_field_response_description.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__definition_type',
-                'exceptionMessage' => "Validation failed. 'components.schemas.authloginObject' should have "
-                    . "required fields: type.",
+                'fixture' => 'invalid_format_missing_field_definition_type.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__info_version',
-                'exceptionMessage' => "Validation failed. 'info' should have required fields: version.",
+                'fixture' => 'invalid_format_missing_field_info_version.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__items_type',
-                'exceptionMessage' => "Validation failed. 'paths./pet/findByStatus.get.parameters.0.schema.items' "
-                    . "should have required fields: type.",
+                'fixture' => 'invalid_format_missing_field_items_type.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__header_type',
-                'exceptionMessage' => "Validation failed. 'paths./user/login.get.responses.200.headers.X-Rate-Limit' "
-                    . "should have required fields: type.",
+                'fixture' => 'invalid_format_missing_field_header_type.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_field__tag_name',
-                'exceptionMessage' => "Validation failed. 'tags.0' should have required fields: name.",
+                'fixture' => 'invalid_format_missing_field_tag_name.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
-                'exceptionMessage' => "Validation failed. Ref 'loginObject' is used in \$ref but not defined "
-                    . "in 'definitions' field.",
+                'fixture' => 'invalid_format_missing_local_ref.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
-                'exceptionMessage' => "Validation failed. Ref 'authloginObject' is used in \$ref but not defined "
-                    . "in 'tests/fixtures/SwaggerServiceTest/documentation/with_definitions.json' file.",
+                'fixture' => 'invalid_format_missing_external_ref.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
-                'exceptionMessage' => "Validation failed. Filename 'invalid-filename.json' is used in \$ref but "
-                    . "file doesn't exist.",
+                'fixture' => 'invalid_format_missing_ref_file.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_schema_type',
-                'exceptionMessage' => "Validation failed. Field 'paths./users.get.responses.200.schema.type' "
-                    . "has an invalid value: something. Allowed values: array, boolean, integer, number, "
-                    . "string, object, null, undefined, file.",
+                'fixture' => 'invalid_format_invalid_schema_type.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_path_parameter',
-                'exceptionMessage' => "Validation failed. Path parameters cannot be optional. "
-                    . "Set required=true for the 'username' parameters at operation 'paths./users.get'.",
+                'fixture' => 'invalid_format_missing_path_parameter.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__type',
-                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.type' has an invalid value: invalid. Allowed values: basic, apiKey, oauth2.",
+                'fixture' => 'invalid_format_security_definition_type.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__flow',
-                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.flow' has an invalid value: invalid. Allowed values: implicit, password, application, accessCode.",
+                'fixture' => 'invalid_format_security_definition_flow.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__in',
-                'exceptionMessage' => "Validation failed. Field 'securityDefinitions.0.in' has an invalid value: invalid. Allowed values: query, header.",
+                'fixture' => 'invalid_format_security_definition_in.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__request_body__invalid_content',
-                'exceptionMessage' => "Validation failed. Operation 'paths./users/{id}.post' has invalid content types: image/png.",
+                'fixture' => 'invalid_format_request_body_invalid_content.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__response__invalid_items',
-                'exceptionMessage' => "Validation failed. 'paths./users/{id}.post.responses.200.schema.items' should have required fields: type.",
+                'fixture' => 'invalid_format_response_invalid_items.html',
             ],
         ];
     }
@@ -257,17 +229,15 @@ class SwaggerServiceTest extends TestCase
     #[DataProvider('getConstructorInvalidTmpData')]
     public function testGetDocFileContentInvalidTmpData(
         string $tmpDoc,
-        string $exceptionMessage,
+        string $fixture,
     ) {
         $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
-        app(SwaggerService::class)->getDocFileContent();
-
+        $content = app(SwaggerService::class)->getDocFileContent();
+        
         View::addLocation(__DIR__ . '/../resources/views');
 
-        $rendered = view('error', ['message' => $exceptionMessage])->render();
-
-        $this->assertStringContainsString($exceptionMessage,  html_entity_decode($rendered));
+        $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
 
     public function testEmptyContactEmail()

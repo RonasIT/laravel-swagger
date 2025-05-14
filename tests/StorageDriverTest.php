@@ -2,7 +2,7 @@
 
 namespace RonasIT\AutoDoc\Tests;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use RonasIT\AutoDoc\Drivers\StorageDriver;
@@ -110,7 +110,7 @@ class StorageDriverTest extends TestCase
     }
 
     public function testGetDocumentation()
-    {
+        {
         $this->disk->put(self::$productionFilePath, $this->getFixture('tmp_data_non_formatted.json'));
 
         $documentation = self::$storageDriverClass->getDocumentation();
@@ -121,6 +121,8 @@ class StorageDriverTest extends TestCase
     public function testGetDocumentationFileNotExists()
     {
         $this->expectException(FileNotFoundException::class);
+
+        $this->expectExceptionMessage('Documentation file not found:');
 
         self::$storageDriverClass->getDocumentation();
     }
