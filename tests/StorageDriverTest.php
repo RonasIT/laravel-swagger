@@ -110,7 +110,7 @@ class StorageDriverTest extends TestCase
     }
 
     public function testGetDocumentation()
-        {
+    {
         $this->disk->put(self::$productionFilePath, $this->getFixture('tmp_data_non_formatted.json'));
 
         $documentation = self::$storageDriverClass->getDocumentation();
