@@ -811,10 +811,7 @@ class SwaggerService
         if (ParallelTesting::token()) {
             $this->driver->appendProcessDataToTmpFile(function (array $sharedTmpData) {
                 $resultDocContent = (empty($sharedTmpData))
-                    ? $this->data = $this->generateEmptyData(
-                        view: $this->config['info']['description'],
-                        license: $this->config['info']['license'],
-                    )
+                    ? $this->data = $this->generateEmptyData($this->config['info']['description'])
                     : $sharedTmpData;
 
                 $this->mergeOpenAPIDocs($resultDocContent, $this->data);
