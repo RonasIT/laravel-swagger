@@ -3,7 +3,6 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
-use Illuminate\Support\Facades\View;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
@@ -234,8 +233,6 @@ class SwaggerServiceTest extends TestCase
         $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
         $content = app(SwaggerService::class)->getDocFileContent();
-        
-        View::addLocation(__DIR__ . '/../resources/views');
 
         $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
