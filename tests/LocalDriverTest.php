@@ -3,7 +3,7 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriverTest extends TestCase
@@ -127,6 +127,8 @@ class LocalDriverTest extends TestCase
     public function testGetDocumentationFileNotExists()
     {
         $this->expectException(FileNotFoundException::class);
+
+        $this->expectExceptionMessageMatches('/^Documentation file not found not_exists_file$/');
 
         config(['auto-doc.drivers.local.production_path' => 'not_exists_file']);
 

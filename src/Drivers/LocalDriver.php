@@ -2,7 +2,7 @@
 
 namespace RonasIT\AutoDoc\Drivers;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 
 class LocalDriver extends BaseDriver
@@ -30,7 +30,7 @@ class LocalDriver extends BaseDriver
     public function getDocumentation(): array
     {
         if (!file_exists($this->prodFilePath)) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException($this->prodFilePath);
         }
 
         $fileContent = file_get_contents($this->prodFilePath);
