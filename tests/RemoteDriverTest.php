@@ -153,7 +153,7 @@ class RemoteDriverTest extends TestCase
     {
         $this->expectException(FileNotFoundException::class);
 
-        $this->expectExceptionMessage('Documentation file not found:');
+        $this->expectExceptionMessageMatches('/^Documentation file not found $/');
 
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);

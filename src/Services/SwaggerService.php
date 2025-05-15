@@ -80,9 +80,7 @@ class SwaggerService
             $this->data = $this->driver->getProcessTmpData();
 
             if (empty($this->data)) {
-                $this->data = empty($this->config['info'])
-                    ? $this->generateEmptyData()
-                    : $this->generateEmptyData($this->config['info']['description']);
+                $this->data = $this->generateEmptyData();
 
                 $this->driver->saveProcessTmpData($this->data);
             }
@@ -140,6 +138,10 @@ class SwaggerService
         // otherwise an exception will be called
         if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
             throw new EmptyContactEmailException();
+        }
+
+        if(empty($view) && !empty($this->config['info'])){
+            $view = $this->config['info']['description'];
         }
 
         $data = [
@@ -811,7 +813,7 @@ class SwaggerService
         if (ParallelTesting::token()) {
             $this->driver->appendProcessDataToTmpFile(function (array $sharedTmpData) {
                 $resultDocContent = (empty($sharedTmpData))
-                    ? $this->data = $this->generateEmptyData($this->config['info']['description'])
+                    ? $this->generateEmptyData($this->config['info']['description'])
                     : $sharedTmpData;
 
                 $this->mergeOpenAPIDocs($resultDocContent, $this->data);
@@ -830,9 +832,6 @@ class SwaggerService
 
             $this->openAPIValidator->validate($documentation);
         } catch (Exception $exception) {
-            $infoConfig = $this->config['info'];
-            $infoConfig['description'] = Arr::get($this->config, 'defaults.error');
-
             return  $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
         }
 
@@ -965,11 +964,7 @@ class SwaggerService
     {
         $info = [];
 
-        foreach ($license as $key => $value) {
-            if (empty($value)) {
-                unset($license[$key]);
-            }
-        }
+        $license = array_filter($license, fn($value) => !empty($value));
 
         if (!empty($license)) {
             $info['license'] = $license;
@@ -981,7 +976,7 @@ class SwaggerService
 
         $infoConfig = Arr::except($this->config['info'], ['description', 'license']);
 
-        return array_merge($info, $infoConfig);
+        return array_merge($infoConfig, $info);
     }
 
     protected function getOpenAPIFileContent(string $filePath): array

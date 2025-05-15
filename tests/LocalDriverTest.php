@@ -128,7 +128,7 @@ class LocalDriverTest extends TestCase
     {
         $this->expectException(FileNotFoundException::class);
 
-        $this->expectExceptionMessage('Documentation file not found: '.config(['auto-doc.drivers.local.production_path']));
+        $this->expectExceptionMessageMatches('/^Documentation file not found not_exists_file$/');
 
         config(['auto-doc.drivers.local.production_path' => 'not_exists_file']);
 

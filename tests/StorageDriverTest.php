@@ -122,7 +122,7 @@ class StorageDriverTest extends TestCase
     {
         $this->expectException(FileNotFoundException::class);
 
-        $this->expectExceptionMessage('Documentation file not found:');
+        $this->expectExceptionMessageMatches('/^Documentation file not found documentation.json$/');
 
         self::$storageDriverClass->getDocumentation();
     }
