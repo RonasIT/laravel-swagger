@@ -4,11 +4,9 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Response;
 use phpmock\phpunit\PHPMock;
-use RonasIT\Support\Traits\MockTrait;
 
 class AutoDocControllerTest extends TestCase
 {
-    use MockTrait;
     use PHPMock;
 
     protected static array $documentation;
