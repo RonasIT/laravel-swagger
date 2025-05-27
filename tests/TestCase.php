@@ -14,9 +14,11 @@ use RonasIT\AutoDoc\Tests\Support\Mock\TestController;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 use RonasIT\Support\Traits\TestingTrait;
+
 class TestCase extends BaseTest
 {
     use TestingTrait;
+
     protected bool $globalExportMode = false;
 
     public function setUp(): void
