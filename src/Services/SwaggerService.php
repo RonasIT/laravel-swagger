@@ -140,7 +140,7 @@ class SwaggerService
             throw new EmptyContactEmailException();
         }
 
-        if(empty($view) && !empty($this->config['info'])){
+        if (empty($view) && !empty($this->config['info'])){
             $view = $this->config['info']['description'];
         }
 
@@ -602,8 +602,8 @@ class SwaggerService
     }
 
     protected function saveParameterDescription(
-        &$data,
-        $parameter,
+        array &$data,
+        string $parameter,
         array $rulesArray,
         array $attributes,
         array $annotations
@@ -964,7 +964,7 @@ class SwaggerService
     {
         $info = [];
 
-        $license = array_filter($license, fn($value) => !empty($value));
+        $license = array_filter($license);
 
         if (!empty($license)) {
             $info['license'] = $license;
@@ -974,9 +974,7 @@ class SwaggerService
             $info['description'] = view($view, $viewData)->render();
         }
 
-        $infoConfig = Arr::except($this->config['info'], ['description', 'license']);
-
-        return array_merge($infoConfig, $info);
+        return array_merge(Arr::except($this->config['info'], ['description', 'license']), $info);
     }
 
     protected function getOpenAPIFileContent(string $filePath): array
