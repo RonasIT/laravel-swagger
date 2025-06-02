@@ -973,8 +973,8 @@ class SwaggerService
         if (!empty($view)) {
             $info['description'] = view($view, $viewData)->render();
         }
-
-        return array_merge(Arr::except($this->config['info'], ['description', 'license']), $info);
+        
+        return array_merge($this->config['info'], $info);
     }
 
     protected function getOpenAPIFileContent(string $filePath): array

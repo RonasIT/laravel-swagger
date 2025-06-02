@@ -16,6 +16,10 @@
         "termsOfService": "",
         "contact": {
             "email": "your@mail.com"
+        },
+        "license": {
+            "name": "",
+            "url": ""
         }
     },
     "securityDefinitions": {
