@@ -832,7 +832,7 @@ class SwaggerService
 
             $this->openAPIValidator->validate($documentation);
         } catch (Exception $exception) {
-            return  $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
+            return $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
         }
 
         $additionalDocs = config('auto-doc.additional_paths', []);
