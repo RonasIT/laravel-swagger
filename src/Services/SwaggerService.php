@@ -832,7 +832,7 @@ class SwaggerService
 
             $this->openAPIValidator->validate($documentation);
         } catch (Exception $exception) {
-            return  $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
+            return $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
         }
 
         $additionalDocs = config('auto-doc.additional_paths', []);
@@ -974,7 +974,7 @@ class SwaggerService
             $info['description'] = view($view, $viewData)->render();
         }
 
-        return array_merge(Arr::except($this->config['info'], ['description', 'license']), $info);
+        return array_merge($this->config['info'], $info);
     }
 
     protected function getOpenAPIFileContent(string $filePath): array
