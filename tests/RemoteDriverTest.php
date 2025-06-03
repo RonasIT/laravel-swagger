@@ -4,13 +4,10 @@ namespace RonasIT\AutoDoc\Tests;
 
 use RonasIT\AutoDoc\Drivers\RemoteDriver;
 use RonasIT\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RonasIT\Support\Traits\MockTrait;
+use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 
 class RemoteDriverTest extends TestCase
 {
-    use MockTrait;
-
     protected static array $tmpData;
     protected static RemoteDriver $remoteDriverClass;
     protected static string $tmpDocumentationFilePath;
@@ -151,7 +148,7 @@ class RemoteDriverTest extends TestCase
 
     public function testGetDocumentationNoFile()
     {
-        $this->expectException(FileNotFoundException::class);
+        $this->assertExceptionThrew(FileNotFoundException::class, 'Documentation file not found ');
 
         config(['auto-doc.drivers.remote.key' => 'mocked_key']);
         config(['auto-doc.drivers.remote.url' => 'mocked_url']);

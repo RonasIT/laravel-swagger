@@ -23,6 +23,7 @@ use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
+use Exception;
 
 /**
  * @property SwaggerDriverContract $driver
@@ -131,12 +132,16 @@ class SwaggerService
         }
     }
 
-    protected function generateEmptyData(): array
+    protected function generateEmptyData(?string $view = null, array $viewData = [], array $license = []): array
     {
         // client must enter at least `contact.email` to generate a default `info` block
         // otherwise an exception will be called
         if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
             throw new EmptyContactEmailException();
+        }
+
+        if (empty($view) && !empty($this->config['info'])) {
+            $view = $this->config['info']['description'];
         }
 
         $data = [
@@ -148,7 +153,7 @@ class SwaggerService
             'components' => [
                 'schemas' => $this->config['definitions'],
             ],
-            'info' => $this->prepareInfo($this->config['info'])
+            'info' => $this->prepareInfo($view, $viewData, $license),
         ];
 
         $securityDefinitions = $this->generateSecurityDefinition();
@@ -260,7 +265,7 @@ class SwaggerService
 
         foreach ($exploded as $value) {
             if (!preg_match('/^[a-zA-Z0-9\.]+$/', $value)) {
-                return  "regexp: {$expression}";
+                return "regexp: {$expression}";
             }
         }
 
@@ -596,8 +601,13 @@ class SwaggerService
         ];
     }
 
-    protected function saveParameterDescription(&$data, $parameter, array $rulesArray, array $attributes, array $annotations)
-    {
+    protected function saveParameterDescription(
+        array &$data,
+        string $parameter,
+        array $rulesArray,
+        array $attributes,
+        array $annotations
+    ) {
         $description = Arr::get($annotations, $parameter);
 
         if (empty($description)) {
@@ -803,7 +813,7 @@ class SwaggerService
         if (ParallelTesting::token()) {
             $this->driver->appendProcessDataToTmpFile(function (array $sharedTmpData) {
                 $resultDocContent = (empty($sharedTmpData))
-                    ? $this->generateEmptyData()
+                    ? $this->generateEmptyData($this->config['info']['description'])
                     : $sharedTmpData;
 
                 $this->mergeOpenAPIDocs($resultDocContent, $this->data);
@@ -817,9 +827,13 @@ class SwaggerService
 
     public function getDocFileContent()
     {
-        $documentation = $this->driver->getDocumentation();
+        try {
+            $documentation = $this->driver->getDocumentation();
 
-        $this->openAPIValidator->validate($documentation);
+            $this->openAPIValidator->validate($documentation);
+        } catch (Exception $exception) {
+            return $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
+        }
 
         $additionalDocs = config('auto-doc.additional_paths', []);
 
@@ -946,27 +960,21 @@ class SwaggerService
         return $values[$type];
     }
 
-    protected function prepareInfo(array $info): array
+    protected function prepareInfo(?string $view = null, array $viewData = [], array $license = []): array
     {
-        if (empty($info)) {
-            return $info;
+        $info = [];
+
+        $license = array_filter($license);
+
+        if (!empty($license)) {
+            $info['license'] = $license;
         }
 
-        foreach ($info['license'] as $key => $value) {
-            if (empty($value)) {
-                unset($info['license'][$key]);
-            }
+        if (!empty($view)) {
+            $info['description'] = view($view, $viewData)->render();
         }
-
-        if (empty($info['license'])) {
-            unset($info['license']);
-        }
-
-        if (!empty($info['description'])) {
-            $info['description'] = view($info['description'])->render();
-        }
-
-        return $info;
+        
+        return array_merge($this->config['info'], $info);
     }
 
     protected function getOpenAPIFileContent(string $filePath): array
