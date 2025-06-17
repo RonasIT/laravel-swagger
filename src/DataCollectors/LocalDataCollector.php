@@ -2,9 +2,9 @@
 
 namespace KWXS\Support\AutoDoc\DataCollectors;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use KWXS\Support\AutoDoc\Exceptions\MissedProductionFilePathException;
 use KWXS\Support\AutoDoc\Interfaces\DataCollectorInterface;
+use LogicException;
 
 class LocalDataCollector implements DataCollectorInterface
 {
@@ -51,7 +51,7 @@ class LocalDataCollector implements DataCollectorInterface
 	public function getDocumentation()
 	{
 		if (!file_exists($this->prodFilePath)) {
-			throw new FileNotFoundException();
+			throw new LogicException('File does not exist: ' . $this->prodFilePath);
 		}
 
 		$fileContent = file_get_contents($this->prodFilePath);
