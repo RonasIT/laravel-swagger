@@ -17,11 +17,11 @@
   "require": {
     "php": "^8.3",
     "laravel/framework": ">=11.34",
-    "phpunit/phpunit": ">=12.2.5",
+    "phpunit/phpunit": ">=11.4",
     "ext-json": "*"
   },
   "require-dev": {
-    "orchestra/testbench": ">=v9.14.0",
+    "orchestra/testbench": ">=9.3",
     "php-coveralls/php-coveralls": "^2.7",
     "php-mock/php-mock-phpunit": ">=2.10",
     "ronasit/laravel-helpers": "^3.4"
