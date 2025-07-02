@@ -140,7 +140,7 @@ class SwaggerService
             throw new EmptyContactEmailException();
         }
 
-        if (empty($view) && !empty($this->config['info'])){
+        if (empty($view) && !empty($this->config['info'])) {
             $view = $this->config['info']['description'];
         }
 
