@@ -23,7 +23,7 @@ use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
-use Exception;
+use Throwable;
 
 /**
  * @property SwaggerDriverContract $driver
@@ -831,7 +831,7 @@ class SwaggerService
             $documentation = $this->driver->getDocumentation();
 
             $this->openAPIValidator->validate($documentation);
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             return $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
         }
 
@@ -973,7 +973,7 @@ class SwaggerService
         if (!empty($view)) {
             $info['description'] = view($view, $viewData)->render();
         }
-        
+
         return array_merge($this->config['info'], $info);
     }
 

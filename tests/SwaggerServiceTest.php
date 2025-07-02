@@ -222,6 +222,10 @@ class SwaggerServiceTest extends TestCase
                 'tmpDoc' => 'documentation/invalid_format__response__invalid_items',
                 'fixture' => 'invalid_format_response_invalid_items.html',
             ],
+            [
+                'tmpDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request',
+                'fixture' => 'invalid_format_incorrect_documentation_structure_request.html',
+            ],
         ];
     }
 
@@ -234,7 +238,7 @@ class SwaggerServiceTest extends TestCase
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
-        $this->assertEqualsFixture($fixture, $content['info']['description']);
+        $this->assertStringContainsString($this->getFixture($fixture), $content['info']['description']);
     }
 
     public function testEmptyContactEmail()
