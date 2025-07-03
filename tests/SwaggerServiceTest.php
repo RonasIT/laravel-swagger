@@ -238,7 +238,7 @@ class SwaggerServiceTest extends TestCase
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
-        $this->assertStringContainsString($this->getFixture($fixture), $content['info']['description']);
+        $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
 
     public function testEmptyContactEmail()

@@ -24,7 +24,7 @@ use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
-
+use Exception;
 /**
  * @property SwaggerDriverContract $driver
  */
@@ -832,7 +832,12 @@ class SwaggerService
 
             $this->openAPIValidator->validate($documentation);
         } catch (Throwable $exception) {
-            return $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
+            $message = $exception instanceof Exception ? $exception->getMessage() : '[]';
+
+            return $this->generateEmptyData($this->config['defaults']['error'], [
+                'message' => $message,
+                'type' => $exception::class,
+            ]);
         }
 
         $additionalDocs = config('auto-doc.additional_paths', []);
