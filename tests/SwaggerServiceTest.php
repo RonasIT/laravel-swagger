@@ -4,7 +4,6 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
 use PHPUnit\Framework\Attributes\DataProvider;
-use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
