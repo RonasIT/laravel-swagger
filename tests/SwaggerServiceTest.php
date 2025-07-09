@@ -245,7 +245,9 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.info.contact.email' => null]);
 
-        $this->expectException(EmptyContactEmailException::class);
+        $content = app(SwaggerService::class)->getDocFileContent();
+
+        $this->assertEqualsFixture('invalid_config_email.html', $content['info']['description'], true);
 
         app(SwaggerService::class);
     }
