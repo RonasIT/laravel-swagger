@@ -87,7 +87,7 @@ class TestCase extends BaseTest
     public function assertEqualsFixture(string $fixtureName, $data, bool $exportMode = false): void
     {
         if ($exportMode || $this->globalExportMode) {
-            $this->exportContent($fixtureName, $data);
+            $this->exportContent($data, $fixtureName);
         }
 
         $this->assertEquals($this->getFixture($fixtureName), $data);

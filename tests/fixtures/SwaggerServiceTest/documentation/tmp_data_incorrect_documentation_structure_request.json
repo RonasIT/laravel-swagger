@@ -1,0 +1,400 @@
+{
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "https:\/\/localhost"
+    }
+  ],
+  "paths": {
+    "\/v{version}\/media": {
+      "post": {
+        "tags": [
+          "v{version}"
+        ],
+        "consumes": [
+          "application\/json"
+        ],
+        "produces": [
+          "application\/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version",
+            "description": "in: 0.1,0.2",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/postV{version}media201ResponseObject"
+                },
+                "example": {
+                  "id": 20,
+                  "link": "https:\/\/localhost\/v0.2\/media\/20\/content",
+                  "created_at": "2018-11-11T11:11:11.000000Z",
+                  "preview": {
+                    "id": 19,
+                    "link": "https:\/\/localhost\/v0.2\/media\/19\/content",
+                    "created_at": "2018-11-11T11:11:11.000000Z",
+                    "blur_hash": null
+                  },
+                  "blur_hash": "L00000fQfQfQfQfQfQfQfQfQfQfQ"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/postV{version}media401ResponseObject"
+                },
+                "example": {
+                  "message": "Unauthenticated."
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "deprecated": false,
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "$ref": "#\/components\/schemas\/v{version}mediaObject"
+              }
+            }
+          },
+          "description": "",
+          "required": true
+        },
+        "summary": "create media"
+      }
+    },
+    "\/v{version}\/media\/{id}\/content": {
+      "get": {
+        "tags": [
+          "v{version}"
+        ],
+        "consumes": [
+          "application\/json"
+        ],
+        "produces": [
+          "image\/jpeg",
+          "application\/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version",
+            "description": "in: 0.1,0.2",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "regexp: [0-9]+",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successfully done",
+            "content": {
+              "image\/jpeg": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/getV{version}media{id}content200ResponseObject"
+                },
+                "example": "[]"
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/getV{version}media{id}content429ResponseObject"
+                },
+                "example": {
+                  "message": "Too Many Attempts."
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/getV{version}media{id}content403ResponseObject"
+                },
+                "example": {
+                  "message": "This action is unauthorized."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "This entity not found",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/getV{version}media{id}content404ResponseObject"
+                },
+                "example": {
+                  "message": "Media does not exist"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "deprecated": false,
+        "summary": "get content"
+      }
+    },
+    "\/media\/{id}": {
+      "delete": {
+        "tags": [
+          "media"
+        ],
+        "consumes": [
+          "application\/json"
+        ],
+        "produces": [
+          "application\/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "This entity not found",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/deleteMedia{id}404ResponseObject"
+                },
+                "example": {
+                  "message": "Not found."
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "deprecated": false,
+        "summary": "delete media"
+      }
+    },
+    "\/media\/bulk": {
+      "post": {
+        "tags": [
+          "media"
+        ],
+        "consumes": [
+          "application\/json"
+        ],
+        "produces": [
+          "application\/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "404": {
+            "description": "This entity not found",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/postMediabulk404ResponseObject"
+                },
+                "example": {
+                  "message": "Not found."
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "deprecated": false,
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "$ref": "#\/components\/schemas\/mediabulkObject"
+              }
+            }
+          },
+          "description": "",
+          "required": true
+        },
+        "summary": "bulk create media"
+      }
+    },
+    "\/media": {
+      "get": {
+        "tags": [
+          "media"
+        ],
+        "consumes": [
+          "application\/json"
+        ],
+        "produces": [
+          "application\/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "description": "integer",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "per_page",
+            "description": "integer",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "all",
+            "description": "integer",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "query",
+            "description": "string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "order_by",
+            "description": "string, in:link,name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "desc",
+            "description": "boolean",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "description": "string",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "This entity not found",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/getMedia404ResponseObject"
+                },
+                "example": {
+                  "message": "Not found."
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "deprecated": false,
+        "summary": "search media"
+      },
+      "post": {
+        "tags": [
+          "media"
+        ],
+        "consumes": [
+          "application\/json"
+        ],
+        "produces": [
+          "application\/json"
+        ],
+        "parameters": [],
+        "content": {
+          "application\/json": {
+            "schema": {
+              "type": "object",
+              "$ref": "#\/components\/schemas\/postMedia404ResponseObject"
+            },
+            "example": {
+              "message": "Not found."
+            }
+          }
+        }
+      }
+    },
+    "security": [],
+    "description": "",
+    "deprecated": false,
+    "requestBody": {
+      "content": {
+        "application\/json": {
+          "schema": {
+            "$ref": "#\/components\/schemas\/mediaObject"
+          }
+        }
+      },
+      "description": "",
+      "required": true
+    },
+    "summary": "create media"
+  }
+}}, "components": {"schemas": {"v{version}mediaObject": {"type": "object", "properties": {"file": {"type": "string", "description": "file, max:5120, mimes:jpg,jpeg,bmp,png,heic"}, "meta": {"type": "object", "description": ""}, "is_public": {"type": "boolean", "description":""}, "type": {"type": "string","description": "in:avatar,cover"}}, "required":["file"], "example": {"file": "[uploaded_file]"}},"postV{version}media201ResponseObject": {"type": "object", "properties": {"id": {"type": "integer"}, "link":{"type": "string"}, "created_at": {"type": "string"}, "preview": {"type": "array", "nullable": true}, "blur_hash": {"type": "string"}}}, "postV{version}media401ResponseObject": {"type": "object", "properties": {"message": {"type": "string"}}}, "getV{version}media{id}content200ResponseObject": {"type": "object", "properties":[]}, "getV{version}media{id}content429ResponseObject": {"type": "object", "properties": {"message": {"type": "string"}}}, "getV{version}media{id}content403ResponseObject": {"type": "object", "properties": {"message": {"type": "string"}}}, "getV{version}media{id}content404ResponseObject": {"type": "object", "properties": {"message": {"type": "string"}}}, "deleteMedia{id}404ResponseObject": {"type": "object", "properties": {"message": {"type": "string"}}}, "mediabulkObject": {"type": "object", "properties": {"media": {"type": "object", "description": ""}, "media.*": {"type": "object", "description": ""}, "media.*.file": {"type": "string", "description": "file, max:5120, mimes:jpg,jpeg,bmp,png,heic"}, "media.*.meta":{"type": "object", "description": ""},"media.*.is_public": {"type": "boolean", "description": ""}}, "required":["media", "media.*.file"], "example": {"media":[{"meta":["test1"], "file": "[uploaded_file]"}, {"meta":["test2"], "file": "[uploaded_file]"}]}}, "postMediabulk404ResponseObject": {"type": "object","properties": {"message": {"type": "string"}}}, "getMedia404ResponseObject": {"type": "object","properties": {"message": {"type": "string"}}}, "mediaObject": {"type": "object","properties": {"file": {"type": "string","description": "file, max:5120, mimes:jpg,jpeg,bmp,png,heic"}, "meta": {"type":"object", "description": ""}, "is_public": {"type": "boolean", "description": ""}, "type": {"type": "string", "description": "in:avatar,cover"}}, "required":["file"], "example": {"file": "[uploaded_file]"}},"postMedia404ResponseObject": {"type": "object", "properties": {"message": {"type": "string"}}}}}, "info": {"description": "This is automatically collected documentation", "version": "0.0.0", "title": "Laravel", "termsOfService": "", "contact": {"email": "azabolotnikov@ronasit.com"}}}

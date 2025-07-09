@@ -23,8 +23,8 @@ use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 use Exception;
-
 /**
  * @property SwaggerDriverContract $driver
  */
@@ -137,7 +137,12 @@ class SwaggerService
         // client must enter at least `contact.email` to generate a default `info` block
         // otherwise an exception will be called
         if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
-            throw new EmptyContactEmailException();
+            $exception = new EmptyContactEmailException();
+
+            $viewData = [
+                'message' => $exception->getMessage(),
+                'type' => $exception::class,
+            ];
         }
 
         if (empty($view) && !empty($this->config['info'])) {
@@ -831,8 +836,13 @@ class SwaggerService
             $documentation = $this->driver->getDocumentation();
 
             $this->openAPIValidator->validate($documentation);
-        } catch (Exception $exception) {
-            return $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
+        } catch (Throwable $exception) {
+            $message = $exception instanceof Exception ? $exception->getMessage() : '[]';
+
+            return $this->generateEmptyData($this->config['defaults']['error'], [
+                'message' => $message,
+                'type' => $exception::class,
+            ]);
         }
 
         $additionalDocs = config('auto-doc.additional_paths', []);
@@ -973,7 +983,7 @@ class SwaggerService
         if (!empty($view)) {
             $info['description'] = view($view, $viewData)->render();
         }
-        
+
         return array_merge($this->config['info'], $info);
     }
 

@@ -4,7 +4,6 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
 use PHPUnit\Framework\Attributes\DataProvider;
-use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
@@ -222,6 +221,10 @@ class SwaggerServiceTest extends TestCase
                 'tmpDoc' => 'documentation/invalid_format__response__invalid_items',
                 'fixture' => 'invalid_format_response_invalid_items.html',
             ],
+            [
+                'tmpDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request',
+                'fixture' => 'invalid_format_incorrect_documentation_structure_request.html',
+            ],
         ];
     }
 
@@ -241,7 +244,9 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.info.contact.email' => null]);
 
-        $this->expectException(EmptyContactEmailException::class);
+        $content = app(SwaggerService::class)->getDocFileContent();
+
+        $this->assertEqualsFixture('invalid_config_email.html', $content['info']['description'], true);
 
         app(SwaggerService::class);
     }
