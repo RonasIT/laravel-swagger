@@ -655,10 +655,7 @@ class SwaggerService
             return null;
         }
 
-        $parameters = $this->resolveClassMethodDependencies(
-            app($class),
-            $method
-        );
+        $parameters = $this->resolveClassMethodDependencies(app($class), $method);
 
         return Arr::first($parameters, function ($key) {
             return preg_match('/Request/', $key);

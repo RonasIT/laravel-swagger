@@ -39,8 +39,6 @@ trait GetDependenciesTrait
             return null;
         }
 
-        $classFields = (new ReflectionFunction($implementation))->getStaticVariables();
-
-        return $classFields['concrete'];
+        return get_class($implementation(app()));
     }
 }
