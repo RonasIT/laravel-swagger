@@ -876,11 +876,31 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->addData($request, $response);
     }
 
-    public function testAddDataWhenInvokableClassWithBindingContract()
+    public function testAddDataWhenInvokableClassWithBindingContractToObject()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke_bind_closure'));
 
         $this->app->bind(TestRequestContract::class, fn () => new TestRequest());
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users',
+            controllerMethod: '__invoke',
+            controllerClass: InvokableTestController::class,
+        );
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json',
+        ]);
+
+        app(SwaggerService::class)->addData($request, $response);
+    }
+
+    public function testAddDataWhenInvokableClassWithBindingContractToClassName()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke_bind_closure'));
+
+        $this->app->bind(TestRequestContract::class, TestRequest::class);
 
         $request = $this->generateRequest(
             type: 'get',
