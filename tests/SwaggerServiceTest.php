@@ -684,9 +684,23 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function testAddDataWithBindingInterface()
+    public static function addDataWithBindingInterface(): array
     {
-        $this->app->bind(TestContract::class, TestRequest::class);
+        return [
+            [
+                'concrete' =>  TestRequest::class,
+            ],
+            [
+                'concrete' => fn ($app) => new TestRequest(),
+            ],
+        ];
+    }
+
+    #[DataProvider('addDataWithBindingInterface')]
+    public function testAddDataWithBindingInterface($concrete)
+    {
+        $this->app->bind(TestContract::class, $concrete);
+
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request'));
 
         $service = app(SwaggerService::class);
@@ -867,46 +881,6 @@ class SwaggerServiceTest extends TestCase
             type: 'get',
             uri: 'users',
             controllerMethod: '__invoke',
-        );
-
-        $response = $this->generateResponse('example_success_user_response.json', 200, [
-            'Content-type' => 'application/json',
-        ]);
-
-        app(SwaggerService::class)->addData($request, $response);
-    }
-
-    public function testAddDataWhenInvokableClassWithBindingContractToObject()
-    {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke_bind_closure'));
-
-        $this->app->bind(TestRequestContract::class, fn () => new TestRequest());
-
-        $request = $this->generateRequest(
-            type: 'get',
-            uri: 'users',
-            controllerMethod: '__invoke',
-            controllerClass: InvokableTestController::class,
-        );
-
-        $response = $this->generateResponse('example_success_user_response.json', 200, [
-            'Content-type' => 'application/json',
-        ]);
-
-        app(SwaggerService::class)->addData($request, $response);
-    }
-
-    public function testAddDataWhenInvokableClassWithBindingContractToClassName()
-    {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke_bind_closure'));
-
-        $this->app->bind(TestRequestContract::class, TestRequest::class);
-
-        $request = $this->generateRequest(
-            type: 'get',
-            uri: 'users',
-            controllerMethod: '__invoke',
-            controllerClass: InvokableTestController::class,
         );
 
         $response = $this->generateResponse('example_success_user_response.json', 200, [

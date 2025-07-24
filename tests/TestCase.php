@@ -126,13 +126,12 @@ class TestCase extends BaseTest
         array $headers = [],
         array $routeConditions = [],
         string $controllerMethod = 'test',
-        string $controllerClass = TestController::class,
     ): Request {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
-        return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions, $controllerClass) {
+        return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions) {
             $route = Route::get($uri)
-                ->setAction(['controller' => $controllerClass . '@' . $controllerMethod])
+                ->setAction(['controller' => TestController::class . '@' . $controllerMethod])
                 ->bind($request);
 
             foreach ($routeConditions as $condition) {
