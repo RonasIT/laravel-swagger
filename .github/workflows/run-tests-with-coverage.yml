@@ -27,6 +27,3 @@ jobs:
         run: |
           composer global require php-coveralls/php-coveralls
           php-coveralls --coverage_clover=build/logs/clover-${{ matrix.php-version }}.xml -v
-
-
-
