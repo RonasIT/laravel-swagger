@@ -857,7 +857,7 @@ class SwaggerServiceTest extends TestCase
         $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), $tempFilePath);
     }
 
-    public function testMergeTempDocumentationTempDocumentationIsEmpty()
+    public function testMergeToEmptyTempDocumentation()
     {
         $this->mockParallelTestingToken();
 
