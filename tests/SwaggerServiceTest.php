@@ -873,7 +873,6 @@ class SwaggerServiceTest extends TestCase
         $this->assertFileEquals($this->generateFixturePath('tmp_data_merged_to_empty_temp_documentation.json'), $tempFilePath);
     }
 
-
     public function testAddDataWhenInvokableClass()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke'));
