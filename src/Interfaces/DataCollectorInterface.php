@@ -20,7 +20,7 @@ interface DataCollectorInterface
 	 * Save production data
 	 * @param string|null $filePath
 	 */
-    public function saveData(string $filePath = null);
+    public function saveData(?string $filePath = null);
 
     /**
      * Get production documentation

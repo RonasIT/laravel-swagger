@@ -156,7 +156,7 @@ class SwaggerService
 		$this->item['summary'] .= ' || Tags: ' . implode(',', $this->item['tags']);
 	}
 
-	public function saveProductionData(string $filePath = null)
+	public function saveProductionData(?string $filePath = null)
 	{
 		$this->dataCollector->saveData($filePath);
 	}
