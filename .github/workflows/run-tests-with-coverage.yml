@@ -13,14 +13,14 @@ jobs:
       matrix:
         php-version: [ "8.3", "8.4" ]
     steps:
-      - uses: shivammathur/setup-php@v2
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          coverage: xdebug, pcov
+          coverage: xdebug
           tools: composer:v2
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Execute unit tests via PHPUnit with coverage
@@ -36,14 +36,15 @@ jobs:
     needs: tests-with-coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: shivammathur/setup-php@v2
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
           tools: composer:v2
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/download-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Import coverage report
+        uses: actions/download-artifact@v4
         with:
           name: clover.xml
           path: build/logs
