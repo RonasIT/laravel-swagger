@@ -2,9 +2,9 @@ name: Run tests with coverage
 
 on:
   push:
-    branches: ["master"]
+    branches: [ "master" ]
   pull_request:
-    branches: ["master"]
+    branches: [ "master" ]
 
 jobs:
   tests-with-coverage:
@@ -13,17 +13,41 @@ jobs:
       matrix:
         php-version: [ "8.3", "8.4" ]
     steps:
-      - uses: shivammathur/setup-php@v2
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-      - uses: actions/checkout@v3
+          coverage: xdebug
+          tools: composer
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Execute unit tests via PHPUnit with coverage
-        run: vendor/bin/phpunit --coverage-clover build/logs/clover-${{ matrix.php-version }}.xml
+        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+      - name: Export coverage report
+        if: ${{ matrix.php-version == '8.4' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: clover.xml
+          path: build/logs
+
+  upload-to-coveralls:
+    needs: tests-with-coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Import coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: clover.xml
+          path: build/logs
       - name: Upload coverage results to Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           composer global require php-coveralls/php-coveralls
-          php-coveralls --coverage_clover=build/logs/clover-${{ matrix.php-version }}.xml -v
+          php-coveralls --coverage_clover=build/logs/clover.xml -v --json_path=coveralls-upload.json
