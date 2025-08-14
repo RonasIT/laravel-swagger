@@ -682,9 +682,23 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function testAddDataWithBindingInterface()
+    public static function getImplementations(): array
     {
-        $this->app->bind(TestContract::class, TestRequest::class);
+        return [
+            [
+                'implementation' =>  TestRequest::class,
+            ],
+            [
+                'implementation' => fn ($app) => new TestRequest(),
+            ],
+        ];
+    }
+
+    #[DataProvider('getImplementations')]
+    public function testAddDataWithBindingInterface($implementation)
+    {
+        $this->app->bind(TestContract::class, $implementation);
+
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request'));
 
         $service = app(SwaggerService::class);
