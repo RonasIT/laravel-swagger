@@ -31,7 +31,9 @@ trait GetDependenciesTrait
 
     protected function getClassByInterface($interfaceName): ?string
     {
-        $bindings = Container::getInstance()->getBindings();
+        $app = Container::getInstance();
+
+        $bindings = $app->getBindings();
 
         $implementation = Arr::get($bindings, "{$interfaceName}.concrete");
 
@@ -39,6 +41,6 @@ trait GetDependenciesTrait
             return null;
         }
 
-        return get_class(call_user_func($implementation, app()));
+        return get_class(call_user_func($implementation, $app));
     }
 }

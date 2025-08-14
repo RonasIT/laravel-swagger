@@ -11,11 +11,9 @@ use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Services\SwaggerService;
-use RonasIT\AutoDoc\Tests\Support\Mock\InvokableTestController;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
-use RonasIT\AutoDoc\Tests\Support\Mock\TestRequestContract;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use stdClass;
 
@@ -684,22 +682,22 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public static function addDataWithBindingInterface(): array
+    public static function getImplementations(): array
     {
         return [
             [
-                'concrete' =>  TestRequest::class,
+                'implementation' =>  TestRequest::class,
             ],
             [
-                'concrete' => fn ($app) => new TestRequest(),
+                'implementation' => fn ($app) => new TestRequest(),
             ],
         ];
     }
 
-    #[DataProvider('addDataWithBindingInterface')]
-    public function testAddDataWithBindingInterface($concrete)
+    #[DataProvider('getImplementations')]
+    public function testAddDataWithBindingInterface($implementation)
     {
-        $this->app->bind(TestContract::class, $concrete);
+        $this->app->bind(TestContract::class, $implementation);
 
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request'));
 
