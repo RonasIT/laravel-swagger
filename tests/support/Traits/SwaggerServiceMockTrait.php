@@ -68,4 +68,18 @@ trait SwaggerServiceMockTrait
             $this->functionCall('saveData'),
         ]);
     }
+
+    protected function fillTempFile(string $content): void
+    {
+        file_put_contents(getcwd() . '/storage/temp_documentation.json', $content);
+    }
+
+    protected function assertTempFileEqualsFixture(string $fixture): void
+    {
+        $fixture = $this->prepareFixtureName($fixture);
+
+        $path = $this->generateFixturePath($fixture);
+
+        $this->assertFileEquals($path, getcwd() . '/storage/temp_documentation.json');
+    }
 }
