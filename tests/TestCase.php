@@ -214,5 +214,4 @@ class TestCase extends BaseTest
     {
         ParallelTesting::resolveTokenUsing(fn () => $token);
     }
-
 }
