@@ -15,11 +15,12 @@ use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
+use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceTestingTrait;
 use stdClass;
 
 class SwaggerServiceTest extends TestCase
 {
-    use SwaggerServiceMockTrait;
+    use SwaggerServiceMockTrait, SwaggerServiceTestingTrait;
 
     public function testConstructorInvalidConfigVersion()
     {
