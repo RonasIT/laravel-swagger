@@ -837,7 +837,9 @@ class SwaggerService
 
             $this->openAPIValidator->validate($documentation);
         } catch (Throwable $exception) {
-            $message = $exception instanceof Exception ? $exception->getMessage() : '[]';
+            $message = ($exception instanceof Exception)
+                ? $exception->getMessage()
+                : config('auto-doc.defaults.unhandled_error_message');
 
             return $this->generateEmptyData($this->config['defaults']['error'], [
                 'message' => $message,

@@ -110,6 +110,8 @@ return [
         | You can use your custom description view for errors.
         */
         'error' => 'auto-doc::error',
+
+        'unhandled_error_message' => 'Documentation file is empty or have bad format',
     ],
 
     /*

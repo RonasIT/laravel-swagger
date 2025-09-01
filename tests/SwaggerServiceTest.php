@@ -247,8 +247,6 @@ class SwaggerServiceTest extends TestCase
         $content = app(SwaggerService::class)->getDocFileContent();
 
         $this->assertEqualsFixture('invalid_config_email.html', $content['info']['description'], true);
-
-        app(SwaggerService::class);
     }
 
     public static function getAddEmptyData(): array
