@@ -136,9 +136,11 @@ class SwaggerService
     {
         // client must enter at least `contact.email` to generate a default `info` block
         // otherwise an exception will be called
-        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
-            $exception = new EmptyContactEmailException();
-
+        try {
+            if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
+                throw new EmptyContactEmailException();
+            }
+        } catch (EmptyContactEmailException $exception) {
             $viewData = [
                 'message' => $exception->getMessage(),
                 'type' => $exception::class,
