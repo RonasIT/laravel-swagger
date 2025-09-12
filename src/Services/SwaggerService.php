@@ -136,22 +136,28 @@ class SwaggerService
     {
         // client must enter at least `contact.email` to generate a default `info` block
         // otherwise an exception will be called
-        try {
-            if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
-                throw new EmptyContactEmailException();
-            }
-        } catch (EmptyContactEmailException $exception) {
-            $viewData = [
-                'message' => $exception->getMessage(),
-                'type' => $exception::class,
-            ];
+        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
+            throw new EmptyContactEmailException();
         }
 
         if (empty($view) && !empty($this->config['info'])) {
             $view = $this->config['info']['description'];
         }
 
-        $data = [
+        $data = $this->prepareEmptyData($view, $viewData, $license);
+
+        $securityDefinitions = $this->generateSecurityDefinition();
+
+        if (!empty($securityDefinitions)) {
+            $data['securityDefinitions'] = $securityDefinitions;
+        }
+
+        return $data;
+    }
+
+    protected function prepareEmptyData(?string $view = null, array $viewData = [], array $license = []): array
+    {
+        return [
             'openapi' => self::OPEN_API_VERSION,
             'servers' => [
                 ['url' => URL::query($this->config['basePath'])],
@@ -162,14 +168,6 @@ class SwaggerService
             ],
             'info' => $this->prepareInfo($view, $viewData, $license),
         ];
-
-        $securityDefinitions = $this->generateSecurityDefinition();
-
-        if (!empty($securityDefinitions)) {
-            $data['securityDefinitions'] = $securityDefinitions;
-        }
-
-        return $data;
     }
 
     protected function generateSecurityDefinition(): ?array
@@ -803,18 +801,6 @@ class SwaggerService
         return Str::camel($action);
     }
 
-    /**
-     * @deprecated method is not in use
-     * @codeCoverageIgnore
-     */
-    protected function saveTempData()
-    {
-        $exportFile = Arr::get($this->config, 'files.temporary');
-        $data = json_encode($this->data);
-
-        file_put_contents($exportFile, $data);
-    }
-
     public function saveProductionData()
     {
         if (ParallelTesting::token()) {
@@ -843,10 +829,7 @@ class SwaggerService
                 ? $exception->getMessage()
                 : config('auto-doc.defaults.unhandled_error_message');
 
-            return $this->generateEmptyData($this->config['defaults']['error'], [
-                'message' => $message,
-                'type' => $exception::class,
-            ]);
+            return $this->generateDataWithExceptionHandling($message, $exception);
         }
 
         $additionalDocs = config('auto-doc.additional_paths', []);
@@ -864,6 +847,24 @@ class SwaggerService
         }
 
         return $documentation;
+    }
+
+    protected function generateDataWithExceptionHandling(string $message, Throwable $exception): array
+    {
+        try {
+            return $this->generateEmptyData($this->config['defaults']['error'], [
+                'message' => $message,
+                'type' => $exception::class,
+            ]);
+        } catch (EmptyContactEmailException $emptyEmailException) {
+            return $this->prepareEmptyData(
+                $this->config['defaults']['error'],
+                [
+                    'message' => $emptyEmailException->getMessage(),
+                    'type' => $emptyEmailException::class,
+                ],
+            );
+        }
     }
 
     protected function camelCaseToUnderScore($input): string

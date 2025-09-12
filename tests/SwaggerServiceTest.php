@@ -15,6 +15,7 @@ use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use stdClass;
+use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 
 class SwaggerServiceTest extends TestCase
 {
@@ -246,7 +247,10 @@ class SwaggerServiceTest extends TestCase
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
-        $this->assertEqualsFixture('invalid_config_email.html', $content['info']['description'], true);
+        $this->assertEqualsFixture('invalid_config_email.html', $content['info']['description']);
+
+        $this->expectException(EmptyContactEmailException::class);
+        $this->expectExceptionMessage('Please fill the `info.contact.email` field in the app-doc.php config file.');
     }
 
     public static function getAddEmptyData(): array
