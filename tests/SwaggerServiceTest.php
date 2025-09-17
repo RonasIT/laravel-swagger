@@ -245,12 +245,27 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.info.contact.email' => null]);
 
-        $content = app(SwaggerService::class)->getDocFileContent();
-
-        $this->assertEqualsFixture('invalid_config_email.html', $content['info']['description']);
-
         $this->expectException(EmptyContactEmailException::class);
         $this->expectExceptionMessage('Please fill the `info.contact.email` field in the app-doc.php config file.');
+
+        app(SwaggerService::class)->getDocFileContent();
+    }
+
+    public function testGetJSONDocumentationEmailIsNull()
+    {
+        config(
+            [
+                'auto-doc.info.contact.email' => null,
+                'app.env' => 'development',
+            ],
+        );
+
+        $content = app(SwaggerService::class)->getDocFileContent();
+
+        $this->assertEqualsFixture(
+            'invalid_contact_email_format.html',
+            $content['info']['description']
+        );
     }
 
     public static function getAddEmptyData(): array

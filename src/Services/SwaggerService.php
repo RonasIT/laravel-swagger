@@ -136,9 +136,7 @@ class SwaggerService
     {
         // client must enter at least `contact.email` to generate a default `info` block
         // otherwise an exception will be called
-        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
-            throw new EmptyContactEmailException();
-        }
+        $this->checkEmail();
 
         if (empty($view) && !empty($this->config['info'])) {
             $view = $this->config['info']['description'];
@@ -153,6 +151,13 @@ class SwaggerService
         }
 
         return $data;
+    }
+
+    protected function checkEmail(): void
+    {
+        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
+            throw new EmptyContactEmailException();
+        }
     }
 
     protected function prepareEmptyData(?string $view = null, array $viewData = [], array $license = []): array
@@ -821,6 +826,8 @@ class SwaggerService
     public function getDocFileContent()
     {
         try {
+            $this->checkEmail();
+
             $documentation = $this->driver->getDocumentation();
 
             $this->openAPIValidator->validate($documentation);
