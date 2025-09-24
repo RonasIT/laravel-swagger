@@ -6,6 +6,6 @@
 
 ### **Details:**
 
-{{$message}}
+{{ $message }}
 
 ---

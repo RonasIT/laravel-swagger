@@ -827,7 +827,7 @@ class SwaggerService
         } catch (Throwable $exception) {
             $message = ($exception instanceof Exception)
                 ? $exception->getMessage()
-                : config('auto-doc.defaults.unhandled_error_message');
+                : __('validation.unhandled_error_message');
 
             return $this->generateDataWithExceptionHandling($message, $exception);
         }
