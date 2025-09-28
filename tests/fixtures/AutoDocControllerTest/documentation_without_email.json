@@ -1,0 +1,25 @@
+{
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "http:\/\/localhost"
+        }
+    ],
+    "paths": [],
+    "components": {
+        "schemas": []
+    },
+    "info": {
+        "description": "# ❗️ **ERROR** ❗️\n\n## 🚨🚨 RonasIT\\AutoDoc\\Exceptions\\EmptyContactEmailException 🚨🚨\n\n---\n\n### **Details:**\n\nPlease fill the `info.contact.email` field in the app-doc.php config file.\n\n---",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": null
+        },
+        "license": {
+            "name": "",
+            "url": ""
+        }
+    }
+}

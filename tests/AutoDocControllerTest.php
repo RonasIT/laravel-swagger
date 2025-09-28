@@ -40,6 +40,22 @@ class AutoDocControllerTest extends TestCase
         $response->assertJson(self::$documentation);
     }
 
+    public function testGetJSONWithoutEmailDocumentation()
+    {
+        config(
+            [
+                'auto-doc.info.contact.email' => null,
+                'app.env' => 'development',
+            ],
+        );
+
+        $response = $this->json('get', '/auto-doc/documentation');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $this->assertEqualsJsonFixture('documentation_without_email', $response->json());
+    }
+
     public function testGetJSONDocumentationWithAdditionalPaths()
     {
         config([
