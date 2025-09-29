@@ -42,12 +42,10 @@ class AutoDocControllerTest extends TestCase
 
     public function testGetJSONWithoutEmailDocumentation()
     {
-        config(
-            [
-                'auto-doc.info.contact.email' => null,
-                'app.env' => 'development',
-            ],
-        );
+        config([
+            'auto-doc.info.contact.email' => null,
+            'app.env' => 'development',
+        ]);
 
         $response = $this->json('get', '/auto-doc/documentation');
 

@@ -250,24 +250,7 @@ class SwaggerServiceTest extends TestCase
 
         app(SwaggerService::class)->getDocFileContent();
     }
-
-    public function testGetJSONDocumentationEmailIsNull()
-    {
-        config(
-            [
-                'auto-doc.info.contact.email' => null,
-                'app.env' => 'development',
-            ],
-        );
-
-        $content = app(SwaggerService::class)->getDocFileContent();
-
-        $this->assertEqualsFixture(
-            'invalid_contact_email_format.html',
-            $content['info']['description']
-        );
-    }
-
+    
     public static function getAddEmptyData(): array
     {
         return [
