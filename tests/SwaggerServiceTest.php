@@ -16,10 +16,12 @@ use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use stdClass;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
+use RonasIT\AutoDoc\Tests\Support\Traits\TraceMockTrait;
 
 class SwaggerServiceTest extends TestCase
 {
     use SwaggerServiceMockTrait;
+    use TraceMockTrait;
 
     public function testConstructorInvalidConfigVersion()
     {

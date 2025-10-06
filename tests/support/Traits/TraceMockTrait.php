@@ -1,0 +1,50 @@
+<?php
+
+namespace RonasIT\AutoDoc\Tests\Support\Traits;
+
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+
+trait TraceMockTrait
+{
+    protected function mockGetTrace(string &$content): void
+    {
+        $contentInArray = explode(PHP_EOL, $content);
+
+        $traceInfo = Arr::first(
+            array: $contentInArray,
+            callback: fn ($value, $key) => Str::containsAll($value, ['args', 'class'])
+        );
+
+        $traceInfoInArray = $this->gerTraceInfoInArray($traceInfo);
+
+        $mockedContent = Arr::set(
+            array: $contentInArray,
+            key: array_search($traceInfo, $contentInArray),
+            value: implode(', ', $traceInfoInArray)
+        );
+
+        $content = implode(PHP_EOL, $mockedContent);
+    }
+
+    protected function gerTraceInfoInArray(string $traceInfo): array
+    {
+        $errorPlaceInArray = explode(', ', $traceInfo);
+        $errorPlaceInArray = array_combine(
+            keys: Arr::map($errorPlaceInArray, fn ($value, $key) => Str::before($value, '=')),
+            values: $errorPlaceInArray
+        );
+
+        foreach ($errorPlaceInArray as $key => $value) {
+            if ($key === 'line') {
+                $errorPlaceInArray[$key] = 'line=999';
+            }
+
+            if ($key === 'class' && Str::contains($value, 'MockObject')) {
+                $errorPlaceInArray[$key] = 'class=MockClass';
+            }
+        }
+
+        return $errorPlaceInArray;
+    }
+}

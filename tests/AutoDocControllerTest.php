@@ -4,10 +4,12 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Response;
 use phpmock\phpunit\PHPMock;
+use RonasIT\AutoDoc\Tests\Support\Traits\TraceMockTrait;
 
 class AutoDocControllerTest extends TestCase
 {
     use PHPMock;
+    use TraceMockTrait;
 
     protected static array $documentation;
     protected static string $localDriverFilePath;
@@ -51,7 +53,11 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $this->assertEqualsJsonFixture('documentation_without_email', $response->json());
+        $content = $response->json();
+
+        $this->mockGetTrace($content['info']['description']);
+
+        $this->assertEqualsJsonFixture('documentation_without_email', $content);
     }
 
     public function testGetJSONDocumentationWithAdditionalPaths()
