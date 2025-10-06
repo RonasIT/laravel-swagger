@@ -13,10 +13,10 @@ trait TraceMockTrait
 
         $traceInfo = Arr::first(
             array: $contentInArray,
-            callback: fn ($value, $key) => Str::containsAll($value, ['args', 'class'])
+            callback: fn ($value, $key) => Str::containsAll($value, ['arg', 'class'])
         );
 
-        $traceInfoInArray = $this->gerTraceInfoInArray($traceInfo);
+        $traceInfoInArray = $this->getTraceInfoInArray($traceInfo);
 
         $mockedContent = Arr::set(
             array: $contentInArray,
@@ -27,7 +27,7 @@ trait TraceMockTrait
         $content = implode(PHP_EOL, $mockedContent);
     }
 
-    protected function gerTraceInfoInArray(string $traceInfo): array
+    protected function getTraceInfoInArray(string $traceInfo): array
     {
         $errorPlaceInArray = explode(', ', $traceInfo);
         $errorPlaceInArray = array_combine(
