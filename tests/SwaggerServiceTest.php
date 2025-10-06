@@ -238,6 +238,8 @@ class SwaggerServiceTest extends TestCase
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
+        $this->mockGetTrace($content['info']['description']);
+
         $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
 
@@ -250,7 +252,7 @@ class SwaggerServiceTest extends TestCase
 
         app(SwaggerService::class)->getDocFileContent();
     }
-    
+
     public static function getAddEmptyData(): array
     {
         return [

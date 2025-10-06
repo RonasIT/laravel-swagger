@@ -25,6 +25,7 @@ use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use Exception;
+
 /**
  * @property SwaggerDriverContract $driver
  */
@@ -73,6 +74,10 @@ class SwaggerService
         $this->setDriver();
 
         if (config('app.env') === 'testing') {
+            // client must enter at least `contact.email` to generate a default `info` block
+            // otherwise an exception will be called
+            $this->checkEmail();
+
             $this->container = $container;
 
             $this->security = $this->config['security'];
@@ -83,6 +88,23 @@ class SwaggerService
                 $this->data = $this->generateEmptyData();
 
                 $this->driver->saveProcessTmpData($this->data);
+            }
+        } else {
+            try {
+                $this->checkEmail();
+            } catch (EmptyContactEmailException $exception) {
+                $this->data = $this->generateEmptyData(
+                    $this->config['defaults']['error'],
+                    [
+                        'message' => $exception->getMessage(),
+                        'type' => $exception::class,
+                        'error_place' => $this->getErrorPlace($exception),
+                    ],
+                );
+
+                $this->driver->saveProcessTmpData($this->data);
+
+                $this->driver->saveData();
             }
         }
     }
@@ -134,15 +156,21 @@ class SwaggerService
 
     protected function generateEmptyData(?string $view = null, array $viewData = [], array $license = []): array
     {
-        // client must enter at least `contact.email` to generate a default `info` block
-        // otherwise an exception will be called
-        $this->checkEmail();
-
         if (empty($view) && !empty($this->config['info'])) {
             $view = $this->config['info']['description'];
         }
 
-        $data = $this->prepareEmptyData($view, $viewData, $license);
+        $data = [
+            'openapi' => self::OPEN_API_VERSION,
+            'servers' => [
+                ['url' => URL::query($this->config['basePath'])],
+            ],
+            'paths' => [],
+            'components' => [
+                'schemas' => $this->config['definitions'],
+            ],
+            'info' => $this->prepareInfo($view, $viewData, $license),
+        ];
 
         $securityDefinitions = $this->generateSecurityDefinition();
 
@@ -158,21 +186,6 @@ class SwaggerService
         if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
             throw new EmptyContactEmailException();
         }
-    }
-
-    protected function prepareEmptyData(?string $view = null, array $viewData = [], array $license = []): array
-    {
-        return [
-            'openapi' => self::OPEN_API_VERSION,
-            'servers' => [
-                ['url' => URL::query($this->config['basePath'])],
-            ],
-            'paths' => [],
-            'components' => [
-                'schemas' => $this->config['definitions'],
-            ],
-            'info' => $this->prepareInfo($view, $viewData, $license),
-        ];
     }
 
     protected function generateSecurityDefinition(): ?array
@@ -826,19 +839,9 @@ class SwaggerService
     public function getDocFileContent()
     {
         try {
-            $this->checkEmail();
-
             $documentation = $this->driver->getDocumentation();
 
             $this->openAPIValidator->validate($documentation);
-        } catch (EmptyContactEmailException $exception) {
-            return $this->prepareEmptyData(
-                $this->config['defaults']['error'],
-                [
-                    'message' => $exception->getMessage(),
-                    'type' => $exception::class,
-                ],
-            );
         } catch (Throwable $exception) {
             $message = ($exception instanceof Exception)
                 ? $exception->getMessage()
@@ -849,6 +852,7 @@ class SwaggerService
                 [
                     'message' => $message,
                     'type' => $exception::class,
+                    'error_place' => $this->getErrorPlace($exception),
                 ]
             );
         }
@@ -868,6 +872,18 @@ class SwaggerService
         }
 
         return $documentation;
+    }
+
+    protected function getErrorPlace(Throwable $exception): string
+    {
+        $errorPlaceInTrace = Arr::first($exception->getTrace());
+
+        $errorPlaceInTrace = implode(', ', Arr::map(
+            $errorPlaceInTrace,
+            fn ($value, $key) => $key . '=' . (is_array($value) ? json_encode($value) : $value),
+        ));
+
+        return $errorPlaceInTrace;
     }
 
     protected function camelCaseToUnderScore($input): string
