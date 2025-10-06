@@ -19,4 +19,8 @@ class TestController
     public function testRequestWithContract(TestContract $contract, string $param)
     {
     }
+
+    public function __invoke(TestEmptyRequest $request)
+    {
+    }
 }

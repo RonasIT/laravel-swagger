@@ -18,7 +18,7 @@ trait GetDependenciesTrait
         }, (new ReflectionMethod($instance, $method))->getParameters());
     }
 
-    protected function transformDependency(ReflectionParameter $parameter)
+    protected function transformDependency(ReflectionParameter $parameter): ?string
     {
         $type = $parameter->getType();
 
@@ -29,9 +29,11 @@ trait GetDependenciesTrait
         return interface_exists($type->getName()) ? $this->getClassByInterface($type->getName()) : $type->getName();
     }
 
-    protected function getClassByInterface($interfaceName)
+    protected function getClassByInterface($interfaceName): ?string
     {
-        $bindings = Container::getInstance()->getBindings();
+        $app = Container::getInstance();
+
+        $bindings = $app->getBindings();
 
         $implementation = Arr::get($bindings, "{$interfaceName}.concrete");
 
@@ -39,8 +41,6 @@ trait GetDependenciesTrait
             return null;
         }
 
-        $classFields = (new ReflectionFunction($implementation))->getStaticVariables();
-
-        return $classFields['concrete'];
+        return get_class(call_user_func($implementation, $app));
     }
 }

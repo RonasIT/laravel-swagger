@@ -672,7 +672,7 @@ class SwaggerService
         $explodedController = explode('@', $controller);
 
         $class = $explodedController[0];
-        $method = $explodedController[1];
+        $method = Arr::get($explodedController, 1, '__invoke');
 
         if (!method_exists($class, $method)) {
             return null;
@@ -822,7 +822,7 @@ class SwaggerService
     public function saveProductionData()
     {
         if (ParallelTesting::token()) {
-            $this->driver->appendProcessDataToTmpFile(function (array $sharedTmpData) {
+            $this->driver->appendProcessDataToTmpFile(function (?array $sharedTmpData) {
                 $resultDocContent = (empty($sharedTmpData))
                     ? $this->generateEmptyData($this->config['info']['description'])
                     : $sharedTmpData;

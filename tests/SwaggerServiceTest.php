@@ -4,6 +4,7 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
 use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
@@ -14,14 +15,13 @@ use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
+use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceTestingTrait;
 use stdClass;
-use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Tests\Support\Traits\TraceMockTrait;
 
 class SwaggerServiceTest extends TestCase
 {
-    use SwaggerServiceMockTrait;
-    use TraceMockTrait;
+    use SwaggerServiceMockTrait, SwaggerServiceTestingTrait, TraceMockTrait;
 
     public function testConstructorInvalidConfigVersion()
     {
@@ -691,9 +691,23 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function testAddDataWithBindingInterface()
+    public static function getImplementations(): array
     {
-        $this->app->bind(TestContract::class, TestRequest::class);
+        return [
+            [
+                'implementation' =>  TestRequest::class,
+            ],
+            [
+                'implementation' => fn ($app) => new TestRequest(),
+            ],
+        ];
+    }
+
+    #[DataProvider('getImplementations')]
+    public function testAddDataWithBindingInterface($implementation)
+    {
+        $this->app->bind(TestContract::class, $implementation);
+
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request'));
 
         $service = app(SwaggerService::class);
@@ -852,9 +866,7 @@ class SwaggerServiceTest extends TestCase
     {
         $this->mockParallelTestingToken();
 
-        $tempFilePath = __DIR__ . '/../storage/temp_documentation.json';
-
-        file_put_contents($tempFilePath, json_encode($this->getJsonFixture('tmp_data_post_user_request')));
+        $this->fillTempFile($this->getFixture('tmp_data_post_user_request.json'));
 
         $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_search_users_empty_request'));
 
@@ -862,7 +874,36 @@ class SwaggerServiceTest extends TestCase
 
         $service->saveProductionData();
 
-        $this->assertFileExists($tempFilePath);
-        $this->assertFileEquals($this->generateFixturePath('tmp_data_merged.json'), $tempFilePath);
+        $this->assertTempFileEqualsFixture('tmp_data_merged');
+    }
+
+    public function testMergeToEmptyTempDocumentation()
+    {
+        $this->mockParallelTestingToken();
+
+        $this->fillTempFile('');
+
+        $this->mockDriverGetTmpData($this->getJsonFixture('tmp_data_search_users_empty_request'));
+
+        app(SwaggerService::class)->saveProductionData();
+
+        $this->assertTempFileEqualsFixture('tmp_data_merged_to_empty_temp_documentation');
+    }
+
+    public function testAddDataWhenInvokableClass()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_invoke'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: 'users',
+            controllerMethod: '__invoke',
+        );
+
+        $response = $this->generateResponse('example_success_user_response.json', 200, [
+            'Content-type' => 'application/json',
+        ]);
+
+        app(SwaggerService::class)->addData($request, $response);
     }
 }

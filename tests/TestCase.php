@@ -118,8 +118,15 @@ class TestCase extends BaseTest
         }
     }
 
-    protected function generateRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $routeConditions = [], $controllerMethod = 'test'): Request
-    {
+    protected function generateRequest(
+        string $type,
+        string $uri,
+        array $data = [],
+        array $pathParams = [],
+        array $headers = [],
+        array $routeConditions = [],
+        string $controllerMethod = 'test',
+    ): Request {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
         return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions) {
