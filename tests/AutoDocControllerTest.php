@@ -8,8 +8,7 @@ use RonasIT\AutoDoc\Tests\Support\Traits\TraceMockTrait;
 
 class AutoDocControllerTest extends TestCase
 {
-    use PHPMock;
-    use TraceMockTrait;
+    use PHPMock, TraceMockTrait;
 
     protected static array $documentation;
     protected static string $localDriverFilePath;
