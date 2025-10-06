@@ -107,11 +107,11 @@ trait SwaggerServiceMockTrait
 
         foreach ($errorPlaceInArray as $key => $value) {
             if ($key === 'line') {
-                $errorPlaceInArray[$key] = 999;
+                $errorPlaceInArray[$key] = 'line=999';
             }
 
             if ($key === 'class' && Str::contains($value, 'MockObject')) {
-                $errorPlaceInArray[$key] = 'MockClass';
+                $errorPlaceInArray[$key] = 'class=MockClass';
             }
         }
 
