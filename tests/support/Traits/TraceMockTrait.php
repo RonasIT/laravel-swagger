@@ -13,7 +13,7 @@ trait TraceMockTrait
 
         $traceInfo = Arr::first(
             array: $contentInArray,
-            callback: fn ($value, $key) => Str::containsAll($value, ['arg', 'class'])
+            callback: fn ($value, $key) => Str::contains($value, 'function=')
         );
 
         $traceInfoInArray = $this->getTraceInfoInArray($traceInfo);
@@ -36,13 +36,11 @@ trait TraceMockTrait
         );
 
         foreach ($errorPlaceInArray as $key => $value) {
-            if ($key === 'line') {
-                $errorPlaceInArray[$key] = 'line=999';
-            }
-
-            if ($key === 'class' && Str::contains($value, 'MockObject')) {
-                $errorPlaceInArray[$key] = 'class=MockClass';
-            }
+            $errorPlaceInArray[$key] = match ($key) {
+                'line' => 'line=999',
+                'class' => Str::contains($value, 'MockObject') ? 'class=MockClass' : $value,
+                default => $value,
+            };
         }
 
         return $errorPlaceInArray;
