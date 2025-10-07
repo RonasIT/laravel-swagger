@@ -39,7 +39,7 @@ trait TraceMockTrait
             $errorPlaceInArray[$key] = match ($key) {
                 'line' => 'line=999',
                 'class' => Str::contains($value, 'MockObject') ? 'class=MockClass' : $value,
-                'file' => $this->normalizeFilePath($value),
+                'file' => 'file=/src' . Str::after($value, '/src'),
                 default => $value,
             };
         }

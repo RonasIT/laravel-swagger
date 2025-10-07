@@ -10,7 +10,7 @@
         "schemas": []
     },
     "info": {
-        "description": "# ❗️ **ERROR** ❗️\n\n## 🚨🚨 RonasIT\\AutoDoc\\Exceptions\\EmptyContactEmailException 🚨🚨\n\n---\n\n### **Details:**\n\nPlease fill the `info.contact.email` field in the app-doc.php config file.\n\n### **Error place:**\n\nfile=\/app\/src\/Services\/SwaggerService.php, line=999, function=checkEmail, class=RonasIT\\AutoDoc\\Services\\SwaggerService, type=-&gt;, args=[]\n---",
+        "description": "# ❗️ **ERROR** ❗️\n\n## 🚨🚨 RonasIT\\AutoDoc\\Exceptions\\EmptyContactEmailException 🚨🚨\n\n---\n\n### **Details:**\n\nPlease fill the `info.contact.email` field in the app-doc.php config file.\n\n### **Error place:**\n\nfile=\/src\/Services\/SwaggerService.php, line=999, function=checkEmail, class=RonasIT\\AutoDoc\\Services\\SwaggerService, type=-&gt;, args=[]\n---",
         "version": "0.0.0",
         "title": "Name of Your Application",
         "termsOfService": "",
