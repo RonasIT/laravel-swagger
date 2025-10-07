@@ -50,4 +50,4 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           composer global require php-coveralls/php-coveralls
-          php-coveralls --debug --coverage_clover=build/logs/clover.xml -v --json_path=coveralls-upload.json
+          php-coveralls --verbose --coverage_clover=build/logs/clover.xml -v --json_path=coveralls-upload.json
