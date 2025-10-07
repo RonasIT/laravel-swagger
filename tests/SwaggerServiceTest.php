@@ -241,7 +241,7 @@ class SwaggerServiceTest extends TestCase
         $content = app(SwaggerService::class)->getDocFileContent();
 
         $this->mockGetTrace($content['info']['description']);
-
+        echo($content['info']['description']."\n");
         $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
 
