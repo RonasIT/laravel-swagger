@@ -39,10 +39,20 @@ trait TraceMockTrait
             $errorPlaceInArray[$key] = match ($key) {
                 'line' => 'line=999',
                 'class' => Str::contains($value, 'MockObject') ? 'class=MockClass' : $value,
+                'file' => $this->normalizeFilePath($value),
                 default => $value,
             };
         }
 
         return $errorPlaceInArray;
+    }
+
+    protected function normalizeFilePath(string $filePath): string
+    {
+        if (!str_starts_with($filePath, '/app')) {
+            return Str::after($filePath, base_path() . DIRECTORY_SEPARATOR);
+        }
+
+        return $filePath;
     }
 }
