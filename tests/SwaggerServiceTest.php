@@ -239,9 +239,9 @@ class SwaggerServiceTest extends TestCase
         $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
         $content = app(SwaggerService::class)->getDocFileContent();
-
+        dd($content['info']['description']);
         $this->mockGetTrace($content['info']['description']);
-        echo($content['info']['description']."\n");
+
         $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
 
