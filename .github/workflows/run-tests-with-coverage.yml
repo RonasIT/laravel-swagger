@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Execute unit tests via PHPUnit with coverage
-        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+        run: vendor/bin/phpunit --debug --coverage-clover build/logs/clover.xml
       - name: Export coverage report
         if: ${{ matrix.php-version == '8.4' }}
         uses: actions/upload-artifact@v4
