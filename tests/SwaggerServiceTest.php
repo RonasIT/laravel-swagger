@@ -184,6 +184,7 @@ class SwaggerServiceTest extends TestCase
                 'tmpDoc' => 'documentation/invalid_format__missing_field__tag_name',
                 'fixture' => 'invalid_format_missing_field_tag_name.html',
             ],
+            // TODO: Remove 8.4 fixture after php update
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
                 'fixture' => 'invalid_format_missing_local_ref.html',
