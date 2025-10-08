@@ -187,14 +187,17 @@ class SwaggerServiceTest extends TestCase
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
                 'fixture' => 'invalid_format_missing_local_ref.html',
+                'eight_dot_four_fixture' => 'php_8.4_invalid_format_missing_local_ref.html'
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
                 'fixture' => 'invalid_format_missing_external_ref.html',
+                'eight_dot_four_fixture' => 'php_8.4_invalid_format_missing_external_ref.html'
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
                 'fixture' => 'invalid_format_missing_ref_file.html',
+                'eight_dot_four_fixture' => 'php_8.4_invalid_format_missing_ref_file.html'
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__invalid_schema_type',
@@ -235,12 +238,18 @@ class SwaggerServiceTest extends TestCase
     public function testGetDocFileContentInvalidTmpData(
         string $tmpDoc,
         string $fixture,
+        ?string $eight_dot_four_fixture = null,
     ) {
         $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
         $this->mockGetTrace($content['info']['description']);
+
+        if (!empty($eight_dot_four_fixture)
+            && version_compare(PHP_VERSION, '8.4.0', '>=')) {
+            $this->assertEqualsFixture($eight_dot_four_fixture, $content['info']['description']);
+        }
 
         $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
