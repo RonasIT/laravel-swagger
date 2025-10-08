@@ -249,9 +249,10 @@ class SwaggerServiceTest extends TestCase
         if (!empty($eight_dot_four_fixture)
             && version_compare(PHP_VERSION, '8.4.0', '>=')) {
             $this->assertEqualsFixture($eight_dot_four_fixture, $content['info']['description']);
+        } else {
+            $this->assertEqualsFixture($fixture, $content['info']['description']);
         }
 
-        $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
 
     public function testEmptyContactEmail()
