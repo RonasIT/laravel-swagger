@@ -61,8 +61,8 @@ trait TraceMockTrait
     {
         if (Str::contains($function, 'closure:')) {
             $functionInArray = explode(':', $function);
-            dd(Arr::last($functionInArray));
-            Arr::set($functionInArray, Arr::last($functionInArray), '1}');
+
+            Arr::set($functionInArray, array_key_last($functionInArray), '1}');
 
             return implode(':', $functionInArray);
         }
