@@ -65,7 +65,7 @@ trait TraceMockTrait
             foreach ($functionInArray as $key => $value) {
                 $functionInArray[$key] = is_int($value) ? '1' : $value;
             }
-
+            dd($functionInArray);
             return implode(':', $functionInArray);
         }
 
