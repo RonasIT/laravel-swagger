@@ -62,11 +62,7 @@ trait TraceMockTrait
         if (Str::contains($function, 'closure:')) {
             $functionInArray = explode(':', $function);
 
-            Arr::set(
-                array: $functionInArray,
-                key: Str::between(array_key_last($functionInArray), ':', '}'),
-                value: '1'
-            );
+            Arr::set($functionInArray, array_key_last($functionInArray), '1}');
 
             return implode(':', $functionInArray);
         }
