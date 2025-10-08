@@ -13,7 +13,7 @@ trait TraceMockTrait
 
         $traceInfo = Arr::first(
             array: $contentInArray,
-            callback: fn ($value, $key) => Str::contains($value, 'function=')
+            callback: fn ($value) => Str::contains($value, 'function=')
         );
 
         $traceInfoInArray = $this->getTraceInfoInArray($traceInfo);
@@ -31,7 +31,7 @@ trait TraceMockTrait
     {
         $errorPlaceInArray = explode(', ', $traceInfo);
         $errorPlaceInArray = array_combine(
-            keys: Arr::map($errorPlaceInArray, fn ($value, $key) => Str::before($value, '=')),
+            keys: Arr::map($errorPlaceInArray, fn ($value) => Str::before($value, '=')),
             values: $errorPlaceInArray
         );
 
