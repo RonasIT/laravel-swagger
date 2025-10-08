@@ -40,6 +40,7 @@ trait TraceMockTrait
                 'line' => 'line=999',
                 'class' => Str::contains($value, 'MockObject') ? 'class=MockClass' : $value,
                 'file' => 'file=/src' . Str::after($value, '/src'),
+                'function' => $this->normalizeClosureFormat($value),
                 default => $value,
             };
         }
@@ -54,5 +55,20 @@ trait TraceMockTrait
         }
 
         return $filePath;
+    }
+
+    protected function normalizeClosureFormat(string $function): string
+    {
+        if (Str::contains($function, 'closure:')) {
+            $functionInArray = explode(':', $function);
+
+            foreach ($functionInArray as $key => $value) {
+                $functionInArray[$key] = is_int($value) ? '1' : $value;
+            }
+
+            return implode(':', $functionInArray);
+        }
+
+        return $function;
     }
 }
