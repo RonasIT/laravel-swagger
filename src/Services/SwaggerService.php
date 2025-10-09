@@ -89,23 +89,6 @@ class SwaggerService
 
                 $this->driver->saveProcessTmpData($this->data);
             }
-        } else {
-            try {
-                $this->checkEmail();
-            } catch (EmptyContactEmailException $exception) {
-                $this->data = $this->generateEmptyData(
-                    $this->config['defaults']['error'],
-                    [
-                        'message' => $exception->getMessage(),
-                        'type' => $exception::class,
-                        'error_place' => $this->getErrorPlace($exception),
-                    ],
-                );
-
-                $this->driver->saveProcessTmpData($this->data);
-
-                $this->driver->saveData();
-            }
         }
     }
 
