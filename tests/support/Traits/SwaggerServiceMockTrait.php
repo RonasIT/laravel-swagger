@@ -57,7 +57,7 @@ trait SwaggerServiceMockTrait
         $this->mockClass($driverClass, [
             $this->functionCall(
                 name: 'getDocumentation',
-                result: $data
+                result: $data,
             ),
         ]);
     }

@@ -329,15 +329,15 @@
           "last_name": "voronin"
         }
 
-    }
-  },
-  "info": {
-    "description": "This is automatically collected documentation",
-    "version": "0.0.0",
-    "title": "Project Title",
-    "termsOfService": "",
-    "contact": {
-      "email": "your@email.com"
-    }
+      }
+    },
+    "info": {
+      "description": "This is automatically collected documentation",
+      "version": "0.0.0",
+      "title": "Project Title",
+      "termsOfService": "",
+      "contact": {
+        "email": "your@email.com"
+      }
 
-}
+    }

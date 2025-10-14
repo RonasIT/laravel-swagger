@@ -24,7 +24,6 @@ use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
-use Exception;
 
 /**
  * @property SwaggerDriverContract $driver
@@ -826,14 +825,10 @@ class SwaggerService
 
             $this->openAPIValidator->validate($documentation);
         } catch (Throwable $exception) {
-            $message = ($exception instanceof Exception)
-                ? $exception->getMessage()
-                : __('validation.unhandled_error_message');
-
             return $this->generateEmptyData(
                 $this->config['defaults']['error'],
                 [
-                    'message' => $message,
+                    'message' => $exception->getMessage(),
                     'type' => $exception::class,
                     'error_place' => $this->getErrorPlace($exception),
                 ]

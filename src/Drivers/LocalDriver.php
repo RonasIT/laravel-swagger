@@ -4,6 +4,8 @@ namespace RonasIT\AutoDoc\Drivers;
 
 use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
+use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
+use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class LocalDriver extends BaseDriver
 {
@@ -34,6 +36,14 @@ class LocalDriver extends BaseDriver
         }
 
         $fileContent = file_get_contents($this->prodFilePath);
+
+        if (empty($fileContent)) {
+            throw new EmptyDocFileException($this->prodFilePath);
+        }
+
+        if (!json_validate(file_get_contents($this->prodFilePath))) {
+            throw new NonJSONDocFileException($this->prodFilePath);
+        }
 
         return json_decode($fileContent, true);
     }

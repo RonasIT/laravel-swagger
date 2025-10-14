@@ -5,6 +5,8 @@ namespace RonasIT\AutoDoc\Tests;
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
+use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
+use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class LocalDriverTest extends TestCase
 {
@@ -37,7 +39,7 @@ class LocalDriverTest extends TestCase
 
     public function testSaveProcessTmpDataCheckTokenBasedPath()
     {
-        $this->mockParallelTestingToken();
+        $this->mockParallelTestingToken('workerID');
 
         $processTempFilePath = __DIR__ . '/../storage/temp_documentation_workerID.json';
 
@@ -122,6 +124,24 @@ class LocalDriverTest extends TestCase
         $documentation = self::$localDriverClass->getDocumentation();
 
         $this->assertEqualsJsonFixture('tmp_data', $documentation);
+    }
+
+    public function testGetEmptyDocumentation(): void
+    {
+        file_put_contents(self::$productionFilePath, '');
+
+        $this->assertExceptionThrew(EmptyDocFileException::class, "Doc file '/app/tests/../storage/documentation.json' is empty.");
+
+        self::$localDriverClass->getDocumentation();
+    }
+
+    public function testGetInvalidJsonDocumentation(): void
+    {
+        file_put_contents(self::$productionFilePath, $this->getFixturePath('invalid_prod_json_data'));
+
+        $this->assertExceptionThrew(NonJSONDocFileException::class, "Doc file '/app/tests/../storage/documentation.json' is not a json doc file.");
+
+        self::$localDriverClass->getDocumentation();
     }
 
     public function testGetDocumentationFileNotExists()

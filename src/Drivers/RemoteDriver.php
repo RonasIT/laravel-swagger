@@ -4,6 +4,7 @@ namespace RonasIT\AutoDoc\Drivers;
 
 use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
+use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class RemoteDriver extends BaseDriver
 {
@@ -39,7 +40,13 @@ class RemoteDriver extends BaseDriver
             throw new FileNotFoundException();
         }
 
-        return json_decode($content, true);
+        $content = json_decode($content, true);
+
+        if (!json_validate($content)) {
+            throw new NonJSONDocFileException('Remote documentation');
+        }
+
+        return $content;
     }
 
     protected function getUrl(): string

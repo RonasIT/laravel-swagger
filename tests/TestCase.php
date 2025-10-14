@@ -209,9 +209,4 @@ class TestCase extends BaseTest
 
         $this->setUp();
     }
-
-    protected function mockParallelTestingToken(string $token = 'workerID'): void
-    {
-        ParallelTesting::resolveTokenUsing(fn () => $token);
-    }
 }

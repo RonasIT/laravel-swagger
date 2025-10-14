@@ -229,7 +229,11 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'invalid_format_response_invalid_items.html',
             ],
             [
-                'tmpDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request',
+                'prodDoc' => 'documentation/empty_prod_documentation',
+                'fixture' => 'empty_prod_documentation.html',
+            ],
+            [
+                'prodDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request',
                 'fixture' => 'invalid_format_incorrect_documentation_structure_request.html',
             ],
         ];
@@ -237,11 +241,18 @@ class SwaggerServiceTest extends TestCase
 
     #[DataProvider('getConstructorInvalidTmpData')]
     public function testGetDocFileContentInvalidTmpData(
-        string $tmpDoc,
         string $fixture,
+        ?string $tmpDoc = null,
+        ?string $prodDoc = null,
         ?string $eight_dot_four_fixture = null,
     ) {
-        $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
+        if (!empty($prodDoc)) {
+            $prodDocPath = base_path("tests/fixtures/SwaggerServiceTest/{$prodDoc}.json");
+
+            file_put_contents('/app/tests/../storage/documentation.json', file_get_contents($prodDocPath));
+        } else {
+            $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
+        }
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
@@ -874,7 +885,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeTempDocumentation()
     {
-        $this->mockParallelTestingToken();
+        $this->mockParallelTestingToken('workerID');
 
         $this->fillTempFile($this->getFixture('tmp_data_post_user_request.json'));
 
@@ -889,7 +900,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeToEmptyTempDocumentation()
     {
-        $this->mockParallelTestingToken();
+        $this->mockParallelTestingToken('workerID');
 
         $this->fillTempFile('');
 
