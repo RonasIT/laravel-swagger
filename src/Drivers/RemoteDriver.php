@@ -40,13 +40,11 @@ class RemoteDriver extends BaseDriver
             throw new FileNotFoundException();
         }
 
-        $content = json_decode($content, true);
-
         if (!json_validate($content)) {
             throw new NonJSONDocFileException('Remote documentation');
         }
 
-        return $content;
+        return json_decode($content, true);
     }
 
     protected function getUrl(): string
