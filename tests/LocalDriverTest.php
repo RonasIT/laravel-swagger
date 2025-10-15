@@ -130,11 +130,7 @@ class LocalDriverTest extends TestCase
     {
         file_put_contents(self::$productionFilePath, '');
 
-        $this->assertExceptionThrew(
-            expectedClassName: EmptyDocFileException::class,
-            expectedMessage: "Doc file '/app/tests/../storage/documentation.json' is empty.",
-            isStrict: false,
-        );
+        $this->assertExceptionThrew(EmptyDocFileException::class, 'Doc file ' . self::$productionFilePath .  ' is empty.');
 
         self::$localDriverClass->getDocumentation();
     }
@@ -143,11 +139,7 @@ class LocalDriverTest extends TestCase
     {
         file_put_contents(self::$productionFilePath, $this->getFixturePath('invalid_prod_json_data'));
 
-        $this->assertExceptionThrew(
-            expectedClassName: NonJSONDocFileException::class,
-            expectedMessage: "Doc file '/app/tests/../storage/documentation.json' is not a json doc file.",
-            isStrict: false,
-        );
+        $this->assertExceptionThrew(NonJSONDocFileException::class, 'Doc file ' . self::$productionFilePath .  ' is not a json doc file.');
 
         self::$localDriverClass->getDocumentation();
     }

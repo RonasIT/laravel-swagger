@@ -247,9 +247,13 @@ class SwaggerServiceTest extends TestCase
         ?string $eight_dot_four_fixture = null,
     ) {
         if (!empty($prodDoc)) {
-            $prodDocPath = base_path("tests/fixtures/SwaggerServiceTest/{$prodDoc}.json");
+            $productionFilePath = __DIR__ . '/../storage/documentation.json';
 
-            file_put_contents(base_path('tests/../storage/documentation.json'), file_get_contents($prodDocPath));
+            config(['auto-doc.drivers.local.production_path' => $productionFilePath]);
+
+            $prodDocPath = "tests/fixtures/SwaggerServiceTest/{$prodDoc}.json";
+
+            file_put_contents($productionFilePath, file_get_contents($prodDocPath));
         } else {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
         }
