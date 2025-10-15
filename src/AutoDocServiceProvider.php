@@ -10,9 +10,7 @@ class AutoDocServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/auto-doc.php', 'auto-doc');
-
-        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'auto-doc');
-
+        
         $this->publishes([
             __DIR__ . '/../config/auto-doc.php' => config_path('auto-doc.php'),
         ], 'config');
