@@ -184,7 +184,7 @@ class SwaggerServiceTest extends TestCase
                 'tmpDoc' => 'documentation/invalid_format__missing_field__tag_name',
                 'fixture' => 'invalid_format_missing_field_tag_name.html',
             ],
-            // TODO: Remove 8.4 fixture after php update
+            // TODO: Remove legacy fixtures after min php update version increased
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
                 'fixture' => 'invalid_format_missing_local_ref.html',
@@ -228,35 +228,16 @@ class SwaggerServiceTest extends TestCase
                 'tmpDoc' => 'documentation/invalid_format__response__invalid_items',
                 'fixture' => 'invalid_format_response_invalid_items.html',
             ],
-            [
-                'prodDoc' => 'documentation/empty_prod_documentation',
-                'fixture' => 'empty_prod_documentation.html',
-            ],
-            [
-                'prodDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request',
-                'fixture' => 'invalid_format_incorrect_documentation_structure_request.html',
-            ],
         ];
     }
 
     #[DataProvider('getConstructorInvalidTmpData')]
     public function testGetDocFileContentInvalidTmpData(
         string $fixture,
-        ?string $tmpDoc = null,
-        ?string $prodDoc = null,
+        string $tmpDoc,
         ?string $eight_dot_four_fixture = null,
     ) {
-        if (!empty($prodDoc)) {
-            $productionFilePath = __DIR__ . '/../storage/documentation.json';
-
-            config(['auto-doc.drivers.local.production_path' => $productionFilePath]);
-
-            $prodDocPath = "tests/fixtures/SwaggerServiceTest/{$prodDoc}.json";
-
-            file_put_contents($productionFilePath, file_get_contents($prodDocPath));
-        } else {
-            $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
-        }
+        $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
@@ -268,6 +249,40 @@ class SwaggerServiceTest extends TestCase
         } else {
             $this->assertEqualsFixture($fixture, $content['info']['description']);
         }
+    }
+
+    public static function getInvalidProdData(): array
+    {
+        return [
+            [
+                'prodDoc' => 'documentation/empty_prod_documentation',
+                'fixture' => 'empty_prod_documentation.html',
+            ],
+            [
+                'prodDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request',
+                'fixture' => 'invalid_format_incorrect_documentation_structure_request.html',
+            ],
+        ];
+    }
+
+    #[DataProvider('getInvalidProdData')]
+    public function testGetDocFileContentInvalidProdData(
+        string $fixture,
+        string $prodDoc
+    ): void {
+        $productionFilePath = __DIR__ . '/../storage/documentation.json';
+
+        config(['auto-doc.drivers.local.production_path' => $productionFilePath]);
+
+        $prodDocPath = "tests/fixtures/SwaggerServiceTest/{$prodDoc}.json";
+
+        file_put_contents($productionFilePath, file_get_contents($prodDocPath));
+
+        $content = app(SwaggerService::class)->getDocFileContent();
+
+        $this->mockGetTrace($content['info']['description']);
+
+        $this->assertEqualsFixture($fixture, $content['info']['description']);
     }
 
     public function testEmptyContactEmail()
