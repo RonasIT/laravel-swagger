@@ -663,9 +663,7 @@ class SwaggerServiceTest extends TestCase
 
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveProcessTmpData(
-            $this->getJsonFixture('tmp_data_global_post_global_uri_request')
-        );
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_global_post_global_uri_request'));
 
         $service = app(SwaggerService::class);
 
@@ -677,9 +675,8 @@ class SwaggerServiceTest extends TestCase
                 'query' => null,
             ],
             headers: [
-                'authorization' => 'Bearer some_token',
-            ]
-        );
+                'authorization' => 'Bearer some_timplementationoken',
+            ]);
 
         $response = $this->generateResponse('example_success_users_post_response.json');
 
@@ -721,9 +718,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveProcessTmpData(
-            $this->getJsonFixture('tmp_data_post_user_request_with_object_params')
-        );
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_post_user_request_with_object_params'));
 
         $service = app(SwaggerService::class);
 
@@ -753,9 +748,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataWithNotExistsMethodOnController()
     {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData(
-            $this->getJsonFixture('tmp_data_get_user_request_without_request_class')
-        );
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_user_request_without_request_class'));
 
         $service = app(SwaggerService::class);
 
@@ -913,9 +906,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataDescriptionForRouteConditionals()
     {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData(
-            $this->getJsonFixture('tmp_data_get_route_parameters_description')
-        );
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_route_parameters_description'));
 
         $request = $this->generateRequest(
             type: 'get',

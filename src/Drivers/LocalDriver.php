@@ -42,7 +42,7 @@ class LocalDriver extends BaseDriver
             throw new EmptyDocFileException(Path::makeRelative($this->prodFilePath, base_path()));
         }
 
-        if (!json_validate(file_get_contents($this->prodFilePath))) {
+        if (!json_validate($fileContent)) {
             throw new NonJSONDocFileException(Path::makeRelative($this->prodFilePath, base_path()));
         }
 
