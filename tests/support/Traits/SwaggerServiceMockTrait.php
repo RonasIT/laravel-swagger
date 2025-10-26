@@ -78,6 +78,8 @@ trait SwaggerServiceMockTrait
 
         $content = Str::replaceMatches('/file=.*?(src\/[^\s]+)/', 'file=/$1', $content);
 
+        $content = Str::replaceMatches('/:\d+/', ':1', $content);
+
         $this->assertEqualsFixture($fixture, $content, $exportMode);
     }
 }
