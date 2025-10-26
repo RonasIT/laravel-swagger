@@ -4,6 +4,7 @@ namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 use RonasIT\Support\Traits\MockTrait;
+use Illuminate\Support\Str;
 
 trait SwaggerServiceMockTrait
 {
@@ -67,5 +68,16 @@ trait SwaggerServiceMockTrait
         $this->mockClass($driverClass, [
             $this->functionCall('saveData'),
         ]);
+    }
+
+    protected function assertExceptionHTMLEqualsFixture(string $fixture, string $content, bool $exportMode = false): void
+    {
+        $content  = Str::replaceMatches('/MockObject/', 'MockClass', $content);
+
+        $content =  Str::replaceMatches('/line=\d+, /', 'line=999, ', $content);
+
+        $content = Str::replaceMatches('/file=.*?(src\/[^\s]+)/', 'file=/$1', $content);
+
+        $this->assertEqualsFixture($fixture, $content, $exportMode);
     }
 }
