@@ -184,18 +184,6 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'invalid_format_missing_field_tag_name.html',
             ],
             [
-                'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
-                'fixture' => 'invalid_format_missing_local_ref.html',
-            ],
-            [
-                'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
-                'fixture' => 'invalid_format_missing_external_ref.html',
-            ],
-            [
-                'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
-                'fixture' => 'invalid_format_missing_ref_file.html',
-            ],
-            [
                 'tmpDoc' => 'documentation/invalid_format__invalid_schema_type',
                 'fixture' => 'invalid_format_invalid_schema_type.html',
             ],
@@ -303,6 +291,41 @@ class SwaggerServiceTest extends TestCase
             $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description']);
         } else {
             $this->markTestSkipped('This test requires PHP version >= 8.4.0');
+        }
+    }
+
+    public static function getInvalidPhpEightDotThreeData(): array
+    {
+        return [
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
+                'fixture' => 'invalid_format_missing_local_ref.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
+                'fixture' => 'invalid_format_missing_external_ref.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
+                'fixture' => 'invalid_format_missing_ref_file.html',
+            ],
+        ];
+    }
+
+    // TODO: Remove legacy fixtures after min php update version increased
+    #[DataProvider('getInvalidPhpEightDotThreeData')]
+    public function testGetDocFileContentInvalidPhpEightDotThreeData(
+        string $fixture,
+        string $tmpDoc,
+    ) {
+        if (version_compare(PHP_VERSION, '8.4.0', '<=')) {
+            $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
+
+            $content = app(SwaggerService::class)->getDocFileContent();
+
+            $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description']);
+        } else {
+            $this->markTestSkipped('This test requires PHP version <= 8.4.0');
         }
     }
 
