@@ -259,7 +259,7 @@ class SwaggerServiceTest extends TestCase
     }
 
     // TODO: Remove legacy fixtures after min php update version increased
-    public static function getInvalidPhpEightDotFourData(): array
+    public static function getInvalidData_php84(): array
     {
         return [
             [
@@ -278,11 +278,9 @@ class SwaggerServiceTest extends TestCase
     }
 
     // TODO: Remove legacy fixtures after min php update version increased
-    #[DataProvider('getInvalidPhpEightDotFourData')]
-    public function testGetDocFileContentInvalidPhpEightDotFourData(
-        string $fixture,
-        string $tmpDoc,
-    ) {
+    #[DataProvider('getInvalidData_php84')]
+    public function testGetDocFileContentInvalidData_php84(string $fixture, string $tmpDoc)
+    {
         if (version_compare(PHP_VERSION, '8.4.0', '>=')) {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
@@ -294,7 +292,7 @@ class SwaggerServiceTest extends TestCase
         }
     }
 
-    public static function getInvalidPhpEightDotThreeData(): array
+    public static function getInvalidData_php83(): array
     {
         return [
             [
@@ -313,11 +311,9 @@ class SwaggerServiceTest extends TestCase
     }
 
     // TODO: Remove legacy fixtures after min php update version increased
-    #[DataProvider('getInvalidPhpEightDotThreeData')]
-    public function testGetDocFileContentInvalidPhpEightDotThreeData(
-        string $fixture,
-        string $tmpDoc,
-    ) {
+    #[DataProvider('getInvalidData_php83')]
+    public function testGetDocFileContentInvalidData_php83(string $fixture, string $tmpDoc)
+    {
         if (version_compare(PHP_VERSION, '8.4.0', '<=')) {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 

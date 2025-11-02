@@ -69,15 +69,4 @@ trait SwaggerServiceMockTrait
             $this->functionCall('saveData'),
         ]);
     }
-
-    protected function assertExceptionHTMLEqualsFixture(string $fixture, string $content, bool $exportMode = false): void
-    {
-        $content =  Str::replaceMatches('/line=\d+, /', 'line=999, ', $content);
-
-        $content = Str::replaceMatches('/file=.*?(src\/[^\s]+)/', 'file=/$1', $content);
-
-        $content = Str::replaceMatches('/:\d+/', ':1', $content);
-
-        $this->assertEqualsFixture($fixture, $content, $exportMode);
-    }
 }

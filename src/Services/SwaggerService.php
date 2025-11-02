@@ -851,14 +851,14 @@ class SwaggerService
 
     protected function getErrorPlace(Throwable $exception): string
     {
-        $errorPlaceInTrace = Arr::first($exception->getTrace());
+        $firstTraceEntry = Arr::first($exception->getTrace());
 
-        $errorPlaceInTrace = implode(', ', Arr::map(
-            $errorPlaceInTrace,
-            fn ($value, $key) => $key . '=' . (is_array($value) ? json_encode($value) : $value),
-        ));
+        $formattedTraceEntry = Arr::map(
+            array: $firstTraceEntry,
+            callback: fn ($value, $key) => $key . '=' . (is_array($value) ? json_encode($value) : $value),
+        );
 
-        return $errorPlaceInTrace;
+        return implode(', ', $formattedTraceEntry);
     }
 
     protected function camelCaseToUnderScore($input): string
