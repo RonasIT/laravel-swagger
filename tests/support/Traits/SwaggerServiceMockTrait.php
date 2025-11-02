@@ -4,7 +4,6 @@ namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 use RonasIT\Support\Traits\MockTrait;
-use Illuminate\Support\Str;
 
 trait SwaggerServiceMockTrait
 {
