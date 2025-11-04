@@ -242,8 +242,8 @@ class SwaggerServiceTest extends TestCase
 
     #[DataProvider('getInvalidProdData')]
     public function testGetDocFileContentInvalidProdData(
-        string $fixture,
-        string $prodDoc
+        string $prodDoc,
+        string $fixture
     ): void {
         $productionFilePath = __DIR__ . '/../storage/documentation.json';
 
@@ -279,7 +279,7 @@ class SwaggerServiceTest extends TestCase
 
     // TODO: Remove legacy fixtures after min php update version increased
     #[DataProvider('getInvalidData_php84')]
-    public function testGetDocFileContentInvalidData_php84(string $fixture, string $tmpDoc)
+    public function testGetDocFileContentInvalidData_php84(string $tmpDoc, string $fixture)
     {
         if (version_compare(PHP_VERSION, '8.4.0', '>=')) {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
@@ -312,7 +312,7 @@ class SwaggerServiceTest extends TestCase
 
     // TODO: Remove legacy fixtures after min php update version increased
     #[DataProvider('getInvalidData_php83')]
-    public function testGetDocFileContentInvalidData_php83(string $fixture, string $tmpDoc)
+    public function testGetDocFileContentInvalidData_php83(string $tmpDoc, string $fixture)
     {
         if (version_compare(PHP_VERSION, '8.4.0', '<=')) {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
