@@ -265,7 +265,7 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'php_8.4_invalid_format_missing_external_ref.html',
             ],
             [
-                'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
+                'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
                 'fixture' => 'php_8.4_invalid_format_missing_local_ref.html',
             ],
             [
@@ -327,7 +327,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.info.contact.email' => null]);
 
-$this->assertExceptionThrew(EmptyContactEmailException::class, 'Please fill the `info.contact.email` field in the app-doc.php config file.');
+        $this->assertExceptionThrew(EmptyContactEmailException::class, 'Please fill the `info.contact.email` field in the app-doc.php config file.');
 
         app(SwaggerService::class)->getDocFileContent();
     }
