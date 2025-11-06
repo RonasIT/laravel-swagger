@@ -241,10 +241,8 @@ class SwaggerServiceTest extends TestCase
     }
 
     #[DataProvider('getInvalidProdData')]
-    public function testGetDocFileContentInvalidProdData(
-        string $prodDoc,
-        string $fixture
-    ): void {
+    public function testGetDocFileContentInvalidProdData(string $prodDoc, string $fixture): void
+    {
         $productionFilePath = __DIR__ . '/../storage/documentation.json';
 
         config(['auto-doc.drivers.local.production_path' => $productionFilePath]);
