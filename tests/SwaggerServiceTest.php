@@ -268,7 +268,7 @@ class SwaggerServiceTest extends TestCase
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
-                'fixture' => 'php_8.4_invalid_format_missing_ref_file.html',
+                'fixture' => 'php_8.4_invalid_format_missing_local_ref.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
@@ -314,14 +314,14 @@ class SwaggerServiceTest extends TestCase
     #[DataProvider('getInvalidData_php83')]
     public function testGetDocFileContentInvalidData_php83(string $tmpDoc, string $fixture)
     {
-        if (version_compare(PHP_VERSION, '8.4.0', '<=')) {
+        if (version_compare(PHP_VERSION, '8.4.0', '<')) {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
 
             $content = app(SwaggerService::class)->getDocFileContent();
 
             $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description']);
         } else {
-            $this->markTestSkipped('This test requires PHP version <= 8.4.0');
+            $this->markTestSkipped('This test requires PHP version < 8.4.0');
         }
     }
 
@@ -671,7 +671,7 @@ class SwaggerServiceTest extends TestCase
                 'query' => null,
             ],
             headers: [
-                'authorization' => 'Bearer some_timplementationoken',
+                'authorization' => 'Bearer some_token',
             ]);
 
         $response = $this->generateResponse('example_success_users_post_response.json');
