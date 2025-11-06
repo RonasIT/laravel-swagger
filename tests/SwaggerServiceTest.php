@@ -327,7 +327,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.info.contact.email' => null]);
 
-$this-> assertExceptionThrew(EmptyContactEmailException::class, 'Please fill the `info.contact.email` field in the app-doc.php config file.');
+$this->assertExceptionThrew(EmptyContactEmailException::class, 'Please fill the `info.contact.email` field in the app-doc.php config file.');
 
         app(SwaggerService::class)->getDocFileContent();
     }
