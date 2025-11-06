@@ -257,7 +257,7 @@ class SwaggerServiceTest extends TestCase
     }
 
     // TODO: Remove legacy fixtures after min php update version increased
-    public static function getInvalidData_php84(): array
+    public static function getInvalidDataPHP84(): array
     {
         return [
             [
