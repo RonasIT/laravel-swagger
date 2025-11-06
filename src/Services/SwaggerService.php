@@ -837,7 +837,7 @@ class SwaggerService
         foreach ($additionalDocs as $filePath) {
             try {
                 $additionalDocContent = $this->getOpenAPIFileContent(base_path($filePath));
-            } catch (DocFileNotExistsException|EmptyDocFileException|InvalidSwaggerSpecException $exception) {
+            } catch (DocFileNotExistsException|InvalidSwaggerSpecException $exception) {
                 report($exception);
 
                 continue;
@@ -993,10 +993,6 @@ class SwaggerService
         }
 
         $fileContent = json_decode(file_get_contents($filePath), true);
-
-        if (empty($fileContent)) {
-            throw new EmptyDocFileException($filePath);
-        }
 
         $this->openAPIValidator->validate($fileContent);
 
