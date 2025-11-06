@@ -290,7 +290,7 @@ class SwaggerServiceTest extends TestCase
         }
     }
 
-    public static function getInvalidData_php83(): array
+    public static function getInvalidDataPHP83(): array
     {
         return [
             [
