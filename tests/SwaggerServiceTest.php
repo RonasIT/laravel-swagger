@@ -241,10 +241,8 @@ class SwaggerServiceTest extends TestCase
     }
 
     #[DataProvider('getInvalidProdData')]
-    public function testGetDocFileContentInvalidProdData(
-        string $prodDoc,
-        string $fixture
-    ): void {
+    public function testGetDocFileContentInvalidProdData(string $prodDoc, string $fixture): void
+    {
         $productionFilePath = __DIR__ . '/../storage/documentation.json';
 
         config(['auto-doc.drivers.local.production_path' => $productionFilePath]);
@@ -259,7 +257,7 @@ class SwaggerServiceTest extends TestCase
     }
 
     // TODO: Remove legacy fixtures after min php update version increased
-    public static function getInvalidData_php84(): array
+    public static function getInvalidDataPHP84(): array
     {
         return [
             [
@@ -278,8 +276,8 @@ class SwaggerServiceTest extends TestCase
     }
 
     // TODO: Remove legacy fixtures after min php update version increased
-    #[DataProvider('getInvalidData_php84')]
-    public function testGetDocFileContentInvalidData_php84(string $tmpDoc, string $fixture)
+    #[DataProvider('getInvalidDataPHP84')]
+    public function testGetDocFileContentInvalidDataPHP84(string $tmpDoc, string $fixture)
     {
         if (version_compare(PHP_VERSION, '8.4.0', '>=')) {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
@@ -292,7 +290,7 @@ class SwaggerServiceTest extends TestCase
         }
     }
 
-    public static function getInvalidData_php83(): array
+    public static function getInvalidDataPHP83(): array
     {
         return [
             [
@@ -311,7 +309,7 @@ class SwaggerServiceTest extends TestCase
     }
 
     // TODO: Remove legacy fixtures after min php update version increased
-    #[DataProvider('getInvalidData_php83')]
+    #[DataProvider('getInvalidDataPHP83')]
     public function testGetDocFileContentInvalidData_php83(string $tmpDoc, string $fixture)
     {
         if (version_compare(PHP_VERSION, '8.4.0', '<')) {
@@ -329,8 +327,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.info.contact.email' => null]);
 
-        $this->expectException(EmptyContactEmailException::class);
-        $this->expectExceptionMessage('Please fill the `info.contact.email` field in the app-doc.php config file.');
+$this->assertExceptionThrew(EmptyContactEmailException::class, 'Please fill the `info.contact.email` field in the app-doc.php config file.');
 
         app(SwaggerService::class)->getDocFileContent();
     }
