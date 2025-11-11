@@ -4,6 +4,7 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Response;
 use phpmock\phpunit\PHPMock;
+use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
 
 class AutoDocControllerTest extends TestCase
 {
@@ -75,7 +76,7 @@ class AutoDocControllerTest extends TestCase
         $mock->expects($this->once());
 
         config([
-            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/documentation__non_json.txt'],
+            'auto-doc.additional_paths' => ['tests/fixtures/AutoDocControllerTest/empty_additional_documentation.json'],
         ]);
 
         $response = $this->json('get', '/auto-doc/documentation');

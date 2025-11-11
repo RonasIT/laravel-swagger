@@ -230,11 +230,11 @@ class SwaggerServiceTest extends TestCase
     {
         return [
             [
-                'prodDoc' => 'documentation/empty_prod_documentation',
+                'prodDoc' => 'documentation/empty_prod_documentation.json',
                 'fixture' => 'empty_prod_documentation.html',
             ],
             [
-                'prodDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request',
+                'prodDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request.json',
                 'fixture' => 'invalid_format_incorrect_documentation_structure_request.html',
             ],
         ];
@@ -247,9 +247,9 @@ class SwaggerServiceTest extends TestCase
 
         config(['auto-doc.drivers.local.production_path' => $productionFilePath]);
 
-        $prodDocPath = "tests/fixtures/SwaggerServiceTest/{$prodDoc}.json";
+        $documentation = $this->getFixture($prodDoc);
 
-        file_put_contents($productionFilePath, file_get_contents($prodDocPath));
+        file_put_contents($productionFilePath, $documentation);
 
         $content = app(SwaggerService::class)->getDocFileContent();
 

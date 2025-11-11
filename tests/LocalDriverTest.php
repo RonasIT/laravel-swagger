@@ -137,7 +137,7 @@ class LocalDriverTest extends TestCase
 
     public function testGetInvalidJsonDocumentation(): void
     {
-        file_put_contents(self::$productionFilePath, $this->getFixturePath('invalid_prod_json_data'));
+        file_put_contents(self::$productionFilePath, $this->getFixture('invalid_prod_json_data.json'));
 
         $this->assertExceptionThrew(NonJSONDocFileException::class, "Doc file 'storage/documentation.json' is not a json doc file.");
 

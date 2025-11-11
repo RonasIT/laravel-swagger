@@ -131,7 +131,7 @@ class StorageDriverTest extends TestCase
 
     public function testGetInvalidJsonDocumentation(): void
     {
-        $this->disk->put(self::$productionFilePath, $this->getFixturePath('invalid_prod_json_data'));
+        $this->disk->put(self::$productionFilePath, $this->getFixture('invalid_prod_json_data.json'));
 
         $this->assertExceptionThrew(NonJSONDocFileException::class, "Doc file 'documentation.json' is not a json doc file.");
 
