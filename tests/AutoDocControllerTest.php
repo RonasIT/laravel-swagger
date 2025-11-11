@@ -4,7 +4,6 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Response;
 use phpmock\phpunit\PHPMock;
-use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
 
 class AutoDocControllerTest extends TestCase
 {
