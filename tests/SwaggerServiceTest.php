@@ -184,18 +184,6 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'invalid_format_missing_field_tag_name.html',
             ],
             [
-                'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
-                'fixture' => 'invalid_format_missing_local_ref.html',
-            ],
-            [
-                'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
-                'fixture' => 'invalid_format_missing_external_ref.html',
-            ],
-            [
-                'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
-                'fixture' => 'invalid_format_missing_ref_file.html',
-            ],
-            [
                 'tmpDoc' => 'documentation/invalid_format__invalid_schema_type',
                 'fixture' => 'invalid_format_invalid_schema_type.html',
             ],
@@ -235,16 +223,113 @@ class SwaggerServiceTest extends TestCase
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
-        $this->assertEqualsFixture($fixture, $content['info']['description']);
+        $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description']);
+    }
+
+    public static function getInvalidProdData(): array
+    {
+        return [
+            [
+                'prodDoc' => 'documentation/empty_prod_documentation.json',
+                'fixture' => 'empty_prod_documentation.html',
+            ],
+            [
+                'prodDoc' => 'documentation/tmp_data_incorrect_documentation_structure_request.json',
+                'fixture' => 'invalid_format_incorrect_documentation_structure_request.html',
+            ],
+        ];
+    }
+
+    #[DataProvider('getInvalidProdData')]
+    public function testGetDocFileContentInvalidProdData(string $prodDoc, string $fixture): void
+    {
+        $productionFilePath = __DIR__ . '/../storage/documentation.json';
+
+        config(['auto-doc.drivers.local.production_path' => $productionFilePath]);
+
+        $documentation = $this->getFixture($prodDoc);
+
+        file_put_contents($productionFilePath, $documentation);
+
+        $content = app(SwaggerService::class)->getDocFileContent();
+
+        $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description']);
+    }
+
+    // TODO: Remove legacy fixtures after min php update version increased
+    public static function getInvalidDataPHP84(): array
+    {
+        return [
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
+                'fixture' => 'php_8.4_invalid_format_missing_external_ref.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
+                'fixture' => 'php_8.4_invalid_format_missing_local_ref.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
+                'fixture' => 'php_8.4_invalid_format_missing_ref_file.html',
+            ],
+        ];
+    }
+
+    // TODO: Remove legacy fixtures after min php update version increased
+    #[DataProvider('getInvalidDataPHP84')]
+    public function testGetDocFileContentInvalidDataPHP84(string $tmpDoc, string $fixture)
+    {
+        if (version_compare(PHP_VERSION, '8.4.0', '>=')) {
+            $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
+
+            $content = app(SwaggerService::class)->getDocFileContent();
+
+            $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description']);
+        } else {
+            $this->markTestSkipped('This test requires PHP version >= 8.4.0');
+        }
+    }
+
+    public static function getInvalidDataPHP83(): array
+    {
+        return [
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_local_ref',
+                'fixture' => 'invalid_format_missing_local_ref.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_external_ref',
+                'fixture' => 'invalid_format_missing_external_ref.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__missing_ref_file',
+                'fixture' => 'invalid_format_missing_ref_file.html',
+            ],
+        ];
+    }
+
+    // TODO: Remove legacy fixtures after min php update version increased
+    #[DataProvider('getInvalidDataPHP83')]
+    public function testGetDocFileContentInvalidData_php83(string $tmpDoc, string $fixture)
+    {
+        if (version_compare(PHP_VERSION, '8.4.0', '<')) {
+            $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
+
+            $content = app(SwaggerService::class)->getDocFileContent();
+
+            $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description']);
+        } else {
+            $this->markTestSkipped('This test requires PHP version < 8.4.0');
+        }
     }
 
     public function testEmptyContactEmail()
     {
         config(['auto-doc.info.contact.email' => null]);
 
-        $this->expectException(EmptyContactEmailException::class);
+        $this->assertExceptionThrew(EmptyContactEmailException::class, 'Please fill the `info.contact.email` field in the app-doc.php config file.');
 
-        app(SwaggerService::class);
+        app(SwaggerService::class)->getDocFileContent();
     }
 
     public static function getAddEmptyData(): array
@@ -626,9 +711,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveProcessTmpData(
-            $this->getJsonFixture('tmp_data_post_user_request_with_object_params')
-        );
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_post_user_request_with_object_params'));
 
         $service = app(SwaggerService::class);
 
@@ -687,7 +770,7 @@ class SwaggerServiceTest extends TestCase
     {
         return [
             [
-                'implementation' =>  TestRequest::class,
+                'implementation' => TestRequest::class,
             ],
             [
                 'implementation' => fn ($app) => new TestRequest(),
@@ -816,9 +899,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testAddDataDescriptionForRouteConditionals()
     {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData(
-            $this->getJsonFixture('tmp_data_get_route_parameters_description')
-        );
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_route_parameters_description'));
 
         $request = $this->generateRequest(
             type: 'get',
@@ -856,7 +937,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeTempDocumentation()
     {
-        $this->mockParallelTestingToken();
+        $this->mockParallelTestingToken('workerID');
 
         $this->fillTempFile($this->getFixture('tmp_data_post_user_request.json'));
 
@@ -871,7 +952,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testMergeToEmptyTempDocumentation()
     {
-        $this->mockParallelTestingToken();
+        $this->mockParallelTestingToken('workerID');
 
         $this->fillTempFile('');
 

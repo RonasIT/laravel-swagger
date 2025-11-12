@@ -5,6 +5,7 @@ namespace RonasIT\AutoDoc\Tests;
 use RonasIT\AutoDoc\Drivers\RemoteDriver;
 use RonasIT\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
 use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
+use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class RemoteDriverTest extends TestCase
 {
@@ -144,6 +145,27 @@ class RemoteDriverTest extends TestCase
         $documentation = $mock->getDocumentation();
 
         $this->assertEquals(self::$tmpData, $documentation);
+    }
+
+    public function testGetInvalidJsonDocumentation(): void
+    {
+        $this->assertExceptionThrew(NonJSONDocFileException::class, "Doc file 'Remote documentation' is not a json doc file.");
+
+        config(['auto-doc.drivers.remote.key' => 'mocked_key']);
+        config(['auto-doc.drivers.remote.url' => 'mocked_url']);
+
+        $mock = $this->mockClass(RemoteDriver::class, [
+            $this->functionCall(
+                name: 'makeHttpRequest',
+                arguments: [
+                    'get',
+                    'mocked_url/documentations/mocked_key',
+                ],
+                result: [$this->getFixture('invalid_prod_json_data.json'), 200],
+            ),
+        ]);
+
+        $mock->getDocumentation();
     }
 
     public function testGetDocumentationNoFile()

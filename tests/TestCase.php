@@ -87,7 +87,7 @@ class TestCase extends BaseTest
     public function assertEqualsFixture(string $fixtureName, $data, bool $exportMode = false): void
     {
         if ($exportMode || $this->globalExportMode) {
-            $this->exportContent($fixtureName, $data);
+            $this->exportContent($data, $fixtureName);
         }
 
         $this->assertEquals($this->getFixture($fixtureName), $data);
@@ -208,10 +208,5 @@ class TestCase extends BaseTest
         putenv("SWAGGER_GLOBAL_PREFIX={$prefix}");
 
         $this->setUp();
-    }
-
-    protected function mockParallelTestingToken(string $token = 'workerID'): void
-    {
-        ParallelTesting::resolveTokenUsing(fn () => $token);
     }
 }

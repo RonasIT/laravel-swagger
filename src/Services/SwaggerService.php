@@ -23,7 +23,7 @@ use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
-use Exception;
+use Throwable;
 
 /**
  * @property SwaggerDriverContract $driver
@@ -73,6 +73,10 @@ class SwaggerService
         $this->setDriver();
 
         if (config('app.env') === 'testing') {
+            // client must enter at least `contact.email` to generate a default `info` block
+            // otherwise an exception will be called
+            $this->checkEmail();
+
             $this->container = $container;
 
             $this->security = $this->config['security'];
@@ -134,12 +138,6 @@ class SwaggerService
 
     protected function generateEmptyData(?string $view = null, array $viewData = [], array $license = []): array
     {
-        // client must enter at least `contact.email` to generate a default `info` block
-        // otherwise an exception will be called
-        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
-            throw new EmptyContactEmailException();
-        }
-
         if (empty($view) && !empty($this->config['info'])) {
             $view = $this->config['info']['description'];
         }
@@ -163,6 +161,13 @@ class SwaggerService
         }
 
         return $data;
+    }
+
+    protected function checkEmail(): void
+    {
+        if (!empty($this->config['info']) && !Arr::get($this->config, 'info.contact.email')) {
+            throw new EmptyContactEmailException();
+        }
     }
 
     protected function generateSecurityDefinition(): ?array
@@ -796,18 +801,6 @@ class SwaggerService
         return Str::camel($action);
     }
 
-    /**
-     * @deprecated method is not in use
-     * @codeCoverageIgnore
-     */
-    protected function saveTempData()
-    {
-        $exportFile = Arr::get($this->config, 'files.temporary');
-        $data = json_encode($this->data);
-
-        file_put_contents($exportFile, $data);
-    }
-
     public function saveProductionData()
     {
         if (ParallelTesting::token()) {
@@ -831,8 +824,12 @@ class SwaggerService
             $documentation = $this->driver->getDocumentation();
 
             $this->openAPIValidator->validate($documentation);
-        } catch (Exception $exception) {
-            return $this->generateEmptyData($this->config['defaults']['error'], ['message' => $exception->getMessage()]);
+        } catch (Throwable $exception) {
+            return $this->generateEmptyData($this->config['defaults']['error'], [
+                'message' => $exception->getMessage(),
+                'type' => $exception::class,
+                'error_place' => $this->getErrorPlace($exception),
+            ]);
         }
 
         $additionalDocs = config('auto-doc.additional_paths', []);
@@ -850,6 +847,18 @@ class SwaggerService
         }
 
         return $documentation;
+    }
+
+    protected function getErrorPlace(Throwable $exception): string
+    {
+        $firstTraceEntry = Arr::first($exception->getTrace());
+
+        $formattedTraceEntry = Arr::map(
+            array: $firstTraceEntry,
+            callback: fn ($value, $key) => $key . '=' . (is_array($value) ? json_encode($value) : $value),
+        );
+
+        return implode(', ', $formattedTraceEntry);
     }
 
     protected function camelCaseToUnderScore($input): string
@@ -973,7 +982,7 @@ class SwaggerService
         if (!empty($view)) {
             $info['description'] = view($view, $viewData)->render();
         }
-        
+
         return array_merge($this->config['info'], $info);
     }
 

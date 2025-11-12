@@ -6,6 +6,8 @@ use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
+use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
+use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class StorageDriver extends BaseDriver
 {
@@ -38,6 +40,14 @@ class StorageDriver extends BaseDriver
         }
 
         $fileContent = $this->disk->get($this->prodFilePath);
+
+        if (empty($fileContent)) {
+            throw new EmptyDocFileException($this->prodFilePath);
+        }
+
+        if (!json_validate($fileContent)) {
+            throw new NonJSONDocFileException($this->prodFilePath);
+        }
 
         return json_decode($fileContent, true);
     }

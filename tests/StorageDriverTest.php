@@ -7,6 +7,8 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use RonasIT\AutoDoc\Drivers\StorageDriver;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
+use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
+use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class StorageDriverTest extends TestCase
 {
@@ -116,6 +118,24 @@ class StorageDriverTest extends TestCase
         $documentation = self::$storageDriverClass->getDocumentation();
 
         $this->assertEqualsJsonFixture('tmp_data', $documentation);
+    }
+
+    public function testGetEmptyDocumentation(): void
+    {
+        $this->disk->put(self::$productionFilePath, '');
+
+        $this->assertExceptionThrew(EmptyDocFileException::class, "Doc file 'documentation.json' is empty.");
+
+        self::$storageDriverClass->getDocumentation();
+    }
+
+    public function testGetInvalidJsonDocumentation(): void
+    {
+        $this->disk->put(self::$productionFilePath, $this->getFixture('invalid_prod_json_data.json'));
+
+        $this->assertExceptionThrew(NonJSONDocFileException::class, "Doc file 'documentation.json' is not a json doc file.");
+
+        self::$storageDriverClass->getDocumentation();
     }
 
     public function testGetDocumentationFileNotExists()

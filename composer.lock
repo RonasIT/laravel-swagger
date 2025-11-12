@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6649148cf8a8b2e6d835a0a49f845589",
+    "content-hash": "5f6eb8551a6eb860f46af5549ff0285b",
     "packages": [
         {
             "name": "brick/math",
@@ -9345,16 +9345,16 @@
         },
         {
             "name": "ronasit/laravel-helpers",
-            "version": "3.4.2",
+            "version": "3.5.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RonasIT/laravel-helpers.git",
-                "reference": "287d5e3a3af61a34ae58efbd69d2780a935c5ab4"
+                "reference": "b2ef76134afd66dedb5a956712f1bd1b483ef9c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RonasIT/laravel-helpers/zipball/287d5e3a3af61a34ae58efbd69d2780a935c5ab4",
-                "reference": "287d5e3a3af61a34ae58efbd69d2780a935c5ab4",
+                "url": "https://api.github.com/repos/RonasIT/laravel-helpers/zipball/b2ef76134afd66dedb5a956712f1bd1b483ef9c1",
+                "reference": "b2ef76134afd66dedb5a956712f1bd1b483ef9c1",
                 "shasum": ""
             },
             "require": {
@@ -9420,9 +9420,9 @@
             ],
             "support": {
                 "issues": "https://github.com/RonasIT/laravel-helpers/issues",
-                "source": "https://github.com/RonasIT/laravel-helpers/tree/3.4.2"
+                "source": "https://github.com/RonasIT/laravel-helpers/tree/3.5.8"
             },
-            "time": "2025-05-26T03:41:09+00:00"
+            "time": "2025-10-08T08:37:24+00:00"
         },
         {
             "name": "symfony/config",
@@ -9778,13 +9778,13 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3",
         "ext-json": "*"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }
