@@ -853,6 +853,8 @@ class SwaggerService
     {
         $firstTraceEntry = Arr::first($exception->getTrace());
 
+        Arr::forget($firstTraceEntry, 'type');
+
         $formattedTraceEntry = Arr::map(
             array: $firstTraceEntry,
             callback: fn ($value, $key) => $key . '=' . (is_array($value) ? json_encode($value) : $value),
