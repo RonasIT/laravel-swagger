@@ -25,7 +25,7 @@ trait SwaggerServiceTestingTrait
 
     protected function assertExceptionHTMLEqualsFixture(string $fixture, string $content, bool $exportMode = false): void
     {
-        $content = Str::replaceMatches('/line=\d+,/', 'line=999,', $content);
+        $content = Str::replaceMatches('/line=\d+/', 'line=999', $content);
 
         $content = Str::replaceMatches('/file=.*?(src\/[^\s]+)/', 'file=/$1', $content);
 
