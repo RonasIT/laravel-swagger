@@ -1,13 +1,14 @@
-## ❗️ **ERROR** ❗️
+# ❗️ **ERROR** ❗️
 
-### 🚨🚨 {{ $type }} 🚨🚨
+## 🚨🚨 {{ $type }} 🚨🚨
 
 ---
 
-#### **Details:**
+### **Details:**
 
 {{ $message }}
 
-#### **Error place:**
+### **Error place:**
 
 {{ $error_place }}
+---
