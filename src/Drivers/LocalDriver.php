@@ -7,7 +7,6 @@ use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
 use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
-use Symfony\Component\Filesystem\Path;
 
 class LocalDriver extends BaseDriver
 {
