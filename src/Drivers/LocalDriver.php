@@ -43,7 +43,7 @@ class LocalDriver extends BaseDriver
         }
 
         if (!json_validate($fileContent)) {
-            throw new NonJSONDocFileException(Str::replace(base_path() . '/', '', $this->prodFilePath));
+            throw new NonJSONDocFileException(Str::after($this->prodFilePath, base_path() . DIRECTORY_SEPARATOR));
         }
 
         return json_decode($fileContent, true);
