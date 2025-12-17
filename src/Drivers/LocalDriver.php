@@ -39,7 +39,7 @@ class LocalDriver extends BaseDriver
         $fileContent = file_get_contents($this->prodFilePath);
 
         if (empty($fileContent)) {
-            throw new EmptyDocFileException(Str::replace(base_path() . '/', '', $this->prodFilePath));
+            throw new EmptyDocFileException(Str::after($this->prodFilePath, base_path() . DIRECTORY_SEPARATOR));
         }
 
         if (!json_validate($fileContent)) {
