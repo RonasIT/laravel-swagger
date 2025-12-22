@@ -39,13 +39,18 @@ class LocalDriver extends BaseDriver
         $fileContent = file_get_contents($this->prodFilePath);
 
         if (empty($fileContent)) {
-            throw new EmptyDocFileException(Str::after($this->prodFilePath, base_path() . DIRECTORY_SEPARATOR));
+            throw new EmptyDocFileException($this->getRelativeFilePath($this->prodFilePath));
         }
 
         if (!json_validate($fileContent)) {
-            throw new NonJSONDocFileException(Str::after($this->prodFilePath, base_path() . DIRECTORY_SEPARATOR));
+            throw new NonJSONDocFileException($this->getRelativeFilePath($this->prodFilePath));
         }
 
         return json_decode($fileContent, true);
+    }
+
+    private function getRelativeFilePath(string $path): string
+    {
+        return Str::after(realpath($path), realpath(base_path()) . DIRECTORY_SEPARATOR);
     }
 }
