@@ -2,11 +2,11 @@
 
 namespace RonasIT\AutoDoc\Drivers;
 
+use Illuminate\Support\Str;
 use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
 use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
 use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
-use Symfony\Component\Filesystem\Path;
 
 class LocalDriver extends BaseDriver
 {
@@ -39,13 +39,18 @@ class LocalDriver extends BaseDriver
         $fileContent = file_get_contents($this->prodFilePath);
 
         if (empty($fileContent)) {
-            throw new EmptyDocFileException(Path::makeRelative($this->prodFilePath, base_path()));
+            throw new EmptyDocFileException($this->getRelativeFilePath($this->prodFilePath));
         }
 
         if (!json_validate($fileContent)) {
-            throw new NonJSONDocFileException(Path::makeRelative($this->prodFilePath, base_path()));
+            throw new NonJSONDocFileException($this->getRelativeFilePath($this->prodFilePath));
         }
 
         return json_decode($fileContent, true);
+    }
+
+    private function getRelativeFilePath(string $path): string
+    {
+        return Str::after(realpath($path), realpath(base_path()) . DIRECTORY_SEPARATOR);
     }
 }
