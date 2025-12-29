@@ -4,7 +4,7 @@ namespace RonasIT\AutoDoc\Exceptions\SpecValidation;
 
 class MissingFieldException extends InvalidSwaggerSpecException
 {
-    public function __construct(array $missingFields, string $parentField = null)
+    public function __construct(array $missingFields, ?string $parentField = null)
     {
         $fieldsString = implode(', ', $missingFields);
 
