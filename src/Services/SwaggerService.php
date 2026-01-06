@@ -1026,9 +1026,7 @@ class SwaggerService
             }
         }
 
-        $additionalSchemas = Arr::get($additionalDocumentation, 'components.schemas', []);
-
-        foreach ($additionalSchemas as $definitionName => $definitionData) {
+        foreach (Arr::get($additionalDocumentation, 'components.schemas', []) as $definitionName => $definitionData) {
             if (empty($documentation['components']['schemas'][$definitionName])) {
                 $documentation['components']['schemas'][$definitionName] = $definitionData;
             }

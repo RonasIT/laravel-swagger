@@ -92,7 +92,7 @@ class SwaggerSpecValidator
         $this->doc = $doc;
 
         $this->validateVersion();
-        $this->validateFieldsPresent($this->doc, self::REQUIRED_FIELDS['doc'], 'root');
+        $this->validateFieldsPresent($this->doc, self::REQUIRED_FIELDS['doc']);
         $this->validateInfo();
         $this->validateSchemes();
         $this->validatePaths();
@@ -118,7 +118,7 @@ class SwaggerSpecValidator
 
     protected function validateSchemes(): void
     {
-        $this->validateFieldValue($this->doc, 'schemes', self::ALLOWED_VALUES['schemes'], 'root');
+        $this->validateFieldValue($this->doc, 'schemes', self::ALLOWED_VALUES['schemes']);
     }
 
     protected function validatePaths(): void
@@ -367,7 +367,7 @@ class SwaggerSpecValidator
         $this->validateFieldValue($header, 'collectionFormat', self::ALLOWED_VALUES['header_collection_format'], $headerId);
 
         if (!empty($header['items'])) {
-            $this->validateItems($header['items'], "$headerId.items");
+            $this->validateItems($header['items'], "{$headerId}.items");
         }
     }
 
@@ -380,20 +380,18 @@ class SwaggerSpecValidator
 
     protected function getMissingFields(array $requiredFields, array $doc, ?string $path = null): array
     {
-        $data = $doc;
-
         if (!empty($path)) {
             $segments = explode('/', str_replace('.', '/', $path));
 
             foreach ($segments as $segment) {
-                $data = Arr::get($data, $segment, []);
+                $doc = Arr::get($doc, $segment, []);
             }
         }
 
-        return array_diff($requiredFields, array_keys($data));
+        return array_diff($requiredFields, array_keys($doc));
     }
 
-    protected function validateFieldsPresent(array $data, array $requiredFields, string $context): void
+    protected function validateFieldsPresent(array $data, array $requiredFields, ?string $context = null): void
     {
         $missing = array_diff($requiredFields, array_keys($data));
 
@@ -402,17 +400,13 @@ class SwaggerSpecValidator
         }
     }
 
-    protected function validateFieldValue(array $data, string $key, array $allowedValues, string $context): void
+    protected function validateFieldValue(array $data, string $key, array $allowedValues, ?string $context = null): void
     {
-        if (!isset($data[$key])) {
+        if (!Arr::has($data, $key)) {
             return;
         }
 
-        $value = $data[$key];
-
-        $inputValues = is_array($value) ? $value : [$value];
-
-        $invalidValues = array_diff($inputValues, $allowedValues);
+        $invalidValues = array_diff(Arr::wrap($data[$key]), $allowedValues);
 
         if (!empty($invalidValues)) {
             throw new InvalidFieldValueException("{$context}.{$key}", $allowedValues, $invalidValues);
