@@ -391,12 +391,12 @@ class SwaggerSpecValidator
         return array_diff($requiredFields, array_keys($doc));
     }
 
-    protected function validateFieldsPresent(array $data, array $requiredFields, ?string $filedName = null): void
+    protected function validateFieldsPresent(array $data, array $requiredFields, ?string $fieldName = null): void
     {
         $missing = array_diff($requiredFields, array_keys($data));
 
         if (!empty($missing)) {
-            throw new MissingFieldException($missing, $filedName);
+            throw new MissingFieldException($missing, $fieldName);
         }
     }
 
