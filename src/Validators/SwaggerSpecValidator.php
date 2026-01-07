@@ -391,25 +391,25 @@ class SwaggerSpecValidator
         return array_diff($requiredFields, array_keys($doc));
     }
 
-    protected function validateFieldsPresent(array $data, array $requiredFields, ?string $context = null): void
+    protected function validateFieldsPresent(array $data, array $requiredFields, ?string $filedName = null): void
     {
         $missing = array_diff($requiredFields, array_keys($data));
 
         if (!empty($missing)) {
-            throw new MissingFieldException($missing, $context);
+            throw new MissingFieldException($missing, $filedName);
         }
     }
 
-    protected function validateFieldValue(array $data, string $key, array $allowedValues, ?string $context = null): void
+    protected function validateFieldValue(array $data, string $field, array $allowedValues, ?string $path = null): void
     {
-        if (!Arr::has($data, $key)) {
+        if (!Arr::has($data, $field)) {
             return;
         }
 
-        $invalidValues = array_diff(Arr::wrap($data[$key]), $allowedValues);
+        $invalidValues = array_diff(Arr::wrap($data[$field]), $allowedValues);
 
         if (!empty($invalidValues)) {
-            throw new InvalidFieldValueException("{$context}.{$key}", $allowedValues, $invalidValues);
+            throw new InvalidFieldValueException("{$path}.{$field}", $allowedValues, $invalidValues);
         }
     }
 
