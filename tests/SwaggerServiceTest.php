@@ -227,7 +227,7 @@ class SwaggerServiceTest extends TestCase
 
         $content = app(SwaggerService::class)->getDocFileContent();
 
-        $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description'], true);
+        $this->assertExceptionHTMLEqualsFixture($fixture, $content['info']['description']);
     }
 
     public static function getInvalidProdData(): array
