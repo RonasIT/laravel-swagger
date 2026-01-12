@@ -409,7 +409,9 @@ class SwaggerSpecValidator
         $invalidValues = array_diff(Arr::wrap($data[$field]), $allowedValues);
 
         if (!empty($invalidValues)) {
-            throw new InvalidFieldValueException("{$path}.{$field}", $allowedValues, $invalidValues);
+            $fullPath = (is_null($path)) ? $field : "{$path}.{$field}";
+
+            throw new InvalidFieldValueException($fullPath, $allowedValues, $invalidValues);
         }
     }
 
