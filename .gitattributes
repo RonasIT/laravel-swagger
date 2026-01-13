@@ -7,3 +7,4 @@ CONTRIBUTING.md export-ignore
 docker-compose.yml export-ignore
 MIGRATION-GUIDES.md export-ignore
 phpunit.xml export-ignore
+pint.json export-ignore

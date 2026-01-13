@@ -24,7 +24,8 @@
     "orchestra/testbench": ">=9.3",
     "php-coveralls/php-coveralls": "^2.7",
     "php-mock/php-mock-phpunit": ">=2.10",
-    "ronasit/laravel-helpers": "^3.5"
+    "ronasit/laravel-helpers": "^3.5",
+    "laravel/pint": "^1.27"
   },
   "autoload": {
     "psr-4": {
