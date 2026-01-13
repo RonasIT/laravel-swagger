@@ -3,9 +3,9 @@
 namespace RonasIT\AutoDoc\Drivers;
 
 use Illuminate\Support\Str;
+use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
 use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
-use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
 use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class LocalDriver extends BaseDriver

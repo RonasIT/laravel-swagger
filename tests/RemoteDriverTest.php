@@ -3,8 +3,8 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use RonasIT\AutoDoc\Drivers\RemoteDriver;
-use RonasIT\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
 use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
+use RonasIT\AutoDoc\Exceptions\MissedRemoteDocumentationUrlException;
 use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class RemoteDriverTest extends TestCase

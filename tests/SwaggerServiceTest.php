@@ -310,7 +310,7 @@ class SwaggerServiceTest extends TestCase
 
     // TODO: Remove legacy fixtures after min php update version increased
     #[DataProvider('getInvalidDataPHP83')]
-    public function testGetDocFileContentInvalidData_php83(string $tmpDoc, string $fixture)
+    public function testGetDocFileContentInvalidDataPhp83(string $tmpDoc, string $fixture)
     {
         if (version_compare(PHP_VERSION, '8.4.0', '<')) {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
@@ -371,7 +371,7 @@ class SwaggerServiceTest extends TestCase
                     'in' => 'query',
                     'type' => 'apiKey',
                 ],
-            ]
+            ],
         ]);
 
         $this->mockDriverGetEmptyAndSaveProcessTmpData([], $this->getJsonFixture($savedTmpDataFixture));
@@ -442,7 +442,7 @@ class SwaggerServiceTest extends TestCase
     public function testAddDataRequestWithoutRuleType()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData(
-            $this->getJsonFixture('tmp_data_search_roles_request_without_rule_type')
+            $this->getJsonFixture('tmp_data_search_roles_request_without_rule_type'),
         );
 
         $service = app(SwaggerService::class);
@@ -457,7 +457,7 @@ class SwaggerServiceTest extends TestCase
     public function testAddDataRequestWithAnnotations()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData(
-            $this->getJsonFixture('tmp_data_search_roles_request_with_annotations')
+            $this->getJsonFixture('tmp_data_search_roles_request_with_annotations'),
         );
 
         $service = app(SwaggerService::class);
@@ -507,8 +507,8 @@ class SwaggerServiceTest extends TestCase
                     'name' => 'api_key',
                     'in' => 'query',
                     'type' => 'apiKey',
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture($requestFixture));
@@ -756,7 +756,7 @@ class SwaggerServiceTest extends TestCase
                 'id' => 1,
                 'role-id' => 5,
             ],
-            controllerMethod: 'notExists'
+            controllerMethod: 'notExists',
         );
 
         $response = $this->generateResponse('example_success_user_response.json', 200, [
@@ -798,7 +798,7 @@ class SwaggerServiceTest extends TestCase
                 'id' => 1,
                 'role-id' => 5,
             ],
-            controllerMethod: 'testRequestWithContract'
+            controllerMethod: 'testRequestWithContract',
         );
 
         $response = $this->generateResponse('example_success_user_response.json', 200, [
@@ -871,7 +871,7 @@ class SwaggerServiceTest extends TestCase
         $this->expectException(UnsupportedDocumentationViewerException::class);
         $this->expectExceptionMessage(
             "The documentation viewer 'invalid' does not exists."
-            . " Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values."
+            . " Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values.",
         );
 
         app(SwaggerService::class);
@@ -884,7 +884,7 @@ class SwaggerServiceTest extends TestCase
         $this->expectException(UnsupportedDocumentationViewerException::class);
         $this->expectExceptionMessage(
             "The documentation viewer '' does not exists."
-            . " Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values."
+            . " Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values.",
         );
 
         app(SwaggerService::class);
