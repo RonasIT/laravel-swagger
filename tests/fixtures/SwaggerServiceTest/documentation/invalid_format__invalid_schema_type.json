@@ -17,6 +17,7 @@
               "Last-Modified": {
                 "type": "array",
                 "items": {
+                  "type": "object",
                   "date": {
                     "type": "string"
                   }

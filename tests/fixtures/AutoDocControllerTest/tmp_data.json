@@ -99,6 +99,32 @@
                 "description": "",
                 "summary": "login"
             }
+        },
+        "/v0.1/test-first": {
+            "get": {
+                "tags": [
+                    "v0.1"
+                ],
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/getV0.1testFirst200ResponseObject"
+                                },
+                                "example": {
+                                    "status": "ok"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
         }
     },
     "components": {
@@ -122,6 +148,14 @@
                 "example": {
                     "email": "admin@test.com",
                     "password": "123"
+                }
+            },
+            "getV0.1testFirst200ResponseObject": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string"
+                    }
                 }
             }
         }

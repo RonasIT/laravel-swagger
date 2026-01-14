@@ -80,6 +80,10 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'invalid_version.html',
             ],
             [
+                'tmpDoc' => 'documentation/invalid_top_level_field_value',
+                'fixture' => 'invalid_top_level_field_value.html',
+            ],
+            [
                 'tmpDoc' => 'documentation/invalid_format__array_parameter__no_items',
                 'fixture' => 'invalid_format_array_parameter_no_items.html',
             ],
