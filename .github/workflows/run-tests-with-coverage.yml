@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Format code style via Pint
-        run: vendor/bin/pint --repair
+        run: vendor/bin/pint --test
       - name: Execute unit tests via PHPUnit with coverage
         run: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit --coverage-clover build/logs/clover.xml
       - name: Export coverage report

@@ -314,7 +314,7 @@ class SwaggerServiceTest extends TestCase
 
     // TODO: Remove legacy fixtures after min php update version increased
     #[DataProvider('getInvalidDataPHP83')]
-    public function testGetDocFileContentInvalidDataPhp83(string $tmpDoc, string $fixture)
+    public function testGetDocFileContentInvalidDataPHP83(string $tmpDoc, string $fixture)
     {
         if (version_compare(PHP_VERSION, '8.4.0', '<')) {
             $this->mockDriverGetDocumentation($this->getJsonFixture($tmpDoc));
