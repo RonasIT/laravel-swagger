@@ -2,12 +2,10 @@
 
 namespace RonasIT\AutoDoc\Traits;
 
-use ReflectionMethod;
-use ReflectionFunction;
-use ReflectionParameter;
-use Illuminate\Support\Arr;
-use ReflectionFunctionAbstract;
 use Illuminate\Container\Container;
+use Illuminate\Support\Arr;
+use ReflectionMethod;
+use ReflectionParameter;
 
 trait GetDependenciesTrait
 {

@@ -7,14 +7,14 @@ use Illuminate\Support\Str;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateFieldException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateParamException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicatePathPlaceholderException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidPathException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidFieldValueException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidPathException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidStatusCodeException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerVersionException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingExternalRefException;
-use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingFieldException;
+use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingLocalRefException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathParamException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingPathPlaceholderException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\MissingRefFileException;
@@ -207,7 +207,7 @@ class SwaggerSpecValidator
             $this->validateType(
                 $response['schema'],
                 array_merge(self::SCHEMA_TYPES, ['file']),
-                "{$responseId}.schema"
+                "{$responseId}.schema",
             );
 
             if (!empty($response['schema']['items'])) {
@@ -257,7 +257,7 @@ class SwaggerSpecValidator
             $invalidTypes = implode(', ', $invalidContentTypes);
 
             throw new InvalidSwaggerSpecException(
-                "Operation '{$operationId}' has invalid content types: {$invalidTypes}."
+                "Operation '{$operationId}' has invalid content types: {$invalidTypes}.",
             );
         }
     }
@@ -298,8 +298,8 @@ class SwaggerSpecValidator
             $missedRequiredString = implode(',', Arr::pluck($missedRequiredParams, 'name'));
 
             throw new InvalidSwaggerSpecException(
-                "Path parameters cannot be optional. Set required=true for the "
-                . "'{$missedRequiredString}' parameters at operation '{$operationId}'."
+                'Path parameters cannot be optional. Set required=true for the '
+                . "'{$missedRequiredString}' parameters at operation '{$operationId}'.",
             );
         }
 
@@ -323,13 +323,13 @@ class SwaggerSpecValidator
 
         if ($bodyParamsCount > 1) {
             throw new InvalidSwaggerSpecException(
-                "Operation '{$operationId}' has {$bodyParamsCount} body parameters. Only one is allowed."
+                "Operation '{$operationId}' has {$bodyParamsCount} body parameters. Only one is allowed.",
             );
         }
 
         if ($bodyParamsCount && $formParamsCount) {
             throw new InvalidSwaggerSpecException(
-                "Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed."
+                "Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed.",
             );
         }
     }
@@ -502,7 +502,7 @@ class SwaggerSpecValidator
 
         if (empty($requiredConsume)) {
             throw new InvalidSwaggerSpecException(
-                "Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed."
+                "Operation '{$operationId}' has body and formData parameters. Only one or the other is allowed.",
             );
         }
     }

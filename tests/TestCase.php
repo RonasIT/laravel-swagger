@@ -5,15 +5,14 @@ namespace RonasIT\AutoDoc\Tests;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTest;
 use RonasIT\AutoDoc\AutoDocServiceProvider;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestController;
+use RonasIT\Support\Traits\TestingTrait;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
-use RonasIT\Support\Traits\TestingTrait;
 
 class TestCase extends BaseTest
 {
@@ -38,7 +37,7 @@ class TestCase extends BaseTest
     protected function getPackageProviders($app): array
     {
         return [
-            AutoDocServiceProvider::class
+            AutoDocServiceProvider::class,
         ];
     }
 
@@ -139,7 +138,7 @@ class TestCase extends BaseTest
 
                 $route = match ($controllerMethod) {
                     'whereIn' => $route->whereIn($condition['pathParam'], $condition['values']),
-                     default => $route->{$controllerMethod}($condition['pathParam']),
+                    default => $route->{$controllerMethod}($condition['pathParam']),
                 };
             }
 
@@ -155,7 +154,7 @@ class TestCase extends BaseTest
             data: [
                 'with' => ['users'],
             ],
-            headers:[
+            headers: [
                 'Content-type' => 'application/json',
             ],
             controllerMethod: $method,

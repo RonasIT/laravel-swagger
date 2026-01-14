@@ -10,7 +10,7 @@ class UnsupportedDocumentationViewerException extends Exception
     {
         parent::__construct(
             "The documentation viewer '{$invalidViewer}' does not exists."
-             . " Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values."
+             . " Please check that the 'documentation_viewer' key of your auto-doc.php config has one of valid values.",
         );
     }
 }

@@ -6,7 +6,7 @@ use Exception;
 
 class MissedProductionFilePathException extends Exception
 {
-    public function __construct($message = null, $code = 0, Exception $previous = null)
+    public function __construct($message = null, $code = 0, ?Exception $previous = null)
     {
         $message = $message ?? 'Production file path missed in config';
 

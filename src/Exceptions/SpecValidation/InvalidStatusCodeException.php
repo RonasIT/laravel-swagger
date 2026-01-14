@@ -8,7 +8,7 @@ class InvalidStatusCodeException extends InvalidSwaggerSpecException
     {
         parent::__construct(
             "Operation at '{$responseId}' should only have three-digit status codes, `default`, "
-            . "and vendor extensions (`x-*`) as properties."
+            . 'and vendor extensions (`x-*`) as properties.',
         );
     }
 }

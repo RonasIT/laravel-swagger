@@ -2,8 +2,8 @@
 
 namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
-use RonasIT\Support\Traits\MockTrait;
 use Illuminate\Support\Str;
+use RonasIT\Support\Traits\MockTrait;
 
 trait SwaggerServiceTestingTrait
 {

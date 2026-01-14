@@ -177,7 +177,7 @@ class SwaggerService
         }
 
         return [
-            $this->security => $this->generateSecurityDefinitionObject($this->security)
+            $this->security => $this->generateSecurityDefinitionObject($this->security),
         ];
     }
 
@@ -186,7 +186,7 @@ class SwaggerService
         return [
             'type' => $this->config['security_drivers'][$type]['type'],
             'name' => $this->config['security_drivers'][$type]['name'],
-            'in' => $this->config['security_drivers'][$type]['in']
+            'in' => $this->config['security_drivers'][$type]['in'],
         ];
     }
 
@@ -215,7 +215,7 @@ class SwaggerService
                 'parameters' => $this->getPathParams(),
                 'responses' => [],
                 'security' => [],
-                'description' => ''
+                'description' => '',
             ];
         }
 
@@ -250,8 +250,8 @@ class SwaggerService
                 'description' => $this->generatePathDescription($key),
                 'required' => true,
                 'schema' => [
-                    'type' => 'string'
-                ]
+                    'type' => 'string',
+                ],
             ];
         }
 
@@ -318,7 +318,7 @@ class SwaggerService
 
         $this->data['components']['schemas'][$definition] = [
             'type' => $schemaType,
-            'properties' => $schemaProperties
+            'properties' => $schemaProperties,
         ];
     }
 
@@ -394,7 +394,7 @@ class SwaggerService
             $this->saveExample(
                 $code,
                 json_encode($content, JSON_PRETTY_PRINT),
-                $produce
+                $produce,
             );
         }
 
@@ -559,7 +559,7 @@ class SwaggerService
     {
         $data = [
             'type' => 'object',
-            'properties' => []
+            'properties' => [],
         ];
 
         foreach ($rules as $parameter => $rule) {
@@ -602,7 +602,7 @@ class SwaggerService
     protected function saveParameterType(&$data, $parameter, $parameterType)
     {
         $data['properties'][$parameter] = [
-            'type' => $parameterType
+            'type' => $parameterType,
         ];
     }
 
@@ -611,7 +611,7 @@ class SwaggerService
         string $parameter,
         array $rulesArray,
         array $attributes,
-        array $annotations
+        array $annotations,
     ) {
         $description = Arr::get($annotations, $parameter);
 
@@ -662,7 +662,7 @@ class SwaggerService
 
         $parameters = $this->resolveClassMethodDependencies(
             app($class),
-            $method
+            $method,
         );
 
         return Arr::first($parameters, function ($key) {
@@ -721,7 +721,7 @@ class SwaggerService
 
         if (empty($security)) {
             $security[] = [
-                "{$this->security}" => []
+                "{$this->security}" => [],
             ];
         }
     }
@@ -962,10 +962,10 @@ class SwaggerService
         $values = [
             'object' => 'null',
             'boolean' => false,
-            'date' => "0000-00-00",
+            'date' => '0000-00-00',
             'integer' => 0,
             'string' => '',
-            'double' => 0
+            'double' => 0,
         ];
 
         return $values[$type];

@@ -8,6 +8,6 @@ class InvalidSwaggerSpecException extends Exception
 {
     public function __construct($message = '')
     {
-        parent::__construct('Validation failed. '. $message);
+        parent::__construct('Validation failed. ' . $message);
     }
 }

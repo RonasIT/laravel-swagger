@@ -25,7 +25,7 @@ class AutoDocServiceProvider extends ServiceProvider
         }
 
         $this->commands([
-            PushDocumentationCommand::class
+            PushDocumentationCommand::class,
         ]);
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'auto-doc');

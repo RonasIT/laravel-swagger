@@ -3,9 +3,9 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use RonasIT\AutoDoc\Drivers\LocalDriver;
+use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
 use RonasIT\AutoDoc\Exceptions\FileNotFoundException;
 use RonasIT\AutoDoc\Exceptions\MissedProductionFilePathException;
-use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
 use RonasIT\AutoDoc\Exceptions\NonJSONDocFileException;
 
 class LocalDriverTest extends TestCase

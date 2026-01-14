@@ -19,7 +19,7 @@ trait SwaggerServiceMockTrait
                 name: 'getProcessTmpData',
                 result: (empty($processTmpData))
                     ? $processTmpData
-                    : array_merge($processTmpData, ['paths' => [], 'components' => []])
+                    : array_merge($processTmpData, ['paths' => [], 'components' => []]),
             ),
             $this->functionCall(
                 name: 'saveProcessTmpData',
@@ -31,12 +31,12 @@ trait SwaggerServiceMockTrait
     protected function mockDriverGetPreparedAndSaveTmpData(
         $getTmpData,
         $saveTmpData,
-        $driverClass = LocalDriver::class
+        $driverClass = LocalDriver::class,
     ): void {
         $this->mockClass($driverClass, [
             $this->functionCall(
                 name: 'getProcessTmpData',
-                result: $getTmpData
+                result: $getTmpData,
             ),
             $this->functionCall('saveProcessTmpData', [$saveTmpData]),
         ]);
@@ -47,7 +47,7 @@ trait SwaggerServiceMockTrait
         $this->mockClass($driverClass, [
             $this->functionCall(
                 name: 'getProcessTmpData',
-                result: $tmpData
+                result: $tmpData,
             ),
         ]);
     }

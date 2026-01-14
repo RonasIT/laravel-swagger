@@ -10,7 +10,7 @@ class TestNotificationSetting extends Model
         'user_id',
         'is_email_enabled',
         'is_push_enabled',
-        'is_sms_enabled'
+        'is_sms_enabled',
     ];
 
     protected $hidden = ['pivot'];
@@ -18,6 +18,6 @@ class TestNotificationSetting extends Model
     protected $casts = [
         'is_email_enabled' => 'boolean',
         'is_push_enabled' => 'boolean',
-        'is_sms_enabled' => 'boolean'
+        'is_sms_enabled' => 'boolean',
     ];
 }
