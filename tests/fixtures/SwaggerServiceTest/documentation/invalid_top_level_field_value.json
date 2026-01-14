@@ -1,0 +1,19 @@
+{
+    "openapi": "3.1.0",
+    "host": "localhost",
+    "basePath": "\/",
+    "schemes": ["ftp"],
+    "paths": {},
+    "components": {
+        "schemas": {}
+    },
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Project Title",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    }
+}

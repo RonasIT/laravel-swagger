@@ -92,7 +92,7 @@ class SwaggerSpecValidator
         $this->doc = $doc;
 
         $this->validateVersion();
-        $this->validateFieldsPresent(self::REQUIRED_FIELDS['doc']);
+        $this->validateFieldsPresent($this->doc, self::REQUIRED_FIELDS['doc']);
         $this->validateInfo();
         $this->validateSchemes();
         $this->validatePaths();
@@ -113,12 +113,12 @@ class SwaggerSpecValidator
 
     protected function validateInfo(): void
     {
-        $this->validateFieldsPresent(self::REQUIRED_FIELDS['info'], 'info');
+        $this->validateFieldsPresent(Arr::get($this->doc, 'info', []), self::REQUIRED_FIELDS['info'], 'info');
     }
 
     protected function validateSchemes(): void
     {
-        $this->validateFieldValue('schemes', self::ALLOWED_VALUES['schemes']);
+        $this->validateFieldValue($this->doc, 'schemes', self::ALLOWED_VALUES['schemes']);
     }
 
     protected function validatePaths(): void
@@ -131,8 +131,9 @@ class SwaggerSpecValidator
             foreach ($operations as $pathKey => $operation) {
                 $operationId = "paths.{$path}.{$pathKey}";
 
-                $this->validateFieldsPresent(self::REQUIRED_FIELDS['operation'], $operationId);
-                $this->validateFieldValue("{$operationId}.schemes", self::ALLOWED_VALUES['schemes']);
+                $this->validateFieldsPresent($operation, self::REQUIRED_FIELDS['operation'], $operationId);
+
+                $this->validateFieldValue($operation, 'schemes', self::ALLOWED_VALUES['schemes'], $operationId);
 
                 $this->validateParameters($operation, $path, $operationId);
 
@@ -154,7 +155,7 @@ class SwaggerSpecValidator
         $definitions = Arr::get($this->doc, 'components.schemas', []);
 
         foreach ($definitions as $index => $definition) {
-            $this->validateFieldsPresent(self::REQUIRED_FIELDS['components'], "components.schemas.{$index}");
+            $this->validateFieldsPresent($definition, self::REQUIRED_FIELDS['components'], "components.schemas.{$index}");
         }
     }
 
@@ -165,11 +166,11 @@ class SwaggerSpecValidator
         foreach ($securityDefinitions as $index => $securityDefinition) {
             $parentId = "securityDefinitions.{$index}";
 
-            $this->validateFieldsPresent(self::REQUIRED_FIELDS['security_definition'], $parentId);
+            $this->validateFieldsPresent($securityDefinition, self::REQUIRED_FIELDS['security_definition'], $parentId);
 
-            $this->validateFieldValue("{$parentId}.type", self::ALLOWED_VALUES['security_definition_type']);
-            $this->validateFieldValue("{$parentId}.in", self::ALLOWED_VALUES['security_definition_in']);
-            $this->validateFieldValue("{$parentId}.flow", self::ALLOWED_VALUES['security_definition_flow']);
+            $this->validateFieldValue($securityDefinition, 'type', self::ALLOWED_VALUES['security_definition_type'], $parentId);
+            $this->validateFieldValue($securityDefinition, 'in', self::ALLOWED_VALUES['security_definition_in'], $parentId);
+            $this->validateFieldValue($securityDefinition, 'flow', self::ALLOWED_VALUES['security_definition_flow'], $parentId);
         }
     }
 
@@ -178,7 +179,7 @@ class SwaggerSpecValidator
         $tags = Arr::get($this->doc, 'tags', []);
 
         foreach ($tags as $index => $tag) {
-            $this->validateFieldsPresent(self::REQUIRED_FIELDS['tag'], "tags.{$index}");
+            $this->validateFieldsPresent($tag, self::REQUIRED_FIELDS['tag'], "tags.{$index}");
         }
 
         $this->validateTagsUnique();
@@ -188,7 +189,7 @@ class SwaggerSpecValidator
     {
         $responseId = "{$operationId}.responses.{$statusCode}";
 
-        $this->validateFieldsPresent(self::REQUIRED_FIELDS['response'], $responseId);
+        $this->validateFieldsPresent($response, self::REQUIRED_FIELDS['response'], $responseId);
 
         if (
             ($statusCode !== 'default')
@@ -222,13 +223,10 @@ class SwaggerSpecValidator
         foreach ($parameters as $index => $param) {
             $paramId = "{$operationId}.parameters.{$index}";
 
-            $this->validateFieldsPresent(self::REQUIRED_FIELDS['parameter'], $paramId);
+            $this->validateFieldsPresent($param, self::REQUIRED_FIELDS['parameter'], $paramId);
 
-            $this->validateFieldValue("{$paramId}.in", self::ALLOWED_VALUES['parameter_in']);
-            $this->validateFieldValue(
-                "{$paramId}.collectionFormat",
-                self::ALLOWED_VALUES['parameter_collection_format']
-            );
+            $this->validateFieldValue($param, 'in', self::ALLOWED_VALUES['parameter_in'], $paramId);
+            $this->validateFieldValue($param, 'collectionFormat', self::ALLOWED_VALUES['parameter_collection_format'], $paramId);
 
             $this->validateParameterType($param, $operation, $paramId, $operationId);
 
@@ -246,7 +244,7 @@ class SwaggerSpecValidator
     {
         $requestBody = Arr::get($operation, 'requestBody', []);
 
-        $this->validateFieldsPresent(self::REQUIRED_FIELDS['requestBody'], "{$operationId}.requestBody");
+        $this->validateFieldsPresent($requestBody, self::REQUIRED_FIELDS['requestBody'], "{$operationId}.requestBody");
 
         $this->validateRequestBodyContent($requestBody['content'], $operationId);
     }
@@ -356,7 +354,7 @@ class SwaggerSpecValidator
                 $validTypes = self::PRIMITIVE_TYPES;
         }
 
-        $this->validateFieldsPresent($requiredFields, $paramId);
+        $this->validateFieldsPresent($param, $requiredFields, $paramId);
 
         $schema = Arr::get($param, 'schema', $param);
         $this->validateType($schema, $validTypes, $paramId);
@@ -364,44 +362,56 @@ class SwaggerSpecValidator
 
     protected function validateHeader(array $header, string $headerId): void
     {
-        $this->validateFieldsPresent(self::REQUIRED_FIELDS['header'], $headerId);
+        $this->validateFieldsPresent($header, self::REQUIRED_FIELDS['header'], $headerId);
         $this->validateType($header, self::PRIMITIVE_TYPES, $headerId);
-        $this->validateFieldValue("{$headerId}.collectionFormat", self::ALLOWED_VALUES['header_collection_format']);
+        $this->validateFieldValue($header, 'collectionFormat', self::ALLOWED_VALUES['header_collection_format'], $headerId);
 
         if (!empty($header['items'])) {
-            $this->validateItems($header['items'], $headerId);
+            $this->validateItems($header['items'], "{$headerId}.items");
         }
     }
 
     protected function validateItems(array $items, string $itemsId): void
     {
-        $this->validateFieldsPresent(self::REQUIRED_FIELDS['item'], $itemsId);
+        $this->validateFieldsPresent($items, self::REQUIRED_FIELDS['item'], $itemsId);
         $this->validateType($items, self::PRIMITIVE_TYPES, $itemsId);
-        $this->validateFieldValue("{$itemsId}.collectionFormat", self::ALLOWED_VALUES['items_collection_format']);
+        $this->validateFieldValue($items, 'collectionFormat', self::ALLOWED_VALUES['items_collection_format'], $itemsId);
     }
 
-    protected function getMissingFields(array $requiredFields, array $doc, ?string $fieldName = null): array
+    protected function getMissingFields(array $requiredFields, array $doc, ?string $path = null): array
     {
-        return array_diff($requiredFields, array_keys(Arr::get($doc, $fieldName)));
+        if (!empty($path)) {
+            $segments = explode('/', str_replace('.', '/', $path));
+
+            foreach ($segments as $segment) {
+                $doc = Arr::get($doc, $segment, []);
+            }
+        }
+
+        return array_diff($requiredFields, array_keys($doc));
     }
 
-    protected function validateFieldsPresent(array $requiredFields, ?string $fieldName = null): void
+    protected function validateFieldsPresent(array $data, array $requiredFields, ?string $fieldName = null): void
     {
-        $missingDocFields = $this->getMissingFields($requiredFields, $this->doc, $fieldName);
+        $missing = array_diff($requiredFields, array_keys($data));
 
-        if (!empty($missingDocFields)) {
-            throw new MissingFieldException($missingDocFields, $fieldName);
+        if (!empty($missing)) {
+            throw new MissingFieldException($missing, $fieldName);
         }
     }
 
-    protected function validateFieldValue(string $fieldName, array $allowedValues): void
+    protected function validateFieldValue(array $data, string $field, array $allowedValues, ?string $path = null): void
     {
-        $inputValue = Arr::wrap(Arr::get($this->doc, $fieldName, []));
-        $approvedValues = array_intersect($inputValue, $allowedValues);
-        $invalidValues = array_diff($inputValue, $approvedValues);
+        if (!Arr::has($data, $field)) {
+            return;
+        }
+
+        $invalidValues = array_diff(Arr::wrap($data[$field]), $allowedValues);
 
         if (!empty($invalidValues)) {
-            throw new InvalidFieldValueException($fieldName, $allowedValues, $invalidValues);
+            $fullPath = (is_null($path)) ? $field : "{$path}.{$field}";
+
+            throw new InvalidFieldValueException($fullPath, $allowedValues, $invalidValues);
         }
     }
 
@@ -413,9 +423,11 @@ class SwaggerSpecValidator
                 $refFilename = Arr::first($refParts);
 
                 if (count($refParts) > 1) {
-                    $path = pathinfo(Arr::last($refParts));
-                    $refParentKey = $path['dirname'];
-                    $refKey = $path['filename'];
+                    $refPath = Arr::last($refParts);
+                    $segments = explode('/', $refPath);
+
+                    $refKey = array_pop($segments);
+                    $refParentKey = implode('/', $segments);
                 }
 
                 if (!empty($refFilename) && !file_exists($refFilename)) {
@@ -427,7 +439,7 @@ class SwaggerSpecValidator
                     !empty($refFilename)
                         ? json_decode(file_get_contents($refFilename), true)
                         : $this->doc,
-                    str_replace('/', '.', $refParentKey),
+                    $refParentKey,
                 );
 
                 if (!empty($missingRefs)) {
