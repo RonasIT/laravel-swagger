@@ -860,7 +860,7 @@ class SwaggerService
             callback: fn ($value, $key) => $key . '=' . (is_array($value) ? json_encode($value) : $value),
         );
 
-        return implode(PHP_EOL, $formattedTraceEntry);
+        return implode('<br />' . PHP_EOL, $formattedTraceEntry);
     }
 
     protected function camelCaseToUnderScore($input): string
