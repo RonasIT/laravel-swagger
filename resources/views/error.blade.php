@@ -10,4 +10,4 @@
 
 #### **Error place:**
 
-{{ $error_place }}
+{!! nl2br($error_place) !!}
