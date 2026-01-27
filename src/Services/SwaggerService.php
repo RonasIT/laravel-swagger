@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use ReflectionMethod;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
@@ -269,7 +270,7 @@ class SwaggerService
         $exploded = explode('|', $expression);
 
         foreach ($exploded as $value) {
-            if (!preg_match('/^[a-zA-Z0-9\.]+$/', $value)) {
+            if (!preg_match('/^[a-zA-Z0-9.]+$/', $value)) {
                 return "regexp: {$expression}";
             }
         }
@@ -399,13 +400,52 @@ class SwaggerService
         }
 
         $action = Str::ucfirst($this->getActionName($this->uri));
-        $definition = "{$this->method}{$action}{$code}ResponseObject";
+
+        $resource = $this->getControllerResource();
+
+        $definition = (!empty($resource))
+            ? Str::before($resource, 'Resource')
+            : "{$this->method}{$action}{$code}ResponseObject";
 
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
+    }
+
+    protected function getControllerResource()
+    {
+        list($controllerClass, $methodName) = explode('@', $this->request->route()->getActionName());
+
+        $method = new ReflectionMethod($controllerClass, $methodName);
+        $returnType = $method->getReturnType();
+
+        if ($returnType) {
+            return $returnType->getName();
+        }
+
+        $reflector = new ReflectionClass($controllerClass);
+        $fileName = $reflector->getFileName();
+
+        $lines = file($fileName);
+
+        if ($lines !== false) {
+            $start = $method->getStartLine() - 1;
+
+            $methodSlice = array_slice($lines, $start, $method->getEndLine() - $start);
+
+            $methodCode = implode('', $methodSlice);
+
+            return Str::match('/return\s+(.*)::make/', $methodCode);
+        }
+
+        return null;
+    }
+
+    protected function isResource(string $className): bool
+    {
+        return true;
     }
 
     protected function saveExample($code, $content, $produce)
@@ -796,7 +836,8 @@ class SwaggerService
 
     protected function getActionName($uri): string
     {
-        $action = preg_replace('[\/]', '', $uri);
+        // проще и быстрее — убрать слеши без использования регулярных выражений
+        $action = str_replace('/', '', $uri);
 
         return Str::camel($action);
     }
