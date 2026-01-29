@@ -991,7 +991,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testHandleResponseWithResource()
     {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('response_with_resource'));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
 
         $request = $this->generateRequest(
             type: 'get',
@@ -1006,7 +1006,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testHandleResponseWithResourceCollection()
     {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('response_with_resource_collection'));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_collection'));
 
         $request = $this->generateRequest(
             type: 'get',
@@ -1024,7 +1024,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testHandleResponseNotResource()
     {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('response_not_resource'));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_without_resource'));
 
         $request = $this->generateRequest(
             type: 'delete',
@@ -1037,7 +1037,7 @@ class SwaggerServiceTest extends TestCase
 
     public function testHandleResponseAliasToResource()
     {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('response_with_resource'));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
 
         $request = $this->generateRequest(
             type: 'get',
@@ -1054,7 +1054,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('closure_response_with_resource'));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_closure_response_with_resource'));
 
         $uri = '/closure';
 
