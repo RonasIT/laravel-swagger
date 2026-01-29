@@ -16,11 +16,6 @@ class User extends Model
         return UserFactory::new();
     }
 
-    public function getConnectionName(): string
-    {
-        return 'pgsql';
-    }
-
     protected $fillable = [
         'name',
         'email',
