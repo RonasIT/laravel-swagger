@@ -14,7 +14,7 @@ class UserFactory extends Factory
         return [
             'id' => 1,
             'name' => 'Michel Smith',
-            'email' => 'smith@exmaple.com',
+            'email' => 'smith@example.com',
             'created_at' => Carbon::parse('2020-01-01'),
             'updated_at' => Carbon::parse('2020-01-01'),
         ];

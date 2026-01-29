@@ -16,11 +16,15 @@ class GetResourceFromResponseAction
 {
     public function execute(Route $route): ?string
     {
-        if ($route->getActionName() === 'Closure') {
+        $actionName = $route->getActionName();
+
+        if ($actionName === 'Closure') {
             return $this->getFromClosure($route->getAction('uses'));
         }
 
-        list($controllerClass, $methodName) = explode('@', $route->getActionName());
+        list($controllerClass, $methodName) = (str_contains($actionName, '@'))
+            ? explode('@', $actionName)
+            : [$actionName, '__invoke'];
 
         try {
             $method = new ReflectionMethod($controllerClass, $methodName);
@@ -84,7 +88,7 @@ class GetResourceFromResponseAction
             callback: fn (string $line) => Str::startsWith($line, 'use') && Str::contains($line, $resourceName),
         );
 
-        return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport);
+        return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport ?? '');
     }
 
     protected function isResourceClass(string $className): bool
