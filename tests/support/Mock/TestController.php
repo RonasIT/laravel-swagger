@@ -15,9 +15,12 @@ class TestController
 
     public function users(TestRequest $request): UsersCollectionResource
     {
-        $user = User::factory()->create();
+        $users = collect([
+            User::factory()->create(),
+            User::factory()->create(),
+        ]);
 
-        return UsersCollectionResource::make(collect([$user]));
+        return UsersCollectionResource::make($users);
     }
 
     public function user(TestRequest $request)
