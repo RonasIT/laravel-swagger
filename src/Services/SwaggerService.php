@@ -270,7 +270,7 @@ class SwaggerService
         $exploded = explode('|', $expression);
 
         foreach ($exploded as $value) {
-            if (!preg_match('/^[a-zA-Z0-9.]+$/', $value)) {
+            if (!preg_match('/^[a-zA-Z0-9\.]+$/', $value)) {
                 return "regexp: {$expression}";
             }
         }
@@ -836,7 +836,6 @@ class SwaggerService
 
     protected function getActionName($uri): string
     {
-        // проще и быстрее — убрать слеши без использования регулярных выражений
         $action = str_replace('/', '', $uri);
 
         return Str::camel($action);
