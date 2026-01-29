@@ -4,6 +4,7 @@ namespace RonasIT\AutoDoc\Services;
 
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\ParallelTesting;
@@ -401,7 +402,7 @@ class SwaggerService
 
         $action = Str::ucfirst($this->getActionName($this->uri));
 
-        $resource = $this->getControllerResource();
+        $resource = $this->getControllerResourceName();
 
         $definition = (!empty($resource))
             ? Str::before($resource, 'Resource')
@@ -414,15 +415,15 @@ class SwaggerService
         }
     }
 
-    protected function getControllerResource()
+    protected function getControllerResourceName(): ?string
     {
         list($controllerClass, $methodName) = explode('@', $this->request->route()->getActionName());
 
         $method = new ReflectionMethod($controllerClass, $methodName);
-        $returnType = $method->getReturnType();
+        $returnType = $method->getReturnType()?->getName();
 
-        if ($returnType) {
-            return $returnType->getName();
+        if (is_string($returnType) && $this->isResource($returnType)) {
+            return Str::afterLast($returnType, '\\');
         }
 
         $reflector = new ReflectionClass($controllerClass);
@@ -437,7 +438,12 @@ class SwaggerService
 
             $methodCode = implode('', $methodSlice);
 
-            return Str::match('/return\s+(.*)::make/', $methodCode);
+            $resource = Str::match('/return\s+(.*)::make/', $methodCode);
+
+            $useLine = array_find($lines, fn ($line) => Str::match("/use\s+(.*){$resource}/", $line));
+            $className = Str::replace(['use', "as {$resource}", ' ', "\n", ';'], '', $useLine);
+
+            return ($this->isResource($className)) ? Str::afterLast($className, '\\') : null;
         }
 
         return null;
@@ -445,7 +451,7 @@ class SwaggerService
 
     protected function isResource(string $className): bool
     {
-        return true;
+        return is_subclass_of($className, JsonResource::class);
     }
 
     protected function saveExample($code, $content, $produce)

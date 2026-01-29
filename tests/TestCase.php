@@ -146,7 +146,7 @@ class TestCase extends BaseTest
         });
     }
 
-    protected function generateGetRolesRequest($method = 'test'): Request
+    protected function generateGetRolesRequest($method = 'test', $url = ''): Request
     {
         return $this->generateRequest(
             type: 'get',

@@ -6,15 +6,16 @@
     }
   ],
   "paths": {
-    "\/user": {
-      "get": {
+    "\/users": {
+      "delete": {
         "tags": [
-          "user"
+          "users"
         ],
         "consumes": [
+          "application\/x-www-form-urlencoded"
         ],
         "produces": [
-          "application\/json"
+          "text\/plain"
         ],
         "parameters": [
           {
@@ -44,19 +45,15 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Operation successfully done",
             "content": {
-              "application\/json": {
+              "text\/plain": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#\/components\/schemas\/User"
+                  "$ref": "#/components/schemas/deleteUsers204ResponseObject"
                 },
-                "example": {
-                  "id": 1,
-                  "name": "Michel Smith",
-                  "email": "smith@exmaple.com"
-                }
+                "example": "[]"
               }
             }
           }
@@ -70,19 +67,9 @@
   },
   "components": {
     "schemas": {
-      "User": {
+      "deleteUsers204ResponseObject": {
         "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          }
-        }
+        "properties": {}
       }
     }
   },

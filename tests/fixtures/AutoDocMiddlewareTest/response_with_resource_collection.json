@@ -6,10 +6,10 @@
     }
   ],
   "paths": {
-    "\/user": {
+    "\/users": {
       "get": {
         "tags": [
-          "user"
+          "users"
         ],
         "consumes": [
         ],
@@ -50,12 +50,23 @@
               "application\/json": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#\/components\/schemas\/User"
+                  "$ref": "#\/components\/schemas\/UsersCollection"
                 },
                 "example": {
-                  "id": 1,
-                  "name": "Michel Smith",
-                  "email": "smith@exmaple.com"
+                  "data": [
+                      {
+                        "id": 1,
+                        "name": "Michel Smith",
+                        "email": "smith@exmaple.com"
+                      },
+                      {
+                        "id": 1,
+                        "name": "Michel Smith",
+                        "email": "smith@exmaple.com"
+                      }
+                  ],
+                  "to": 2,
+                  "total": 2
                 }
               }
             }
@@ -70,17 +81,17 @@
   },
   "components": {
     "schemas": {
-      "User": {
+      "UsersCollection": {
         "type": "object",
         "properties": {
-          "id": {
+          "data": {
+            "type": "array"
+          },
+          "to": {
             "type": "integer"
           },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
+          "total": {
+            "type": "integer"
           }
         }
       }
