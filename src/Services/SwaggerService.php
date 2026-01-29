@@ -802,7 +802,7 @@ class SwaggerService
 
     protected function getActionName($uri): string
     {
-        $action = str_replace('/', '', $uri);
+        $action = preg_replace('[\/]', '', $uri);
 
         return Str::camel($action);
     }
