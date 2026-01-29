@@ -71,7 +71,9 @@ class GetResponseResourceNameAction
 
     protected function getResourceNameFromReturnString(string $methodCode): string
     {
-        return Str::match('/return\s+(.*)::make/', $methodCode);
+        preg_match('/(?:return\s+|=>\s*)([^\s(]+)::make/', $methodCode, $matches);
+
+        return $matches[1] ?? '';
     }
 
     protected function getClassNameFromImports(array $fileContent, string $resourceName): string

@@ -3,6 +3,7 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
@@ -1047,5 +1048,24 @@ class SwaggerServiceTest extends TestCase
         $resource = UserResource::make(User::factory()->make());
 
         app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
+    public function testAddDataClosureRequestWithResource()
+    {
+        config(['auto-doc.security' => 'jwt']);
+
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('closure_response_with_resource'));
+
+        $uri = '/closure';
+
+        $request = $this
+            ->getBaseRequest('get', $uri)
+            ->setRouteResolver(fn () => Route::get($uri)->setAction([
+                'uses' => fn () => UserResource::make(User::factory()->make()),
+            ]));
+
+        $response = UserResource::make(User::factory()->make())->toResponse($request);
+
+        app(SwaggerService::class)->addData($request, $response);
     }
 }

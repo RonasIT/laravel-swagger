@@ -1,0 +1,76 @@
+{
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http://localhost"
+    }
+  ],
+  "paths": {
+    "/closure": {
+      "get": {
+        "tags": [
+          "closure"
+        ],
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User",
+                  "type": "object"
+                },
+                "example": {
+                  "id": 1,
+                  "name": "Michel Smith",
+                  "email": "smith@exmaple.com"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": ""
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  },
+  "securityDefinitions": {
+    "jwt": {
+      "type": "apiKey",
+      "name": "authorization",
+      "in": "header"
+    }
+  }
+}
