@@ -5,6 +5,7 @@ namespace RonasIT\AutoDoc\Actions;
 use Closure;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionException;
 use ReflectionFunction;
@@ -78,7 +79,10 @@ class GetResponseResourceNameAction
 
     protected function getClassNameFromImports(array $fileContent, string $resourceName): string
     {
-        $resourceImport = array_find($fileContent, fn (string $line) => Str::match("/use\s+(.*){$resourceName}/", $line));
+        $resourceImport = Arr::first(
+            array: $fileContent,
+            callback: fn (string $line) => Str::startsWith($line, 'use') && Str::contains($line, $resourceName)
+        );
 
         return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport);
     }
