@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use RonasIT\AutoDoc\Actions\GetResponseResourceNameAction;
+use RonasIT\AutoDoc\Actions\GetResourceFromResponseAction;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
@@ -401,7 +401,7 @@ class SwaggerService
 
         $action = Str::ucfirst($this->getActionName($this->uri));
 
-        $resourceName = app(GetResponseResourceNameAction::class)->execute($this->request->route());
+        $resourceName = app(GetResourceFromResponseAction::class)->execute($this->request->route());
 
         $definition = (!empty($resourceName))
             ? Str::before($resourceName, 'Resource')

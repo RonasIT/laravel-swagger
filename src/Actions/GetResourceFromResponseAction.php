@@ -12,7 +12,7 @@ use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
 
-class GetResponseResourceNameAction
+class GetResourceFromResponseAction
 {
     public function execute(Route $route): ?string
     {
