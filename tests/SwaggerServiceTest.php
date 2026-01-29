@@ -1057,13 +1057,15 @@ class SwaggerServiceTest extends TestCase
 
         $uri = '/closure';
 
+        $user = User::factory()->make();
+
         $request = $this
             ->getBaseRequest('get', $uri)
             ->setRouteResolver(fn () => Route::get($uri)->setAction([
-                'uses' => fn () => UserResource::make(User::factory()->make()),
+                'uses' => fn () => UserResource::make($user),
             ]));
 
-        $response = UserResource::make(User::factory()->make())->toResponse($request);
+        $response = UserResource::make($user)->toResponse($request);
 
         app(SwaggerService::class)->addData($request, $response);
     }
