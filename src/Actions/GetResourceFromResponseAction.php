@@ -81,7 +81,7 @@ class GetResourceFromResponseAction
     {
         $resourceImport = Arr::first(
             array: $fileContent,
-            callback: fn (string $line) => Str::startsWith($line, 'use') && Str::contains($line, $resourceName)
+            callback: fn (string $line) => Str::startsWith($line, 'use') && Str::contains($line, $resourceName),
         );
 
         return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport);
