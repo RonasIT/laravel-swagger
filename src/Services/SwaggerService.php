@@ -4,14 +4,13 @@ namespace RonasIT\AutoDoc\Services;
 
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use ReflectionMethod;
+use RonasIT\AutoDoc\Actions\GetResponseResourceNameAction;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
@@ -402,10 +401,10 @@ class SwaggerService
 
         $action = Str::ucfirst($this->getActionName($this->uri));
 
-        $resource = $this->getControllerResourceName();
+        $resourceName = app(GetResponseResourceNameAction::class)->execute($this->request->route());
 
-        $definition = (!empty($resource))
-            ? Str::before($resource, 'Resource')
+        $definition = (!empty($resourceName))
+            ? Str::before($resourceName, 'Resource')
             : "{$this->method}{$action}{$code}ResponseObject";
 
         $this->saveResponseSchema($content, $definition);
@@ -413,45 +412,6 @@ class SwaggerService
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
-    }
-
-    protected function getControllerResourceName(): ?string
-    {
-        list($controllerClass, $methodName) = explode('@', $this->request->route()->getActionName());
-
-        $method = new ReflectionMethod($controllerClass, $methodName);
-        $returnType = $method->getReturnType()?->getName();
-
-        if (is_string($returnType) && $this->isResource($returnType)) {
-            return Str::afterLast($returnType, '\\');
-        }
-
-        $reflector = new ReflectionClass($controllerClass);
-        $fileName = $reflector->getFileName();
-
-        $lines = file($fileName);
-
-        if ($lines !== false) {
-            $start = $method->getStartLine() - 1;
-
-            $methodSlice = array_slice($lines, $start, $method->getEndLine() - $start);
-
-            $methodCode = implode('', $methodSlice);
-
-            $resource = Str::match('/return\s+(.*)::make/', $methodCode);
-
-            $useLine = array_find($lines, fn ($line) => Str::match("/use\s+(.*){$resource}/", $line));
-            $className = Str::replace(['use', "as {$resource}", ' ', "\n", ';'], '', $useLine);
-
-            return ($this->isResource($className)) ? Str::afterLast($className, '\\') : null;
-        }
-
-        return null;
-    }
-
-    protected function isResource(string $className): bool
-    {
-        return is_subclass_of($className, JsonResource::class);
     }
 
     protected function saveExample($code, $content, $produce)
