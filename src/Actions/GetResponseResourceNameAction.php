@@ -5,11 +5,11 @@ namespace RonasIT\AutoDoc\Actions;
 use Closure;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Str;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
-use Illuminate\Support\Str;
 
 class GetResponseResourceNameAction
 {

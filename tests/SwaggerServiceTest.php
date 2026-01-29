@@ -11,7 +11,6 @@ use RonasIT\AutoDoc\Exceptions\LegacyConfigException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware;
 use RonasIT\AutoDoc\Services\SwaggerService;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;

@@ -9,7 +9,7 @@ use RonasIT\Support\Traits\ModelTrait;
 
 class User extends Model
 {
-    use ModelTrait, HasFactory;
+    use HasFactory, ModelTrait;
 
     protected static function newFactory(): Factory
     {
