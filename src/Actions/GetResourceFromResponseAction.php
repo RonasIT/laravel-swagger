@@ -74,7 +74,7 @@ class GetResourceFromResponseAction
 
     protected function getResourceNameFromReturnString(string $methodCode): string
     {
-        preg_match('/(?:return\s+|=>\s*)([^\s(]+)::make/', $methodCode, $matches);
+        preg_match('/(?:return\s+|=>\s+)([^\s(]+)::make/', $methodCode, $matches);
 
         return $matches[1] ?? '';
     }
