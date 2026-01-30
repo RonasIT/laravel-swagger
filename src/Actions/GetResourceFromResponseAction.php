@@ -22,9 +22,7 @@ class GetResourceFromResponseAction
             return $this->getFromClosure($route->getAction('uses'));
         }
 
-        list($controllerClass, $methodName) = (str_contains($actionName, '@'))
-            ? explode('@', $actionName)
-            : [$actionName, '__invoke'];
+        list($controllerClass, $methodName) = explode('@', $actionName);
 
         try {
             $method = new ReflectionMethod($controllerClass, $methodName);
@@ -85,7 +83,7 @@ class GetResourceFromResponseAction
     {
         $resourceImport = Arr::first(
             array: $fileContent,
-            callback: fn (string $line) => Str::startsWith($line, 'use') && Str::contains($line, $resourceName),
+            callback: fn (string $line) => (Str::startsWith($line, 'use') && Str::contains($line, $resourceName)),
         );
 
         return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport ?? '');
