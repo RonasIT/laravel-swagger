@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use RonasIT\AutoDoc\Actions\GetResourceFromResponseAction;
+use ReflectionException;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
@@ -21,6 +21,9 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\AutoDoc\Extractors\ClosureExtractor;
+use RonasIT\AutoDoc\Extractors\MethodExtractor;
+use RonasIT\AutoDoc\Extractors\RouteExtractor;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
@@ -401,7 +404,7 @@ class SwaggerService
 
         $action = Str::ucfirst($this->getActionName($this->uri));
 
-        $resourceName = app(GetResourceFromResponseAction::class)->execute($this->request->route());
+        $resourceName = $this->getResourceName();
 
         $definition = (!empty($resourceName))
             ? Str::replace('Resource', '', $resourceName)
@@ -412,6 +415,23 @@ class SwaggerService
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
+    }
+
+    protected function getResourceName(): ?string
+    {
+        $routeExtractor = new RouteExtractor($this->request->route());
+
+        if ($routeExtractor->usesClosure()) {
+            return (new ClosureExtractor($routeExtractor->getClosure()))->getResource();
+        }
+
+        try {
+            $methodExtractor = new MethodExtractor($routeExtractor->getControllerClass(), $routeExtractor->getMethodName());
+        } catch (ReflectionException) {
+            return null;
+        }
+
+        return $methodExtractor->getResource();
     }
 
     protected function saveExample($code, $content, $produce)
@@ -651,16 +671,14 @@ class SwaggerService
 
     public function getConcreteRequest()
     {
-        $controller = $this->request->route()->getActionName();
+        $routeExtractor = new RouteExtractor($this->request->route());
 
-        if ($controller === 'Closure') {
+        if ($routeExtractor->usesClosure()) {
             return null;
         }
 
-        $explodedController = explode('@', $controller);
-
-        $class = $explodedController[0];
-        $method = Arr::get($explodedController, 1, '__invoke');
+        $class = $routeExtractor->getControllerClass();
+        $method = $routeExtractor->getMethodName();
 
         if (!method_exists($class, $method)) {
             return null;

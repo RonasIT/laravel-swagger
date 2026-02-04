@@ -19,7 +19,7 @@ class MethodExtractor extends Extractor
         $returnType = $this->reflectionFunction->getReturnType()?->getName();
 
         if (is_null($returnType)) {
-            return $this->getFromCode();
+            return $this->getResourceFromCode();
         }
 
         return ($this->isResourceClass($returnType))
@@ -27,7 +27,7 @@ class MethodExtractor extends Extractor
             : null;
     }
 
-    protected function getFromCode(): ?string
+    protected function getResourceFromCode(): ?string
     {
         $code = $this->getFunctionCode();
 
