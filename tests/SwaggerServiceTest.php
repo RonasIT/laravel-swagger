@@ -1083,7 +1083,7 @@ class SwaggerServiceTest extends TestCase
         $request = $this
             ->getBaseRequest('get', $uri)
             ->setRouteResolver(fn () => Route::get($uri)->setAction([
-                'uses' => fn () => RonasIT\AutoDoc\Tests\Support\Resources\UserResource::make($user),
+                'uses' => fn () => \RonasIT\AutoDoc\Tests\Support\Resources\UserResource::make($user),
             ]));
 
         $response = UserResource::make($user)->toResponse($request);
