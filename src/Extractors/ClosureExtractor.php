@@ -7,15 +7,17 @@ use ReflectionFunction;
 
 class ClosureExtractor extends BaseExtractor
 {
-    public function __construct(Closure $closure)
-    {
-        $this->reflectionFunction = new ReflectionFunction($closure);
+    public function __construct(
+        protected Closure $closure,
+    ) {
     }
 
     public function getResource(): ?string
     {
-        $code = $this->getFunctionCode();
+        $code = $this->getFunctionCode(new ReflectionFunction($this->closure));
 
-        return $this->getResourceNameFromCode($code);
+        $resource = $this->getResourceNameFromCode($code);
+
+        return (!empty($resource)) ? $this->extractClassName($resource) : null;
     }
 }

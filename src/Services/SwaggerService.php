@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use ReflectionException;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
@@ -425,11 +424,10 @@ class SwaggerService
             return (new ClosureExtractor($routeExtractor->getClosure()))->getResource();
         }
 
-        try {
-            $methodExtractor = new MethodExtractor($routeExtractor->getControllerClass(), $routeExtractor->getMethodName());
-        } catch (ReflectionException) {
-            return null;
-        }
+        $methodExtractor = new MethodExtractor(
+            class: $routeExtractor->getControllerClass(),
+            method: $routeExtractor->getMethodName(),
+        );
 
         return $methodExtractor->getResource();
     }

@@ -5,31 +5,37 @@ namespace RonasIT\AutoDoc\Extractors;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use ReflectionException;
 use ReflectionMethod;
 
 class MethodExtractor extends BaseExtractor
 {
-    public function __construct(string $class, string $method)
-    {
-        $this->reflectionFunction = ReflectionMethod::createFromMethodName("{$class}::{$method}");
+    public function __construct(
+        protected string $class,
+        protected string $method,
+    ) {
     }
 
     public function getResource(): ?string
     {
-        $returnType = $this->reflectionFunction->getReturnType()?->getName();
-
-        if (is_null($returnType)) {
-            return $this->getResourceFromCode();
+        try {
+            $reflectionMethod = ReflectionMethod::createFromMethodName("{$this->class}::{$this->method}");
+        } catch (ReflectionException) {
+            return null;
         }
 
-        return ($this->isResourceClass($returnType))
-            ? $this->extractClassName($returnType)
-            : null;
+        $returnType = $reflectionMethod->getReturnType()?->getName();
+
+        if (is_null($returnType)) {
+            return $this->getResourceFromCode($reflectionMethod);
+        }
+
+        return ($this->isResourceClass($returnType)) ? $this->extractClassName($returnType) : null;
     }
 
-    protected function getResourceFromCode(): ?string
+    protected function getResourceFromCode(ReflectionMethod $reflectionMethod): ?string
     {
-        $code = $this->getFunctionCode();
+        $code = $this->getFunctionCode($reflectionMethod);
 
         $resourceName = $this->getResourceNameFromCode($code);
 
@@ -37,11 +43,9 @@ class MethodExtractor extends BaseExtractor
             return null;
         }
 
-        $className = $this->getClassNameFromImports($resourceName);
+        $className = $this->getClassNameFromImports($reflectionMethod, $resourceName);
 
-        return ($this->isResourceClass($className))
-            ? $this->extractClassName($className)
-            : null;
+        return ($this->isResourceClass($className)) ? $this->extractClassName($className) : null;
     }
 
     protected function isResourceClass(string $className): bool
@@ -49,10 +53,10 @@ class MethodExtractor extends BaseExtractor
         return is_subclass_of($className, JsonResource::class);
     }
 
-    protected function getClassNameFromImports(string $resourceName): string
+    protected function getClassNameFromImports(ReflectionMethod $reflectionMethod, string $resourceName): string
     {
         $resourceImport = Arr::first(
-            array: $this->getFileContent(),
+            array: $this->getFileContent($reflectionMethod),
             callback: fn (string $line) => (Str::startsWith($line, 'use') && Str::contains($line, $resourceName)),
             default: '',
         );

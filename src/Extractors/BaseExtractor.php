@@ -7,17 +7,15 @@ use ReflectionFunctionAbstract;
 
 abstract class BaseExtractor
 {
-    protected ReflectionFunctionAbstract $reflectionFunction;
-
     private array $fileContent;
 
-    protected function getFunctionCode(): string
+    protected function getFunctionCode(ReflectionFunctionAbstract $reflectionFunction): string
     {
-        $fileContent = $this->getFileContent();
+        $fileContent = $this->getFileContent($reflectionFunction);
 
-        $startLineIndex = $this->reflectionFunction->getStartLine() - 1;
+        $startLineIndex = $reflectionFunction->getStartLine() - 1;
 
-        $methodSlice = array_slice($fileContent, $startLineIndex, $this->reflectionFunction->getEndLine() - $startLineIndex);
+        $methodSlice = array_slice($fileContent, $startLineIndex, $reflectionFunction->getEndLine() - $startLineIndex);
 
         return implode('', $methodSlice);
     }
@@ -29,10 +27,10 @@ abstract class BaseExtractor
         return $matches[1] ?? null;
     }
 
-    protected function getFileContent(): array
+    protected function getFileContent(ReflectionFunctionAbstract $reflectionFunction): array
     {
         if (!isset($this->fileContent)) {
-            $this->fileContent = file($this->reflectionFunction->getFileName());
+            $this->fileContent = file($reflectionFunction->getFileName());
         }
 
         return $this->fileContent;

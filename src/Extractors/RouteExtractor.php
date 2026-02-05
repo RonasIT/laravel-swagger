@@ -7,16 +7,16 @@ use Illuminate\Routing\Route;
 
 class RouteExtractor extends BaseExtractor
 {
-    protected ?string $controllerClass = null;
-    protected ?string $methodName = null;
+    protected ?string $controllerClass;
+    protected ?string $methodName;
 
     public function __construct(
         protected Route $route,
     ) {
         $actionParts = explode('@', $this->route->getActionName());
 
-         $this->controllerClass = $actionParts[0] ?? null;
-         $this->methodName = $actionParts[1] ?? null;
+        $this->controllerClass = $actionParts[0] ?? null;
+        $this->methodName = $actionParts[1] ?? null;
     }
 
     public function getControllerClass(): ?string

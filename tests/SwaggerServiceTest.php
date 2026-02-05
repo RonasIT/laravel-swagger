@@ -1069,4 +1069,25 @@ class SwaggerServiceTest extends TestCase
 
         app(SwaggerService::class)->addData($request, $response);
     }
+
+    public function testAddDataClosureRequestWithResourceWithNameSpace()
+    {
+        config(['auto-doc.security' => 'jwt']);
+
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_closure_response_with_resource'));
+
+        $uri = '/closure';
+
+        $user = User::factory()->make();
+
+        $request = $this
+            ->getBaseRequest('get', $uri)
+            ->setRouteResolver(fn () => Route::get($uri)->setAction([
+                'uses' => fn () => RonasIT\AutoDoc\Tests\Support\Resources\UserResource::make($user),
+            ]));
+
+        $response = UserResource::make($user)->toResponse($request);
+
+        app(SwaggerService::class)->addData($request, $response);
+    }
 }
