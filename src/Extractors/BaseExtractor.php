@@ -5,11 +5,10 @@ namespace RonasIT\AutoDoc\Extractors;
 use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
 
-abstract class Extractor
+abstract class BaseExtractor
 {
     protected ReflectionFunctionAbstract $reflectionFunction;
 
-    private const string RESOURCE_RETURN_PATTERN = '/(?:return\s+|=>\s+)([^\s(]+)::make/';
     private array $fileContent;
 
     protected function getFunctionCode(): string
@@ -25,7 +24,7 @@ abstract class Extractor
 
     protected function getResourceNameFromCode(string $methodCode): ?string
     {
-        preg_match(self::RESOURCE_RETURN_PATTERN, $methodCode, $matches);
+        preg_match('/(?:return\s+|=>\s+)([^\s(]+)::make/', $methodCode, $matches);
 
         return $matches[1] ?? null;
     }

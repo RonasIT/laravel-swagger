@@ -5,7 +5,7 @@ namespace RonasIT\AutoDoc\Extractors;
 use Closure;
 use ReflectionFunction;
 
-class ClosureExtractor extends Extractor
+class ClosureExtractor extends BaseExtractor
 {
     public function __construct(Closure $closure)
     {

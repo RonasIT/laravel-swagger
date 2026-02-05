@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionMethod;
 
-class MethodExtractor extends Extractor
+class MethodExtractor extends BaseExtractor
 {
     public function __construct(string $class, string $method)
     {

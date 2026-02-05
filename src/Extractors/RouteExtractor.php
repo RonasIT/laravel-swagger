@@ -5,7 +5,7 @@ namespace RonasIT\AutoDoc\Extractors;
 use Closure;
 use Illuminate\Routing\Route;
 
-class RouteExtractor extends Extractor
+class RouteExtractor extends BaseExtractor
 {
     protected ?string $controllerClass = null;
     protected ?string $methodName = null;
@@ -13,9 +13,10 @@ class RouteExtractor extends Extractor
     public function __construct(
         protected Route $route,
     ) {
-        if (!$this->usesClosure()) {
-            list($this->controllerClass, $this->methodName) = explode('@', $this->route->getActionName());
-        }
+        $actionParts = explode('@', $this->route->getActionName());
+
+         $this->controllerClass = $actionParts[0] ?? null;
+         $this->methodName = $actionParts[1] ?? null;
     }
 
     public function getControllerClass(): ?string
