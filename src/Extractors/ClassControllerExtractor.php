@@ -64,5 +64,4 @@ class ClassControllerExtractor extends BaseControllerExtractor
 
         return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport);
     }
-
 }
