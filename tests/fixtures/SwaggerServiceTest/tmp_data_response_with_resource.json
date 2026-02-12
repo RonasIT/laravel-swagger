@@ -1,0 +1,105 @@
+{
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
+  "paths": {
+    "\/user": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "consumes": [
+        ],
+        "produces": [
+          "application\/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "description": "string, required",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "user_id",
+            "description": "integer, with_to_array_rule_string_name",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_email_enabled",
+            "description": "test_rule_without_to_string",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successfully done",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/User"
+                },
+                "example": {
+                  "id": 1,
+                  "name": "Michel Smith",
+                  "email": "smith@example.com"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "deprecated": false,
+        "summary": "test"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  },
+  "securityDefinitions": {
+    "laravel": {
+      "type": "apiKey",
+      "name": "Cookie",
+      "in": "header"
+    }
+  }
+}

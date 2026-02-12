@@ -20,6 +20,9 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\AutoDoc\Extractors\ClassControllerExtractor;
+use RonasIT\AutoDoc\Extractors\ClosureControllerExtractor;
+use RonasIT\AutoDoc\Extractors\RouteExtractor;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
@@ -399,13 +402,34 @@ class SwaggerService
         }
 
         $action = Str::ucfirst($this->getActionName($this->uri));
-        $definition = "{$this->method}{$action}{$code}ResponseObject";
+
+        $resourceName = $this->getResourceName();
+
+        $definition = (!empty($resourceName))
+            ? Str::replaceLast('Resource', '', $resourceName)
+            : "{$this->method}{$action}{$code}ResponseObject";
 
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
+    }
+
+    protected function getResourceName(): ?string
+    {
+        $routeExtractor = new RouteExtractor($this->request->route());
+
+        if ($routeExtractor->usesClosure()) {
+            return (new ClosureControllerExtractor($routeExtractor->getClosure()))->getResource();
+        }
+
+        $methodExtractor = new ClassControllerExtractor(
+            class: $routeExtractor->getControllerClass(),
+            method: $routeExtractor->getMethodName(),
+        );
+
+        return $methodExtractor->getResource();
     }
 
     protected function saveExample($code, $content, $produce)
@@ -645,16 +669,14 @@ class SwaggerService
 
     public function getConcreteRequest()
     {
-        $controller = $this->request->route()->getActionName();
+        $routeExtractor = new RouteExtractor($this->request->route());
 
-        if ($controller === 'Closure') {
+        if ($routeExtractor->usesClosure()) {
             return null;
         }
 
-        $explodedController = explode('@', $controller);
-
-        $class = $explodedController[0];
-        $method = Arr::get($explodedController, 1, '__invoke');
+        $class = $routeExtractor->getControllerClass();
+        $method = $routeExtractor->getMethodName();
 
         if (!method_exists($class, $method)) {
             return null;
