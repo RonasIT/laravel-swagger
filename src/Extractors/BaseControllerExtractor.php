@@ -5,9 +5,18 @@ namespace RonasIT\AutoDoc\Extractors;
 use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
 
-abstract class BaseExtractor
+abstract class BaseControllerExtractor
 {
+    protected ?string $resource;
+
     private array $fileContent;
+
+    abstract protected function setResource(): ?string;
+
+    public function __construct()
+    {
+        $this->resource = $this->setResource();
+    }
 
     protected function getFunctionCode(ReflectionFunctionAbstract $reflectionFunction): string
     {
@@ -18,6 +27,11 @@ abstract class BaseExtractor
         $methodSlice = array_slice($fileContent, $startLineIndex, $reflectionFunction->getEndLine() - $startLineIndex);
 
         return implode('', $methodSlice);
+    }
+
+    public function getResource(): ?string
+    {
+        return $this->resource;
     }
 
     protected function getResourceNameFromCode(string $methodCode): ?string

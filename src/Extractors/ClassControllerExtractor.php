@@ -8,15 +8,16 @@ use Illuminate\Support\Str;
 use ReflectionException;
 use ReflectionMethod;
 
-class MethodExtractor extends BaseExtractor
+class ClassControllerExtractor extends BaseControllerExtractor
 {
     public function __construct(
         protected string $class,
         protected string $method,
     ) {
+        parent::__construct();
     }
 
-    public function getResource(): ?string
+    protected function setResource(): ?string
     {
         try {
             $reflectionMethod = ReflectionMethod::createFromMethodName("{$this->class}::{$this->method}");
@@ -63,4 +64,5 @@ class MethodExtractor extends BaseExtractor
 
         return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport);
     }
+
 }

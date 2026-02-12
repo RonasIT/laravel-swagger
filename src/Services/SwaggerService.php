@@ -20,8 +20,8 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\AutoDoc\Extractors\ClosureExtractor;
-use RonasIT\AutoDoc\Extractors\MethodExtractor;
+use RonasIT\AutoDoc\Extractors\ClosureControllerExtractor;
+use RonasIT\AutoDoc\Extractors\ClassControllerExtractor;
 use RonasIT\AutoDoc\Extractors\RouteExtractor;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
@@ -421,10 +421,10 @@ class SwaggerService
         $routeExtractor = new RouteExtractor($this->request->route());
 
         if ($routeExtractor->usesClosure()) {
-            return (new ClosureExtractor($routeExtractor->getClosure()))->getResource();
+            return (new ClosureControllerExtractor($routeExtractor->getClosure()))->getResource();
         }
 
-        $methodExtractor = new MethodExtractor(
+        $methodExtractor = new ClassControllerExtractor(
             class: $routeExtractor->getControllerClass(),
             method: $routeExtractor->getMethodName(),
         );

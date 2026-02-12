@@ -5,7 +5,7 @@ namespace RonasIT\AutoDoc\Extractors;
 use Closure;
 use Illuminate\Routing\Route;
 
-class RouteExtractor extends BaseExtractor
+class RouteExtractor
 {
     protected ?string $controllerClass;
     protected ?string $methodName;
