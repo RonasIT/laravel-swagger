@@ -2,20 +2,33 @@
 
 namespace RonasIT\AutoDoc\Extractors;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
 
 abstract class BaseControllerExtractor
 {
-    protected ?string $resource;
+    public readonly ?string $resource;
 
     private array $fileContent;
 
-    abstract protected function setResource(): ?string;
-
     public function __construct()
     {
-        $this->resource = $this->setResource();
+        $class = $this->getResourceClass();
+
+        $this->resource = (!empty($class) && $this->isResourceClass($class)) ? $this->extractClassName($class) : null;
+    }
+
+    abstract protected function getResourceClass(): ?string;
+
+    protected function isResourceClass(string $className): bool
+    {
+        return is_subclass_of($className, JsonResource::class);
+    }
+
+    protected function extractClassName(string $namespace): string
+    {
+        return Str::afterLast($namespace, '\\');
     }
 
     protected function getFunctionCode(ReflectionFunctionAbstract $reflectionFunction): string
@@ -27,11 +40,6 @@ abstract class BaseControllerExtractor
         $methodSlice = array_slice($fileContent, $startLineIndex, $reflectionFunction->getEndLine() - $startLineIndex);
 
         return implode('', $methodSlice);
-    }
-
-    public function getResource(): ?string
-    {
-        return $this->resource;
     }
 
     protected function getResourceNameFromCode(string $methodCode): ?string
@@ -48,10 +56,5 @@ abstract class BaseControllerExtractor
         }
 
         return $this->fileContent;
-    }
-
-    protected function extractClassName(string $namespace): string
-    {
-        return Str::afterLast($namespace, '\\');
     }
 }

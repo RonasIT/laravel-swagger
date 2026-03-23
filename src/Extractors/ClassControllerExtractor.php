@@ -2,7 +2,6 @@
 
 namespace RonasIT\AutoDoc\Extractors;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionException;
@@ -17,7 +16,7 @@ class ClassControllerExtractor extends BaseControllerExtractor
         parent::__construct();
     }
 
-    protected function setResource(): ?string
+    protected function getResourceClass(): ?string
     {
         try {
             $reflectionMethod = ReflectionMethod::createFromMethodName("{$this->class}::{$this->method}");
@@ -25,13 +24,9 @@ class ClassControllerExtractor extends BaseControllerExtractor
             return null;
         }
 
-        $returnType = $reflectionMethod->getReturnType()?->getName();
+        $resourceClass = $reflectionMethod->getReturnType()?->getName();
 
-        if (is_null($returnType)) {
-            return $this->getResourceFromCode($reflectionMethod);
-        }
-
-        return ($this->isResourceClass($returnType)) ? $this->extractClassName($returnType) : null;
+        return (is_null($resourceClass)) ? $this->getResourceFromCode($reflectionMethod) : $resourceClass;
     }
 
     protected function getResourceFromCode(ReflectionMethod $reflectionMethod): ?string
@@ -40,18 +35,7 @@ class ClassControllerExtractor extends BaseControllerExtractor
 
         $resourceName = $this->getResourceNameFromCode($code);
 
-        if (empty($resourceName)) {
-            return null;
-        }
-
-        $className = $this->getClassNameFromImports($reflectionMethod, $resourceName);
-
-        return ($this->isResourceClass($className)) ? $this->extractClassName($className) : null;
-    }
-
-    protected function isResourceClass(string $className): bool
-    {
-        return is_subclass_of($className, JsonResource::class);
+        return (empty($resourceName)) ? null : $this->getClassNameFromImports($reflectionMethod, $resourceName);
     }
 
     protected function getClassNameFromImports(ReflectionMethod $reflectionMethod, string $resourceName): string

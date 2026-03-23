@@ -13,12 +13,15 @@ class ClosureControllerExtractor extends BaseControllerExtractor
         parent::__construct();
     }
 
-    public function setResource(): ?string
+    protected function getResourceClass(): ?string
     {
         $code = $this->getFunctionCode(new ReflectionFunction($this->closure));
 
-        $resource = $this->getResourceNameFromCode($code);
+        return $this->getResourceNameFromCode($code);
+    }
 
-        return (!empty($resource)) ? $this->extractClassName($resource) : null;
+    protected function isResourceClass(string $className): bool
+    {
+        return true;
     }
 }

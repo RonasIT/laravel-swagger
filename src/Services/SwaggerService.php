@@ -420,16 +420,11 @@ class SwaggerService
     {
         $routeExtractor = new RouteExtractor($this->request->route());
 
-        if ($routeExtractor->usesClosure()) {
-            return (new ClosureControllerExtractor($routeExtractor->getClosure()))->getResource();
-        }
+        $extractor = ($routeExtractor->usesClosure)
+            ? new ClosureControllerExtractor($routeExtractor->getClosure())
+            : new ClassControllerExtractor($routeExtractor->controllerClass, $routeExtractor->methodName);
 
-        $methodExtractor = new ClassControllerExtractor(
-            class: $routeExtractor->getControllerClass(),
-            method: $routeExtractor->getMethodName(),
-        );
-
-        return $methodExtractor->getResource();
+        return $extractor->resource;
     }
 
     protected function saveExample($code, $content, $produce)
@@ -671,20 +666,13 @@ class SwaggerService
     {
         $routeExtractor = new RouteExtractor($this->request->route());
 
-        if ($routeExtractor->usesClosure()) {
-            return null;
-        }
-
-        $class = $routeExtractor->getControllerClass();
-        $method = $routeExtractor->getMethodName();
-
-        if (!method_exists($class, $method)) {
+        if ($routeExtractor->usesClosure || !method_exists($routeExtractor->controllerClass, $routeExtractor->methodName)) {
             return null;
         }
 
         $parameters = $this->resolveClassMethodDependencies(
-            app($class),
-            $method,
+            app($routeExtractor->controllerClass),
+            $routeExtractor->methodName,
         );
 
         return Arr::first($parameters, function ($key) {
