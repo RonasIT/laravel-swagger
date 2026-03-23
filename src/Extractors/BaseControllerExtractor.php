@@ -11,8 +11,6 @@ abstract class BaseControllerExtractor
 {
     public readonly ?string $resource;
 
-    private array $fileContent;
-
     public function __construct()
     {
         $class = $this->getResourceClass();
