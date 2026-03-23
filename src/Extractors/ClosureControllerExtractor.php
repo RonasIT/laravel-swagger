@@ -15,13 +15,6 @@ class ClosureControllerExtractor extends BaseControllerExtractor
 
     protected function getResourceClass(): ?string
     {
-        $code = $this->getFunctionCode(new ReflectionFunction($this->closure));
-
-        return $this->getResourceNameFromCode($code);
-    }
-
-    protected function isResourceClass(string $className): bool
-    {
-        return true;
+        return $this->getResourceFromCode(new ReflectionFunction($this->closure));
     }
 }

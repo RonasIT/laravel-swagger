@@ -3,6 +3,7 @@
 namespace RonasIT\AutoDoc\Extractors;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
 
@@ -42,11 +43,21 @@ abstract class BaseControllerExtractor
         return implode('', $methodSlice);
     }
 
-    protected function getResourceNameFromCode(string $methodCode): ?string
+    protected function getResourceFromCode(ReflectionFunctionAbstract $reflectionMethod): ?string
     {
-        preg_match('/(?:return\s+|=>\s+)([^\s(]+)::make/', $methodCode, $matches);
+        $code = $this->getFunctionCode($reflectionMethod);
 
-        return $matches[1] ?? null;
+        preg_match('/(?:return\s+|=>\s+)([^\s(]+)::make/', $code, $matches);
+
+        $resourceName = $matches[1] ?? null;
+
+        if (empty($resourceName)) {
+            return null;
+        }
+
+        return (class_exists($resourceName))
+            ? $resourceName
+            : $this->getClassNameFromImports($reflectionMethod, $resourceName);
     }
 
     protected function getFileContent(ReflectionFunctionAbstract $reflectionFunction): array
@@ -56,5 +67,16 @@ abstract class BaseControllerExtractor
         }
 
         return $this->fileContent;
+    }
+
+    protected function getClassNameFromImports(ReflectionFunctionAbstract $reflectionMethod, string $resourceName): string
+    {
+        $resourceImport = Arr::first(
+            array: $this->getFileContent($reflectionMethod),
+            callback: fn (string $line) => (Str::startsWith($line, 'use') && Str::contains($line, $resourceName)),
+            default: '',
+        );
+
+        return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport);
     }
 }
