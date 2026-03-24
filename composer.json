@@ -15,7 +15,7 @@
     }
   ],
   "require": {
-    "php": "^8.3",
+    "php": "^8.4.1",
     "laravel/framework": ">=11.44.1",
     "phpunit/phpunit": ">=11.4",
     "ext-json": "*"
