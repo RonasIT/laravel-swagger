@@ -405,9 +405,9 @@ class SwaggerService
 
         $resourceName = $this->getResourceName();
 
-        $definition = (!empty($resourceName))
-            ? Str::replaceLast('Resource', '', $resourceName)
-            : "{$this->method}{$action}{$code}ResponseObject";
+        $definition = (empty($resourceName))
+            ? "{$this->method}{$action}{$code}ResponseObject"
+            : Str::beforeLast($resourceName, 'Resource');
 
         $this->saveResponseSchema($content, $definition);
 
