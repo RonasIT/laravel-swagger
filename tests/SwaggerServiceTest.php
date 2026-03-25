@@ -3,6 +3,7 @@
 namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\InvalidDriverClassException;
@@ -14,6 +15,9 @@ use RonasIT\AutoDoc\Services\SwaggerService;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestContract;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
+use RonasIT\AutoDoc\Tests\Support\Models\User;
+use RonasIT\AutoDoc\Tests\Support\Resources\UserResource;
+use RonasIT\AutoDoc\Tests\Support\Resources\UsersCollectionResource;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceTestingTrait;
 use stdClass;
@@ -980,6 +984,109 @@ class SwaggerServiceTest extends TestCase
         $response = $this->generateResponse('example_success_user_response.json', 200, [
             'Content-type' => 'application/json',
         ]);
+
+        app(SwaggerService::class)->addData($request, $response);
+    }
+
+    public function testHandleResponseWithResource()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/user',
+            controllerMethod: 'user',
+        );
+
+        $resource = UserResource::make(User::factory()->make());
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
+    public function testHandleResponseWithResourceCollection()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_collection'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/users',
+            controllerMethod: 'users',
+        );
+
+        $resource = UsersCollectionResource::make(collect([
+            User::factory()->make(),
+            User::factory()->make(),
+        ]));
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
+    public function testHandleResponseNotResource()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_without_resource'));
+
+        $request = $this->generateRequest(
+            type: 'delete',
+            uri: '/users',
+            controllerMethod: 'deleteProfile',
+        );
+
+        app(SwaggerService::class)->addData($request, response()->noContent());
+    }
+
+    public function testHandleResponseAliasToResource()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/user',
+            controllerMethod: 'userAliasResource',
+        );
+
+        $resource = UserResource::make(User::factory()->make());
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
+    public function testAddDataClosureRequestWithResource()
+    {
+        config(['auto-doc.security' => 'jwt']);
+
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_closure_response_with_resource'));
+
+        $uri = '/closure';
+
+        $user = User::factory()->make();
+
+        $request = $this
+            ->getBaseRequest('get', $uri)
+            ->setRouteResolver(fn () => Route::get($uri)->setAction([
+                'uses' => fn () => UserResource::make($user),
+            ]));
+
+        $response = UserResource::make($user)->toResponse($request);
+
+        app(SwaggerService::class)->addData($request, $response);
+    }
+
+    public function testAddDataClosureRequestWithResourceWithNameSpace()
+    {
+        config(['auto-doc.security' => 'jwt']);
+
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_closure_response_with_resource'));
+
+        $uri = '/closure';
+
+        $user = User::factory()->make();
+
+        $request = $this
+            ->getBaseRequest('get', $uri)
+            ->setRouteResolver(fn () => Route::get($uri)->setAction([
+                'uses' => fn () => \RonasIT\AutoDoc\Tests\Support\Resources\UserResource::make($user),
+            ]));
+
+        $response = UserResource::make($user)->toResponse($request);
 
         app(SwaggerService::class)->addData($request, $response);
     }

@@ -20,6 +20,9 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
+use RonasIT\AutoDoc\Extractors\ClassControllerExtractor;
+use RonasIT\AutoDoc\Extractors\ClosureControllerExtractor;
+use RonasIT\AutoDoc\Extractors\RouteExtractor;
 use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
@@ -399,13 +402,29 @@ class SwaggerService
         }
 
         $action = Str::ucfirst($this->getActionName($this->uri));
-        $definition = "{$this->method}{$action}{$code}ResponseObject";
+
+        $resourceName = $this->getResourceName();
+
+        $definition = (empty($resourceName))
+            ? "{$this->method}{$action}{$code}ResponseObject"
+            : Str::beforeLast($resourceName, 'Resource');
 
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
+    }
+
+    protected function getResourceName(): ?string
+    {
+        $routeExtractor = new RouteExtractor($this->request->route());
+
+        $extractor = ($routeExtractor->usesClosure)
+            ? new ClosureControllerExtractor($routeExtractor->getClosure())
+            : new ClassControllerExtractor($routeExtractor->controllerClass, $routeExtractor->methodName);
+
+        return $extractor->resource;
     }
 
     protected function saveExample($code, $content, $produce)
@@ -645,24 +664,15 @@ class SwaggerService
 
     public function getConcreteRequest()
     {
-        $controller = $this->request->route()->getActionName();
+        $routeExtractor = new RouteExtractor($this->request->route());
 
-        if ($controller === 'Closure') {
-            return null;
-        }
-
-        $explodedController = explode('@', $controller);
-
-        $class = $explodedController[0];
-        $method = Arr::get($explodedController, 1, '__invoke');
-
-        if (!method_exists($class, $method)) {
+        if ($routeExtractor->usesClosure || !method_exists($routeExtractor->controllerClass, $routeExtractor->methodName)) {
             return null;
         }
 
         $parameters = $this->resolveClassMethodDependencies(
-            app($class),
-            $method,
+            app($routeExtractor->controllerClass),
+            $routeExtractor->methodName,
         );
 
         return Arr::first($parameters, function ($key) {
