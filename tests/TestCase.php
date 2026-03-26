@@ -123,13 +123,12 @@ class TestCase extends BaseTest
     protected function generateRequest(
         string $type,
         string $uri,
-        array  $data = [],
-        array  $pathParams = [],
-        array  $headers = [],
-        array  $routeConditions = [],
+        array $data = [],
+        array $pathParams = [],
+        array $headers = [],
+        array $routeConditions = [],
         string $controllerMethod = 'test',
-    ): Request
-    {
+    ): Request {
         $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
 
         return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions) {
