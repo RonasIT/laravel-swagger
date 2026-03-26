@@ -23,9 +23,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Install Laravel version
-        run: composer require "laravel/framework:${{ matrix.laravel-version }}" -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer require "laravel/framework:${{ matrix.laravel-version }}" --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Install other dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Format code style via Pint
         run: vendor/bin/pint --test
       - name: Execute unit tests via PHPUnit with coverage
