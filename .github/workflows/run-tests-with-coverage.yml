@@ -20,6 +20,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           coverage: xdebug
           tools: composer
+          ini-values: zend.exception_ignore_args=0
       - name: Checkout
         uses: actions/checkout@v4
       - name: Show PHP ini value
