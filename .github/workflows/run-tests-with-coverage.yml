@@ -29,7 +29,7 @@ jobs:
       - name: Format code style via Pint
         run: vendor/bin/pint --test
       - name: Execute unit tests via PHPUnit with coverage
-        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+        run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml
       - name: Export coverage report
         if: ${{ matrix.php-version == '8.4' && matrix.laravel-version == '13.*' }}
         uses: actions/upload-artifact@v4
