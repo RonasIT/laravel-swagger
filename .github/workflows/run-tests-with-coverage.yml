@@ -22,6 +22,8 @@ jobs:
           tools: composer
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Show PHP ini value
+        run: php -r "var_dump(ini_get('zend.exception_ignore_args'));"
       - name: Install Laravel version
         run: composer require "laravel/framework:${{ matrix.laravel-version }}" --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Install other dependencies
