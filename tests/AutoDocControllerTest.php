@@ -194,7 +194,7 @@ class AutoDocControllerTest extends TestCase
 
         $this->assertEquals($response->getContent(), file_get_contents(resource_path('/assets/swagger/swagger-ui.js')));
 
-        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+        $response->assertHeader('Content-Type', 'text/html; charset=utf-8');
     }
 
     public function testGetElementsAssetFile()
@@ -210,7 +210,7 @@ class AutoDocControllerTest extends TestCase
             actual: file_get_contents(resource_path('/assets/elements/web-components.min.js')),
         );
 
-        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+        $response->assertHeader('Content-Type', 'text/html; charset=utf-8');
     }
 
     public function testGetFileNotExists()

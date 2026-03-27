@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         php-version: [ "8.3", "8.4" ]
-        laravel-version: [ "12.*", "13.*" ]
+        laravel-version: [ "11.*", "12.*", "13.*" ]
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -27,8 +27,6 @@ jobs:
         run: php -r "var_dump(ini_get('zend.exception_ignore_args'));"
       - name: Install Laravel version
         run: composer require "laravel/framework:${{ matrix.laravel-version }}" --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-      - name: Install other dependencies
-        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Format code style via Pint
         run: vendor/bin/pint --test
       - name: Execute unit tests via PHPUnit with coverage
