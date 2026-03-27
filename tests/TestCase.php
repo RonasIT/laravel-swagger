@@ -24,10 +24,7 @@ class TestCase extends BaseTest
     {
         parent::setUp();
 
-        config([
-            'auto-doc.info.contact.email' => 'your@mail.com',
-            'commonmark.renderer.soft_break' => "<br />\n",
-        ]);
+        config(['auto-doc.info.contact.email' => 'your@mail.com']);
     }
 
     public function tearDown(): void
