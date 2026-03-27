@@ -17,6 +17,8 @@ jobs:
         exclude:
           - php-version: "8.3"
             phpunit-version: "13.*"
+          - laravel-version: "11.*"
+            phpunit-version: "13.*"
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
