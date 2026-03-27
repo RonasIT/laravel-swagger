@@ -20,17 +20,14 @@ jobs:
           php-version: ${{ matrix.php-version }}
           coverage: xdebug
           tools: composer
-          ini-values: zend.exception_ignore_args=0
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Show PHP ini value
-        run: php -r "var_dump(ini_get('zend.exception_ignore_args'));"
       - name: Install Laravel version
         run: composer require "laravel/framework:${{ matrix.laravel-version }}" --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Format code style via Pint
         run: vendor/bin/pint --test
       - name: Execute unit tests via PHPUnit with coverage
-        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+        run: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit --coverage-clover build/logs/clover.xml
       - name: Export coverage report
         if: ${{ matrix.php-version == '8.4' && matrix.laravel-version == '13.*' }}
         uses: actions/upload-artifact@v4
