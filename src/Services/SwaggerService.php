@@ -20,10 +20,7 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\AutoDoc\Extractors\ClassControllerExtractor;
-use RonasIT\AutoDoc\Extractors\ClosureControllerExtractor;
-use RonasIT\AutoDoc\Extractors\RouteExtractor;
-use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
+use RonasIT\AutoDoc\Extractors\RequestExtractor;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -33,8 +30,6 @@ use Throwable;
  */
 class SwaggerService
 {
-    use GetDependenciesTrait;
-
     public const string OPEN_API_VERSION = '3.1.0';
 
     protected $driver;
@@ -45,10 +40,8 @@ class SwaggerService
     protected $container;
     private $uri;
     private $method;
-    /**
-     * @var Request
-     */
-    private $request;
+
+    private RequestExtractor $requestExtractor;
     private $item;
     private $security;
 
@@ -195,7 +188,7 @@ class SwaggerService
 
     public function addData(Request $request, $response)
     {
-        $this->request = $request;
+        $this->requestExtractor = new RequestExtractor($request);
 
         $this->prepareItem();
 
@@ -208,7 +201,7 @@ class SwaggerService
     protected function prepareItem()
     {
         $this->uri = "/{$this->getUri()}";
-        $this->method = strtolower($this->request->getMethod());
+        $this->method = strtolower($this->requestExtractor->request->getMethod());
 
         if (empty(Arr::get($this->data, "paths.{$this->uri}.{$this->method}"))) {
             $this->data['paths'][$this->uri][$this->method] = [
@@ -227,7 +220,7 @@ class SwaggerService
 
     protected function getUri()
     {
-        $uri = $this->request->route()->uri();
+        $uri = $this->requestExtractor->request->route()->uri();
         $basePath = preg_replace("/^\//", '', $this->config['basePath']);
         $preparedUri = preg_replace("/^{$basePath}/", '', $uri);
 
@@ -263,7 +256,7 @@ class SwaggerService
 
     protected function generatePathDescription(string $key): string
     {
-        $expression = Arr::get($this->request->route()->wheres, $key);
+        $expression = Arr::get($this->requestExtractor->request->route()->wheres, $key);
 
         if (empty($expression)) {
             return '';
@@ -286,7 +279,7 @@ class SwaggerService
         $this->saveTags();
         $this->saveSecurity();
 
-        $concreteRequest = $this->getConcreteRequest();
+        $concreteRequest = $this->requestExtractor->requestClassName;
 
         if (empty($concreteRequest)) {
             $this->item['description'] = '';
@@ -403,10 +396,8 @@ class SwaggerService
 
         $action = Str::ucfirst($this->getActionName($this->uri));
 
-        $resourceName = $this->getResourceName();
-
-        $definition = (!empty($resourceName))
-            ? Str::replaceLast('Resource', '', $resourceName)
+        $definition = (!empty($this->requestExtractor->resource))
+            ? Str::replaceLast('Resource', '', $this->requestExtractor->resource)
             : "{$this->method}{$action}{$code}ResponseObject";
 
         $this->saveResponseSchema($content, $definition);
@@ -414,17 +405,6 @@ class SwaggerService
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
-    }
-
-    protected function getResourceName(): ?string
-    {
-        $routeExtractor = new RouteExtractor($this->request->route());
-
-        $extractor = ($routeExtractor->usesClosure)
-            ? new ClosureControllerExtractor($routeExtractor->getClosure())
-            : new ClassControllerExtractor($routeExtractor->controllerClass, $routeExtractor->methodName);
-
-        return $extractor->resource;
     }
 
     protected function saveExample($code, $content, $produce)
@@ -468,8 +448,8 @@ class SwaggerService
     protected function saveParameters($request, array $annotations)
     {
         $formRequest = new $request();
-        $formRequest->setUserResolver($this->request->getUserResolver());
-        $formRequest->setRouteResolver($this->request->getRouteResolver());
+        $formRequest->setUserResolver($this->requestExtractor->request->getUserResolver());
+        $formRequest->setRouteResolver($this->requestExtractor->request->getRouteResolver());
         $rules = method_exists($formRequest, 'rules') ? $this->prepareRules($formRequest->rules()) : [];
         $attributes = method_exists($formRequest, 'attributes') ? $formRequest->attributes() : [];
 
@@ -555,7 +535,7 @@ class SwaggerService
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
-                $type = $this->request->header('Content-Type', 'application/json');
+                $type = $this->requestExtractor->request->header('Content-Type', 'application/json');
 
                 $this->item['requestBody'] = [
                     'content' => [
@@ -643,7 +623,7 @@ class SwaggerService
 
     protected function requestHasMoreProperties($actionName): bool
     {
-        $requestParametersCount = count($this->request->all());
+        $requestParametersCount = count($this->requestExtractor->request->all());
 
         $properties = Arr::get($this->data, "components.schemas.{$actionName}Object.properties", []);
         $objectParametersCount = count($properties);
@@ -662,28 +642,10 @@ class SwaggerService
         return empty($bodyParamExisted);
     }
 
-    public function getConcreteRequest()
-    {
-        $routeExtractor = new RouteExtractor($this->request->route());
-
-        if ($routeExtractor->usesClosure || !method_exists($routeExtractor->controllerClass, $routeExtractor->methodName)) {
-            return null;
-        }
-
-        $parameters = $this->resolveClassMethodDependencies(
-            app($routeExtractor->controllerClass),
-            $routeExtractor->methodName,
-        );
-
-        return Arr::first($parameters, function ($key) {
-            return preg_match('/Request/', $key);
-        });
-    }
-
     public function saveConsume()
     {
         $consumeList = $this->data['paths'][$this->uri][$this->method]['consumes'];
-        $consume = $this->request->header('Content-Type');
+        $consume = $this->requestExtractor->request->header('Content-Type');
 
         if (!empty($consume) && !in_array($consume, $consumeList)) {
             $this->item['consumes'][] = $consume;
@@ -752,22 +714,15 @@ class SwaggerService
         $security = Arr::get($this->config, 'security');
         $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
 
-        switch (Arr::get($securityDriver, 'in')) {
-            case 'header':
-                // TODO Change this logic after migration on Swagger 3.0
-                // Swagger 2.0 does not support cookie authorization.
-                $securityToken = $this->request->hasHeader($securityDriver['name'])
-                    ? $this->request->header($securityDriver['name'])
-                    : $this->request->cookie($securityDriver['name']);
-
-                break;
-            case 'query':
-                $securityToken = $this->request->query($securityDriver['name']);
-
-                break;
-            default:
-                $securityToken = null;
-        }
+        $securityToken = match (Arr::get($securityDriver, 'in')) {
+            // TODO Change this logic after migration on Swagger 3.0
+            // Swagger 2.0 does not support cookie authorization.
+            'header' => $this->requestExtractor->request->hasHeader($securityDriver['name'])
+                    ? $this->requestExtractor->request->header($securityDriver['name'])
+                    : $this->requestExtractor->request->cookie($securityDriver['name']),
+            'query' => $this->requestExtractor->request->query($securityDriver['name']),
+            default => null,
+        };
 
         return !empty($securityToken);
     }
@@ -787,7 +742,7 @@ class SwaggerService
     {
         $defaultDescription = Response::$statusTexts[$code];
 
-        $request = $this->getConcreteRequest();
+        $request = $this->requestExtractor->requestClassName;
 
         if (empty($request)) {
             return $defaultDescription;
@@ -887,7 +842,7 @@ class SwaggerService
 
     protected function generateExample($properties): array
     {
-        $parameters = $this->replaceObjectValues($this->request->all());
+        $parameters = $this->replaceObjectValues($this->requestExtractor->request->all());
         $example = [];
 
         $this->replaceNullValues($parameters, $properties, $example);

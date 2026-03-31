@@ -32,17 +32,6 @@ abstract class BaseControllerExtractor
         return Str::afterLast($namespace, '\\');
     }
 
-    protected function getFunctionCode(ReflectionFunctionAbstract $reflectionFunction): string
-    {
-        $fileContent = $this->getFileContent($reflectionFunction);
-
-        $startLineIndex = $reflectionFunction->getStartLine() - 1;
-
-        $methodSlice = array_slice($fileContent, $startLineIndex, $reflectionFunction->getEndLine() - $startLineIndex);
-
-        return implode('', $methodSlice);
-    }
-
     protected function getResourceFromCode(ReflectionFunctionAbstract $reflectionMethod): ?string
     {
         $code = $this->getFunctionCode($reflectionMethod);
@@ -60,13 +49,15 @@ abstract class BaseControllerExtractor
             : $this->getClassNameFromImports($reflectionMethod, $resourceName);
     }
 
-    protected function getFileContent(ReflectionFunctionAbstract $reflectionFunction): array
+    protected function getFunctionCode(ReflectionFunctionAbstract $reflectionFunction): string
     {
-        if (!isset($this->fileContent)) {
-            $this->fileContent = file($reflectionFunction->getFileName());
-        }
+        $fileContent = $this->getFileContent($reflectionFunction);
 
-        return $this->fileContent;
+        $startLineIndex = $reflectionFunction->getStartLine() - 1;
+
+        $methodSlice = array_slice($fileContent, $startLineIndex, $reflectionFunction->getEndLine() - $startLineIndex);
+
+        return implode('', $methodSlice);
     }
 
     protected function getClassNameFromImports(ReflectionFunctionAbstract $reflectionMethod, string $resourceName): string
@@ -78,5 +69,14 @@ abstract class BaseControllerExtractor
         );
 
         return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport);
+    }
+
+    protected function getFileContent(ReflectionFunctionAbstract $reflectionFunction): array
+    {
+        if (!isset($this->fileContent)) {
+            $this->fileContent = file($reflectionFunction->getFileName());
+        }
+
+        return $this->fileContent;
     }
 }
