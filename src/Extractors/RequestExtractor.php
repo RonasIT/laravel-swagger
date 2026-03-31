@@ -26,7 +26,7 @@ readonly class RequestExtractor
         $this->controllerMethod = $this->routeExtractor->methodName;
         $this->usesClosure = $this->routeExtractor->usesClosure;
         $this->resource = $this->getResourceName();
-        $this->requestClassName = $this->hasRequestClass() ? $this->getRequestClassName() : null;
+        $this->requestClassName = $this->usesRequestClass() ? $this->getRequestClassName() : null;
     }
 
     protected function getResourceName(): ?string
@@ -38,7 +38,7 @@ readonly class RequestExtractor
         return $extractor->resource;
     }
 
-    protected function getRequestClassName(): ?string
+    protected function getRequestClassName(): string
     {
         $controller = app($this->controllerClass);
 
@@ -47,7 +47,7 @@ readonly class RequestExtractor
         return Arr::first($parameters, fn ($key) => preg_match('/Request/', $key));
     }
 
-    protected function hasRequestClass(): bool
+    protected function usesRequestClass(): bool
     {
         return !$this->usesClosure
             && method_exists($this->controllerClass, $this->controllerMethod);
