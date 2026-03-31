@@ -396,9 +396,9 @@ class SwaggerService
 
         $action = Str::ucfirst($this->getActionName($this->uri));
 
-        $definition = (!empty($this->requestExtractor->resource))
-            ? Str::replaceLast('Resource', '', $this->requestExtractor->resource)
-            : "{$this->method}{$action}{$code}ResponseObject";
+        $definition = (empty($this->requestExtractor->resource))
+            ? "{$this->method}{$action}{$code}ResponseObject"
+            : Str::replaceLast('Resource', '', $this->requestExtractor->resource);
 
         $this->saveResponseSchema($content, $definition);
 
