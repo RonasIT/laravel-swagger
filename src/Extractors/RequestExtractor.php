@@ -38,7 +38,7 @@ readonly class RequestExtractor
         return $extractor->resource;
     }
 
-    protected function getRequestClassName(): string
+    protected function getRequestClassName(): ?string
     {
         $controller = app($this->controllerClass);
 
