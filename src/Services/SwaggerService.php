@@ -901,6 +901,62 @@ class SwaggerService
         return $documentation;
     }
 
+    public function getCollapsedDocFileContent(): array
+    {
+        return $this->collapseArrayQueryParams($this->getDocFileContent());
+    }
+
+    protected function collapseArrayQueryParams(array $documentation): array
+    {
+        $relationArrayParamNames = RelationQueryParam::arrayParamNames();
+
+        foreach ($documentation['paths'] ?? [] as $path => $pathItem) {
+            foreach ($pathItem as $method => $operation) {
+                if (!isset($operation['parameters'])) {
+                    continue;
+                }
+
+                $collapsed = [];
+                $seen = [];
+
+                foreach ($operation['parameters'] as $param) {
+                    $name = $param['name'];
+
+                    if (!in_array($name, $relationArrayParamNames)) {
+                        $collapsed[] = $param;
+
+                        continue;
+                    }
+
+                    if (!isset($seen[$name])) {
+                        $seen[$name] = count($collapsed);
+                        $collapsed[] = $param;
+                    } else {
+                        $index = $seen[$name];
+
+                        if (isset($param['example'])) {
+                            $collapsed[$index]['schema']['enum'][] = $param['example'];
+                        }
+                    }
+                }
+
+                foreach ($seen as $name => $index) {
+                    if (isset($collapsed[$index]['schema']['enum'])) {
+                        array_unshift(
+                            $collapsed[$index]['schema']['enum'],
+                            $collapsed[$index]['example'],
+                        );
+                        unset($collapsed[$index]['example']);
+                    }
+                }
+
+                $documentation['paths'][$path][$method]['parameters'] = array_values($collapsed);
+            }
+        }
+
+        return $documentation;
+    }
+
     protected function getErrorPlace(Throwable $exception): string
     {
         $firstTraceEntry = Arr::first($exception->getTrace());

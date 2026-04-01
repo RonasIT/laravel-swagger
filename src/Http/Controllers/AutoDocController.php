@@ -25,6 +25,13 @@ class AutoDocController extends BaseController
         return response()->json($documentation);
     }
 
+    public function documentationForViewer()
+    {
+        $documentation = $this->service->getCollapsedDocFileContent();
+
+        return response()->json($documentation);
+    }
+
     public function index()
     {
         $currentEnvironment = config('app.env');

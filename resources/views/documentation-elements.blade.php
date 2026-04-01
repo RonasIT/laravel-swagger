@@ -12,7 +12,7 @@
 
 <body>
     <elements-api
-        apiDescriptionUrl="{{ config('auto-doc.global_prefix') }}/auto-doc/documentation"
+        apiDescriptionUrl="{{ config('auto-doc.global_prefix') }}/auto-doc/documentation-ui"
         tryItCredentialsPolicy="include"
         router="hash"
         layout="sidebar"

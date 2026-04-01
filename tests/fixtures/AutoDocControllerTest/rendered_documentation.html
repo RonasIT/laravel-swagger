@@ -40,7 +40,7 @@
 
     window.onload = () => {
         const ui = SwaggerUIBundle({
-            url: `${prefix}/auto-doc/documentation`,
+            url: `${prefix}/auto-doc/documentation-ui`,
             dom_id: '#swagger-ui',
             deepLinking: true,
             defaultModelRendering: 'model',

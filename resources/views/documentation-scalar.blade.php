@@ -9,7 +9,7 @@
 <body>
 <script
         id="api-reference"
-        data-url="{{ config('auto-doc.global_prefix') }}/auto-doc/documentation"
+        data-url="{{ config('auto-doc.global_prefix') }}/auto-doc/documentation-ui"
         data-proxy-url="https://proxy.scalar.com"></script>
 
 <script src="{{ config('auto-doc.global_prefix') }}/auto-doc/scalar-min.js"></script>
