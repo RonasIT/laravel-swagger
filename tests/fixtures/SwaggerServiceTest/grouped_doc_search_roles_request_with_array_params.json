@@ -38,7 +38,8 @@
                                 "team.logo",
                                 "team.logo.preview"
                             ]
-                        }
+                        },
+                        "example": "team.sport"
                     },
                     {
                         "in": "query",
