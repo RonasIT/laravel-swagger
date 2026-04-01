@@ -488,15 +488,15 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
-    public function testGetCollapsedDocFileContentWithArrayParams()
+    public function testGetGroupedDocFileContentWithArrayParams()
     {
         $this->mockDriverGetDocumentation(
             $this->getJsonFixture('tmp_data_search_roles_request_with_array_params'),
         );
 
-        $content = app(SwaggerService::class)->getCollapsedDocFileContent();
+        $content = app(SwaggerService::class)->getGroupedDocFileContent();
 
-        $this->assertEqualsJsonFixture('collapsed_doc_search_roles_request_with_array_params', $content);
+        $this->assertEqualsJsonFixture('grouped_doc_search_roles_request_with_array_params', $content);
     }
 
     public static function addDataWithSecurity(): array
