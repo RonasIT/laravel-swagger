@@ -1,0 +1,138 @@
+{
+    "openapi": "3.1.0",
+    "servers": [
+        {
+            "url": "http://localhost"
+        }
+    ],
+    "paths": {
+        "/users/roles": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "string, required",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "with[]",
+                        "description": "string, in:team.sport,team.logo,team.logo.preview",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "team.sport"
+                    },
+                    {
+                        "in": "query",
+                        "name": "with[]",
+                        "description": "string, in:team.sport,team.logo,team.logo.preview",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "team.logo"
+                    },
+                    {
+                        "in": "query",
+                        "name": "with[]",
+                        "description": "string, in:team.sport,team.logo,team.logo.preview",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "team.logo.preview"
+                    },
+                    {
+                        "in": "query",
+                        "name": "with_count[]",
+                        "description": "string, in:team",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "team"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operation successfully done",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getUsersroles200ResponseObject",
+                                    "type": "object"
+                                },
+                                "example": [
+                                    {
+                                        "id": 1,
+                                        "name": "admin",
+                                        "users": [
+                                            {
+                                                "id": 1,
+                                                "name": "admin"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": 2,
+                                        "name": "client",
+                                        "users": [
+                                            {
+                                                "id": 2,
+                                                "name": "first_client"
+                                            },
+                                            {
+                                                "id": 3,
+                                                "name": "second_client"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "description": "",
+                "summary": "test with array params",
+                "deprecated": false
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "getUsersroles200ResponseObject": {
+                "type": "array",
+                "properties": {
+                    "items": {
+                        "allOf": [
+                            {
+                                "type": "array"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "info": {
+        "description": "This is automatically collected documentation",
+        "version": "0.0.0",
+        "title": "Name of Your Application",
+        "termsOfService": "",
+        "contact": {
+            "email": "your@email.com"
+        }
+    }
+}

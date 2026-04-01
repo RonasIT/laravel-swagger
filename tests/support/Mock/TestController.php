@@ -20,6 +20,10 @@ class TestController
     {
     }
 
+    public function testRequestWithArrayParams(TestRequestWithArrayParams $request)
+    {
+    }
+
     public function __invoke(TestEmptyRequest $request)
     {
     }
