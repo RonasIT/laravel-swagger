@@ -49,7 +49,16 @@
                 SwaggerUIStandalonePreset
             ],
             plugins: [
-                SwaggerUIBundle.plugins.DownloadUrl
+                SwaggerUIBundle.plugins.DownloadUrl,
+                (system) => ({
+                    wrapComponents: {
+                        InfoUrl: () => () => system.React.createElement(
+                            'a',
+                            { href: `${prefix}/auto-doc/documentation`, target: '_blank' },
+                            `${prefix}/auto-doc/documentation`
+                        )
+                    }
+                })
             ],
             layout: 'StandaloneLayout'
         })
