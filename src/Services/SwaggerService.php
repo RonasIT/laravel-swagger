@@ -901,56 +901,30 @@ class SwaggerService
         return $documentation;
     }
 
-    public function getCollapsedDocFileContent(): array
+    public function getGroupedDocFileContent(): array
     {
-        return $this->collapseArrayQueryParams($this->getDocFileContent());
-    }
+        $documentation = $this->getDocFileContent();
 
-    protected function collapseArrayQueryParams(array $documentation): array
-    {
-        $relationArrayParamNames = RelationQueryParam::arrayParamNames();
+        $arrayParamNames = RelationQueryParam::arrayParamNames();
 
-        foreach ($documentation['paths'] ?? [] as $path => $pathItem) {
+        foreach ($documentation['paths'] as $path => $pathItem) {
             foreach ($pathItem as $method => $operation) {
-                if (!isset($operation['parameters'])) {
-                    continue;
+                if (Arr::has($operation, 'parameters')) {
+                    $documentation['paths'][$path][$method]['parameters'] = collect($operation['parameters'])
+                        ->groupBy('name')
+                        ->map(function ($params, $name) use ($arrayParamNames) {
+                            if ($params->count() === 1 || !in_array($name, $arrayParamNames)) {
+                                return $params->first();
+                            }
+
+                            $base = $params->first();
+                            $base['schema']['enum'] = $params->pluck('example')->filter()->values()->all();
+
+                            return $base;
+                        })
+                        ->values()
+                        ->all();
                 }
-
-                $collapsed = [];
-                $seen = [];
-
-                foreach ($operation['parameters'] as $param) {
-                    $name = $param['name'];
-
-                    if (!in_array($name, $relationArrayParamNames)) {
-                        $collapsed[] = $param;
-
-                        continue;
-                    }
-
-                    if (!isset($seen[$name])) {
-                        $seen[$name] = count($collapsed);
-                        $collapsed[] = $param;
-                    } else {
-                        $index = $seen[$name];
-
-                        if (isset($param['example'])) {
-                            $collapsed[$index]['schema']['enum'][] = $param['example'];
-                        }
-                    }
-                }
-
-                foreach ($seen as $name => $index) {
-                    if (isset($collapsed[$index]['schema']['enum'])) {
-                        array_unshift(
-                            $collapsed[$index]['schema']['enum'],
-                            $collapsed[$index]['example'],
-                        );
-                        unset($collapsed[$index]['example']);
-                    }
-                }
-
-                $documentation['paths'][$path][$method]['parameters'] = array_values($collapsed);
             }
         }
 
