@@ -18,14 +18,14 @@ class AutoDocController extends BaseController
         $this->documentationViewer = config('auto-doc.documentation_viewer');
     }
 
-    public function documentation()
+    public function documentationForPostman()
     {
         $documentation = $this->service->getDocFileContent();
 
         return response()->json($documentation);
     }
 
-    public function documentationForViewer()
+    public function documentation()
     {
         $documentation = $this->service->getGroupedDocFileContent();
 
