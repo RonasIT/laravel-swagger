@@ -40,7 +40,7 @@
 
     window.onload = () => {
         const ui = SwaggerUIBundle({
-            url: `${prefix}/auto-doc/documentation-ui`,
+            url: `${prefix}/auto-doc/documentation`,
             dom_id: '#swagger-ui',
             deepLinking: true,
             defaultModelRendering: 'model',
@@ -49,16 +49,7 @@
                 SwaggerUIStandalonePreset
             ],
             plugins: [
-                SwaggerUIBundle.plugins.DownloadUrl,
-                (system) => ({
-                    wrapComponents: {
-                        InfoUrl: () => () => system.React.createElement(
-                            'a',
-                            { href: `${prefix}/auto-doc/documentation`, target: '_blank' },
-                            `${prefix}/auto-doc/documentation`
-                        )
-                    }
-                })
+                SwaggerUIBundle.plugins.DownloadUrl
             ],
             layout: 'StandaloneLayout'
         })

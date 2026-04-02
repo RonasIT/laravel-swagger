@@ -7,7 +7,7 @@
     </head>
     <body>
         <rapi-doc
-            spec-url="{{ config('auto-doc.global_prefix') }}/auto-doc/documentation-ui"
+            spec-url="{{ config('auto-doc.global_prefix') }}/auto-doc/documentation"
             render-style="focused"
             layout="column">
         </rapi-doc>
