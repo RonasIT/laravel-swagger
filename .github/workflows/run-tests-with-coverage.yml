@@ -58,7 +58,7 @@ jobs:
       - name: Execute unit tests via PHPUnit with coverage
         run: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit --coverage-clover build/logs/clover.xml
       - name: Export coverage report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: clover.xml
           path: build/logs
@@ -72,7 +72,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Import coverage report
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: clover.xml
           path: build/logs
