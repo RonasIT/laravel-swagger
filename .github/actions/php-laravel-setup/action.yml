@@ -28,11 +28,15 @@ runs:
 
     - name: Install Laravel version
       shell: bash
-      run: composer require "laravel/framework:${{ inputs.laravel-version }}" -q --no-update
+      env:
+        LARAVEL_VERSION: ${{ inputs.laravel-version }}
+      run: composer require "laravel/framework:$LARAVEL_VERSION" -q --no-update
 
     - name: Install PHPUnit version
       shell: bash
-      run: composer require "phpunit/phpunit:${{ inputs.phpunit-version }}" -q --no-update
+      env:
+        PHPUNIT_VERSION: ${{ inputs.phpunit-version }}
+      run: composer require "phpunit/phpunit:$PHPUNIT_VERSION" -q --no-update
 
     - name: Install dependencies
       shell: bash
