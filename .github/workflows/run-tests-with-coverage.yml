@@ -38,7 +38,7 @@ jobs:
           phpunit-version: ${{ matrix.phpunit-version }}
           coverage: none
       - name: Execute unit tests via PHPUnit
-        run: vendor/bin/phpunit
+        run: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit
 
   tests-with-coverage:
     runs-on: ubuntu-latest
