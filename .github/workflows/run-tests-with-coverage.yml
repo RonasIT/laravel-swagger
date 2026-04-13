@@ -29,7 +29,7 @@ jobs:
             phpunit-version: "13.*"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup
         uses: ./.github/actions/php-laravel-setup
         with:
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup
         uses: ./.github/actions/php-laravel-setup
         with:
@@ -57,7 +57,7 @@ jobs:
       - name: Execute unit tests via PHPUnit with coverage
         run: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit --coverage-clover build/logs/clover.xml
       - name: Export coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: clover.xml
           path: build/logs
@@ -69,9 +69,9 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Import coverage report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: clover.xml
           path: build/logs
