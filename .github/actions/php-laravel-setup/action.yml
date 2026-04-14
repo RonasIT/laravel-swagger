@@ -1,0 +1,43 @@
+name: PHP Laravel PHPUnit setup
+description: Setup PHP and install dependencies for selected Laravel and PHPUnit versions
+
+inputs:
+  php-version:
+    description: PHP version for the job
+    required: true
+  laravel-version:
+    description: Laravel framework version constraint
+    required: true
+  phpunit-version:
+    description: PHPUnit version constraint
+    required: true
+  coverage:
+    description: Coverage driver passed to setup-php
+    required: false
+    default: none
+
+runs:
+  using: composite
+  steps:
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        coverage: ${{ inputs.coverage }}
+        tools: composer
+
+    - name: Install Laravel version
+      shell: bash
+      env:
+        LARAVEL_VERSION: ${{ inputs.laravel-version }}
+      run: composer require "laravel/framework:$LARAVEL_VERSION" -q --no-update
+
+    - name: Install PHPUnit version
+      shell: bash
+      env:
+        PHPUNIT_VERSION: ${{ inputs.phpunit-version }}
+      run: composer require "phpunit/phpunit:$PHPUNIT_VERSION" -q --no-update
+
+    - name: Install dependencies
+      shell: bash
+      run: composer update -W -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
