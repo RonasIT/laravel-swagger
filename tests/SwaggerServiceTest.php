@@ -473,6 +473,32 @@ class SwaggerServiceTest extends TestCase
         $service->addData($request, $response);
     }
 
+    public function testAddDataRequestWithArrayParams()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData(
+            $this->getJsonFixture('tmp_data_search_roles_request_with_array_params'),
+        );
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateGetRolesRequest('testRequestWithArrayParams');
+
+        $response = $this->generateResponse('example_success_roles_response.json');
+
+        $service->addData($request, $response);
+    }
+
+    public function testGetGroupedDocFileContentWithArrayParams()
+    {
+        $this->mockDriverGetDocumentation(
+            $this->getJsonFixture('tmp_data_search_roles_request_with_array_params'),
+        );
+
+        $content = app(SwaggerService::class)->getGroupedDocFileContent();
+
+        $this->assertEqualsJsonFixture('grouped_doc_search_roles_request_with_array_params', $content);
+    }
+
     public static function addDataWithSecurity(): array
     {
         return [

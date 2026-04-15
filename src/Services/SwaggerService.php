@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
+use RonasIT\AutoDoc\Enums\RelationQueryParam;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
@@ -502,34 +503,85 @@ class SwaggerService
     protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
     {
         foreach ($rules as $parameter => $rule) {
+            if (in_array($parameter, RelationQueryParam::values())) {
+                continue;
+            }
+
             $validation = explode('|', $rule);
 
-            $description = Arr::get($annotations, $parameter);
+            if ($this->isRelationArrayItemParameter($parameter)) {
+                $this->saveRelationParameters(substr($parameter, 0, -2), $validation, $attributes, $annotations);
 
-            if (empty($description)) {
-                $description = Arr::get($attributes, $parameter, implode(', ', $validation));
+                continue;
             }
 
-            $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter) use ($parameter) {
-                return $existedParameter['name'] === $parameter;
-            });
-
-            if (empty($existedParameter)) {
-                $parameterDefinition = [
-                    'in' => 'query',
-                    'name' => $parameter,
-                    'description' => $description,
-                    'schema' => [
-                        'type' => $this->getParameterType($validation),
-                    ],
-                ];
-                if (in_array('required', $validation)) {
-                    $parameterDefinition['required'] = true;
-                }
-
-                $this->item['parameters'][] = $parameterDefinition;
-            }
+            $this->saveQueryParameter($parameter, $validation, $attributes, $annotations);
         }
+    }
+
+    protected function isRelationArrayItemParameter(string $parameter): bool
+    {
+        if (!str_ends_with($parameter, '.*')) {
+            return false;
+        }
+
+        return in_array(substr($parameter, 0, -2), RelationQueryParam::values());
+    }
+
+    protected function saveRelationParameters(string $parameter, array $validation, array $attributes, array $annotations): void
+    {
+        $filteredValidation = [];
+        $enumValues = [];
+
+        foreach ($validation as $rule) {
+            if ($rule === 'required') {
+                continue;
+            }
+
+            if (str_starts_with($rule, 'in:')) {
+                $enumValues = explode(',', substr($rule, 3));
+            }
+
+            $filteredValidation[] = $rule;
+        }
+
+        foreach ($enumValues as $value) {
+            $this->saveQueryParameter("{$parameter}[]", $filteredValidation, $attributes, $annotations, example: $value);
+        }
+    }
+
+    protected function saveQueryParameter(string $parameter, array $validation, array $attributes, array $annotations, ?string $example = null): void
+    {
+        $existedParameter = Arr::first(
+            $this->item['parameters'],
+            fn ($existedParameter) => $existedParameter['name'] === $parameter && ($existedParameter['example'] ?? null) === $example,
+        );
+
+        if (!empty($existedParameter)) {
+            return;
+        }
+
+        $description = Arr::get($annotations, $parameter)
+            ?: Arr::get($attributes, $parameter, implode(', ', $validation));
+
+        $parameterDefinition = [
+            'in' => 'query',
+            'name' => $parameter,
+            'description' => $description,
+            'schema' => [
+                'type' => $this->getParameterType($validation),
+            ],
+        ];
+
+        if (in_array('required', $validation)) {
+            $parameterDefinition['required'] = true;
+        }
+
+        if ($example !== null) {
+            $parameterDefinition['example'] = $example;
+        }
+
+        $this->item['parameters'][] = $parameterDefinition;
     }
 
     protected function savePostRequestParameters($actionName, $rules, array $attributes, array $annotations)
@@ -844,6 +896,36 @@ class SwaggerService
             }
 
             $this->mergeOpenAPIDocs($documentation, $additionalDocContent);
+        }
+
+        return $documentation;
+    }
+
+    public function getGroupedDocFileContent(): array
+    {
+        $documentation = $this->getDocFileContent();
+
+        $arrayParamNames = RelationQueryParam::arrayParamNames();
+
+        foreach ($documentation['paths'] as $path => $pathItem) {
+            foreach ($pathItem as $method => $operation) {
+                if (Arr::has($operation, 'parameters')) {
+                    $documentation['paths'][$path][$method]['parameters'] = collect($operation['parameters'])
+                        ->groupBy('name')
+                        ->map(function ($params, $name) use ($arrayParamNames) {
+                            if ($params->count() === 1 || !in_array($name, $arrayParamNames)) {
+                                return $params->first();
+                            }
+
+                            $base = $params->first();
+                            $base['schema']['enum'] = $params->pluck('example')->filter()->values()->all();
+
+                            return $base;
+                        })
+                        ->values()
+                        ->all();
+                }
+            }
         }
 
         return $documentation;

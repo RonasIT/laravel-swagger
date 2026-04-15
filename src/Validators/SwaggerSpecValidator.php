@@ -4,6 +4,7 @@ namespace RonasIT\AutoDoc\Validators;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use RonasIT\AutoDoc\Enums\RelationQueryParam;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateFieldException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicateParamException;
 use RonasIT\AutoDoc\Exceptions\SpecValidation\DuplicatePathPlaceholderException;
@@ -455,7 +456,8 @@ class SwaggerSpecValidator
 
     protected function validateParamsUnique(array $params, string $operationId): void
     {
-        $collection = collect($params);
+        $collection = collect($params)->reject(fn ($item) => in_array($item['name'], RelationQueryParam::arrayParamNames()));
+
         $duplicates = $collection->duplicates(function ($item) {
             return $item['in'] . $item['name'];
         });

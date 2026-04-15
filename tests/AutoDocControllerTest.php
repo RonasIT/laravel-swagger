@@ -40,6 +40,15 @@ class AutoDocControllerTest extends TestCase
         $response->assertJson(self::$documentation);
     }
 
+    public function testGetJSONDocumentationForViewer()
+    {
+        $response = $this->json('get', '/auto-doc/documentation/postman');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $response->assertJson(self::$documentation);
+    }
+
     public function testGetJSONDocumentationWithAdditionalPaths()
     {
         config([

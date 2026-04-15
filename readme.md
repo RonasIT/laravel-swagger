@@ -187,8 +187,8 @@ php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
 4. Run tests
 5. Go to route defined in the `auto-doc.route` config
 6. Profit!
-
     ![img.png](resources/assets/images/img.png)
+7. The Postman collection is available at the `/auto-doc/documentation/postman` route
 
 ### Annotations
 
