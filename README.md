@@ -28,7 +28,11 @@ passing PHPUnit tests.
 
 ## Installation
 
-1. Install the package using the following command: `composer require ronasit/laravel-swagger`
+1. Install the package using the following command:
+
+```sh
+composer require ronasit/laravel-swagger
+```
 
 > ***Note***
 > 
@@ -55,7 +59,7 @@ php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
     return Application::configure(basePath: dirname(__DIR__))
         ->withMiddleware(function (Middleware $middleware) {
             $middleware->use([
-                ...
+                //...
                 \RonasIT\AutoDoc\Http\Middleware\AutoDocMiddleware::class,
             ]);
         });
@@ -65,29 +69,23 @@ php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
 
 5. Configure documentation saving using one of the next ways:
   - Add `SwaggerExtension` to the `<extensions>` block of your `phpunit.xml`.
-  **Please note that this way will be removed after updating**
-  **PHPUnit up to 10 version (https://github.com/sebastianbergmann/phpunit/issues/4676)**
 
   ```xml
   <phpunit>
+      //...
       <extensions>
           <bootstrap class="RonasIT\AutoDoc\Support\PHPUnit\Extensions\SwaggerExtension"/>
       </extensions>
-      <testsuites>
-          <testsuite name="Feature">
-              <directory suffix="Test.php">./tests/Feature</directory>
-          </testsuite>
-      </testsuites>
   </phpunit>
   ```
   - Call `php artisan swagger:push-documentation` console command after
-    the `tests` stage in your CI/CD configuration
+    the `tests` stage.
 
 ## Usage
 
 ### Basic usage
 
-1. Create request class:
+1. Create a request class:
 
     ```php
     <?php
@@ -144,7 +142,7 @@ php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
     > Plugin will take validation rules from the request class and generate fields description
     > of input parameter.
 
-2. Create a controller and a method for your route:
+1. Implement request handling in the corresponding controller class:
 
     ```php
     <?php
@@ -166,10 +164,10 @@ php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
 
     > ***Note***
     > 
-    > Dependency injection of request class is optional but if it not presents,
-    > the "Parameters" block in the API documentation will be empty.
+    > Dependency injection of the request class is optional, but if it isn't present, 
+    > the 'Parameters' block in the API documentation will be empty.
 
-3. Create test for API endpoint:
+3. Create a test for the API endpoint:
 
     ```php
     public function testUpdate()
@@ -184,15 +182,15 @@ php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
     }
     ```
 
-4. Run tests
-5. Go to route defined in the `auto-doc.route` config
+4. Run the tests
+5. Go to the route which is defined in the `auto-doc.route` config
 6. Profit!
 
     ![img.png](resources/assets/images/img.png)
 
 ### Annotations
 
-You can use the following annotations in your request classes to customize documentation of your API endpoints:
+You can use the following annotations in the corresponding request class to customize documentation of the API endpoint:
 
 - **@summary** - short description of request
 - **@description** - implementation notes
@@ -204,11 +202,6 @@ You can use the following annotations in your request classes to customize docum
 > 
 > If you do not use request class, the summary and description and parameters will be empty.
 
-### Configs
-
-- `auto-doc.route` - route for generated documentation
-- `auto-doc.basePath` - root of your API
-
 ### Custom driver
 
 You can specify the way to collect and view documentation by creating your own custom driver.
@@ -218,8 +211,8 @@ You can find example of drivers [here](https://github.com/RonasIT/laravel-swagge
 ### Viewing OpenAPI documentation
 
 As of version 2.2, the package includes the ability to switch between OpenAPI documentation
-viewers. To access different viewers, modify the `documentation_viewer` configuration.
-This change is reflected immediately, without the need to rebuild the documentation file.
+viewers. To access different viewers, modify the `documentation_viewer` configuration or set the viewer using
+the `SWAGGER_SPEC_VIEWER` env. This change is reflected immediately, without the need to rebuild the documentation file.
 
 ### Merging additional documentations
 
@@ -238,3 +231,4 @@ can be found in the [Contributing guide](CONTRIBUTING.md).
 ## License
 
 Laravel Swagger plugin is open-sourced software licensed under the [MIT license](LICENSE).
+ 
