@@ -1,13 +1,13 @@
 <?php
 
-namespace RonasIT\AutoDoc\Traits;
+namespace RonasIT\AutoDoc\RequestContext\Resolvers;
 
 use Illuminate\Container\Container;
 use Illuminate\Support\Arr;
 use ReflectionMethod;
 use ReflectionParameter;
 
-trait GetDependenciesTrait
+class MethodDependencyResolver
 {
     public function resolveClassMethodDependencies(object $instance, string $method): array
     {
@@ -27,7 +27,7 @@ trait GetDependenciesTrait
         return interface_exists($type->getName()) ? $this->getClassByInterface($type->getName()) : $type->getName();
     }
 
-    protected function getClassByInterface($interfaceName): ?string
+    protected function getClassByInterface(string $interfaceName): ?string
     {
         $app = Container::getInstance();
 

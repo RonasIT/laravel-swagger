@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\AutoDoc\Extractors;
+namespace RonasIT\AutoDoc\RequestContext\Extractors;
 
 use Closure;
 use ReflectionFunction;

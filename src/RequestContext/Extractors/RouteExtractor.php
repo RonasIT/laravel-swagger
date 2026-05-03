@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\AutoDoc\Extractors;
+namespace RonasIT\AutoDoc\RequestContext\Extractors;
 
 use Closure;
 use Illuminate\Routing\Route;
@@ -11,8 +11,9 @@ class RouteExtractor
     private const string CLOSURE_ACTION_NAME = 'Closure';
 
     public readonly ?string $controllerClass;
-    public readonly ?string $methodName;
-    public readonly bool $usesClosure;
+    public readonly ?string $controllerMethod;
+    public readonly bool $isClosureAction;
+    public readonly array $wheres;
 
     public function __construct(
         protected Route $route,
@@ -22,17 +23,24 @@ class RouteExtractor
         $actionParts = explode('@', $actionName);
 
         $this->controllerClass = $actionParts[0] ?? null;
-        $this->methodName = $actionParts[1] ?? null;
+        $this->controllerMethod = $actionParts[1] ?? null;
 
-        $this->usesClosure = $actionName === self::CLOSURE_ACTION_NAME;
+        $this->isClosureAction = ($actionName === self::CLOSURE_ACTION_NAME);
+        $this->wheres = $this->route->wheres;
     }
 
     public function getClosure(): Closure
     {
-        if (!$this->usesClosure) {
+        if (!$this->isClosureAction) {
             throw new NonClosureControllerException();
         }
 
-        return $this->route->getAction('uses');
+        $uses = $this->route->getAction('uses');
+
+        if (!$uses instanceof Closure) {
+            throw new NonClosureControllerException();
+        }
+
+        return $uses;
     }
 }

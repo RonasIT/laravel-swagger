@@ -4,7 +4,7 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Support\Facades\Route;
 use RonasIT\AutoDoc\Exceptions\NonClosureControllerException;
-use RonasIT\AutoDoc\Extractors\RouteExtractor;
+use RonasIT\AutoDoc\RequestContext\Extractors\RouteExtractor;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestController;
 
 class UnitTest extends TestCase

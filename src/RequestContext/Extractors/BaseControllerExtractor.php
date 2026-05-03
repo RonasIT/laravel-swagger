@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\AutoDoc\Extractors;
+namespace RonasIT\AutoDoc\RequestContext\Extractors;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
