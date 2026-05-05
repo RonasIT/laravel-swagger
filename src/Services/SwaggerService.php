@@ -376,7 +376,7 @@ class SwaggerService
             $this->saveExample($code, json_encode($content, JSON_PRETTY_PRINT), $produce);
         }
 
-        $action = Str::ucfirst($this->getActionName($this->requestContext->uri));
+        $action = Str::ucfirst($this->getActionName());
 
         $definition = (empty($this->requestContext->resourceName))
             ? "{$this->requestContext->httpMethod}{$action}{$code}ResponseObject"
@@ -435,7 +435,7 @@ class SwaggerService
         $rules = method_exists($formRequest, 'rules') ? $this->prepareRules($formRequest->rules()) : [];
         $attributes = method_exists($formRequest, 'attributes') ? $formRequest->attributes() : [];
 
-        $actionName = $this->getActionName($this->requestContext->uri);
+        $actionName = $this->getActionName();
 
         if (in_array($this->requestContext->httpMethod, ['get', 'delete'])) {
             $this->saveGetRequestParameters($rules, $attributes, $annotations);
@@ -723,9 +723,9 @@ class SwaggerService
         return Arr::get($this->config, "defaults.code-descriptions.{$code}", $defaultDescription);
     }
 
-    protected function getActionName($uri): string
+    protected function getActionName(): string
     {
-        $action = preg_replace('[\/]', '', $uri);
+        $action = preg_replace('[\/]', '', $this->requestContext->uri);
 
         return Str::camel($action);
     }
