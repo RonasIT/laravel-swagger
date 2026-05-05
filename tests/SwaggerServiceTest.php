@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Testing\File;
