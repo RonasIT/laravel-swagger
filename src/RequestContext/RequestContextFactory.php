@@ -22,7 +22,7 @@ class RequestContextFactory
             routeResolver: $request->getRouteResolver(),
             headers: $request->headers->all(),
             routeWheres: $routeExtractor->wheres,
-            usesAuth: app(SecurityTokenResolver::class)->usesAuth($request),
+            hasSecurityToken: app(SecurityTokenResolver::class)->hasSecurityToken($request),
         );
     }
 }

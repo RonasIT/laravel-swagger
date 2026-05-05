@@ -3,22 +3,27 @@
 namespace RonasIT\AutoDoc\RequestContext\Resolvers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 
 class SecurityTokenResolver
 {
-    public function usesAuth(Request $request): bool
+    public function hasSecurityToken(Request $request): bool
     {
-        $security = config('auto-doc.security');
-        $securityDriver = config("auto-doc.security_drivers.{$security}");
+        $securityDriver = $this->getSecurityDriver();
 
-        $securityToken = match (Arr::get($securityDriver, 'in')) {
-            'header' => $request->cookie($securityDriver['name'])
-                        ?? $request->header($securityDriver['name']),
+        $securityToken = match ($securityDriver['in'] ?? null) {
+            'header' => $request->header($securityDriver['name']),
+            'cookie' => $request->cookie($securityDriver['name']),
             'query' => $request->query($securityDriver['name']),
             default => null,
         };
 
         return !empty($securityToken);
+    }
+
+    protected function getSecurityDriver(): array
+    {
+        $security = config('auto-doc.security', '');
+
+        return config("auto-doc.security_drivers.{$security}", []);
     }
 }

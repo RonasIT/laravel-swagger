@@ -17,7 +17,7 @@ final readonly class RequestContext
         public Closure $routeResolver,
         public array $headers,
         public array $routeWheres,
-        public bool $usesAuth,
+        public bool $hasSecurityToken,
     ) {
     }
 

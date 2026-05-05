@@ -664,7 +664,7 @@ class SwaggerService
 
     protected function saveSecurity()
     {
-        if ($this->requestContext->usesAuth) {
+        if ($this->requestContext->hasSecurityToken) {
             $this->addSecurityToOperation();
         }
     }

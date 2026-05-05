@@ -81,11 +81,9 @@ class RouteExtractor
 
     public function getUri(): string
     {
-        $uri = $this->route->uri();
-
         $basePath = preg_replace("/^\//", '', config('auto-doc.basePath'));
 
-        $uriWithoutBasePath = preg_replace("/^{$basePath}/", '', $uri);
+        $uriWithoutBasePath = preg_replace("/^{$basePath}/", '', $this->route->uri());
 
         $preparedUri = preg_replace("/^\//", '', $uriWithoutBasePath);
 
