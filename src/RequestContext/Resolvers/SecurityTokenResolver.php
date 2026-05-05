@@ -10,10 +10,11 @@ class SecurityTokenResolver
     public function usesAuth(Request $request): bool
     {
         $security = config('auto-doc.security');
-        $securityDriver = config("auto-doc.security.security_drivers.{$security}");
+        $securityDriver = config("auto-doc.security_drivers.{$security}");
 
         $securityToken = match (Arr::get($securityDriver, 'in')) {
-            'header' => $request->cookie($securityDriver['name']),
+            'header' => $request->cookie($securityDriver['name'])
+                        ?? $request->header($securityDriver['name']),
             'query' => $request->query($securityDriver['name']),
             default => null,
         };
