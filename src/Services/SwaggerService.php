@@ -186,7 +186,7 @@ class SwaggerService
 
     public function addData(Request $request, $response)
     {
-        $this->requestContext = app(RequestContextFactory::class)->make($request);
+        $this->requestContext = RequestContextFactory::make($request);
 
         $this->prepareItem();
 

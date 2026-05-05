@@ -4,7 +4,9 @@ namespace RonasIT\AutoDoc\RequestContext\Extractors;
 
 use Closure;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Arr;
 use RonasIT\AutoDoc\Exceptions\NonClosureControllerException;
+use RonasIT\AutoDoc\RequestContext\Resolvers\MethodDependencyResolver;
 
 class RouteExtractor
 {
@@ -14,17 +16,19 @@ class RouteExtractor
     public readonly ?string $controllerMethod;
     public readonly bool $isClosureAction;
     public readonly array $wheres;
+    protected MethodDependencyResolver $methodDependencyResolver;
 
     public function __construct(
         protected Route $route,
     ) {
+        $this->methodDependencyResolver = app(MethodDependencyResolver::class);
+
         $actionName = $route->getActionName();
 
         $actionParts = explode('@', $actionName);
 
         $this->controllerClass = $actionParts[0] ?? null;
         $this->controllerMethod = $actionParts[1] ?? null;
-
         $this->isClosureAction = ($actionName === self::CLOSURE_ACTION_NAME);
         $this->wheres = $this->route->wheres;
     }
@@ -42,5 +46,49 @@ class RouteExtractor
         }
 
         return $uses;
+    }
+
+    public function getResourceName(): ?string
+    {
+        $extractor = ($this->isClosureAction)
+            ? new ClosureControllerExtractor($this->getClosure())
+            : new ClassControllerExtractor($this->controllerClass, $this->controllerMethod);
+
+        return $extractor->resource;
+    }
+
+    public function getRequestClassName(): ?string
+    {
+        if (!$this->isUsesRequestClass()) {
+            return null;
+        }
+
+        $parameters = $this
+            ->methodDependencyResolver
+            ->resolveClassMethodDependencies(
+                instance: app($this->controllerClass),
+                method: $this->controllerMethod,
+            );
+
+        return Arr::first($parameters, fn ($className) => is_string($className) && preg_match('/Request/', $className));
+    }
+
+    protected function isUsesRequestClass(): bool
+    {
+        return !$this->isClosureAction
+            && method_exists($this->controllerClass, $this->controllerMethod);
+    }
+
+    public function getUri(): string
+    {
+        $uri = strtolower($this->route->uri());
+
+        $basePath = preg_replace("/^\//", '', config('auto-doc.basePath'));
+
+        $uriWithoutBasePath = preg_replace("/^{$basePath}/", '', $uri);
+
+        $preparedUri = preg_replace("/^\//", '', $uriWithoutBasePath);
+
+        return "/{$preparedUri}";
     }
 }
