@@ -30,7 +30,7 @@ class TestController
         return UserResource::make($user);
     }
 
-    public function deleteProfile(TestRequest $request): \Illuminate\Http\Response
+    public function deleteProfile(TestRequest $request): Illuminate\Http\Response
     {
         return response()->noContent();
     }
