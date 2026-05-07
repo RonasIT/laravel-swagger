@@ -1,4 +1,4 @@
-name: Run tests
+name: Tests
 
 on:
   push:
@@ -6,79 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  PHP_LATEST: &php-latest "8.5"
-  LARAVEL_LATEST: &laravel-latest "13.*"
-  PHPUNIT_LATEST: &phpunit-latest "13.*"
-
 jobs:
   tests:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version: [ "8.3", "8.4", "8.5" ]
-        laravel-version: [ "11.*", "12.*", "13.*" ]
-        phpunit-version: [ "11.*", "12.*", "13.*" ]
-        exclude:
-          - php-version: *php-latest
-            laravel-version: *laravel-latest
-            phpunit-version: *phpunit-latest
-          - php-version: "8.3"
-            phpunit-version: "13.*"
-          - laravel-version: "11.*"
-            phpunit-version: "13.*"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Setup
-        uses: ./.github/actions/php-laravel-setup
-        with:
-          php-version: ${{ matrix.php-version }}
-          laravel-version: ${{ matrix.laravel-version }}
-          phpunit-version: ${{ matrix.phpunit-version }}
-          coverage: none
-      - name: Execute unit tests via PHPUnit
-        run: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit
-
-  tests-with-coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Setup
-        uses: ./.github/actions/php-laravel-setup
-        with:
-          php-version: *php-latest
-          laravel-version: *laravel-latest
-          phpunit-version: *phpunit-latest
-          coverage: xdebug
-      - name: Format code style via Pint
-        run: vendor/bin/pint --test
-      - name: Execute unit tests via PHPUnit with coverage
-        run: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit --coverage-clover build/logs/clover.xml
-      - name: Export coverage report
-        uses: actions/upload-artifact@v7
-        with:
-          name: clover.xml
-          path: build/logs
-
-  upload-to-coveralls:
-    needs: tests-with-coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Import coverage report
-        uses: actions/download-artifact@v7
-        with:
-          name: clover.xml
-          path: build/logs
-      - name: Upload coverage results to Coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          composer global require php-coveralls/php-coveralls
-          php-coveralls --coverage_clover=build/logs/clover.xml -v --json_path=coveralls-upload.json
+    uses: ronasit/github-actions/.github/workflows/tests.yml@main
+    with:
+      use-database: true
+      phpunit-command: vendor/bin/phpunit
+      phpunit-coverage-command: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit --coverage-clover build/logs/clover.xml
