@@ -68,7 +68,9 @@ abstract class BaseControllerExtractor
             default: '',
         );
 
-        return Str::replace(['use', "as {$resourceName}", ' ', "\n", ';'], '', $resourceImport);
+        preg_match('/^use\s+([^;]+?)(?:\s+as\s+\w+)?;$/', trim($resourceImport), $matches);
+
+        return $matches[1] ?? '';
     }
 
     protected function getFileContent(ReflectionFunctionAbstract $reflectionFunction): array
