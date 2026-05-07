@@ -1003,6 +1003,21 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->addData($request, $resource->toResponse($request));
     }
 
+    public function testHandleResponseWithResourceBadRequest()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/user',
+            controllerMethod: 'user',
+        );
+
+        $resource = UserResource::make(User::factory()->make());
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
     public function testHandleResponseWithResourceCollection()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_collection'));
@@ -1033,6 +1048,7 @@ class SwaggerServiceTest extends TestCase
 
         app(SwaggerService::class)->addData($request, response()->noContent());
     }
+
 
     public function testHandleResponseAliasToResource()
     {
@@ -1089,5 +1105,19 @@ class SwaggerServiceTest extends TestCase
         $response = UserResource::make($user)->toResponse($request);
 
         app(SwaggerService::class)->addData($request, $response);
+    }
+
+    public function testHandleResponseWithResourceAndExceptionDoNotShareSchemaKey()
+    {
+        $this->mockDriverGetPreparedAndSaveTmpData(
+            getTmpData: $this->getJsonFixture('tmp_data_response_with_resource_after_success'),
+            saveTmpData: $this->getJsonFixture('tmp_data_response_with_resource_and_exception'),
+        );
+
+        $request = $this->generateRequest('get', '/user', ['user']);
+
+        $failed = $this->generateResponse('example_validation_error_response.json', 422);
+
+        app(SwaggerService::class)->addData($request, $failed);
     }
 }

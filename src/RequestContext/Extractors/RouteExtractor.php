@@ -23,14 +23,15 @@ class RouteExtractor
     ) {
         $this->methodDependencyResolver = app(MethodDependencyResolver::class);
 
+        $this->wheres = $this->route->wheres;
+
         $actionName = $route->getActionName();
+        $this->isClosureAction = ($actionName === self::CLOSURE_ACTION_NAME);
 
         $actionParts = explode('@', $actionName);
 
         $this->controllerClass = $actionParts[0] ?? null;
-        $this->controllerMethod = $actionParts[1] ?? null;
-        $this->isClosureAction = ($actionName === self::CLOSURE_ACTION_NAME);
-        $this->wheres = $this->route->wheres;
+        $this->controllerMethod = $actionParts[1] ?? '__invoke';
     }
 
     public function getClosure(): Closure
