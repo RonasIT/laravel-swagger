@@ -217,7 +217,7 @@ class SwaggerService
     {
         $params = [];
 
-        preg_match_all('/{.*?}/', $this->requestContext->uri, $params);
+        preg_match_all('/{[^}]*}/', $this->requestContext->uri, $params);
 
         $params = Arr::collapse($params);
 
