@@ -10,6 +10,5 @@ jobs:
   tests:
     uses: ronasit/github-actions/.github/workflows/tests.yml@main
     with:
-      use-database: true
-      phpunit-command: vendor/bin/phpunit
+      phpunit-command: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit
       phpunit-coverage-command: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit --coverage-clover build/logs/clover.xml
