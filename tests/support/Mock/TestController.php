@@ -3,8 +3,8 @@
 namespace RonasIT\AutoDoc\Tests\Support\Mock;
 
 use RonasIT\AutoDoc\Tests\Support\Models\User;
-use RonasIT\AutoDoc\Tests\Support\Resources\UserResource as AliasResource;
 use RonasIT\AutoDoc\Tests\Support\Resources\UserResource;
+use RonasIT\AutoDoc\Tests\Support\Resources\UserResource as AliasResource;
 use RonasIT\AutoDoc\Tests\Support\Resources\UsersCollectionResource;
 
 class TestController
