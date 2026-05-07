@@ -725,7 +725,7 @@ class SwaggerService
 
     protected function getActionName(): string
     {
-        $action = preg_replace('[\/]', '', $this->requestContext->uri);
+        $action = str_replace('/', '', $this->requestContext->uri);
 
         return Str::camel($action);
     }
