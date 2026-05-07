@@ -35,10 +35,6 @@ class RouteExtractor
 
     public function getClosure(): Closure
     {
-        if (!$this->isClosureAction) {
-            throw new NonClosureControllerException();
-        }
-
         $uses = $this->route->getAction('uses');
 
         if (!$uses instanceof Closure) {
