@@ -13,3 +13,4 @@ jobs:
       additional-package: phpunit/phpunit
       phpunit-command: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit
       phpunit-coverage-command: php -d zend.exception_ignore_args=0 -d xdebug.collect_params=4 vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+      custom-exclude: [{"php-version":"8.3","additional-package-version":"13.*"},{"laravel-version":"11.*","additional-package-version":"13.*"}]
