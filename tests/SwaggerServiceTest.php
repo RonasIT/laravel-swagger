@@ -494,7 +494,7 @@ class SwaggerServiceTest extends TestCase
             $this->getJsonFixture('tmp_data_search_roles_request_with_array_params'),
         );
 
-        $content = app(SwaggerService::class)->getGroupedDocFileContent();
+        $content = app(SwaggerService::class)->getPrettyDocFileContent();
 
         $this->assertEqualsJsonFixture('grouped_doc_search_roles_request_with_array_params', $content);
     }

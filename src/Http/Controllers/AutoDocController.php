@@ -27,7 +27,7 @@ class AutoDocController extends BaseController
 
     public function documentation()
     {
-        $documentation = $this->service->getGroupedDocFileContent();
+        $documentation = $this->service->getPrettyDocFileContent();
 
         return response()->json($documentation);
     }

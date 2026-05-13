@@ -10,9 +10,4 @@ enum RelationQueryParam: string
 
     case With = 'with';
     case WithCount = 'with_count';
-
-    public static function arrayParamNames(): array
-    {
-        return array_map(fn (self $case) => "{$case->value}[]", self::cases());
-    }
 }

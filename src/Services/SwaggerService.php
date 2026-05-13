@@ -510,7 +510,7 @@ class SwaggerService
             $validation = explode('|', $rule);
 
             if ($this->isRelationArrayItemParameter($parameter)) {
-                $this->saveRelationParameters(substr($parameter, 0, -2), $validation, $attributes, $annotations);
+                $this->saveRelationParameters(Str::remove('.*', $parameter), $validation, $attributes, $annotations);
 
                 continue;
             }
@@ -546,7 +546,7 @@ class SwaggerService
         }
 
         foreach ($enumValues as $value) {
-            $this->saveQueryParameter("{$parameter}[]", $filteredValidation, $attributes, $annotations, example: $value);
+            $this->saveQueryParameter("{$parameter}[]", $filteredValidation, $attributes, $annotations, $value);
         }
     }
 
@@ -554,7 +554,7 @@ class SwaggerService
     {
         $existedParameter = Arr::first(
             $this->item['parameters'],
-            fn ($existedParameter) => $existedParameter['name'] === $parameter && ($existedParameter['example'] ?? null) === $example,
+            fn ($existedParameter) => $existedParameter['name'] === $parameter && Arr::get($existedParameter, 'example') === $example,
         );
 
         if (!empty($existedParameter)) {
@@ -901,11 +901,11 @@ class SwaggerService
         return $documentation;
     }
 
-    public function getGroupedDocFileContent(): array
+    public function getPrettyDocFileContent(): array
     {
         $documentation = $this->getDocFileContent();
 
-        $arrayParamNames = RelationQueryParam::arrayParamNames();
+        $arrayParamNames = array_map(fn ($case) => "{$case->value}[]", RelationQueryParam::cases());
 
         foreach ($documentation['paths'] as $path => $pathItem) {
             foreach ($pathItem as $method => $operation) {

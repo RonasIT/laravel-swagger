@@ -456,7 +456,7 @@ class SwaggerSpecValidator
 
     protected function validateParamsUnique(array $params, string $operationId): void
     {
-        $collection = collect($params)->reject(fn ($item) => in_array($item['name'], RelationQueryParam::arrayParamNames()));
+        $collection = collect($params)->reject(fn ($item) => in_array($item['name'], array_map(fn ($case) => "{$case->value}[]", RelationQueryParam::cases())));
 
         $duplicates = $collection->duplicates(function ($item) {
             return $item['in'] . $item['name'];
