@@ -18,6 +18,8 @@ class TestRequestWithArrayParams extends FormRequest
             'with_count.*' => 'required|string|in:team',
             'status_in_list' => 'array',
             'status_in_list.*' => 'string|in:active,blocked',
+            'is_active' => 'array',
+            'is_active.*' => 'string|in:0,1',
         ];
     }
 

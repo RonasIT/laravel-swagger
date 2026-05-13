@@ -80,6 +80,24 @@
                             "type": "string"
                         },
                         "example": "blocked"
+                    },
+                    {
+                        "in": "query",
+                        "name": "is_active[]",
+                        "description": "string, in:0,1",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "0"
+                    },
+                    {
+                        "in": "query",
+                        "name": "is_active[]",
+                        "description": "string, in:0,1",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "1"
                     }
                 ],
                 "responses": {

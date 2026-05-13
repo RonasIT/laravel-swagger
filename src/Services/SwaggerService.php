@@ -531,7 +531,7 @@ class SwaggerService
     {
         $inRule = collect($validation)->first(fn ($rule) => Str::startsWith($rule, 'in:'));
 
-        $availableValues = $inRule ? array_filter(explode(',', Str::after($inRule, 'in:'))) : [];
+        $availableValues = $inRule ? array_filter(explode(',', Str::after($inRule, 'in:')), fn ($value) => $value !== '') : [];
 
         $validationWithoutRequired = array_values(array_filter($validation, fn ($rule) => $rule !== 'required'));
 
@@ -900,7 +900,11 @@ class SwaggerService
                             }
 
                             $base = $params->first();
-                            $base['schema']['enum'] = $params->pluck('example')->filter()->values()->all();
+                            $base['schema']['enum'] = $params
+                                ->pluck('example')
+                                ->filter(fn ($value) => $value !== null)
+                                ->values()
+                                ->all();
 
                             return $base;
                         })

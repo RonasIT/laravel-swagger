@@ -62,6 +62,19 @@
                             ]
                         },
                         "example": "active"
+                    },
+                    {
+                        "in": "query",
+                        "name": "is_active[]",
+                        "description": "string, in:0,1",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "0",
+                                "1"
+                            ]
+                        },
+                        "example": "0"
                     }
                 ],
                 "responses": {
