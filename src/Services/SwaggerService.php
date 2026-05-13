@@ -531,7 +531,7 @@ class SwaggerService
     {
         $inRule = collect($validation)->first(fn ($rule) => Str::startsWith($rule, 'in:'));
 
-        $availableValues = $inRule ? explode(',', Str::after($inRule, 'in:')) : [];
+        $availableValues = $inRule ? array_filter(explode(',', Str::after($inRule, 'in:'))) : [];
 
         $validationWithoutRequired = array_values(array_filter($validation, fn ($rule) => $rule !== 'required'));
 
