@@ -200,7 +200,21 @@
                     "v0.1"
                 ],
                 "description": "",
-                "parameters": [],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "with[]",
+                        "description": "string, in:posts,comments",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "posts",
+                                "comments"
+                            ]
+                        },
+                        "example": "posts"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

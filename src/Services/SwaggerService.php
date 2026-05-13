@@ -115,7 +115,7 @@ class SwaggerService
 
         $securityDriver = Arr::get($this->config, 'security');
 
-        if ($securityDriver && !Arr::exists($this->config['security_drivers'], $securityDriver)) {
+        if ($securityDriver && !Arr::exists(Arr::get($this->config, 'security_drivers'), $securityDriver)) {
             throw new WrongSecurityConfigException();
         }
     }

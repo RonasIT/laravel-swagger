@@ -188,7 +188,6 @@ php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
 5. Go to route defined in the `auto-doc.route` config
 6. Profit!
     ![img.png](resources/assets/images/img.png)
-7. The Postman collection is available at the `/auto-doc/documentation/postman` route
 
 ### Annotations
 
@@ -225,6 +224,10 @@ This change is reflected immediately, without the need to rebuild the documentat
 
 The package supports the integration of the primary documentation with additional valid
 OpenAPI files specified in the `additional_paths` configuration.
+
+### Integration with Postman
+
+The Postman collection is available at the `/auto-doc/documentation/postman` route.
 
 ## Migration guides
 
