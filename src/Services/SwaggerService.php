@@ -551,8 +551,7 @@ class SwaggerService
             return;
         }
 
-        $description = Arr::get($annotations, $parameter)
-            ?: Arr::get($attributes, $parameter, implode(', ', $validation));
+        $description = $this->generateDescription($parameter, $validation, $attributes, $annotations);
 
         $parameterDefinition = [
             'in' => 'query',
@@ -618,7 +617,7 @@ class SwaggerService
 
             $rulesArray = array_flip(array_diff_key(array_flip($rulesArray), $uselessRules));
 
-            $this->saveParameterDescription($data, $parameter, $rulesArray, $attributes, $annotations);
+            $data['properties'][$parameter]['description'] = $this->generateDescription($parameter, $rulesArray, $attributes, $annotations);
         }
 
         $data['example'] = $this->generateExample($data['properties']);
@@ -648,20 +647,15 @@ class SwaggerService
         ];
     }
 
-    protected function saveParameterDescription(
-        array &$data,
-        string $parameter,
-        array $rulesArray,
-        array $attributes,
-        array $annotations,
-    ) {
+    protected function generateDescription(string $parameter, array $validation, array $attributes, array $annotations): string
+    {
         $description = Arr::get($annotations, $parameter);
 
         if (empty($description)) {
-            $description = Arr::get($attributes, $parameter, implode(', ', $rulesArray));
+            $description = Arr::get($attributes, $parameter, implode(', ', $validation));
         }
 
-        $data['properties'][$parameter]['description'] = $description;
+        return $description;
     }
 
     protected function requestHasMoreProperties($actionName): bool
