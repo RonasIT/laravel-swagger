@@ -530,23 +530,14 @@ class SwaggerService
 
     protected function saveRelationParameters(string $parameter, array $validation, array $attributes, array $annotations): void
     {
-        $filteredValidation = [];
-        $enumValues = [];
+        $inRule = collect($validation)->first(fn ($rule) => str_starts_with($rule, 'in:'));
 
-        foreach ($validation as $rule) {
-            if ($rule === 'required') {
-                continue;
-            }
+        $availableValues = $inRule ? explode(',', Str::after($inRule, 'in:')) : [];
 
-            if (str_starts_with($rule, 'in:')) {
-                $enumValues = explode(',', substr($rule, 3));
-            }
+        $validationWithoutRequired = array_values(array_filter($validation, fn ($rule) => $rule !== 'required'));
 
-            $filteredValidation[] = $rule;
-        }
-
-        foreach ($enumValues as $value) {
-            $this->saveQueryParameter("{$parameter}[]", $filteredValidation, $attributes, $annotations, $value);
+        foreach ($availableValues as $value) {
+            $this->saveQueryParameter("{$parameter}[]", $validationWithoutRequired, $attributes, $annotations, $value);
         }
     }
 
