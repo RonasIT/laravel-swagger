@@ -108,6 +108,10 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'invalid_format_duplicate_path_params.html',
             ],
             [
+                'tmpDoc' => 'documentation/invalid_format__duplicate_bracket_query_params',
+                'fixture' => 'invalid_format_duplicate_bracket_query_params.html',
+            ],
+            [
                 'tmpDoc' => 'documentation/invalid_format__duplicate_path_placeholders',
                 'fixture' => 'invalid_format_duplicate_path_placeholders.html',
             ],
