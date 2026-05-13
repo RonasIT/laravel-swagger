@@ -49,6 +49,19 @@
                             "type": "string"
                         },
                         "example": "team"
+                    },
+                    {
+                        "in": "query",
+                        "name": "status_in_list[]",
+                        "description": "string, in:active,blocked",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "blocked"
+                            ]
+                        },
+                        "example": "active"
                     }
                 ],
                 "responses": {

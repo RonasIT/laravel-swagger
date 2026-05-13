@@ -16,6 +16,8 @@ class TestRequestWithArrayParams extends FormRequest
             'with.*' => "required|string|in:{$availableRelations}",
             'with_count' => 'array',
             'with_count.*' => 'required|string|in:team',
+            'status_in_list' => 'array',
+            'status_in_list.*' => 'string|in:active,blocked',
         ];
     }
 

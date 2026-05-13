@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
-use RonasIT\AutoDoc\Enums\RelationQueryParam;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
@@ -116,7 +115,7 @@ class SwaggerService
 
         $securityDriver = Arr::get($this->config, 'security');
 
-        if ($securityDriver && !array_key_exists($securityDriver, Arr::get($this->config, 'security_drivers'))) {
+        if ($securityDriver && !Arr::exists($this->config['security_drivers'], $securityDriver)) {
             throw new WrongSecurityConfigException();
         }
     }
@@ -503,13 +502,13 @@ class SwaggerService
     protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
     {
         foreach ($rules as $parameter => $rule) {
-            if (in_array($parameter, RelationQueryParam::values())) {
+            if (Arr::exists($rules, "{$parameter}.*")) {
                 continue;
             }
 
             $validation = explode('|', $rule);
 
-            if ($this->isRelationArrayItemParameter($parameter)) {
+            if ($this->isArrayItemParameter($parameter, $validation)) {
                 $this->saveRelationParameters(Str::remove('.*', $parameter), $validation, $attributes, $annotations);
 
                 continue;
@@ -519,18 +518,18 @@ class SwaggerService
         }
     }
 
-    protected function isRelationArrayItemParameter(string $parameter): bool
+    protected function isArrayItemParameter(string $parameter, array $validation): bool
     {
-        if (!str_ends_with($parameter, '.*')) {
+        if (!Str::endsWith($parameter, '.*')) {
             return false;
         }
 
-        return in_array(substr($parameter, 0, -2), RelationQueryParam::values());
+        return collect($validation)->contains(fn ($rule) => Str::startsWith($rule, 'in:'));
     }
 
     protected function saveRelationParameters(string $parameter, array $validation, array $attributes, array $annotations): void
     {
-        $inRule = collect($validation)->first(fn ($rule) => str_starts_with($rule, 'in:'));
+        $inRule = collect($validation)->first(fn ($rule) => Str::startsWith($rule, 'in:'));
 
         $availableValues = $inRule ? explode(',', Str::after($inRule, 'in:')) : [];
 
@@ -896,15 +895,13 @@ class SwaggerService
     {
         $documentation = $this->getDocFileContent();
 
-        $arrayParamNames = array_map(fn ($case) => "{$case->value}[]", RelationQueryParam::cases());
-
         foreach ($documentation['paths'] as $path => $pathItem) {
             foreach ($pathItem as $method => $operation) {
                 if (Arr::has($operation, 'parameters')) {
                     $documentation['paths'][$path][$method]['parameters'] = collect($operation['parameters'])
                         ->groupBy('name')
-                        ->map(function ($params, $name) use ($arrayParamNames) {
-                            if ($params->count() === 1 || !in_array($name, $arrayParamNames)) {
+                        ->map(function ($params, $name) {
+                            if ($params->count() === 1 || !Str::endsWith($name, '[]')) {
                                 return $params->first();
                             }
 
@@ -1020,7 +1017,7 @@ class SwaggerService
     protected function replaceNullValues($parameters, $types, &$example)
     {
         foreach ($parameters as $parameter => $value) {
-            if (is_null($value) && array_key_exists($parameter, $types)) {
+            if (is_null($value) && Arr::exists($types, $parameter)) {
                 $example[$parameter] = $this->getDefaultValueByType($types[$parameter]['type']);
             } elseif (is_array($value)) {
                 $this->replaceNullValues($value, $types, $example[$parameter]);
