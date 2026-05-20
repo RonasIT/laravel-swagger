@@ -372,7 +372,7 @@ class SwaggerService
 
         $code = $response->getStatusCode();
 
-        if (!in_array($code, $responses)) {
+        if (!array_key_exists($code, $responses)) {
             $this->saveExample($code, json_encode($content, JSON_PRETTY_PRINT), $produce);
         }
 

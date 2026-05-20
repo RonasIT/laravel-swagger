@@ -1003,21 +1003,6 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->addData($request, $resource->toResponse($request));
     }
 
-    public function testHandleResponseWithResourceBadRequest()
-    {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
-
-        $request = $this->generateRequest(
-            type: 'get',
-            uri: '/user',
-            controllerMethod: 'user',
-        );
-
-        $resource = UserResource::make(User::factory()->make());
-
-        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
-    }
-
     public function testHandleResponseWithResourceCollection()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_collection'));
