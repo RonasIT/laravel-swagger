@@ -76,7 +76,11 @@ abstract class BaseControllerExtractor
     protected function getFileContent(ReflectionFunctionAbstract $reflectionFunction): array
     {
         if (!isset($this->fileContent)) {
-            $this->fileContent = file($reflectionFunction->getFileName());
+            $fileName = $reflectionFunction->getFileName();
+
+            $this->fileContent = (empty($fileName) || !is_readable($fileName))
+                ? []
+                : file($fileName) ?? [];
         }
 
         return $this->fileContent;

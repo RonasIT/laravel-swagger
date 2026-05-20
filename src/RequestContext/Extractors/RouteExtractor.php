@@ -73,6 +73,8 @@ class RouteExtractor
     protected function isUsesRequestClass(): bool
     {
         return !$this->isClosureAction
+            && !empty($this->controllerClass)
+            && !empty($this->controllerMethod)
             && method_exists($this->controllerClass, $this->controllerMethod);
     }
 
