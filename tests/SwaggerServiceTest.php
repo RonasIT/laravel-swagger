@@ -1049,7 +1049,6 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->addData($request, response()->noContent());
     }
 
-
     public function testHandleResponseAliasToResource()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
