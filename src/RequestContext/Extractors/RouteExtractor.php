@@ -18,7 +18,6 @@ class RouteExtractor
     public function __construct(
         protected Route $route,
     ) {
-
         $this->wheres = $this->route->wheres;
 
         $actionName = $route->getActionName();
