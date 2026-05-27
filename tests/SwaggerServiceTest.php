@@ -1031,7 +1031,7 @@ class SwaggerServiceTest extends TestCase
             controllerMethod: 'users',
         );
 
-        $resource = UsersCollectionResource::make(collect([
+        $resource = UserResource::collection(collect([
             User::factory()->make(),
             User::factory()->make(),
         ]));
