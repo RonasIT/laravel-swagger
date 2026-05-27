@@ -6,10 +6,10 @@
     }
   ],
   "paths": {
-    "\/user": {
+    "\/users": {
       "get": {
         "tags": [
-          "user"
+          "users"
         ],
         "consumes": [
         ],

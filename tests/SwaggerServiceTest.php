@@ -994,7 +994,7 @@ class SwaggerServiceTest extends TestCase
 
         $request = $this->generateRequest(
             type: 'get',
-            uri: '/user',
+            uri: '/users',
             controllerMethod: 'user',
         );
 
