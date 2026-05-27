@@ -32,9 +32,7 @@ class RouteExtractor
 
         $this->controllerClass = $actionParts[0] ?? null;
 
-        $this->controllerMethod = (!is_null($this->controllerClass))
-            ? $actionParts[1] ?? '__invoke'
-            : null;
+        $this->controllerMethod = (is_null($this->controllerClass)) ? null : $actionParts[1] ?? '__invoke';
     }
 
     public function getClosure(): Closure
