@@ -25,8 +25,6 @@ final readonly class RequestContext
     {
         $result = Arr::get($this->headers, strtolower($name), $default);
 
-        return (is_array($result))
-            ? Arr::first($result)
-            : $result;
+        return (is_array($result)) ? Arr::first($result) : $result;
     }
 }
