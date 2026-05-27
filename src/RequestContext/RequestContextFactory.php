@@ -22,7 +22,9 @@ class RequestContextFactory
             httpMethod: strtolower($request->method()),
             uri: $routeExtractor->getUri(),
             payload: $request->all(),
-            requestClassName: $routeExtractor->getRequestClassName(),
+            requestClassName: method_exists($controllerExtractor, 'getRequestClassName')
+                ? $controllerExtractor->getRequestClassName()
+                : null,
             resourceName: $controllerExtractor->resource,
             userResolver: $request->getUserResolver(),
             routeResolver: $request->getRouteResolver(),

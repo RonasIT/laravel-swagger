@@ -21,7 +21,6 @@ class RouteExtractor
     public function __construct(
         protected Route $route,
     ) {
-        $this->methodDependencyResolver = app(MethodDependencyResolver::class);
 
         $this->wheres = $this->route->wheres;
 
@@ -44,30 +43,6 @@ class RouteExtractor
         }
 
         return $uses;
-    }
-
-    public function getRequestClassName(): ?string
-    {
-        if (!$this->isUsesRequestClass()) {
-            return null;
-        }
-
-        $parameters = $this
-            ->methodDependencyResolver
-            ->resolveClassMethodDependencies(
-                instance: app($this->controllerClass),
-                method: $this->controllerMethod,
-            );
-
-        return Arr::first($parameters, fn ($className) => is_string($className) && preg_match('/Request/', $className));
-    }
-
-    protected function isUsesRequestClass(): bool
-    {
-        return !$this->isClosureAction
-            && !empty($this->controllerClass)
-            && !empty($this->controllerMethod)
-            && method_exists($this->controllerClass, $this->controllerMethod);
     }
 
     public function getUri(): string
