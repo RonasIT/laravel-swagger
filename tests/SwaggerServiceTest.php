@@ -1021,6 +1021,24 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->addData($request, $resource->toResponse($request));
     }
 
+    public function testHandleResponseWithResourceAsAnonymousCollection()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_collection'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/users',
+            controllerMethod: 'users',
+        );
+
+        $resource = UsersCollectionResource::make(collect([
+            User::factory()->make(),
+            User::factory()->make(),
+        ]));
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
     public function testHandleResponseNotResource()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_without_resource'));
@@ -1042,6 +1060,21 @@ class SwaggerServiceTest extends TestCase
             type: 'get',
             uri: '/users',
             controllerMethod: 'userAliasResource',
+        );
+
+        $resource = UserResource::make(User::factory()->make());
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
+    public function testHandleResourceAsNewClass()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/users',
+            controllerMethod: 'userWithNewResource',
         );
 
         $resource = UserResource::make(User::factory()->make());

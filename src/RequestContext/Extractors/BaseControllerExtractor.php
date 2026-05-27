@@ -22,11 +22,6 @@ abstract class BaseControllerExtractor
 
     abstract protected function getResourceClass(): ?string;
 
-    protected function isResourceClass(string $className): bool
-    {
-        return is_subclass_of($className, JsonResource::class);
-    }
-
     protected function extractClassName(string $namespace): string
     {
         return Str::afterLast($namespace, '\\');
@@ -36,17 +31,36 @@ abstract class BaseControllerExtractor
     {
         $code = $this->getFunctionCode($reflectionMethod);
 
-        preg_match('/(?:return\s+|=>\s+)([^\s(]+)::make/', $code, $matches);
+        $patterns = [
+            '/(?:return\s+|=>\s+)([^\s(]+)::make/',
+            '/(?:return\s+|=>\s+)([^\s(]+)::collection/',
+            '/(?:return\s+|=>\s+)new\s+([^\s(]+)/',
+        ];
 
-        $resourceName = $matches[1] ?? null;
+        foreach ($patterns as $pattern) {
+            preg_match($pattern, $code, $matches);
 
-        if (empty($resourceName)) {
-            return null;
+            if (empty($matches[1])) {
+                continue;
+            }
+
+            $resourceName = $matches[1];
+
+            $resourceName = (class_exists($resourceName))
+                ? $resourceName
+                : $this->getClassNameFromImports($reflectionMethod, $resourceName);
+
+            if ($this->isResourceClass($resourceName)) {
+                return $resourceName;
+            }
         }
 
-        return (class_exists($resourceName))
-            ? $resourceName
-            : $this->getClassNameFromImports($reflectionMethod, $resourceName);
+        return null;
+    }
+
+    protected function isResourceClass(string $className): bool
+    {
+        return is_subclass_of($className, JsonResource::class);
     }
 
     protected function getFunctionCode(ReflectionFunctionAbstract $reflectionFunction): string

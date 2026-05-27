@@ -2,6 +2,7 @@
 
 namespace RonasIT\AutoDoc\Tests\Support\Mock;
 
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use RonasIT\AutoDoc\Tests\Support\Models\User;
 use RonasIT\AutoDoc\Tests\Support\Resources\UserResource;
 use RonasIT\AutoDoc\Tests\Support\Resources\UserResource as AliasResource;
@@ -28,6 +29,23 @@ class TestController
         $user = User::factory()->create();
 
         return UserResource::make($user);
+    }
+
+    public function userWithNewResource(TestRequest $request)
+    {
+        $user = User::factory()->create();
+
+        return new UserResource($user);
+    }
+
+    public function makeResourceAsCollect(TestRequest $request): AnonymousResourceCollection
+    {
+        $users = collect([
+            User::factory()->create(),
+            User::factory()->create(),
+        ]);
+
+        return UserResource::collection($users);
     }
 
     public function deleteProfile(TestRequest $request): Illuminate\Http\Response
