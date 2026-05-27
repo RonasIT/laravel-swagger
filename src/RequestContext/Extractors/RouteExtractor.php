@@ -4,7 +4,6 @@ namespace RonasIT\AutoDoc\RequestContext\Extractors;
 
 use Closure;
 use Illuminate\Routing\Route;
-use Illuminate\Support\Arr;
 use RonasIT\AutoDoc\Exceptions\NonClosureControllerException;
 use RonasIT\AutoDoc\RequestContext\Resolvers\MethodDependencyResolver;
 
