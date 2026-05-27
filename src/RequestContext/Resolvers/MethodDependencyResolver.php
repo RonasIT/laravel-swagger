@@ -11,9 +11,9 @@ class MethodDependencyResolver
 {
     public function resolveClassMethodDependencies(object $instance, string $method): array
     {
-        return array_map(function ($parameter) {
-            return $this->transformDependency($parameter);
-        }, (new ReflectionMethod($instance, $method))->getParameters());
+        $parameters = (new ReflectionMethod($instance, $method))->getParameters();
+
+        return array_map(fn ($parameter) => $this->transformDependency($parameter), $parameters);
     }
 
     protected function transformDependency(ReflectionParameter $parameter): ?string
@@ -24,7 +24,9 @@ class MethodDependencyResolver
             return null;
         }
 
-        return interface_exists($type->getName()) ? $this->getClassByInterface($type->getName()) : $type->getName();
+        return interface_exists($type->getName())
+            ? $this->getClassByInterface($type->getName())
+            : $type->getName();
     }
 
     protected function getClassByInterface(string $interfaceName): ?string
@@ -35,10 +37,8 @@ class MethodDependencyResolver
 
         $implementation = Arr::get($bindings, "{$interfaceName}.concrete");
 
-        if (empty($implementation)) {
-            return null;
-        }
-
-        return get_class(call_user_func($implementation, $app));
+        return (empty($implementation))
+            ? null
+            : get_class(call_user_func($implementation, $app));
     }
 }
