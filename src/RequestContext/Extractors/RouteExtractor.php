@@ -50,9 +50,7 @@ class RouteExtractor
         $isContainsBasePath = $basePath !== ''
             && str_starts_with($routeUri, $basePath);
 
-        $uri = $isContainsBasePath
-            ? substr($routeUri, strlen($basePath))
-            : $routeUri;
+        $uri = ($isContainsBasePath) ? substr($routeUri, strlen($basePath)) : $routeUri;
 
         return '/' . ltrim($uri, '/');
     }
