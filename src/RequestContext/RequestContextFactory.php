@@ -3,6 +3,8 @@
 namespace RonasIT\AutoDoc\RequestContext;
 
 use Illuminate\Http\Request;
+use RonasIT\AutoDoc\RequestContext\Extractors\ClassControllerExtractor;
+use RonasIT\AutoDoc\RequestContext\Extractors\ClosureControllerExtractor;
 use RonasIT\AutoDoc\RequestContext\Extractors\RouteExtractor;
 use RonasIT\AutoDoc\RequestContext\Resolvers\SecurityTokenResolver;
 
@@ -12,12 +14,16 @@ class RequestContextFactory
     {
         $routeExtractor = new RouteExtractor($request->route());
 
+        $controllerExtractor = ($routeExtractor->isClosureAction)
+            ? new ClosureControllerExtractor($routeExtractor->getClosure())
+            : new ClassControllerExtractor($routeExtractor->controllerClass, $routeExtractor->controllerMethod);
+
         return new RequestContext(
             httpMethod: strtolower($request->method()),
             uri: $routeExtractor->getUri(),
             payload: $request->all(),
             requestClassName: $routeExtractor->getRequestClassName(),
-            resourceName: $routeExtractor->getResourceName(),
+            resourceName: $controllerExtractor->resource,
             userResolver: $request->getUserResolver(),
             routeResolver: $request->getRouteResolver(),
             headers: $request->headers->all(),

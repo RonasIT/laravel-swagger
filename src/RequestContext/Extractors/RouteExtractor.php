@@ -46,15 +46,6 @@ class RouteExtractor
         return $uses;
     }
 
-    public function getResourceName(): ?string
-    {
-        $extractor = ($this->isClosureAction)
-            ? new ClosureControllerExtractor($this->getClosure())
-            : new ClassControllerExtractor($this->controllerClass, $this->controllerMethod);
-
-        return $extractor->resource;
-    }
-
     public function getRequestClassName(): ?string
     {
         if (!$this->isUsesRequestClass()) {
