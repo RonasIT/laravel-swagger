@@ -5,7 +5,6 @@ namespace RonasIT\AutoDoc\RequestContext\Extractors;
 use Closure;
 use Illuminate\Routing\Route;
 use RonasIT\AutoDoc\Exceptions\NonClosureControllerException;
-use RonasIT\AutoDoc\RequestContext\Resolvers\MethodDependencyResolver;
 
 class RouteExtractor
 {
@@ -15,7 +14,6 @@ class RouteExtractor
     public readonly ?string $controllerMethod;
     public readonly bool $isClosureAction;
     public readonly array $wheres;
-    protected MethodDependencyResolver $methodDependencyResolver;
 
     public function __construct(
         protected Route $route,
