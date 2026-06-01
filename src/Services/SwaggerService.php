@@ -511,21 +511,16 @@ class SwaggerService
 
             if ($this->isArrayItemParameter($parameter, $rules)) {
                 $this->saveListParameters(Str::remove('.*', $parameter), $rules, $attributes, $annotations);
-
-                continue;
+            } else {
+                $this->saveQueryParameter($parameter, $rules, $attributes, $annotations);
             }
-
-            $this->saveQueryParameter($parameter, $rules, $attributes, $annotations);
         }
     }
 
     protected function isArrayItemParameter(string $parameter, Collection $rules): bool
     {
-        if (!Str::endsWith($parameter, '.*')) {
-            return false;
-        }
-
-        return $rules->contains(fn ($rule) => Str::startsWith($rule, 'in:'));
+        return Str::endsWith($parameter, '.*')
+            && $rules->contains(fn ($rule) => Str::startsWith($rule, 'in:'));
     }
 
     protected function saveListParameters(string $parameter, Collection $rules, array $attributes, array $annotations): void
@@ -541,10 +536,8 @@ class SwaggerService
         }
     }
 
-    protected function saveQueryParameter(string $parameter, Collection $validation, array $attributes, array $annotations, ?string $example = null): void
+    protected function saveQueryParameter(string $parameter, Collection $rules, array $attributes, array $annotations, ?string $example = null): void
     {
-        $validation = $validation->all();
-
         $existedParameter = Arr::first(
             $this->item['parameters'],
             fn ($existedParameter) => $existedParameter['name'] === $parameter && Arr::get($existedParameter, 'example') === $example,
@@ -554,22 +547,20 @@ class SwaggerService
             return;
         }
 
-        $description = $this->generateDescription($parameter, $validation, $attributes, $annotations);
-
         $parameterDefinition = [
             'in' => 'query',
             'name' => $parameter,
-            'description' => $description,
+            'description' => $this->generateDescription($parameter, $rules->all(), $attributes, $annotations),
             'schema' => [
-                'type' => $this->getParameterType($validation),
+                'type' => $this->getParameterType($rules->all()),
             ],
         ];
 
-        if (in_array('required', $validation)) {
+        if ($rules->contains('required')) {
             $parameterDefinition['required'] = true;
         }
 
-        if ($example !== null) {
+        if (!is_null($example)) {
             $parameterDefinition['example'] = $example;
         }
 
@@ -650,12 +641,12 @@ class SwaggerService
         ];
     }
 
-    protected function generateDescription(string $parameter, array $validation, array $attributes, array $annotations): string
+    protected function generateDescription(string $parameter, array $rules, array $attributes, array $annotations): string
     {
         $description = Arr::get($annotations, $parameter);
 
         if (empty($description)) {
-            $description = Arr::get($attributes, $parameter, implode(', ', $validation));
+            $description = Arr::get($attributes, $parameter, implode(', ', $rules));
         }
 
         return $description;
@@ -905,7 +896,7 @@ class SwaggerService
                             $base = $params->first();
                             $base['schema']['enum'] = $params
                                 ->pluck('example')
-                                ->filter(fn ($value) => $value !== null)
+                                ->filter(fn ($value) => !is_null($value))
                                 ->values()
                                 ->all();
 

@@ -227,7 +227,7 @@ OpenAPI files specified in the `additional_paths` configuration.
 
 ### Integration with Postman
 
-The Postman collection is available at the `/auto-doc/documentation/postman` route.
+The package provides a separate endpoint to get the OpenAPI spec documentation in a Postman-specific format. Pass your app's `/auto-doc/documentation/postman` endpoint into the [Postman import](https://learning.postman.com/docs/getting-started/importing-and-exporting/importing-data).
 
 ## Migration guides
 
