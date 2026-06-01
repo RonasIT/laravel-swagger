@@ -6,6 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -499,49 +500,51 @@ class SwaggerService
         return $rule;
     }
 
-    protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
+    protected function saveGetRequestParameters($validation, array $attributes, array $annotations)
     {
-        foreach ($rules as $parameter => $rule) {
-            if (Arr::exists($rules, "{$parameter}.*")) {
+        foreach ($validation as $parameter => $rules) {
+            if (Arr::exists($validation, "{$parameter}.*")) {
                 continue;
             }
 
-            $validation = explode('|', $rule);
+            $rules = collect(explode('|', $rules));
 
-            if ($this->isArrayItemParameter($parameter, $validation)) {
-                $this->saveRelationParameters(Str::remove('.*', $parameter), $validation, $attributes, $annotations);
+            if ($this->isArrayItemParameter($parameter, $rules)) {
+                $this->saveListParameters(Str::remove('.*', $parameter), $rules, $attributes, $annotations);
 
                 continue;
             }
 
-            $this->saveQueryParameter($parameter, $validation, $attributes, $annotations);
+            $this->saveQueryParameter($parameter, $rules, $attributes, $annotations);
         }
     }
 
-    protected function isArrayItemParameter(string $parameter, array $validation): bool
+    protected function isArrayItemParameter(string $parameter, Collection $validation): bool
     {
         if (!Str::endsWith($parameter, '.*')) {
             return false;
         }
 
-        return collect($validation)->contains(fn ($rule) => Str::startsWith($rule, 'in:'));
+        return $validation->contains(fn ($rule) => Str::startsWith($rule, 'in:'));
     }
 
-    protected function saveRelationParameters(string $parameter, array $validation, array $attributes, array $annotations): void
+    protected function saveListParameters(string $parameter, Collection $validation, array $attributes, array $annotations): void
     {
-        $inRule = collect($validation)->first(fn ($rule) => Str::startsWith($rule, 'in:'));
+        $inRule = $validation->first(fn ($rule) => Str::startsWith($rule, 'in:'));
 
         $availableValues = $inRule ? array_filter(explode(',', Str::after($inRule, 'in:')), fn ($value) => $value !== '') : [];
 
-        $validationWithoutRequired = array_values(array_filter($validation, fn ($rule) => $rule !== 'required'));
+        $filteredValidation = $validation->reject(fn ($rule) => $rule === 'required')->values();
 
         foreach ($availableValues as $value) {
-            $this->saveQueryParameter("{$parameter}[]", $validationWithoutRequired, $attributes, $annotations, $value);
+            $this->saveQueryParameter("{$parameter}[]", $filteredValidation, $attributes, $annotations, $value);
         }
     }
 
-    protected function saveQueryParameter(string $parameter, array $validation, array $attributes, array $annotations, ?string $example = null): void
+    protected function saveQueryParameter(string $parameter, Collection|array $validation, array $attributes, array $annotations, ?string $example = null): void
     {
+        $validation = collect($validation)->all();
+
         $existedParameter = Arr::first(
             $this->item['parameters'],
             fn ($existedParameter) => $existedParameter['name'] === $parameter && Arr::get($existedParameter, 'example') === $example,
