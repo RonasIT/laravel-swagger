@@ -519,31 +519,31 @@ class SwaggerService
         }
     }
 
-    protected function isArrayItemParameter(string $parameter, Collection $validation): bool
+    protected function isArrayItemParameter(string $parameter, Collection $rules): bool
     {
         if (!Str::endsWith($parameter, '.*')) {
             return false;
         }
 
-        return $validation->contains(fn ($rule) => Str::startsWith($rule, 'in:'));
+        return $rules->contains(fn ($rule) => Str::startsWith($rule, 'in:'));
     }
 
-    protected function saveListParameters(string $parameter, Collection $validation, array $attributes, array $annotations): void
+    protected function saveListParameters(string $parameter, Collection $rules, array $attributes, array $annotations): void
     {
-        $inRule = $validation->first(fn ($rule) => Str::startsWith($rule, 'in:'));
+        $inRule = $rules->first(fn ($rule) => Str::startsWith($rule, 'in:'));
+        $availableValues = Str::after($inRule, 'in:');
+        $availableValues = explode(',', $availableValues);
 
-        $availableValues = $inRule ? array_filter(explode(',', Str::after($inRule, 'in:')), fn ($value) => $value !== '') : [];
-
-        $filteredValidation = $validation->reject(fn ($rule) => $rule === 'required')->values();
+        $filteredRules = $rules->reject(fn ($rule) => $rule === 'required')->values();
 
         foreach ($availableValues as $value) {
-            $this->saveQueryParameter("{$parameter}[]", $filteredValidation, $attributes, $annotations, $value);
+            $this->saveQueryParameter("{$parameter}[]", $filteredRules, $attributes, $annotations, $value);
         }
     }
 
-    protected function saveQueryParameter(string $parameter, Collection|array $validation, array $attributes, array $annotations, ?string $example = null): void
+    protected function saveQueryParameter(string $parameter, Collection $validation, array $attributes, array $annotations, ?string $example = null): void
     {
-        $validation = collect($validation)->all();
+        $validation = $validation->all();
 
         $existedParameter = Arr::first(
             $this->item['parameters'],
