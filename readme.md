@@ -187,7 +187,6 @@ php artisan vendor:publish --provider=RonasIT\\AutoDoc\\AutoDocServiceProvider
 4. Run tests
 5. Go to route defined in the `auto-doc.route` config
 6. Profit!
-
     ![img.png](resources/assets/images/img.png)
 
 ### Annotations
@@ -225,6 +224,10 @@ This change is reflected immediately, without the need to rebuild the documentat
 
 The package supports the integration of the primary documentation with additional valid
 OpenAPI files specified in the `additional_paths` configuration.
+
+### Integration with Postman
+
+The package provides a separate endpoint to get the OpenAPI spec documentation in a Postman-specific format. Pass your app's `/auto-doc/documentation/postman` endpoint into the [Postman import](https://learning.postman.com/docs/getting-started/importing-and-exporting/importing-data).
 
 ## Migration guides
 

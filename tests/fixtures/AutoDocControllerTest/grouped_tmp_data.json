@@ -112,18 +112,13 @@
                         "name": "with[]",
                         "description": "string, in:posts,comments",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "posts",
+                                "comments"
+                            ]
                         },
                         "example": "posts"
-                    },
-                    {
-                        "in": "query",
-                        "name": "with[]",
-                        "description": "string, in:posts,comments",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "example": "comments"
                     }
                 ],
                 "responses": {
