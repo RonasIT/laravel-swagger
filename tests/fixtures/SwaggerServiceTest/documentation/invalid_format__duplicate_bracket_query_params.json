@@ -1,0 +1,38 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Invalid API"
+  },
+  "paths": {
+    "/v0.1/test": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "with[]",
+            "description": "string, in:posts,comments",
+            "schema": {
+              "type": "string"
+            },
+            "example": "posts"
+          },
+          {
+            "in": "query",
+            "name": "with[]",
+            "description": "string, in:posts,comments",
+            "schema": {
+              "type": "string"
+            },
+            "example": "posts"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "hello world"
+          }
+        }
+      }
+    }
+  }
+}

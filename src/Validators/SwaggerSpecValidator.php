@@ -460,8 +460,15 @@ class SwaggerSpecValidator
     protected function validateParamsUnique(array $params, string $operationId): void
     {
         $collection = collect($params);
+
         $duplicates = $collection->duplicates(function ($item) {
-            return $item['in'] . $item['name'];
+            $key = $item['in'] . $item['name'];
+
+            if (Str::endsWith($item['name'], '[]')) {
+                $key .= $item['example'];
+            }
+
+            return $key;
         });
 
         if ($duplicates->count()) {

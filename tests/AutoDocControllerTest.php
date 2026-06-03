@@ -37,7 +37,16 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson(self::$documentation);
+        $this->assertEqualsJsonFixture('grouped_tmp_data', $response->json());
+    }
+
+    public function testGetDocumentationForPostman()
+    {
+        $response = $this->json('get', '/auto-doc/documentation/postman');
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $this->assertEqualsJsonFixture('tmp_data', $response->json());
     }
 
     public function testGetJSONDocumentationWithAdditionalPaths()
@@ -66,7 +75,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson(self::$documentation);
+        $this->assertEqualsJsonFixture('grouped_tmp_data', $response->json());
     }
 
     public function testGetJSONDocumentationIsEmpty()
@@ -82,7 +91,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson(self::$documentation);
+        $this->assertEqualsJsonFixture('grouped_tmp_data', $response->json());
     }
 
     public function testGetJSONDocumentationInvalidAdditionalDoc()
@@ -97,7 +106,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson(self::$documentation);
+        $this->assertEqualsJsonFixture('grouped_tmp_data', $response->json());
     }
 
     public function testGetJSONDocumentationWithGlobalPrefix()
@@ -108,7 +117,7 @@ class AutoDocControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
 
-        $response->assertJson(self::$documentation);
+        $this->assertEqualsJsonFixture('grouped_tmp_data', $response->json());
     }
 
     public function testGetViewDocumentation()

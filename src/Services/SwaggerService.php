@@ -6,6 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -115,7 +116,7 @@ class SwaggerService
 
         $securityDriver = Arr::get($this->config, 'security');
 
-        if ($securityDriver && !array_key_exists($securityDriver, Arr::get($this->config, 'security_drivers'))) {
+        if ($securityDriver && !Arr::exists(Arr::get($this->config, 'security_drivers'), $securityDriver)) {
             throw new WrongSecurityConfigException();
         }
     }
@@ -499,37 +500,71 @@ class SwaggerService
         return $rule;
     }
 
-    protected function saveGetRequestParameters($rules, array $attributes, array $annotations)
+    protected function saveGetRequestParameters($validation, array $attributes, array $annotations)
     {
-        foreach ($rules as $parameter => $rule) {
-            $validation = explode('|', $rule);
-
-            $description = Arr::get($annotations, $parameter);
-
-            if (empty($description)) {
-                $description = Arr::get($attributes, $parameter, implode(', ', $validation));
+        foreach ($validation as $parameter => $rules) {
+            if (Arr::exists($validation, "{$parameter}.*")) {
+                continue;
             }
 
-            $existedParameter = Arr::first($this->item['parameters'], function ($existedParameter) use ($parameter) {
-                return $existedParameter['name'] === $parameter;
-            });
+            $rules = collect(explode('|', $rules));
 
-            if (empty($existedParameter)) {
-                $parameterDefinition = [
-                    'in' => 'query',
-                    'name' => $parameter,
-                    'description' => $description,
-                    'schema' => [
-                        'type' => $this->getParameterType($validation),
-                    ],
-                ];
-                if (in_array('required', $validation)) {
-                    $parameterDefinition['required'] = true;
-                }
-
-                $this->item['parameters'][] = $parameterDefinition;
+            if ($this->isArrayItemParameter($parameter, $rules)) {
+                $this->saveListParameters(Str::remove('.*', $parameter), $rules, $attributes, $annotations);
+            } else {
+                $this->saveQueryParameter($parameter, $rules, $attributes, $annotations);
             }
         }
+    }
+
+    protected function isArrayItemParameter(string $parameter, Collection $rules): bool
+    {
+        return Str::endsWith($parameter, '.*')
+            && $rules->contains(fn ($rule) => Str::startsWith($rule, 'in:'));
+    }
+
+    protected function saveListParameters(string $parameter, Collection $rules, array $attributes, array $annotations): void
+    {
+        $inRule = $rules->first(fn ($rule) => Str::startsWith($rule, 'in:'));
+        $availableValues = Str::after($inRule, 'in:');
+        $availableValues = explode(',', $availableValues);
+
+        $filteredRules = $rules->reject(fn ($rule) => $rule === 'required')->values();
+
+        foreach ($availableValues as $value) {
+            $this->saveQueryParameter("{$parameter}[]", $filteredRules, $attributes, $annotations, $value);
+        }
+    }
+
+    protected function saveQueryParameter(string $parameter, Collection $rules, array $attributes, array $annotations, ?string $example = null): void
+    {
+        $existedParameter = Arr::first(
+            $this->item['parameters'],
+            fn ($existedParameter) => $existedParameter['name'] === $parameter && Arr::get($existedParameter, 'example') === $example,
+        );
+
+        if (!empty($existedParameter)) {
+            return;
+        }
+
+        $parameterDefinition = [
+            'in' => 'query',
+            'name' => $parameter,
+            'description' => $this->generateDescription($parameter, $rules->all(), $attributes, $annotations),
+            'schema' => [
+                'type' => $this->getParameterType($rules->all()),
+            ],
+        ];
+
+        if ($rules->contains('required')) {
+            $parameterDefinition['required'] = true;
+        }
+
+        if (!is_null($example)) {
+            $parameterDefinition['example'] = $example;
+        }
+
+        $this->item['parameters'][] = $parameterDefinition;
     }
 
     protected function savePostRequestParameters($actionName, $rules, array $attributes, array $annotations)
@@ -576,7 +611,7 @@ class SwaggerService
 
             $rulesArray = array_flip(array_diff_key(array_flip($rulesArray), $uselessRules));
 
-            $this->saveParameterDescription($data, $parameter, $rulesArray, $attributes, $annotations);
+            $data['properties'][$parameter]['description'] = $this->generateDescription($parameter, $rulesArray, $attributes, $annotations);
         }
 
         $data['example'] = $this->generateExample($data['properties']);
@@ -606,20 +641,15 @@ class SwaggerService
         ];
     }
 
-    protected function saveParameterDescription(
-        array &$data,
-        string $parameter,
-        array $rulesArray,
-        array $attributes,
-        array $annotations,
-    ) {
+    protected function generateDescription(string $parameter, array $rules, array $attributes, array $annotations): string
+    {
         $description = Arr::get($annotations, $parameter);
 
         if (empty($description)) {
-            $description = Arr::get($attributes, $parameter, implode(', ', $rulesArray));
+            $description = Arr::get($attributes, $parameter, implode(', ', $rules));
         }
 
-        $data['properties'][$parameter]['description'] = $description;
+        return $description;
     }
 
     protected function requestHasMoreProperties($actionName): bool
@@ -849,6 +879,38 @@ class SwaggerService
         return $documentation;
     }
 
+    public function getPrettyDocFileContent(): array
+    {
+        $documentation = $this->getDocFileContent();
+
+        foreach ($documentation['paths'] as $path => $pathItem) {
+            foreach ($pathItem as $method => $operation) {
+                if (Arr::has($operation, 'parameters')) {
+                    $documentation['paths'][$path][$method]['parameters'] = collect($operation['parameters'])
+                        ->groupBy('name')
+                        ->map(function ($params, $name) {
+                            if ($params->count() === 1 || !Str::endsWith($name, '[]')) {
+                                return $params->first();
+                            }
+
+                            $base = $params->first();
+                            $base['schema']['enum'] = $params
+                                ->pluck('example')
+                                ->filter(fn ($value) => !is_null($value))
+                                ->values()
+                                ->all();
+
+                            return $base;
+                        })
+                        ->values()
+                        ->all();
+                }
+            }
+        }
+
+        return $documentation;
+    }
+
     protected function getErrorPlace(Throwable $exception): string
     {
         $firstTraceEntry = Arr::first($exception->getTrace());
@@ -947,7 +1009,7 @@ class SwaggerService
     protected function replaceNullValues($parameters, $types, &$example)
     {
         foreach ($parameters as $parameter => $value) {
-            if (is_null($value) && array_key_exists($parameter, $types)) {
+            if (is_null($value) && Arr::exists($types, $parameter)) {
                 $example[$parameter] = $this->getDefaultValueByType($types[$parameter]['type']);
             } elseif (is_array($value)) {
                 $this->replaceNullValues($value, $types, $example[$parameter]);
