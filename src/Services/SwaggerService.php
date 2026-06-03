@@ -154,10 +154,10 @@ class SwaggerService
             'info' => $this->prepareInfo($view, $viewData, $license),
         ];
 
-        $securityDefinitions = $this->generateSecurityDefinition();
+        $securitySchemes = $this->generateSecuritySchemes();
 
-        if (!empty($securityDefinitions)) {
-            $data['securityDefinitions'] = $securityDefinitions;
+        if (!empty($securitySchemes)) {
+            $data['components']['securitySchemes'] = $securitySchemes;
         }
 
         return $data;
@@ -170,18 +170,18 @@ class SwaggerService
         }
     }
 
-    protected function generateSecurityDefinition(): ?array
+    protected function generateSecuritySchemes(): ?array
     {
         if (empty($this->security)) {
             return null;
         }
 
         return [
-            $this->security => $this->generateSecurityDefinitionObject($this->security),
+            $this->security => $this->generateSecuritySchemesObject($this->security),
         ];
     }
 
-    protected function generateSecurityDefinitionObject($type): array
+    protected function generateSecuritySchemesObject($type): array
     {
         return [
             'type' => $this->config['security_drivers'][$type]['type'],
@@ -744,15 +744,15 @@ class SwaggerService
 
         switch (Arr::get($securityDriver, 'in')) {
             case 'header':
-                // TODO Change this logic after migration on Swagger 3.0
-                // Swagger 2.0 does not support cookie authorization.
-                $securityToken = $this->request->hasHeader($securityDriver['name'])
-                    ? $this->request->header($securityDriver['name'])
-                    : $this->request->cookie($securityDriver['name']);
+                $securityToken = $this->request->header($securityDriver['name']);
 
                 break;
             case 'query':
                 $securityToken = $this->request->query($securityDriver['name']);
+
+                break;
+            case 'cookie':
+                $securityToken = $this->request->cookie($securityDriver['name']);
 
                 break;
             default:

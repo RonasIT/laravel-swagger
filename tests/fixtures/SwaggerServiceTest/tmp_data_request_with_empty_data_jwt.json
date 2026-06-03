@@ -7,7 +7,14 @@
     ],
     "paths": [],
     "components": {
-        "schemas": []
+        "schemas": [],
+        "securitySchemes": {
+            "jwt": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
     },
     "info": {
         "description": "This is automatically collected documentation",
@@ -20,13 +27,6 @@
         "license": {
             "name": "",
             "url": ""
-        }
-    },
-    "securityDefinitions": {
-        "jwt": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }

@@ -200,8 +200,8 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'invalid_format_security_definition_type.html',
             ],
             [
-                'tmpDoc' => 'documentation/invalid_format__security_definition__flow',
-                'fixture' => 'invalid_format_security_definition_flow.html',
+                'tmpDoc' => 'documentation/invalid_format__security_definition__flows',
+                'fixture' => 'invalid_format_security_definition_flows.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__in',

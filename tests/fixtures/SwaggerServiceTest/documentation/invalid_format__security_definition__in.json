@@ -5,6 +5,15 @@
       "url": "http:\/\/localhost"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "query",
+        "in": "invalid"
+      }
+    }
+  },
   "paths": {
     "\/api\/users":
     {
@@ -79,12 +88,5 @@
     {
       "email": "your@email.com"
     }
-  },
-  "securityDefinitions": [
-    {
-      "type": "basic",
-      "in": "invalid",
-      "flow": "password"
-    }
-  ]
+  }
 }

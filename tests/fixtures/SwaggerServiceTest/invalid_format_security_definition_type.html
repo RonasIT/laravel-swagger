@@ -6,7 +6,7 @@
 
 #### **Details:**
 
-Validation failed. Field &#039;securityDefinitions.0.type&#039; has an invalid value: invalid. Allowed values: basic, apiKey, oauth2.
+Validation failed. Field &#039;api_key.type&#039; has an invalid value: invalid. Allowed values: apiKey, http, mutualTLS, oauth2, openIdConnect.
 
 #### **Error place:**
 
@@ -14,4 +14,4 @@ file=/src/Validators/SwaggerSpecValidator.php<br />
 line=999<br />
 function=validateFieldValue<br />
 class=RonasIT\AutoDoc\Validators\SwaggerSpecValidator<br />
-args=[{"type":"invalid","in":"query","flow":"password"},"type",["basic","apiKey","oauth2"],"securityDefinitions.0"]
+args=[{"type":"invalid","name":"query","in":"header"},"type",["apiKey","http","mutualTLS","oauth2","openIdConnect"],"api_key"]
