@@ -97,7 +97,7 @@ class SwaggerSpecValidator
         $this->validateSchemes();
         $this->validatePaths();
         $this->validateDefinitions();
-        $this->validateSecurityDefinitions();
+        $this->validateSecuritySchemes();
         $this->validateTags();
         $this->validateRefs();
     }
@@ -159,7 +159,7 @@ class SwaggerSpecValidator
         }
     }
 
-    protected function validateSecurityDefinitions(): void
+    protected function validateSecuritySchemes(): void
     {
         $securitySchemes = Arr::get($this->doc, 'components.securitySchemes', []);
 
@@ -406,7 +406,7 @@ class SwaggerSpecValidator
 
         $fields = Arr::wrap($data[$field]);
 
-        if (is_multidimensional($fields)) {
+        if (!array_is_list($fields)) {
             $fields = array_keys($fields);
         }
 
