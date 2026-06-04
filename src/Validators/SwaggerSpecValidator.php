@@ -406,7 +406,7 @@ class SwaggerSpecValidator
 
         $fields = Arr::wrap($data[$field]);
 
-        if (!array_is_list($fields)) {
+        if (array_keys($fields) !== range(0, count($fields) - 1)) {
             $fields = array_keys($fields);
         }
 
