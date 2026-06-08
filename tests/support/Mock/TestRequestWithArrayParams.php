@@ -1,0 +1,34 @@
+<?php
+
+namespace RonasIT\AutoDoc\Tests\Support\Mock;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class TestRequestWithArrayParams extends FormRequest
+{
+    public function rules(): array
+    {
+        $availableRelations = implode(',', $this->getAvailableRelations());
+
+        return [
+            'query' => 'string|required',
+            'with' => 'array',
+            'with.*' => "required|string|in:{$availableRelations}",
+            'with_count' => 'array',
+            'with_count.*' => 'required|string|in:team',
+            'status_in_list' => 'array',
+            'status_in_list.*' => 'string|in:active,blocked',
+            'is_active' => 'array',
+            'is_active.*' => 'string|in:0,1',
+        ];
+    }
+
+    protected function getAvailableRelations(): array
+    {
+        return [
+            'team.sport',
+            'team.logo',
+            'team.logo.preview',
+        ];
+    }
+}
