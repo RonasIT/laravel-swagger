@@ -4,19 +4,19 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Support\Facades\Route;
 use RonasIT\AutoDoc\Exceptions\NonClosureControllerException;
-use RonasIT\AutoDoc\RequestContext\Extractors\RouteExtractor;
+use RonasIT\AutoDoc\Inspectors\RouteInspector;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestController;
 
 class UnitTest extends TestCase
 {
-    public function testRouteExtractorGetClosureException()
+    public function testRouteInspectorGetClosureException()
     {
         $this->assertExceptionThrew(NonClosureControllerException::class, '');
 
         $route = Route::get('/some/url')->setAction(['controller' => TestController::class . '@test']);
 
-        $extractor = new RouteExtractor($route);
+        $inspector = new RouteInspector($route);
 
-        $extractor->getClosure();
+        $inspector->getClosure();
     }
 }

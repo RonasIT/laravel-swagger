@@ -2,6 +2,7 @@
 
 namespace RonasIT\AutoDoc\Tests\Support\Mock;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use RonasIT\AutoDoc\Tests\Support\Models\User;
 use RonasIT\AutoDoc\Tests\Support\Resources\UserResource;
@@ -25,6 +26,13 @@ class TestController
     }
 
     public function user(TestRequest $request)
+    {
+        $user = User::factory()->create();
+
+        return UserResource::make($user);
+    }
+
+    public function userWithUnionReturnType(TestRequest $request): UserResource|JsonResponse
     {
         $user = User::factory()->create();
 

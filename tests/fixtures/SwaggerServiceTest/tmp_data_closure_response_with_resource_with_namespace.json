@@ -15,36 +15,10 @@
         "produces": [
           "application/json"
         ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "query",
-            "description": "string, required",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "in": "query",
-            "name": "user_id",
-            "description": "integer, with_to_array_rule_string_name",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "is_email_enabled",
-            "description": "test_rule_without_to_string",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
-            "description": "Operation successfully done",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -61,9 +35,7 @@
           }
         },
         "security": [],
-        "description": "",
-        "deprecated": false,
-        "summary": "test"
+        "description": ""
       }
     }
   },

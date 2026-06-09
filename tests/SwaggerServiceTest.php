@@ -1033,6 +1033,21 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->addData($request, $resource->toResponse($request));
     }
 
+    public function testHandleResponseWithUnionReturnType()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_union_return_type'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/users',
+            controllerMethod: 'userWithUnionReturnType',
+        );
+
+        $resource = UserResource::make(User::factory()->make());
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
     public function testHandleResponseWithResourceCollection()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_collection'));
@@ -1125,7 +1140,7 @@ class SwaggerServiceTest extends TestCase
         $request = $this
             ->getBaseRequest('get', $uri)
             ->setRouteResolver(fn () => Route::get($uri)->setAction([
-                'uses' => fn () => UserResource::make($user),
+                'uses' => fn (TestRequest $request) => UserResource::make($user),
             ]));
 
         $response = UserResource::make($user)->toResponse($request);
@@ -1137,7 +1152,7 @@ class SwaggerServiceTest extends TestCase
     {
         config(['auto-doc.security' => 'jwt']);
 
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_closure_response_with_resource'));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_closure_response_with_resource_with_namespace'));
 
         $uri = '/closure';
 

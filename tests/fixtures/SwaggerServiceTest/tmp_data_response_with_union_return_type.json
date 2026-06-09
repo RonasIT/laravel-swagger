@@ -2,18 +2,19 @@
   "openapi": "3.1.0",
   "servers": [
     {
-      "url": "http://localhost"
+      "url": "http:\/\/localhost"
     }
   ],
   "paths": {
-    "/closure": {
+    "\/users": {
       "get": {
         "tags": [
-          "closure"
+          "users"
         ],
-        "consumes": [],
+        "consumes": [
+        ],
         "produces": [
-          "application/json"
+          "application\/json"
         ],
         "parameters": [
           {
@@ -46,10 +47,10 @@
           "200": {
             "description": "Operation successfully done",
             "content": {
-              "application/json": {
+              "application\/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User",
-                  "type": "object"
+                  "type": "object",
+                  "$ref": "#\/components\/schemas\/User"
                 },
                 "example": {
                   "id": 1,
@@ -95,9 +96,9 @@
     }
   },
   "securityDefinitions": {
-    "jwt": {
+    "laravel": {
       "type": "apiKey",
-      "name": "authorization",
+      "name": "Cookie",
       "in": "header"
     }
   }
