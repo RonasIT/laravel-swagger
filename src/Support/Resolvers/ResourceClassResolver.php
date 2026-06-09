@@ -1,26 +1,27 @@
 <?php
 
-namespace RonasIT\AutoDoc\Support;
+namespace RonasIT\AutoDoc\Support\Resolvers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
+use RonasIT\AutoDoc\DTO\ResolvedResource;
 
 class ResourceClassResolver
 {
-    public function resolve(ReflectionFunctionAbstract $reflection): ?string
+    public function resolve(ReflectionFunctionAbstract $reflection): ?ResolvedResource
     {
         $fileContent = $this->getFileContent($reflection);
         $code = $this->getFunctionCode($reflection, $fileContent);
 
         $patterns = [
-            '/(?:return\s+|=>\s+)([^\s(]+)::make/',
-            '/(?:return\s+|=>\s+)([^\s(]+)::collection/',
-            '/(?:return\s+|=>\s+)new\s+([^\s(]+)/',
+            'single' => '/(?:return\s+|=>\s+)([^\s(]+)::make/',
+            'collection' => '/(?:return\s+|=>\s+)([^\s(]+)::collection/',
+            'class' => '/(?:return\s+|=>\s+)new\s+([^\s(]+)/',
         ];
 
-        foreach ($patterns as $pattern) {
+        foreach ($patterns as $type => $pattern) {
             preg_match($pattern, $code, $matches);
 
             if (empty($matches[1])) {
@@ -34,7 +35,7 @@ class ResourceClassResolver
                 : $this->getClassNameFromImports($resourceName, $fileContent);
 
             if (is_subclass_of($resourceName, JsonResource::class)) {
-                return $resourceName;
+                return new ResolvedResource($resourceName, $type === 'collection');
             }
         }
 

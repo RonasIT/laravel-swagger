@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\AutoDoc\Support;
+namespace RonasIT\AutoDoc\Support\Resolvers;
 
 use Illuminate\Container\Container;
 use Illuminate\Support\Arr;

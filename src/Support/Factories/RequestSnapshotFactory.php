@@ -1,8 +1,9 @@
 <?php
 
-namespace RonasIT\AutoDoc\Support;
+namespace RonasIT\AutoDoc\Support\Factories;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use RonasIT\AutoDoc\Contracts\ControllerInspectorContract;
 use RonasIT\AutoDoc\DTO\HttpActionMeta;
 use RonasIT\AutoDoc\DTO\RequestSnapshot;
@@ -10,6 +11,8 @@ use RonasIT\AutoDoc\DTO\RouteSnapshot;
 use RonasIT\AutoDoc\Inspectors\ClassControllerInspector;
 use RonasIT\AutoDoc\Inspectors\ClosureControllerInspector;
 use RonasIT\AutoDoc\Inspectors\RouteInspector;
+use RonasIT\AutoDoc\Support\Resolvers\MethodDependencyResolver;
+use RonasIT\AutoDoc\Support\Resolvers\ResourceClassResolver;
 
 class RequestSnapshotFactory
 {
@@ -27,6 +30,13 @@ class RequestSnapshotFactory
         $controllerInspector = $this->getControllerInspector($routeInspector);
 
         $requestClass = $controllerInspector->getRequestClass();
+        $resolvedResource = $controllerInspector->getResourceClass();
+
+        $resourceClass = match (true) {
+            $resolvedResource === null => null,
+            $resolvedResource->isCollection => Str::replaceLast('Resource', 'Collection', class_basename($resolvedResource->class)),
+            default => $resolvedResource->class,
+        };
 
         return new RequestSnapshot(
             route: new RouteSnapshot(
@@ -36,7 +46,7 @@ class RequestSnapshotFactory
             ),
             action: new HttpActionMeta(
                 requestClass: $requestClass,
-                resourceClass: $controllerInspector->getResourceClass(),
+                resourceClass: $resourceClass,
             ),
             requestData: $this->requestDataFactory->make($request, $requestClass),
             hasSecurityToken: $this->resolveSecurityToken($request),

@@ -1068,12 +1068,12 @@ class SwaggerServiceTest extends TestCase
 
     public function testHandleResponseWithResourceAsAnonymousCollection()
     {
-        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_collection'));
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_anonim_collection'));
 
         $request = $this->generateRequest(
             type: 'get',
             uri: '/users',
-            controllerMethod: 'users',
+            controllerMethod: 'makeResourceAsCollect',
         );
 
         $resource = UserResource::collection(collect([

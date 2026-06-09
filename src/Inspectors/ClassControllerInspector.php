@@ -3,6 +3,7 @@
 namespace RonasIT\AutoDoc\Inspectors;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use ReflectionException;
@@ -10,8 +11,9 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionUnionType;
 use RonasIT\AutoDoc\Contracts\ControllerInspectorContract;
-use RonasIT\AutoDoc\Support\MethodDependencyResolver;
-use RonasIT\AutoDoc\Support\ResourceClassResolver;
+use RonasIT\AutoDoc\DTO\ResolvedResource;
+use RonasIT\AutoDoc\Support\Resolvers\MethodDependencyResolver;
+use RonasIT\AutoDoc\Support\Resolvers\ResourceClassResolver;
 
 class ClassControllerInspector implements ControllerInspectorContract
 {
@@ -23,7 +25,7 @@ class ClassControllerInspector implements ControllerInspectorContract
     ) {
     }
 
-    public function getResourceClass(): ?string
+    public function getResourceClass(): ?ResolvedResource
     {
         try {
             $reflectionMethod = ReflectionMethod::createFromMethodName("{$this->class}::{$this->method}");
@@ -37,14 +39,12 @@ class ClassControllerInspector implements ControllerInspectorContract
             $className = $returnType->getName();
 
             if ($this->isResourceClass($className)) {
-                return $className;
+                return new ResolvedResource($className);
             }
         } elseif ($returnType instanceof ReflectionUnionType) {
             foreach ($returnType->getTypes() as $type) {
-                if ($type instanceof ReflectionNamedType
-                    && !$type->isBuiltin()
-                    && $this->isResourceClass($type->getName())) {
-                    return $type->getName();
+                if ($this->isConcreteResourceType($type)) {
+                    return new ResolvedResource($type->getName());
                 }
             }
         }
@@ -66,8 +66,16 @@ class ClassControllerInspector implements ControllerInspectorContract
         return Arr::first($parameters, fn ($className) => is_string($className) && is_subclass_of($className, FormRequest::class));
     }
 
+    private function isConcreteResourceType(mixed $type): bool
+    {
+        return $type instanceof ReflectionNamedType
+            && !$type->isBuiltin()
+            && $this->isResourceClass($type->getName());
+    }
+
     private function isResourceClass(string $className): bool
     {
-        return is_subclass_of($className, JsonResource::class);
+        return is_subclass_of($className, JsonResource::class)
+            && $className !== AnonymousResourceCollection::class;
     }
 }
