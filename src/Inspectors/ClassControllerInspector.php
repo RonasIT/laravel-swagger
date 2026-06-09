@@ -27,21 +27,29 @@ class ClassControllerInspector implements ControllerInspectorContract
 
     public function getResourceClass(): ?ResolvedResource
     {
+        $reflectionMethod = $this->getReflectionMethod();
+
+        return $reflectionMethod
+            ? $this->resolveFromReturnType($reflectionMethod->getReturnType()) ?? $this->resourceClassResolver->resolve($reflectionMethod)
+            : null;
+    }
+
+    private function getReflectionMethod(): ?ReflectionMethod
+    {
         try {
-            $reflectionMethod = ReflectionMethod::createFromMethodName("{$this->class}::{$this->method}");
+            return ReflectionMethod::createFromMethodName("{$this->class}::{$this->method}");
         } catch (ReflectionException) {
             return null;
         }
+    }
 
-        $returnType = $reflectionMethod->getReturnType();
+    private function resolveFromReturnType(mixed $returnType): ?ResolvedResource
+    {
+        if ($returnType instanceof ReflectionNamedType && $this->isResourceClass($returnType->getName())) {
+            return new ResolvedResource($returnType->getName());
+        }
 
-        if ($returnType instanceof ReflectionNamedType) {
-            $className = $returnType->getName();
-
-            if ($this->isResourceClass($className)) {
-                return new ResolvedResource($className);
-            }
-        } elseif ($returnType instanceof ReflectionUnionType) {
+        if ($returnType instanceof ReflectionUnionType) {
             foreach ($returnType->getTypes() as $type) {
                 if ($this->isConcreteResourceType($type)) {
                     return new ResolvedResource($type->getName());
@@ -49,7 +57,7 @@ class ClassControllerInspector implements ControllerInspectorContract
             }
         }
 
-        return $this->resourceClassResolver->resolve($reflectionMethod);
+        return null;
     }
 
     public function getRequestClass(): ?string
