@@ -63,7 +63,7 @@ class ClassControllerInspector implements ControllerInspectorContract
             method: $this->method,
         );
 
-        return Arr::first($parameters, fn ($className) => is_subclass_of($className, FormRequest::class) && preg_match('/Request/', $className));
+        return Arr::first($parameters, fn ($className) => is_string($className) && is_subclass_of($className, FormRequest::class));
     }
 
     private function isResourceClass(string $className): bool

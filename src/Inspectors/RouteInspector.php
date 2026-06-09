@@ -11,7 +11,7 @@ class RouteInspector
     private const string CLOSURE_ACTION_NAME = 'Closure';
 
     public function __construct(
-       readonly private Route $route,
+        private readonly Route $route,
     ) {
     }
 
