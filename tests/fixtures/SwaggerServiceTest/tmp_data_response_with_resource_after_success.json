@@ -1,10 +1,10 @@
 {
-  "message": "The given data was invalid.",
-  "errors": {
-    "email": [
-      "The email field is required."
-    ]
-  },
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
   "paths": {
     "\/user": {
       "get": {
@@ -49,7 +49,7 @@
               "application\/json": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#\/components\/schemas\/User_200Response"
+                  "$ref": "#\/components\/schemas\/User"
                 },
                 "example": {
                   "id": 1,
@@ -69,7 +69,7 @@
   },
   "components": {
     "schemas": {
-      "User_200Response": {
+      "User": {
         "type": "object",
         "properties": {
           "id": {
@@ -83,6 +83,22 @@
           }
         }
       }
+    }
+  },
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  },
+  "securityDefinitions": {
+    "laravel": {
+      "type": "apiKey",
+      "name": "Cookie",
+      "in": "header"
     }
   }
 }
