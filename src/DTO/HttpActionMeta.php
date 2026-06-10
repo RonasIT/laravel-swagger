@@ -6,7 +6,7 @@ final readonly class HttpActionMeta
 {
     public function __construct(
         public ?string $requestClass,
-        public ?string $resourceClass,
+        public ?ResolvedResource $resolvedResource,
     ) {
     }
 }

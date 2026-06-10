@@ -32,12 +32,6 @@ class RequestSnapshotFactory
         $requestClass = $controllerInspector->getRequestClass();
         $resolvedResource = $controllerInspector->getResourceClass();
 
-        $resourceClass = match (true) {
-            $resolvedResource === null => null,
-            $resolvedResource->isCollection => Str::replaceLast('Resource', 'Collection', class_basename($resolvedResource->class)),
-            default => $resolvedResource->class,
-        };
-
         return new RequestSnapshot(
             route: new RouteSnapshot(
                 uri: $routeInspector->getUri(),
@@ -46,7 +40,7 @@ class RequestSnapshotFactory
             ),
             action: new HttpActionMeta(
                 requestClass: $requestClass,
-                resourceClass: $resourceClass,
+                resolvedResource: $resolvedResource,
             ),
             requestData: $this->requestDataFactory->make($request, $requestClass),
             hasSecurityToken: $this->resolveSecurityToken($request),

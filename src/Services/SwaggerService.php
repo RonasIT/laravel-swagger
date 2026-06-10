@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
 use RonasIT\AutoDoc\DTO\RequestSnapshot;
+use RonasIT\AutoDoc\DTO\ResolvedResource;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
@@ -371,15 +372,28 @@ class SwaggerService
 
         $action = Str::ucfirst($this->getActionName());
 
-        $definition = (empty($this->requestSnapshot->action->resourceClass))
-            ? "{$this->requestSnapshot->route->httpMethod}{$action}{$code}ResponseObject"
-            : Str::replaceLast('Resource', '', class_basename($this->requestSnapshot->action->resourceClass));
+        $definition = $this->getResponseDefinitionName($action, $code);
 
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
+    }
+
+    protected function getResponseDefinitionName(string $action, int $code): string
+    {
+        $resource = $this->requestSnapshot->action->resolvedResource;
+
+        if (empty($resource)) {
+            return "{$this->requestSnapshot->route->httpMethod}{$action}{$code}ResponseObject";
+        }
+
+        $baseName = Str::replaceLast('Resource', '', class_basename($resource->class));
+
+        return ($resource->isCollection && !Str::endsWith($baseName, 'Collection'))
+            ? $baseName . 'Collection'
+            : $baseName;
     }
 
     protected function saveExample($code, $content, $produce)
