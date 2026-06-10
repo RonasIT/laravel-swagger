@@ -3,7 +3,6 @@
 namespace RonasIT\AutoDoc\Support\Factories;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use RonasIT\AutoDoc\Contracts\ControllerInspectorContract;
 use RonasIT\AutoDoc\DTO\HttpActionMeta;
 use RonasIT\AutoDoc\DTO\RequestSnapshot;
