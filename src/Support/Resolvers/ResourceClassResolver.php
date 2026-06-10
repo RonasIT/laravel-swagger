@@ -15,21 +15,26 @@ class ResourceClassResolver
 {
     public function resolve(ReflectionFunctionAbstract $reflection): ?ResolvedResource
     {
-        return $this->resolveFromReturnType($reflection->getReturnType())
-            ?? $this->resolveFromSource($reflection);
+        $returnType = $reflection->getReturnType();
+
+        $result = (!empty($returnType))
+            ? $this->resolveFromReturnType($returnType)
+            : null;
+
+        return $result ?? $this->resolveFromSource($reflection);
     }
 
-    private function resolveFromReturnType(mixed $returnType): ?ResolvedResource
+    private function resolveFromReturnType(object $returnType): ?ResolvedResource
     {
-        if ($returnType instanceof ReflectionNamedType && $this->isResourceClass($returnType->getName())) {
-            return new ResolvedResource($returnType->getName());
-        }
+        $types = match (get_class($returnType)) {
+            ReflectionNamedType::class => [$returnType],
+            ReflectionUnionType::class => $returnType->getTypes(),
+            default => [],
+        };
 
-        if ($returnType instanceof ReflectionUnionType) {
-            foreach ($returnType->getTypes() as $type) {
-                if ($type instanceof ReflectionNamedType && !$type->isBuiltin() && $this->isResourceClass($type->getName())) {
-                    return new ResolvedResource($type->getName());
-                }
+        foreach ($types as $type) {
+            if ($type instanceof ReflectionNamedType && !$type->isBuiltin() && $this->isResourceClass($type->getName())) {
+                return new ResolvedResource($type->getName());
             }
         }
 
