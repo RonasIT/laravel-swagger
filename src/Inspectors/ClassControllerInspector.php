@@ -7,9 +7,8 @@ use Illuminate\Support\Arr;
 use ReflectionException;
 use ReflectionMethod;
 use RonasIT\AutoDoc\Contracts\ControllerInspectorContract;
-use RonasIT\AutoDoc\DTO\ResolvedResource;
 use RonasIT\AutoDoc\Support\Resolvers\MethodDependencyResolver;
-use RonasIT\AutoDoc\Support\Resolvers\ResourceClassResolver;
+use RonasIT\AutoDoc\Support\Resolvers\ResourceSchemaNameResolver;
 
 class ClassControllerInspector implements ControllerInspectorContract
 {
@@ -17,15 +16,15 @@ class ClassControllerInspector implements ControllerInspectorContract
         private string $class,
         private string $method,
         private MethodDependencyResolver $dependencyResolver,
-        private ResourceClassResolver $resourceClassResolver,
+        private ResourceSchemaNameResolver $resourceSchemaNameResolver,
     ) {
     }
 
-    public function getResourceClass(): ?ResolvedResource
+    public function getResourceSchemaName(): ?string
     {
         $reflectionMethod = $this->getReflectionMethod();
 
-        return (!empty($reflectionMethod)) ? $this->resourceClassResolver->resolve($reflectionMethod) : null;
+        return (!empty($reflectionMethod)) ? $this->resourceSchemaNameResolver->resolve($reflectionMethod) : null;
     }
 
     private function getReflectionMethod(): ?ReflectionMethod

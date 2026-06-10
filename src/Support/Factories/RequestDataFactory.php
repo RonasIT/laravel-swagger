@@ -41,7 +41,7 @@ class RequestDataFactory
         );
     }
 
-    private function prepareRules(array $rules): array
+    protected function prepareRules(array $rules): array
     {
         $preparedRules = [];
 
@@ -58,7 +58,7 @@ class RequestDataFactory
         return $preparedRules;
     }
 
-    private function getRuleAsString(string|object $rule): string
+    protected function getRuleAsString(string|object $rule): string
     {
         if (is_object($rule)) {
             if (method_exists($rule, '__toString')) {
@@ -74,7 +74,7 @@ class RequestDataFactory
         return $rule;
     }
 
-    private function getClassAnnotations(string $class): array
+    protected function getClassAnnotations(string $class): array
     {
         $reflection = new ReflectionClass($class);
         $annotations = $reflection->getDocComment();

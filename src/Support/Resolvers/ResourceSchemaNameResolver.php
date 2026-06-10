@@ -9,11 +9,10 @@ use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
 use ReflectionNamedType;
 use ReflectionUnionType;
-use RonasIT\AutoDoc\DTO\ResolvedResource;
 
-class ResourceClassResolver
+class ResourceSchemaNameResolver
 {
-    public function resolve(ReflectionFunctionAbstract $reflection): ?ResolvedResource
+    public function resolve(ReflectionFunctionAbstract $reflection): ?string
     {
         $returnType = $reflection->getReturnType();
 
@@ -24,7 +23,7 @@ class ResourceClassResolver
         return $result ?? $this->resolveFromSource($reflection);
     }
 
-    private function resolveFromReturnType(object $returnType): ?ResolvedResource
+    protected function resolveFromReturnType(object $returnType): ?string
     {
         $types = match (get_class($returnType)) {
             ReflectionNamedType::class => [$returnType],
@@ -34,20 +33,20 @@ class ResourceClassResolver
 
         foreach ($types as $type) {
             if ($type instanceof ReflectionNamedType && !$type->isBuiltin() && $this->isResourceClass($type->getName())) {
-                return new ResolvedResource($type->getName());
+                return $this->toSchemaName($type->getName());
             }
         }
 
         return null;
     }
 
-    private function resolveFromSource(ReflectionFunctionAbstract $reflection): ?ResolvedResource
+    protected function resolveFromSource(ReflectionFunctionAbstract $reflection): ?string
     {
         $fileContent = $this->getFileContent($reflection);
         $code = $this->getFunctionCode($reflection, $fileContent);
 
         $patterns = [
-            'single' => '/(?:return\s+|=>\s+)([^\s(]+)::make/',
+            'make' => '/(?:return\s+|=>\s+)([^\s(]+)::make/',
             'collection' => '/(?:return\s+|=>\s+)([^\s(]+)::collection/',
             'class' => '/(?:return\s+|=>\s+)new\s+([^\s(]+)/',
         ];
@@ -64,27 +63,36 @@ class ResourceClassResolver
                 : $this->getClassNameFromImports($matches[1], $fileContent);
 
             if (is_subclass_of($resourceName, JsonResource::class)) {
-                return new ResolvedResource($resourceName, $type === 'collection');
+                return $this->toSchemaName($resourceName, $type === 'collection');
             }
         }
 
         return null;
     }
 
-    private function isResourceClass(string $className): bool
+    protected function toSchemaName(string $className, bool $isCollection = false): string
+    {
+        $baseName = Str::replaceLast('Resource', '', class_basename($className));
+
+        return ($isCollection && !Str::endsWith($baseName, 'Collection'))
+            ? $baseName . 'Collection'
+            : $baseName;
+    }
+
+    protected function isResourceClass(string $className): bool
     {
         return is_subclass_of($className, JsonResource::class)
             && $className !== AnonymousResourceCollection::class;
     }
 
-    private function getFileContent(ReflectionFunctionAbstract $reflection): array
+    protected function getFileContent(ReflectionFunctionAbstract $reflection): array
     {
         $fileName = $reflection->getFileName();
 
         return (empty($fileName) || !is_readable($fileName)) ? [] : file($fileName) ?? [];
     }
 
-    private function getFunctionCode(ReflectionFunctionAbstract $reflection, array $fileContent): string
+    protected function getFunctionCode(ReflectionFunctionAbstract $reflection, array $fileContent): string
     {
         $startLineIndex = $reflection->getStartLine() - 1;
         $methodSlice = array_slice($fileContent, $startLineIndex, $reflection->getEndLine() - $startLineIndex);
@@ -92,7 +100,7 @@ class ResourceClassResolver
         return implode('', $methodSlice);
     }
 
-    private function getClassNameFromImports(string $resourceName, array $fileContent): string
+    protected function getClassNameFromImports(string $resourceName, array $fileContent): string
     {
         $resourceImport = Arr::first(
             array: $fileContent,

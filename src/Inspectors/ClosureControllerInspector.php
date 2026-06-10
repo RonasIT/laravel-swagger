@@ -7,20 +7,19 @@ use Illuminate\Http\Request;
 use ReflectionFunction;
 use ReflectionNamedType;
 use RonasIT\AutoDoc\Contracts\ControllerInspectorContract;
-use RonasIT\AutoDoc\DTO\ResolvedResource;
-use RonasIT\AutoDoc\Support\Resolvers\ResourceClassResolver;
+use RonasIT\AutoDoc\Support\Resolvers\ResourceSchemaNameResolver;
 
 class ClosureControllerInspector implements ControllerInspectorContract
 {
     public function __construct(
         private Closure $closure,
-        private ResourceClassResolver $resourceClassResolver,
+        private ResourceSchemaNameResolver $resourceSchemaNameResolver,
     ) {
     }
 
-    public function getResourceClass(): ?ResolvedResource
+    public function getResourceSchemaName(): ?string
     {
-        return $this->resourceClassResolver->resolve(new ReflectionFunction($this->closure));
+        return $this->resourceSchemaNameResolver->resolve(new ReflectionFunction($this->closure));
     }
 
     public function getRequestClass(): ?string

@@ -12,13 +12,13 @@ use RonasIT\AutoDoc\Inspectors\ClassControllerInspector;
 use RonasIT\AutoDoc\Inspectors\ClosureControllerInspector;
 use RonasIT\AutoDoc\Inspectors\RouteInspector;
 use RonasIT\AutoDoc\Support\Resolvers\MethodDependencyResolver;
-use RonasIT\AutoDoc\Support\Resolvers\ResourceClassResolver;
+use RonasIT\AutoDoc\Support\Resolvers\ResourceSchemaNameResolver;
 
 class RequestSnapshotFactory
 {
     public function __construct(
         private MethodDependencyResolver $dependencyResolver,
-        private ResourceClassResolver $resourceClassResolver,
+        private ResourceSchemaNameResolver $resourceSchemaNameResolver,
         private RequestDataFactory $requestDataFactory,
     ) {
     }
@@ -30,7 +30,7 @@ class RequestSnapshotFactory
         $controllerInspector = $this->getControllerInspector($routeInspector);
 
         $requestClass = $controllerInspector->getRequestClass();
-        $resolvedResource = $controllerInspector->getResourceClass();
+        $resourceSchemaName = $controllerInspector->getResourceSchemaName();
 
         return new RequestSnapshot(
             route: new RouteSnapshot(
@@ -40,29 +40,29 @@ class RequestSnapshotFactory
             ),
             action: new HttpActionMeta(
                 requestClass: $requestClass,
-                resolvedResource: $resolvedResource,
+                resourceSchemaName: $resourceSchemaName,
             ),
             requestData: $this->requestDataFactory->make($request, $requestClass),
             hasSecurityToken: $this->resolveSecurityToken($request),
         );
     }
 
-    private function getControllerInspector(RouteInspector $routeInspector): ControllerInspectorContract
+    protected function getControllerInspector(RouteInspector $routeInspector): ControllerInspectorContract
     {
         return $routeInspector->isClosureAction()
             ? new ClosureControllerInspector(
                 $routeInspector->getClosure(),
-                $this->resourceClassResolver,
+                $this->resourceSchemaNameResolver,
             )
             : new ClassControllerInspector(
                 $routeInspector->getControllerClass(),
                 $routeInspector->getControllerMethod(),
                 $this->dependencyResolver,
-                $this->resourceClassResolver,
+                $this->resourceSchemaNameResolver,
             );
     }
 
-    private function resolveSecurityToken(Request $request): bool
+    protected function resolveSecurityToken(Request $request): bool
     {
         $security = config('auto-doc.security', '');
         $driver = config("auto-doc.security_drivers.{$security}", []);
