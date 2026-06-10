@@ -30,13 +30,7 @@ class RequestSnapshotFactory
         $controllerInspector = $this->getControllerInspector($routeInspector);
 
         $requestClass = $controllerInspector->getRequestClass();
-        $resolvedResource = $controllerInspector->getResourceClass();
-
-        $resourceClass = match (true) {
-            $resolvedResource === null => null,
-            $resolvedResource->isCollection => Str::replaceLast('Resource', 'Collection', class_basename($resolvedResource->class)),
-            default => $resolvedResource->class,
-        };
+        $resourceClass = $controllerInspector->getResourceClass();
 
         return new RequestSnapshot(
             route: new RouteSnapshot(
