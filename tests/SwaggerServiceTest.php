@@ -1158,7 +1158,7 @@ class SwaggerServiceTest extends TestCase
 
         $user = User::factory()->make();
 
-        $closure = fn () => \RonasIT\AutoDoc\Tests\Support\Resources\UserResource::make($user);
+        $closure = fn () => RonasIT\AutoDoc\Tests\Support\Resources\UserResource::make($user);
 
         $request = $this
             ->getBaseRequest('get', $uri)
