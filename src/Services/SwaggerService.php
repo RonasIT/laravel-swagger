@@ -191,8 +191,11 @@ class SwaggerService
 
     protected function prepareItem()
     {
-        if (empty(Arr::get($this->data, "paths.{$this->requestSnapshot->route->uri}.{$this->requestSnapshot->route->httpMethod}"))) {
-            $this->data['paths'][$this->requestSnapshot->route->uri][$this->requestSnapshot->route->httpMethod] = [
+        $uri = $this->requestSnapshot->route->uri;
+        $method = $this->requestSnapshot->route->httpMethod;
+
+        if (empty(Arr::get($this->data, "paths.{$uri}.{$method}"))) {
+            $this->data['paths'][$uri][$method] = [
                 'tags' => [],
                 'consumes' => [],
                 'produces' => [],
@@ -203,7 +206,7 @@ class SwaggerService
             ];
         }
 
-        $this->item = &$this->data['paths'][$this->requestSnapshot->route->uri][$this->requestSnapshot->route->httpMethod];
+        $this->item = &$this->data['paths'][$uri][$method];
     }
 
     protected function getPathParams(): array
