@@ -1158,11 +1158,11 @@ class SwaggerServiceTest extends TestCase
 
         $user = User::factory()->make();
 
+        $closure = fn () => \RonasIT\AutoDoc\Tests\Support\Resources\UserResource::make($user);
+
         $request = $this
             ->getBaseRequest('get', $uri)
-            ->setRouteResolver(fn () => Route::get($uri)->setAction([
-                'uses' => fn () => RonasIT\AutoDoc\Tests\Support\Resources\UserResource::make($user),
-            ]));
+            ->setRouteResolver(fn () => Route::get($uri, $closure));
 
         $response = UserResource::make($user)->toResponse($request);
 

@@ -50,14 +50,14 @@ class RequestSnapshotFactory
     {
         return $routeInspector->isClosureAction()
             ? new ClosureControllerInspector(
-                $routeInspector->getClosure(),
-                $this->resourceSchemaNameResolver,
+                closure: $routeInspector->getClosure(),
+                resourceSchemaNameResolver: $this->resourceSchemaNameResolver,
             )
             : new ClassControllerInspector(
-                $routeInspector->getControllerClass(),
-                $routeInspector->getControllerMethod(),
-                $this->dependencyResolver,
-                $this->resourceSchemaNameResolver,
+                class: $routeInspector->getControllerClass(),
+                method: $routeInspector->getControllerMethod(),
+                dependencyResolver: $this->dependencyResolver,
+                resourceSchemaNameResolver: $this->resourceSchemaNameResolver,
             );
     }
 
