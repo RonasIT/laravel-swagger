@@ -60,10 +60,12 @@ class ResourceSchemaNameResolver
 
             $resourceName = class_exists($matches[1])
                 ? $matches[1]
-                : $this->getClassNameFromImports($matches[1], $fileContent);
+                : $this->getClas§sNameFromImports($matches[1], $fileContent);
 
             if (is_subclass_of($resourceName, JsonResource::class)) {
-                return $this->toSchemaName($resourceName, $type === 'collection');
+                $isCollection = ($type === 'collection');
+
+                return $this->toSchemaName($resourceName, $isCollection);
             }
         }
 
