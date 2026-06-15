@@ -772,22 +772,12 @@ class SwaggerService
         $security = Arr::get($this->config, 'security');
         $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
 
-        switch (Arr::get($securityDriver, 'in')) {
-            case 'header':
-                $securityToken = $this->request->header($securityDriver['name']);
-
-                break;
-            case 'query':
-                $securityToken = $this->request->query($securityDriver['name']);
-
-                break;
-            case 'cookie':
-                $securityToken = $this->request->cookie($securityDriver['name']);
-
-                break;
-            default:
-                $securityToken = null;
-        }
+        $securityToken = match(Arr::get($securityDriver, 'in')) {
+            'header' => $this->request->header($securityDriver['name']),
+            'query' => $this->request->query($securityDriver['name']),
+            'cookie' => $this->request->cookie($securityDriver['name']),
+            default => null,
+        };
 
         return !empty($securityToken);
     }

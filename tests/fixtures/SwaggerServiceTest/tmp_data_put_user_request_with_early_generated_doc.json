@@ -167,6 +167,13 @@
         "type": "object",
         "properties": []
       }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "apiKey",
+        "name": "authorization",
+        "in": "header"
+      }
     }
   },
   "info": {
@@ -176,13 +183,6 @@
     "termsOfService": "",
     "contact": {
       "email": "your@email.com"
-    }
-  },
-  "securityDefinitions": {
-    "jwt": {
-      "type": "apiKey",
-      "name": "authorization",
-      "in": "header"
     }
   }
 }

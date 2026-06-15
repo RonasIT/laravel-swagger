@@ -163,12 +163,14 @@ class SwaggerSpecValidator
     {
         $securitySchemes = Arr::get($this->doc, 'components.securitySchemes', []);
 
-        foreach ($securitySchemes as $key => $securityScheme) {
-            $this->validateFieldsPresent($securityScheme, self::REQUIRED_FIELDS['securitySchemes'], $key);
+        foreach ($securitySchemes as $index => $securityScheme) {
+            $schemeId = "components.securitySchemes.{$index}";
 
-            $this->validateFieldValue($securityScheme, 'type', self::ALLOWED_VALUES['security_schemes_type'], $key);
-            $this->validateFieldValue($securityScheme, 'in', self::ALLOWED_VALUES['security_schemes_in'], $key);
-            $this->validateFieldValue($securityScheme, 'flows', self::ALLOWED_VALUES['security_schemes_flows'], $key);
+            $this->validateFieldsPresent($securityScheme, self::REQUIRED_FIELDS['securitySchemes'], $schemeId);
+
+            $this->validateFieldValue($securityScheme, 'type', self::ALLOWED_VALUES['security_schemes_type'], $schemeId);
+            $this->validateFieldValue($securityScheme, 'in', self::ALLOWED_VALUES['security_schemes_in'], $schemeId);
+            $this->validateFieldValue($securityScheme, 'flows', self::ALLOWED_VALUES['security_schemes_flows'], $schemeId, true);
         }
     }
 
@@ -398,17 +400,13 @@ class SwaggerSpecValidator
         }
     }
 
-    protected function validateFieldValue(array $data, string $field, array $allowedValues, ?string $path = null): void
+    protected function validateFieldValue(array $data, string $field, array $allowedValues, ?string $path = null, bool $useKeys = false): void
     {
         if (!Arr::has($data, $field)) {
             return;
         }
 
-        $fields = Arr::wrap($data[$field]);
-
-        if (array_keys($fields) !== range(0, count($fields) - 1)) {
-            $fields = array_keys($fields);
-        }
+        $fields = ($useKeys) ? array_keys(Arr::wrap($data[$field])) : Arr::wrap($data[$field]);
 
         $invalidValues = array_diff($fields, $allowedValues);
 
