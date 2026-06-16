@@ -104,6 +104,13 @@
                     }
                 }
             }
+        },
+        "securitySchemes": {
+            "laravel": {
+                "type": "apiKey",
+                "name": "Cookie",
+                "in": "header"
+            }
         }
     },
     "info": {
@@ -113,13 +120,6 @@
         "termsOfService": "",
         "contact": {
             "email": "your@email.com"
-        }
-    },
-    "securityDefinitions": {
-        "laravel": {
-            "type": "apiKey",
-            "name": "Cookie",
-            "in": "header"
         }
     }
 }

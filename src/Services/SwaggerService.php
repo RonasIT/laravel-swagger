@@ -178,16 +178,7 @@ class SwaggerService
         }
 
         return [
-            $this->security => $this->generateSecuritySchemesObject($this->security),
-        ];
-    }
-
-    protected function generateSecuritySchemesObject($type): array
-    {
-        return [
-            'type' => $this->config['security_drivers'][$type]['type'],
-            'name' => $this->config['security_drivers'][$type]['name'],
-            'in' => $this->config['security_drivers'][$type]['in'],
+            $this->security => $this->config['security_drivers'][$this->security],
         ];
     }
 
@@ -772,14 +763,18 @@ class SwaggerService
         $security = Arr::get($this->config, 'security');
         $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
 
-        $securityToken = match (Arr::get($securityDriver, 'in')) {
-            'header' => $this->request->header($securityDriver['name']),
-            'query' => $this->request->query($securityDriver['name']),
-            'cookie' => $this->request->cookie($securityDriver['name']),
-            default => null,
-        };
+        if (Arr::get($securityDriver, 'type') === 'apiKey') {
+            $securityToken = match ($securityDriver['in']) {
+                'header' => $this->request->header($securityDriver['name']),
+                'query' => $this->request->query($securityDriver['name']),
+                'cookie' => $this->request->cookie($securityDriver['name']),
+                default => null,
+            };
 
-        return !empty($securityToken);
+            return !empty($securityToken);
+        }
+
+        return $this->request->hasHeader('authorization');
     }
 
     protected function parseRequestName($request)

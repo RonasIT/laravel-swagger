@@ -78,13 +78,13 @@ return [
     'security' => '',
     'security_drivers' => [
         'jwt' => [
-            'type' => 'apiKey',
-            'name' => 'Authorization',
-            'in' => 'header',
+            'type' => 'http',
+            'scheme' => 'bearer',
+            'bearerFormat' => 'JWT',
         ],
-        'laravel' => [
+        'laravel_session' => [
             'type' => 'apiKey',
-            'name' => '__ym_uid',
+            'name' => 'laravel_session',
             'in' => 'cookie',
         ],
     ],
@@ -220,5 +220,5 @@ return [
         ],
     ],
 
-    'config_version' => '2.10',
+    'config_version' => '3.0',
 ];

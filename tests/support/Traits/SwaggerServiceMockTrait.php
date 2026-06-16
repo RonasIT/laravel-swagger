@@ -2,6 +2,7 @@
 
 namespace RonasIT\AutoDoc\Tests\Support\Traits;
 
+use Illuminate\Support\Arr;
 use RonasIT\AutoDoc\Drivers\LocalDriver;
 use RonasIT\Support\Traits\MockTrait;
 
@@ -19,7 +20,7 @@ trait SwaggerServiceMockTrait
                 name: 'getProcessTmpData',
                 result: (empty($processTmpData))
                     ? $processTmpData
-                    : array_merge($processTmpData, ['paths' => [], 'components' => []]),
+                    : Arr::except([...$processTmpData, 'paths' => []], 'components.schemas'),
             ),
             $this->functionCall(
                 name: 'saveProcessTmpData',

@@ -104,6 +104,13 @@
                     }
                 }
             }
+        },
+        "securitySchemes": {
+            "query": {
+                "type": "apiKey",
+                "name": "authorization",
+                "in": "query"
+            }
         }
     },
     "info": {
@@ -113,13 +120,6 @@
         "termsOfService": "",
         "contact": {
             "email": "your@email.com"
-        }
-    },
-    "securityDefinitions": {
-        "query": {
-            "type": "apiKey",
-            "name": "authorization",
-            "in": "header"
         }
     }
 }

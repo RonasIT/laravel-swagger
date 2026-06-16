@@ -58,6 +58,12 @@ class SwaggerSpecValidator
         'requestBody' => ['content'],
         'response' => ['description'],
         'securitySchemes' => ['type'],
+        'securitySchemesByType' => [
+            'apiKey' => ['name', 'in'],
+            'http' => ['scheme'],
+            'oauth2' => ['flows'],
+            'openIdConnect' => ['openIdConnectUrl'],
+        ],
         'tag' => ['name'],
     ];
 
@@ -169,6 +175,8 @@ class SwaggerSpecValidator
             $this->validateFieldsPresent($securityScheme, self::REQUIRED_FIELDS['securitySchemes'], $schemeId);
 
             $this->validateFieldValue($securityScheme, 'type', self::ALLOWED_VALUES['security_schemes_type'], $schemeId);
+            $this->validateFieldsPresent($securityScheme, self::REQUIRED_FIELDS['securitySchemesByType'][$securityScheme['type']], $schemeId);
+
             $this->validateFieldValue($securityScheme, 'in', self::ALLOWED_VALUES['security_schemes_in'], $schemeId);
             $this->validateFieldValue($securityScheme, 'flows', self::ALLOWED_VALUES['security_schemes_flows'], $schemeId, true);
         }

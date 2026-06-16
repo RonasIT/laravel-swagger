@@ -170,9 +170,9 @@
     },
     "securitySchemes": {
       "jwt": {
-        "type": "apiKey",
-        "name": "authorization",
-        "in": "header"
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   },

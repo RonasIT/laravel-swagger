@@ -10,9 +10,9 @@
         "schemas": [],
         "securitySchemes": {
             "jwt": {
-                "type": "apiKey",
-                "name": "Authorization",
-                "in": "header"
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
             }
         }
     },

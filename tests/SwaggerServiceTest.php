@@ -212,6 +212,10 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'invalid_format_security_definition_in.html',
             ],
             [
+                'tmpDoc' => 'documentation/invalid_format__security_definition__apiKey_missing_fields',
+                'fixture' => 'invalid_format_security_definition_missing_fields_apiKey.html',
+            ],
+            [
                 'tmpDoc' => 'documentation/invalid_format__request_body__invalid_content',
                 'fixture' => 'invalid_format_request_body_invalid_content.html',
             ],
@@ -370,9 +374,9 @@ class SwaggerServiceTest extends TestCase
                     'type' => 'apiKey',
                 ],
                 'jwt' => [
-                    'name' => 'Authorization',
-                    'in' => 'header',
-                    'type' => 'apiKey',
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
                 ],
                 'query' => [
                     'name' => 'api_key',
@@ -533,9 +537,9 @@ class SwaggerServiceTest extends TestCase
                     'type' => 'apiKey',
                 ],
                 'jwt' => [
-                    'name' => 'Authorization',
-                    'in' => 'header',
-                    'type' => 'apiKey',
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
                 ],
                 'query' => [
                     'name' => 'api_key',
