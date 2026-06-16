@@ -768,7 +768,6 @@ class SwaggerService
                 'header' => $this->request->header($securityDriver['name']),
                 'query' => $this->request->query($securityDriver['name']),
                 'cookie' => $this->request->cookie($securityDriver['name']),
-                default => null,
             };
 
             return !empty($securityToken);

@@ -522,6 +522,10 @@ class SwaggerServiceTest extends TestCase
                 'security' => 'query',
                 'requestFixture' => 'tmp_data_search_roles_request_query_security',
             ],
+            [
+                'security' => 'header',
+                'requestFixture' => 'tmp_data_search_roles_request_header_security',
+            ],
         ];
     }
 
@@ -544,6 +548,11 @@ class SwaggerServiceTest extends TestCase
                 'query' => [
                     'name' => 'api_key',
                     'in' => 'query',
+                    'type' => 'apiKey',
+                ],
+                'header' => [
+                    'name' => 'x-token',
+                    'in' => 'header',
                     'type' => 'apiKey',
                 ],
             ],
