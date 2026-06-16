@@ -63,6 +63,7 @@ class SwaggerSpecValidator
             'http' => ['scheme'],
             'oauth2' => ['flows'],
             'openIdConnect' => ['openIdConnectUrl'],
+            'mutualTLS' => [],
         ],
         'tag' => ['name'],
     ];
