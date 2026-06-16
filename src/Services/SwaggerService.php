@@ -773,7 +773,7 @@ class SwaggerService
             return !empty($securityToken);
         }
 
-        return $this->request->hasHeader('authorization');
+        return !empty($security) && $this->request->hasHeader('authorization');
     }
 
     protected function parseRequestName($request)
