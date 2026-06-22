@@ -771,9 +771,9 @@ class SwaggerService
         return match ($securityDriver['type']) {
             'apiKey' => !empty(match ($securityDriver['in']) {
                 'header' => $this->request->header($securityDriver['name']),
-                'query'  => $this->request->query($securityDriver['name']),
+                'query' => $this->request->query($securityDriver['name']),
                 'cookie' => $this->request->cookie($securityDriver['name']),
-                default  => null,
+                default => null,
             }),
             'mutualTLS' => false,
             default => $this->request->hasHeader('authorization'),
