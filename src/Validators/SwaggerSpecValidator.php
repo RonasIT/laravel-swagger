@@ -58,14 +58,14 @@ class SwaggerSpecValidator
         'requestBody' => ['content'],
         'response' => ['description'],
         'securitySchemes' => ['type'],
-        'securitySchemesByType' => [
-            'apiKey' => ['name', 'in'],
-            'http' => ['scheme'],
-            'oauth2' => ['flows'],
-            'openIdConnect' => ['openIdConnectUrl'],
-            'mutualTLS' => [],
-        ],
         'tag' => ['name'],
+    ];
+
+    public const SECURITY_SCHEMES_REQUIRED_FIELDS_BY_TYPE = [
+        'apiKey' => ['name', 'in'],
+        'http' => ['scheme'],
+        'oauth2' => ['flows'],
+        'openIdConnect' => ['openIdConnectUrl'],
     ];
 
     public const ALLOWED_VALUES = [
@@ -176,7 +176,7 @@ class SwaggerSpecValidator
             $this->validateFieldsPresent($securityScheme, self::REQUIRED_FIELDS['securitySchemes'], $schemeId);
 
             $this->validateFieldValue($securityScheme, 'type', self::ALLOWED_VALUES['security_schemes_type'], $schemeId);
-            $this->validateFieldsPresent($securityScheme, self::REQUIRED_FIELDS['securitySchemesByType'][$securityScheme['type']], $schemeId);
+            $this->validateFieldsPresent($securityScheme, Arr::get(self::SECURITY_SCHEMES_REQUIRED_FIELDS_BY_TYPE, $securityScheme['type'], []), $schemeId);
 
             $this->validateFieldValue($securityScheme, 'in', self::ALLOWED_VALUES['security_schemes_in'], $schemeId);
             $this->validateFieldValue($securityScheme, 'flows', self::ALLOWED_VALUES['security_schemes_flows'], $schemeId, true);

@@ -761,19 +761,23 @@ class SwaggerService
     protected function requestSupportAuth(): bool
     {
         $security = Arr::get($this->config, 'security');
-        $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
 
-        if (Arr::get($securityDriver, 'type') === 'apiKey') {
-            $securityToken = match ($securityDriver['in']) {
-                'header' => $this->request->header($securityDriver['name']),
-                'query' => $this->request->query($securityDriver['name']),
-                'cookie' => $this->request->cookie($securityDriver['name']),
-            };
-
-            return !empty($securityToken);
+        if (empty($security)) {
+            return false;
         }
 
-        return !empty($security) && $this->request->hasHeader('authorization');
+        $securityDriver = Arr::get($this->config, "security_drivers.$security");
+
+        return match ($securityDriver['type']) {
+            'apiKey' => !empty(match ($securityDriver['in']) {
+                'header' => $this->request->header($securityDriver['name']),
+                'query'  => $this->request->query($securityDriver['name']),
+                'cookie' => $this->request->cookie($securityDriver['name']),
+                default  => null,
+            }),
+            'mutualTLS' => false,
+            default => $this->request->hasHeader('authorization'),
+        };
     }
 
     protected function parseRequestName($request)
