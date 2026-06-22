@@ -766,7 +766,7 @@ class SwaggerService
             return false;
         }
 
-        $securityDriver = Arr::get($this->config, "security_drivers.$security");
+        $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
 
         return match ($securityDriver['type']) {
             'apiKey' => !empty(match ($securityDriver['in']) {
