@@ -54,7 +54,7 @@ class SwaggerService
 
     public function __construct(
         protected Container $container,
-        protected RequestSnapshotFactory $snapshotFactory,
+        protected RequestSnapshotFactory $requestSnapshotFactory,
         protected SwaggerSpecValidator $openAPIValidator,
     ) {
         $this->initConfig();
@@ -179,7 +179,7 @@ class SwaggerService
 
     public function addData(Request $request, $response)
     {
-        $this->requestSnapshot = $this->snapshotFactory->make($request);
+        $this->requestSnapshot = $this->requestSnapshotFactory->make($request);
 
         $this->prepareItem();
 
