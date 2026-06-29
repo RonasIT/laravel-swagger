@@ -261,7 +261,7 @@ class SwaggerService
         $this->saveTags();
         $this->saveSecurity();
 
-        $concreteRequest = $this->requestSnapshot->action->requestClass;
+        $concreteRequest = $this->requestSnapshot->requestClass;
 
         if (empty($concreteRequest)) {
             $this->item['description'] = '';
@@ -374,7 +374,7 @@ class SwaggerService
 
         $action = Str::ucfirst($this->getActionName());
 
-        $definition = $this->requestSnapshot->action->resourceSchemaName
+        $definition = $this->requestSnapshot->resourceSchemaName
             ?? "{$this->requestSnapshot->route->httpMethod}{$action}{$code}ResponseObject";
 
         $this->saveResponseSchema($content, $definition);
@@ -691,7 +691,7 @@ class SwaggerService
     {
         $defaultDescription = Response::$statusTexts[$code];
 
-        $request = $this->requestSnapshot->action->requestClass;
+        $request = $this->requestSnapshot->requestClass;
 
         if (empty($request)) {
             return $defaultDescription;

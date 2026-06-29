@@ -4,7 +4,6 @@ namespace RonasIT\AutoDoc\Support\Factories;
 
 use Illuminate\Http\Request;
 use RonasIT\AutoDoc\Contracts\ControllerInspectorContract;
-use RonasIT\AutoDoc\DTO\HttpActionMeta;
 use RonasIT\AutoDoc\DTO\RequestSnapshot;
 use RonasIT\AutoDoc\DTO\RouteSnapshot;
 use RonasIT\AutoDoc\Inspectors\ClassControllerInspector;
@@ -37,11 +36,9 @@ class RequestSnapshotFactory
                 httpMethod: strtolower($request->method()),
                 wheres: $routeInspector->getWheres(),
             ),
-            action: new HttpActionMeta(
-                requestClass: $requestClass,
-                resourceSchemaName: $resourceSchemaName,
-            ),
             requestData: $this->requestDataFactory->make($request, $requestClass),
+            requestClass: $requestClass,
+            resourceSchemaName: $resourceSchemaName,
             hasSecurityToken: $this->resolveSecurityToken($request),
         );
     }

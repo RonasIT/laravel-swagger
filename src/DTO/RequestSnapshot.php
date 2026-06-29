@@ -6,8 +6,9 @@ final readonly class RequestSnapshot
 {
     public function __construct(
         public RouteSnapshot $route,
-        public HttpActionMeta $action,
         public RequestData $requestData,
+        public ?string $requestClass,
+        public ?string $resourceSchemaName,
         public bool $hasSecurityToken,
     ) {
     }
