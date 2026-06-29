@@ -238,7 +238,7 @@ class SwaggerService
 
     protected function generatePathDescription(string $key): string
     {
-        $expression = Arr::get($this->requestSnapshot->route->routeWheres, $key);
+        $expression = Arr::get($this->requestSnapshot->route->wheres, $key);
 
         if (empty($expression)) {
             return '';

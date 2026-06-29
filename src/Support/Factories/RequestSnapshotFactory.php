@@ -35,7 +35,7 @@ class RequestSnapshotFactory
             route: new RouteSnapshot(
                 uri: $routeInspector->getUri(),
                 httpMethod: strtolower($request->method()),
-                routeWheres: $routeInspector->getWheres(),
+                wheres: $routeInspector->getWheres(),
             ),
             action: new HttpActionMeta(
                 requestClass: $requestClass,
