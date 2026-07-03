@@ -6,7 +6,7 @@ final readonly class ResourceSchema
 {
     public function __construct(
         public string $className,
-        public bool $isCollection = false,
+        public bool $isCollection,
     ) {
     }
 }

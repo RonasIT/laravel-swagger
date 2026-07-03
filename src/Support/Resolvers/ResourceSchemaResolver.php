@@ -4,6 +4,7 @@ namespace RonasIT\AutoDoc\Support\Resolvers;
 
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
@@ -34,7 +35,12 @@ class ResourceSchemaResolver
 
         foreach ($types as $type) {
             if ($type instanceof ReflectionNamedType && !$type->isBuiltin() && $this->isResourceClass($type->getName())) {
-                return new ResourceSchema($type->getName());
+                $className = $type->getName();
+
+                return new ResourceSchema(
+                    className: $className,
+                    isCollection: is_subclass_of($className, ResourceCollection::class),
+                );
             }
         }
 
@@ -64,7 +70,10 @@ class ResourceSchemaResolver
                 : $this->getClassNameFromImports($matches[1], $fileContent);
 
             if (is_subclass_of($resourceName, JsonResource::class)) {
-                return new ResourceSchema($resourceName, isCollection: $type === 'collection');
+                return new ResourceSchema(
+                    className: $resourceName,
+                    isCollection: $type === 'collection',
+                );
             }
         }
 
