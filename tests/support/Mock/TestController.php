@@ -5,11 +5,11 @@ namespace RonasIT\AutoDoc\Tests\Support\Mock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use RonasIT\AutoDoc\Tests\Support\Models\User;
-use RonasIT\AutoDoc\Tests\Support\Resources\UserResource;
-use RonasIT\AutoDoc\Tests\Support\Resources\UserResource as AliasResource;
-use RonasIT\AutoDoc\Tests\Support\Resources\User\UserResource as UserFromSubDirResource;
 use RonasIT\AutoDoc\Tests\Support\Resources\Admin\UserResource as AdminResource;
 use RonasIT\AutoDoc\Tests\Support\Resources\Admin\UsersCollectionResource as AdminCollectionResource;
+use RonasIT\AutoDoc\Tests\Support\Resources\User\UserResource as UserFromSubDirResource;
+use RonasIT\AutoDoc\Tests\Support\Resources\UserResource;
+use RonasIT\AutoDoc\Tests\Support\Resources\UserResource as AliasResource;
 use RonasIT\AutoDoc\Tests\Support\Resources\UsersCollectionResource;
 
 class TestController
