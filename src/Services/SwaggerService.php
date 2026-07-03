@@ -383,24 +383,31 @@ class SwaggerService
 
     protected function getDefinition(string $statusCode): string
     {
-        if (empty($this->requestSnapshot->resourceSchema)) {
+        $resourceSchema = $this->requestSnapshot->resourceSchema;
+
+        if (empty($resourceSchema)) {
             $action = Str::ucfirst($this->getActionName());
 
             return "{$this->requestSnapshot->route->httpMethod}{$action}{$statusCode}ResponseObject";
         }
 
-        $classBaseName = class_basename($this->requestSnapshot->resourceSchema->className);
+        $classBaseName = class_basename($resourceSchema->className);
 
-        $subFolder = Str::after($this->requestSnapshot->resourceSchema->className, '\\Resources\\');
-        $subFolder = Str::replace([$classBaseName, '\\'], '', $subFolder);
+        $subFolderPrefix = Str::of($resourceSchema->className)
+            ->after('\\Resources\\')
+            ->replace([$classBaseName, '\\'], '')
+            ->toString();
 
-        $baseName = Str::replaceLast('Resource', '', $classBaseName);
+        $resourceName = Str::of($classBaseName)
+            ->replaceLast('Resource', '')
+            ->toString();
 
-        $baseName = ($subFolder === $baseName) ? $baseName : $subFolder . $baseName;
+        $schemaName = ($subFolderPrefix === $resourceName) ? $resourceName : $subFolderPrefix . $resourceName;
 
-        return ($this->requestSnapshot->resourceSchema->isCollection && !Str::endsWith($baseName, 'Collection'))
-            ? $baseName . 'Collection'
-            : $baseName;
+        $needsCollectionSuffix = $resourceSchema->isCollection
+            && !Str::endsWith($schemaName, 'Collection');
+
+        return ($needsCollectionSuffix) ? "{$schemaName}Collection" : $schemaName;
     }
 
     protected function saveExample($code, $content, $produce)
