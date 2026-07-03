@@ -372,16 +372,35 @@ class SwaggerService
             $this->saveExample($code, json_encode($content, JSON_PRETTY_PRINT), $produce);
         }
 
-        $action = Str::ucfirst($this->getActionName());
-
-        $definition = $this->requestSnapshot->resourceSchemaName
-            ?? "{$this->requestSnapshot->route->httpMethod}{$action}{$code}ResponseObject";
+        $definition = $this->getDefinition($code);
 
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
+    }
+
+    protected function getDefinition(string $statusCode): string
+    {
+        if (empty($this->requestSnapshot->resourceSchema)) {
+            $action = Str::ucfirst($this->getActionName());
+
+            return "{$this->requestSnapshot->route->httpMethod}{$action}{$statusCode}ResponseObject";
+        }
+
+        $classBaseName = class_basename($this->requestSnapshot->resourceSchema->className);
+
+        $subFolder = Str::after($this->requestSnapshot->resourceSchema->className, '\\Resources\\');
+        $subFolder = Str::replace([$classBaseName, '\\'], '', $subFolder);
+
+        $baseName = Str::replaceLast('Resource', '', $classBaseName);
+
+        $baseName = ($subFolder === $baseName) ? $baseName : $subFolder . $baseName;
+
+        return ($this->requestSnapshot->resourceSchema->isCollection && !Str::endsWith($baseName, 'Collection'))
+            ? $baseName . 'Collection'
+            : $baseName;
     }
 
     protected function saveExample($code, $content, $produce)

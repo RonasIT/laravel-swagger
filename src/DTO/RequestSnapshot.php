@@ -8,7 +8,7 @@ final readonly class RequestSnapshot
         public RouteSnapshot $route,
         public RequestData $requestData,
         public ?string $requestClass,
-        public ?string $resourceSchemaName,
+        public ?ResourceSchema $resourceSchema,
         public bool $hasSecurityToken,
     ) {
     }

@@ -10,13 +10,13 @@ use RonasIT\AutoDoc\Inspectors\ClassControllerInspector;
 use RonasIT\AutoDoc\Inspectors\ClosureControllerInspector;
 use RonasIT\AutoDoc\Inspectors\RouteInspector;
 use RonasIT\AutoDoc\Support\Resolvers\MethodDependencyResolver;
-use RonasIT\AutoDoc\Support\Resolvers\ResourceSchemaNameResolver;
+use RonasIT\AutoDoc\Support\Resolvers\ResourceSchemaResolver;
 
 class RequestSnapshotFactory
 {
     public function __construct(
         private MethodDependencyResolver $dependencyResolver,
-        private ResourceSchemaNameResolver $resourceSchemaNameResolver,
+        private ResourceSchemaResolver $resourceSchemaResolver,
         private RequestDataFactory $requestDataFactory,
     ) {
     }
@@ -28,7 +28,7 @@ class RequestSnapshotFactory
         $controllerInspector = $this->getControllerInspector($routeInspector);
 
         $requestClass = $controllerInspector->getRequestClass();
-        $resourceSchemaName = $controllerInspector->getResourceSchemaName();
+        $resourceSchema = $controllerInspector->getResource();
 
         return new RequestSnapshot(
             route: new RouteSnapshot(
@@ -38,7 +38,7 @@ class RequestSnapshotFactory
             ),
             requestData: $this->requestDataFactory->make($request, $requestClass),
             requestClass: $requestClass,
-            resourceSchemaName: $resourceSchemaName,
+            resourceSchema: $resourceSchema,
             hasSecurityToken: $this->resolveSecurityToken($request),
         );
     }
@@ -48,13 +48,13 @@ class RequestSnapshotFactory
         return $routeInspector->isClosureAction()
             ? new ClosureControllerInspector(
                 closure: $routeInspector->getClosure(),
-                resourceSchemaNameResolver: $this->resourceSchemaNameResolver,
+                resourceSchemaResolver: $this->resourceSchemaResolver,
             )
             : new ClassControllerInspector(
                 class: $routeInspector->getControllerClass(),
                 method: $routeInspector->getControllerMethod(),
                 dependencyResolver: $this->dependencyResolver,
-                resourceSchemaNameResolver: $this->resourceSchemaNameResolver,
+                resourceSchemaResolver: $this->resourceSchemaResolver,
             );
     }
 

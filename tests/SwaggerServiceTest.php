@@ -17,6 +17,9 @@ use RonasIT\AutoDoc\Tests\Support\Mock\TestNotificationSetting;
 use RonasIT\AutoDoc\Tests\Support\Mock\TestRequest;
 use RonasIT\AutoDoc\Tests\Support\Models\User;
 use RonasIT\AutoDoc\Tests\Support\Resources\UserResource;
+use RonasIT\AutoDoc\Tests\Support\Resources\User\UserResource as SubDirAndNameSameResource;
+use RonasIT\AutoDoc\Tests\Support\Resources\Admin\UserResource as AdminUserResource;
+use RonasIT\AutoDoc\Tests\Support\Resources\Admin\UsersCollectionResource as AdminCollectionResource;
 use RonasIT\AutoDoc\Tests\Support\Resources\UsersCollectionResource;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceMockTrait;
 use RonasIT\AutoDoc\Tests\Support\Traits\SwaggerServiceTestingTrait;
@@ -1108,6 +1111,51 @@ class SwaggerServiceTest extends TestCase
         );
 
         $resource = UserResource::make(User::factory()->make());
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
+    public function testHandleResponseResourceFromSubDir()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource_from_sub_dir'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/users',
+            controllerMethod: 'getAdmin',
+        );
+
+        $resource = AdminUserResource::make(User::factory()->make());
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
+    public function testHandleResponseResourceNameFromSameNameSubDir()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_resource'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/users',
+            controllerMethod: 'userFromSubDirResource',
+        );
+
+        $resource = SubDirAndNameSameResource::make(User::factory()->make());
+
+        app(SwaggerService::class)->addData($request, $resource->toResponse($request));
+    }
+
+    public function testHandleResponseResourceCollectionFromSubDir()
+    {
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_response_with_admin_collection_resource_from_sub_dir'));
+
+        $request = $this->generateRequest(
+            type: 'get',
+            uri: '/users',
+            controllerMethod: 'getAdminCollection',
+        );
+
+        $resource = AdminCollectionResource::make(collect([User::factory()->make()]));
 
         app(SwaggerService::class)->addData($request, $resource->toResponse($request));
     }

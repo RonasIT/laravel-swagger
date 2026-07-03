@@ -9,10 +9,11 @@ use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
 use ReflectionNamedType;
 use ReflectionUnionType;
+use RonasIT\AutoDoc\DTO\ResourceSchema;
 
-class ResourceSchemaNameResolver
+class ResourceSchemaResolver
 {
-    public function resolve(ReflectionFunctionAbstract $reflection): ?string
+    public function resolve(ReflectionFunctionAbstract $reflection): ?ResourceSchema
     {
         $returnType = $reflection->getReturnType();
 
@@ -23,7 +24,7 @@ class ResourceSchemaNameResolver
         return $result ?? $this->resolveFromSource($reflection);
     }
 
-    protected function resolveFromReturnType(object $returnType): ?string
+    protected function resolveFromReturnType(object $returnType): ?ResourceSchema
     {
         $types = match (get_class($returnType)) {
             ReflectionNamedType::class => [$returnType],
@@ -33,14 +34,14 @@ class ResourceSchemaNameResolver
 
         foreach ($types as $type) {
             if ($type instanceof ReflectionNamedType && !$type->isBuiltin() && $this->isResourceClass($type->getName())) {
-                return $this->toSchemaName($type->getName());
+                return new ResourceSchema($type->getName());
             }
         }
 
         return null;
     }
 
-    protected function resolveFromSource(ReflectionFunctionAbstract $reflection): ?string
+    protected function resolveFromSource(ReflectionFunctionAbstract $reflection): ?ResourceSchema
     {
         $fileContent = $this->getFileContent($reflection);
         $code = $this->getFunctionCode($reflection, $fileContent);
@@ -63,22 +64,11 @@ class ResourceSchemaNameResolver
                 : $this->getClassNameFromImports($matches[1], $fileContent);
 
             if (is_subclass_of($resourceName, JsonResource::class)) {
-                $isCollection = ($type === 'collection');
-
-                return $this->toSchemaName($resourceName, $isCollection);
+                return new ResourceSchema($resourceName, isCollection: $type === 'collection');
             }
         }
 
         return null;
-    }
-
-    protected function toSchemaName(string $className, bool $isCollection = false): string
-    {
-        $baseName = Str::replaceLast('Resource', '', class_basename($className));
-
-        return ($isCollection && !Str::endsWith($baseName, 'Collection'))
-            ? $baseName . 'Collection'
-            : $baseName;
     }
 
     protected function isResourceClass(string $className): bool
