@@ -1,0 +1,92 @@
+{
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "http:\/\/localhost"
+    }
+  ],
+  "paths": {
+    "\/users": {
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "consumes": [
+          "application\/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "text\/plain"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "description": "string, required",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "user_id",
+            "description": "integer, with_to_array_rule_string_name",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_email_enabled",
+            "description": "test_rule_without_to_string",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successfully done",
+            "content": {
+              "text\/plain": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/deleteUsers204ResponseObject"
+                },
+                "example": "[]"
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "",
+        "deprecated": false,
+        "summary": "test"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "deleteUsers204ResponseObject": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  },
+  "info": {
+    "description": "This is automatically collected documentation",
+    "version": "0.0.0",
+    "title": "Name of Your Application",
+    "termsOfService": "",
+    "contact": {
+      "email": "your@email.com"
+    }
+  },
+  "securityDefinitions": {
+    "laravel": {
+      "type": "apiKey",
+      "name": "Cookie",
+      "in": "header"
+    }
+  }
+}

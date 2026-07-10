@@ -1,0 +1,79 @@
+<?php
+
+namespace RonasIT\AutoDoc\Support\Factories;
+
+use Illuminate\Http\Request;
+use RonasIT\AutoDoc\Contracts\ControllerInspectorContract;
+use RonasIT\AutoDoc\DTO\RequestSnapshot;
+use RonasIT\AutoDoc\DTO\RouteSnapshot;
+use RonasIT\AutoDoc\Inspectors\ClassControllerInspector;
+use RonasIT\AutoDoc\Inspectors\ClosureControllerInspector;
+use RonasIT\AutoDoc\Inspectors\RouteInspector;
+use RonasIT\AutoDoc\Support\Resolvers\MethodDependencyResolver;
+use RonasIT\AutoDoc\Support\Resolvers\ResourceSchemaResolver;
+
+class RequestSnapshotFactory
+{
+    public function __construct(
+        private MethodDependencyResolver $dependencyResolver,
+        private ResourceSchemaResolver $resourceSchemaResolver,
+        private RequestDataFactory $requestDataFactory,
+    ) {
+    }
+
+    public function make(Request $request): RequestSnapshot
+    {
+        $routeInspector = new RouteInspector($request->route());
+
+        $controllerInspector = $this->getControllerInspector($routeInspector);
+
+        $requestClass = $controllerInspector->getRequestClass();
+        $resourceSchema = $controllerInspector->getResource();
+
+        return new RequestSnapshot(
+            route: new RouteSnapshot(
+                uri: $routeInspector->getUri(),
+                httpMethod: strtolower($request->method()),
+                wheres: $routeInspector->getWheres(),
+            ),
+            requestData: $this->requestDataFactory->make($request, $requestClass),
+            requestClass: $requestClass,
+            resourceSchema: $resourceSchema,
+            hasSecurityToken: $this->resolveSecurityToken($request),
+        );
+    }
+
+    protected function getControllerInspector(RouteInspector $routeInspector): ControllerInspectorContract
+    {
+        return $routeInspector->isClosureAction()
+            ? new ClosureControllerInspector(
+                closure: $routeInspector->getClosure(),
+                resourceSchemaResolver: $this->resourceSchemaResolver,
+            )
+            : new ClassControllerInspector(
+                class: $routeInspector->getControllerClass(),
+                method: $routeInspector->getControllerMethod(),
+                dependencyResolver: $this->dependencyResolver,
+                resourceSchemaResolver: $this->resourceSchemaResolver,
+            );
+    }
+
+    protected function resolveSecurityToken(Request $request): bool
+    {
+        $security = config('auto-doc.security', '');
+        $driver = config("auto-doc.security_drivers.{$security}", []);
+
+        if (empty($driver['in'])) {
+            return false;
+        }
+
+        $driverName = match ($driver['in']) {
+            'header' => $request->header($driver['name']),
+            'cookie' => $request->cookie($driver['name']),
+            'query' => $request->query($driver['name']),
+            default => null,
+        };
+
+        return !empty($driverName);
+    }
+}

@@ -10,8 +10,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use ReflectionClass;
 use RonasIT\AutoDoc\Contracts\SwaggerDriverContract;
+use RonasIT\AutoDoc\DTO\RequestSnapshot;
 use RonasIT\AutoDoc\Exceptions\DocFileNotExistsException;
 use RonasIT\AutoDoc\Exceptions\EmptyContactEmailException;
 use RonasIT\AutoDoc\Exceptions\EmptyDocFileException;
@@ -21,7 +21,7 @@ use RonasIT\AutoDoc\Exceptions\SpecValidation\InvalidSwaggerSpecException;
 use RonasIT\AutoDoc\Exceptions\SwaggerDriverClassNotFoundException;
 use RonasIT\AutoDoc\Exceptions\UnsupportedDocumentationViewerException;
 use RonasIT\AutoDoc\Exceptions\WrongSecurityConfigException;
-use RonasIT\AutoDoc\Traits\GetDependenciesTrait;
+use RonasIT\AutoDoc\Support\Factories\RequestSnapshotFactory;
 use RonasIT\AutoDoc\Validators\SwaggerSpecValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -31,22 +31,13 @@ use Throwable;
  */
 class SwaggerService
 {
-    use GetDependenciesTrait;
-
     public const string OPEN_API_VERSION = '3.1.0';
 
     protected $driver;
-    protected $openAPIValidator;
 
     protected $data;
     protected $config;
-    protected $container;
-    private $uri;
-    private $method;
-    /**
-     * @var Request
-     */
-    private $request;
+    protected RequestSnapshot $requestSnapshot;
     private $item;
     private $security;
 
@@ -61,14 +52,11 @@ class SwaggerService
         'int' => 'integer',
     ];
 
-    protected $booleanAnnotations = [
-        'deprecated',
-    ];
-
-    public function __construct(Container $container)
-    {
-        $this->openAPIValidator = app(SwaggerSpecValidator::class);
-
+    public function __construct(
+        protected Container $container,
+        protected RequestSnapshotFactory $requestSnapshotFactory,
+        protected SwaggerSpecValidator $openAPIValidator,
+    ) {
         $this->initConfig();
 
         $this->setDriver();
@@ -77,8 +65,6 @@ class SwaggerService
             // client must enter at least `contact.email` to generate a default `info` block
             // otherwise an exception will be called
             $this->checkEmail();
-
-            $this->container = $container;
 
             $this->security = $this->config['security'];
 
@@ -193,7 +179,7 @@ class SwaggerService
 
     public function addData(Request $request, $response)
     {
-        $this->request = $request;
+        $this->requestSnapshot = $this->requestSnapshotFactory->make($request);
 
         $this->prepareItem();
 
@@ -205,11 +191,11 @@ class SwaggerService
 
     protected function prepareItem()
     {
-        $this->uri = "/{$this->getUri()}";
-        $this->method = strtolower($this->request->getMethod());
+        $uri = $this->requestSnapshot->route->uri;
+        $method = $this->requestSnapshot->route->httpMethod;
 
-        if (empty(Arr::get($this->data, "paths.{$this->uri}.{$this->method}"))) {
-            $this->data['paths'][$this->uri][$this->method] = [
+        if (empty(Arr::get($this->data, "paths.{$uri}.{$method}"))) {
+            $this->data['paths'][$uri][$method] = [
                 'tags' => [],
                 'consumes' => [],
                 'produces' => [],
@@ -220,23 +206,14 @@ class SwaggerService
             ];
         }
 
-        $this->item = &$this->data['paths'][$this->uri][$this->method];
-    }
-
-    protected function getUri()
-    {
-        $uri = $this->request->route()->uri();
-        $basePath = preg_replace("/^\//", '', $this->config['basePath']);
-        $preparedUri = preg_replace("/^{$basePath}/", '', $uri);
-
-        return preg_replace("/^\//", '', $preparedUri);
+        $this->item = &$this->data['paths'][$uri][$method];
     }
 
     protected function getPathParams(): array
     {
         $params = [];
 
-        preg_match_all('/{.*?}/', $this->uri, $params);
+        preg_match_all('/{[^}]*}/', $this->requestSnapshot->route->uri, $params);
 
         $params = Arr::collapse($params);
 
@@ -261,7 +238,7 @@ class SwaggerService
 
     protected function generatePathDescription(string $key): string
     {
-        $expression = Arr::get($this->request->route()->wheres, $key);
+        $expression = Arr::get($this->requestSnapshot->route->wheres, $key);
 
         if (empty($expression)) {
             return '';
@@ -284,7 +261,7 @@ class SwaggerService
         $this->saveTags();
         $this->saveSecurity();
 
-        $concreteRequest = $this->getConcreteRequest();
+        $concreteRequest = $this->requestSnapshot->requestClass;
 
         if (empty($concreteRequest)) {
             $this->item['description'] = '';
@@ -292,10 +269,10 @@ class SwaggerService
             return;
         }
 
-        $annotations = $this->getClassAnnotations($concreteRequest);
+        $annotations = $this->requestSnapshot->requestData->annotations;
 
         $this->markAsDeprecated($annotations);
-        $this->saveParameters($concreteRequest, $annotations);
+        $this->saveParameters($annotations);
         $this->saveDescription($concreteRequest, $annotations);
     }
 
@@ -356,7 +333,7 @@ class SwaggerService
 
     protected function parseResponse($response)
     {
-        $produceList = $this->data['paths'][$this->uri][$this->method]['produces'];
+        $produceList = $this->data['paths'][$this->requestSnapshot->route->uri][$this->requestSnapshot->route->httpMethod]['produces'];
 
         $produce = $response->headers->get('Content-type');
 
@@ -391,22 +368,46 @@ class SwaggerService
 
         $code = $response->getStatusCode();
 
-        if (!in_array($code, $responses)) {
-            $this->saveExample(
-                $code,
-                json_encode($content, JSON_PRETTY_PRINT),
-                $produce,
-            );
+        if (!array_key_exists($code, $responses)) {
+            $this->saveExample($code, json_encode($content, JSON_PRETTY_PRINT), $produce);
         }
 
-        $action = Str::ucfirst($this->getActionName($this->uri));
-        $definition = "{$this->method}{$action}{$code}ResponseObject";
+        $definition = $this->getDefinition($code);
 
         $this->saveResponseSchema($content, $definition);
 
         if (is_array($this->item['responses'][$code])) {
             $this->item['responses'][$code]['content'][$produce]['schema']['$ref'] = "#/components/schemas/{$definition}";
         }
+    }
+
+    protected function getDefinition(string $statusCode): string
+    {
+        $resourceSchema = $this->requestSnapshot->resourceSchema;
+
+        if (empty($resourceSchema)) {
+            $action = Str::ucfirst($this->getActionName());
+
+            return "{$this->requestSnapshot->route->httpMethod}{$action}{$statusCode}ResponseObject";
+        }
+
+        $classBaseName = class_basename($resourceSchema->className);
+
+        $subFolderPrefix = Str::of($resourceSchema->className)
+            ->after('\\Resources\\')
+            ->replace([$classBaseName, '\\'], '')
+            ->toString();
+
+        $resourceName = Str::of($classBaseName)
+            ->replaceLast('Resource', '')
+            ->toString();
+
+        $schemaName = ($subFolderPrefix === $resourceName) ? $resourceName : $subFolderPrefix . $resourceName;
+
+        $needsCollectionSuffix = $resourceSchema->isCollection
+            && !Str::endsWith($schemaName, 'Collection');
+
+        return ($needsCollectionSuffix) ? "{$schemaName}Collection" : $schemaName;
     }
 
     protected function saveExample($code, $content, $produce)
@@ -447,57 +448,18 @@ class SwaggerService
         ];
     }
 
-    protected function saveParameters($request, array $annotations)
+    protected function saveParameters(array $annotations)
     {
-        $formRequest = new $request();
-        $formRequest->setUserResolver($this->request->getUserResolver());
-        $formRequest->setRouteResolver($this->request->getRouteResolver());
-        $rules = method_exists($formRequest, 'rules') ? $this->prepareRules($formRequest->rules()) : [];
-        $attributes = method_exists($formRequest, 'attributes') ? $formRequest->attributes() : [];
+        $rules = $this->requestSnapshot->requestData->rules;
+        $attributes = $this->requestSnapshot->requestData->attributes;
 
-        $actionName = $this->getActionName($this->uri);
+        $actionName = $this->getActionName();
 
-        if (in_array($this->method, ['get', 'delete'])) {
+        if (in_array($this->requestSnapshot->route->httpMethod, ['get', 'delete'])) {
             $this->saveGetRequestParameters($rules, $attributes, $annotations);
         } else {
             $this->savePostRequestParameters($actionName, $rules, $attributes, $annotations);
         }
-    }
-
-    protected function prepareRules(array $rules): array
-    {
-        $preparedRules = [];
-
-        foreach ($rules as $field => $rulesField) {
-            if (is_array($rulesField)) {
-                $rulesField = array_map(function ($rule) {
-                    return $this->getRuleAsString($rule);
-                }, $rulesField);
-
-                $preparedRules[$field] = implode('|', $rulesField);
-            } else {
-                $preparedRules[$field] = $this->getRuleAsString($rulesField);
-            }
-        }
-
-        return $preparedRules;
-    }
-
-    protected function getRuleAsString($rule): string
-    {
-        if (is_object($rule)) {
-            if (method_exists($rule, '__toString')) {
-                return $rule->__toString();
-            }
-
-            $shortName = Str::afterLast(get_class($rule), '\\');
-
-            $ruleName = preg_replace('/Rule$/', '', $shortName);
-
-            return Str::snake($ruleName);
-        }
-
-        return $rule;
     }
 
     protected function saveGetRequestParameters($validation, array $attributes, array $annotations)
@@ -571,7 +533,7 @@ class SwaggerService
     {
         if ($this->requestHasMoreProperties($actionName)) {
             if ($this->requestHasBody()) {
-                $type = $this->request->header('Content-Type', 'application/json');
+                $type = $this->requestSnapshot->requestData->contentType ?? 'application/json';
 
                 $this->item['requestBody'] = [
                     'content' => [
@@ -654,7 +616,7 @@ class SwaggerService
 
     protected function requestHasMoreProperties($actionName): bool
     {
-        $requestParametersCount = count($this->request->all());
+        $requestParametersCount = count($this->requestSnapshot->requestData->payload);
 
         $properties = Arr::get($this->data, "components.schemas.{$actionName}Object.properties", []);
         $objectParametersCount = count($properties);
@@ -664,7 +626,7 @@ class SwaggerService
 
     protected function requestHasBody(): bool
     {
-        $parameters = $this->data['paths'][$this->uri][$this->method]['parameters'];
+        $parameters = $this->data['paths'][$this->requestSnapshot->route->uri][$this->requestSnapshot->route->httpMethod]['parameters'];
 
         $bodyParamExisted = Arr::where($parameters, function ($value) {
             return $value['name'] === 'body';
@@ -673,37 +635,10 @@ class SwaggerService
         return empty($bodyParamExisted);
     }
 
-    public function getConcreteRequest()
-    {
-        $controller = $this->request->route()->getActionName();
-
-        if ($controller === 'Closure') {
-            return null;
-        }
-
-        $explodedController = explode('@', $controller);
-
-        $class = $explodedController[0];
-        $method = Arr::get($explodedController, 1, '__invoke');
-
-        if (!method_exists($class, $method)) {
-            return null;
-        }
-
-        $parameters = $this->resolveClassMethodDependencies(
-            app($class),
-            $method,
-        );
-
-        return Arr::first($parameters, function ($key) {
-            return preg_match('/Request/', $key);
-        });
-    }
-
     public function saveConsume()
     {
-        $consumeList = $this->data['paths'][$this->uri][$this->method]['consumes'];
-        $consume = $this->request->header('Content-Type');
+        $consumeList = $this->data['paths'][$this->requestSnapshot->route->uri][$this->requestSnapshot->route->httpMethod]['consumes'];
+        $consume = $this->requestSnapshot->requestData->contentType;
 
         if (!empty($consume) && !in_array($consume, $consumeList)) {
             $this->item['consumes'][] = $consume;
@@ -715,7 +650,7 @@ class SwaggerService
         $globalPrefix = config('auto-doc.global_prefix');
         $globalPrefix = Str::after($globalPrefix, '/');
 
-        $explodedUri = explode('/', $this->uri);
+        $explodedUri = explode('/', $this->requestSnapshot->route->uri);
         $explodedUri = array_filter($explodedUri);
 
         $tag = array_shift($explodedUri);
@@ -740,14 +675,14 @@ class SwaggerService
 
     protected function saveSecurity()
     {
-        if ($this->requestSupportAuth()) {
+        if ($this->requestSnapshot->hasSecurityToken) {
             $this->addSecurityToOperation();
         }
     }
 
     protected function addSecurityToOperation()
     {
-        $security = &$this->data['paths'][$this->uri][$this->method]['security'];
+        $security = &$this->data['paths'][$this->requestSnapshot->route->uri][$this->requestSnapshot->route->httpMethod]['security'];
 
         if (empty($security)) {
             $security[] = [
@@ -767,31 +702,6 @@ class SwaggerService
         return $summary;
     }
 
-    protected function requestSupportAuth(): bool
-    {
-        $security = Arr::get($this->config, 'security');
-        $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
-
-        switch (Arr::get($securityDriver, 'in')) {
-            case 'header':
-                // TODO Change this logic after migration on Swagger 3.0
-                // Swagger 2.0 does not support cookie authorization.
-                $securityToken = $this->request->hasHeader($securityDriver['name'])
-                    ? $this->request->header($securityDriver['name'])
-                    : $this->request->cookie($securityDriver['name']);
-
-                break;
-            case 'query':
-                $securityToken = $this->request->query($securityDriver['name']);
-
-                break;
-            default:
-                $securityToken = null;
-        }
-
-        return !empty($securityToken);
-    }
-
     protected function parseRequestName($request)
     {
         $explodedRequest = explode('\\', $request);
@@ -807,13 +717,13 @@ class SwaggerService
     {
         $defaultDescription = Response::$statusTexts[$code];
 
-        $request = $this->getConcreteRequest();
+        $request = $this->requestSnapshot->requestClass;
 
         if (empty($request)) {
             return $defaultDescription;
         }
 
-        $annotations = $this->getClassAnnotations($request);
+        $annotations = $this->requestSnapshot->requestData->annotations;
 
         $localDescription = Arr::get($annotations, "_{$code}");
 
@@ -824,9 +734,9 @@ class SwaggerService
         return Arr::get($this->config, "defaults.code-descriptions.{$code}", $defaultDescription);
     }
 
-    protected function getActionName($uri): string
+    protected function getActionName(): string
     {
-        $action = preg_replace('[\/]', '', $uri);
+        $action = str_replace('/', '', $this->requestSnapshot->route->uri);
 
         return Str::camel($action);
     }
@@ -939,7 +849,7 @@ class SwaggerService
 
     protected function generateExample($properties): array
     {
-        $parameters = $this->replaceObjectValues($this->request->all());
+        $parameters = $this->replaceObjectValues($this->requestSnapshot->requestData->payload);
         $example = [];
 
         $this->replaceNullValues($parameters, $properties, $example);
@@ -967,38 +877,6 @@ class SwaggerService
         }
 
         return $returnParameters;
-    }
-
-    protected function getClassAnnotations($class): array
-    {
-        $reflection = new ReflectionClass($class);
-
-        $annotations = $reflection->getDocComment();
-
-        $annotations = Str::of($annotations)->remove("\r");
-
-        $blocks = explode("\n", $annotations);
-
-        $result = [];
-
-        foreach ($blocks as $block) {
-            if (Str::contains($block, '@')) {
-                $index = strpos($block, '@');
-                $block = substr($block, $index);
-                $exploded = explode(' ', $block);
-
-                $paramName = str_replace('@', '', array_shift($exploded));
-                $paramValue = implode(' ', $exploded);
-
-                if (in_array($paramName, $this->booleanAnnotations)) {
-                    $paramValue = true;
-                }
-
-                $result[$paramName] = $paramValue;
-            }
-        }
-
-        return $result;
     }
 
     /**
