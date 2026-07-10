@@ -5,7 +5,6 @@ namespace RonasIT\AutoDoc\Support\Resolvers;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionFunctionAbstract;
 use ReflectionNamedType;
@@ -34,7 +33,11 @@ class ResourceSchemaResolver
         };
 
         foreach ($types as $type) {
-            if ($type instanceof ReflectionNamedType && !$type->isBuiltin() && $this->isResourceClass($type->getName())) {
+            $isResourceClass = $type instanceof ReflectionNamedType
+                && !$type->isBuiltin()
+                && $this->isResourceClass($type->getName());
+
+            if ($isResourceClass) {
                 $className = $type->getName();
 
                 return new ResourceSchema(
@@ -103,14 +106,26 @@ class ResourceSchemaResolver
 
     protected function getClassNameFromImports(string $resourceName, array $fileContent): string
     {
-        $resourceImport = Arr::first(
-            array: $fileContent,
-            callback: fn (string $line) => Str::startsWith($line, 'use')
-                && preg_match('/\b' . preg_quote($resourceName, '/') . '\b/', $line),
-        );
+        foreach ($fileContent as $line) {
+            $line = trim($line);
 
-        preg_match('/^use\s+([^;]+?)(?:\s+as\s+\w+)?;$/', trim($resourceImport), $matches);
+            if (!Str::startsWith($line, 'use ')) {
+                continue;
+            }
 
-        return $matches[1] ?? '';
+            preg_match('/^use\s+(?<namespace>[^;]+?)(?:\s+as\s+(?<alias>\w+))?;$/', $line, $matches);
+
+            $nameSpace = $matches['namespace'] ?? '';
+            $alias = $matches['alias'] ?? '';
+
+            $isFoundNamespace = ($alias === $resourceName)
+                || (empty($alias) && Str::afterLast($nameSpace, '\\') === $resourceName);
+
+            if ($isFoundNamespace) {
+                return $nameSpace;
+            }
+        }
+
+        return '';
     }
 }
