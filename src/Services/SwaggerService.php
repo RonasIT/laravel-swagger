@@ -769,7 +769,7 @@ class SwaggerService
         $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
 
         return match (Arr::get($securityDriver, 'type')) {
-            'apiKey' => (!empty(match (Arr::get($securityDriver, 'in'))) {
+            'apiKey' => !empty(match (Arr::get($securityDriver, 'in')) {
                 'header' => $this->request->header($securityDriver['name']),
                 'query' => $this->request->query($securityDriver['name']),
                 'cookie' => $this->request->cookie($securityDriver['name']),
