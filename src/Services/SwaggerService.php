@@ -769,14 +769,25 @@ class SwaggerService
         $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
 
         return match (Arr::get($securityDriver, 'type')) {
-            'apiKey' => !empty(match (Arr::get($securityDriver, 'in')) {
-                'header' => $this->request->header($securityDriver['name']),
-                'query' => $this->request->query($securityDriver['name']),
-                'cookie' => $this->request->cookie($securityDriver['name']),
-                default => null,
-            }),
+            'apiKey' => (!empty($this->getApiKeyToken($securityDriver))),
             'mutualTLS' => false,
-            default => !empty($this->request->header('authorization')),
+            default => (!empty($this->request->header('authorization'))),
+        };
+    }
+
+    protected function getApiKeyToken(array $securityDriver): mixed
+    {
+        $name = Arr::get($securityDriver, 'name');
+
+        if (empty($name)) {
+            return null;
+        }
+
+        return match (Arr::get($securityDriver, 'in')) {
+            'header' => $this->request->header($name),
+            'query' => $this->request->query($name),
+            'cookie' => $this->request->cookie($name),
+            default => null,
         };
     }
 

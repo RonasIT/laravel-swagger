@@ -690,6 +690,16 @@ class SwaggerServiceTest extends TestCase
                 'requestCookies' => [],
                 'requestFixture' => 'tmp_data_search_roles_request',
             ],
+            [
+                'securityDriver' => [
+                    'type' => 'apiKey',
+                    'in' => 'header',
+                ],
+                'requestData' => [],
+                'requestHeaders' => ['x-token' => 'some_token'],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
         ];
     }
 
