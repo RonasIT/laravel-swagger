@@ -125,8 +125,9 @@ class TestCase extends BaseTest
         array $headers = [],
         array $routeConditions = [],
         string $controllerMethod = 'test',
+        array $cookies = [],
     ): Request {
-        $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers);
+        $request = $this->getBaseRequest($type, $uri, $data, $pathParams, $headers, $cookies);
 
         return $request->setRouteResolver(function () use ($uri, $request, $controllerMethod, $routeConditions) {
             $route = Route::get($uri)
@@ -146,18 +147,25 @@ class TestCase extends BaseTest
         });
     }
 
-    protected function generateGetRolesRequest($method = 'test'): Request
-    {
+    protected function generateGetRolesRequest(
+        $method = 'test',
+        array $data = [],
+        array $headers = [],
+        array $cookies = [],
+    ): Request {
         return $this->generateRequest(
             type: 'get',
             uri: 'users/roles',
             data: [
                 'with' => ['users'],
+                ...$data,
             ],
             headers: [
                 'Content-type' => 'application/json',
+                ...$headers,
             ],
             controllerMethod: $method,
+            cookies: $cookies,
         );
     }
 
@@ -182,7 +190,7 @@ class TestCase extends BaseTest
         });
     }
 
-    protected function getBaseRequest($type, $uri, $data = [], $pathParams = [], $headers = []): Request
+    protected function getBaseRequest($type, $uri, $data = [], $pathParams = [], $headers = [], $cookies = []): Request
     {
         $realUri = $uri;
 
@@ -194,6 +202,7 @@ class TestCase extends BaseTest
             uri: $this->prepareUrlForRequest($realUri),
             method: strtoupper($type),
             parameters: $data,
+            cookies: $cookies,
             server: $this->transformHeadersToServerVars($headers),
         );
 

@@ -108,8 +108,8 @@
         "securitySchemes": {
             "laravel": {
                 "type": "apiKey",
-                "name": "Cookie",
-                "in": "header"
+                "name": "laravel",
+                "in": "cookie"
             }
         }
     },

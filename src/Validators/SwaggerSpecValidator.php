@@ -76,7 +76,7 @@ class SwaggerSpecValidator
         'schemes' => ['http', 'https', 'ws', 'wss'],
         'security_schemes_flows' => ['implicit', 'password', 'clientCredentials', 'authorizationCode'],
         'security_schemes_in' => ['query', 'header', 'cookie'],
-        'security_schemes_type' => ['apiKey', 'http',  'mutualTLS', 'oauth2', 'openIdConnect'],
+        'security_schemes_type' => ['apiKey', 'http', 'mutualTLS', 'oauth2', 'openIdConnect'],
     ];
 
     public const ALLOWED_TYPES = [

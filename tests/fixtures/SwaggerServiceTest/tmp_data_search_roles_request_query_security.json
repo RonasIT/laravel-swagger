@@ -108,7 +108,7 @@
         "securitySchemes": {
             "query": {
                 "type": "apiKey",
-                "name": "authorization",
+                "name": "api_key",
                 "in": "query"
             }
         }
