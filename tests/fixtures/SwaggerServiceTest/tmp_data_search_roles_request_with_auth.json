@@ -83,7 +83,11 @@
                         }
                     }
                 },
-                "security": [],
+                "security": [
+                    {
+                        "secured": []
+                    }
+                ],
                 "description": "",
                 "summary": "test",
                 "deprecated": false
@@ -103,13 +107,6 @@
                         ]
                     }
                 }
-            }
-        },
-        "securitySchemes": {
-            "query": {
-                "type": "apiKey",
-                "name": "api_key",
-                "in": "query"
             }
         }
     },

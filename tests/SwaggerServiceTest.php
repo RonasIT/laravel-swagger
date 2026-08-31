@@ -204,12 +204,28 @@ class SwaggerServiceTest extends TestCase
                 'fixture' => 'invalid_format_security_definition_type.html',
             ],
             [
-                'tmpDoc' => 'documentation/invalid_format__security_definition__flow',
-                'fixture' => 'invalid_format_security_definition_flow.html',
+                'tmpDoc' => 'documentation/invalid_format__security_definition__flows',
+                'fixture' => 'invalid_format_security_definition_flows.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__security_definition__in',
                 'fixture' => 'invalid_format_security_definition_in.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__security_definition__apiKey_missing_fields',
+                'fixture' => 'invalid_format_security_definition_missing_fields_apiKey.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__security_definition__http_missing_fields',
+                'fixture' => 'invalid_format_security_definition_missing_fields_http.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__security_definition__oauth2_missing_fields',
+                'fixture' => 'invalid_format_security_definition_missing_fields_oauth2.html',
+            ],
+            [
+                'tmpDoc' => 'documentation/invalid_format__security_definition__openIdConnect_missing_fields',
+                'fixture' => 'invalid_format_security_definition_missing_fields_openIdConnect.html',
             ],
             [
                 'tmpDoc' => 'documentation/invalid_format__request_body__invalid_content',
@@ -370,9 +386,9 @@ class SwaggerServiceTest extends TestCase
                     'type' => 'apiKey',
                 ],
                 'jwt' => [
-                    'name' => 'Authorization',
-                    'in' => 'header',
-                    'type' => 'apiKey',
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
                 ],
                 'query' => [
                     'name' => 'api_key',
@@ -533,9 +549,9 @@ class SwaggerServiceTest extends TestCase
                     'type' => 'apiKey',
                 ],
                 'jwt' => [
-                    'name' => 'Authorization',
-                    'in' => 'header',
-                    'type' => 'apiKey',
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
                 ],
                 'query' => [
                     'name' => 'api_key',
@@ -550,6 +566,167 @@ class SwaggerServiceTest extends TestCase
         $service = app(SwaggerService::class);
 
         $request = $this->generateGetRolesRequest();
+
+        $response = $this->generateResponse('example_success_roles_response.json');
+
+        $service->addData($request, $response);
+    }
+
+    public static function addDataWithRequestAuth(): array
+    {
+        return [
+            [
+                'securityDriver' => [
+                    'type' => 'apiKey',
+                    'name' => 'x-token',
+                    'in' => 'header',
+                ],
+                'requestData' => [],
+                'requestHeaders' => ['x-token' => 'some_token'],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request_with_auth',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'apiKey',
+                    'name' => 'api_key',
+                    'in' => 'query',
+                ],
+                'requestData' => ['api_key' => 'some_token'],
+                'requestHeaders' => [],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request_with_auth',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'apiKey',
+                    'name' => 'laravel_session',
+                    'in' => 'cookie',
+                ],
+                'requestData' => [],
+                'requestHeaders' => [],
+                'requestCookies' => ['laravel_session' => 'some_token'],
+                'requestFixture' => 'tmp_data_search_roles_request_with_auth',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
+                ],
+                'requestData' => [],
+                'requestHeaders' => ['authorization' => 'Bearer some_token'],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request_with_auth',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'apiKey',
+                    'name' => 'x-token',
+                    'in' => 'header',
+                ],
+                'requestData' => [],
+                'requestHeaders' => [],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'apiKey',
+                    'name' => 'laravel_session',
+                    'in' => 'cookie',
+                ],
+                'requestData' => [],
+                'requestHeaders' => ['laravel_session' => 'some_token'],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
+                ],
+                'requestData' => [],
+                'requestHeaders' => [],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
+                ],
+                'requestData' => [],
+                'requestHeaders' => ['authorization' => ''],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
+            [
+                'securityDriver' => ['type' => 'mutualTLS'],
+                'requestData' => [],
+                'requestHeaders' => ['authorization' => 'Bearer some_token'],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
+            [
+                'securityDriver' => [
+                    'name' => 'x-token',
+                    'in' => 'header',
+                ],
+                'requestData' => [],
+                'requestHeaders' => ['x-token' => 'some_token'],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'apiKey',
+                    'name' => 'x-token',
+                ],
+                'requestData' => [],
+                'requestHeaders' => ['x-token' => 'some_token'],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
+            [
+                'securityDriver' => [
+                    'type' => 'apiKey',
+                    'in' => 'header',
+                ],
+                'requestData' => [],
+                'requestHeaders' => ['x-token' => 'some_token'],
+                'requestCookies' => [],
+                'requestFixture' => 'tmp_data_search_roles_request',
+            ],
+        ];
+    }
+
+    #[DataProvider('addDataWithRequestAuth')]
+    public function testAddDataWithRequestAuth(
+        array $securityDriver,
+        array $requestData,
+        array $requestHeaders,
+        array $requestCookies,
+        string $requestFixture,
+    ) {
+        config([
+            'auto-doc.security' => 'secured',
+            'auto-doc.security_drivers' => [
+                'secured' => $securityDriver,
+            ],
+        ]);
+
+        $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture($requestFixture));
+
+        $service = app(SwaggerService::class);
+
+        $request = $this->generateGetRolesRequest(
+            data: $requestData,
+            headers: $requestHeaders,
+            cookies: $requestCookies,
+        );
 
         $response = $this->generateResponse('example_success_roles_response.json');
 

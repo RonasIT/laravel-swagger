@@ -74,6 +74,13 @@
                     }
                 }
             }
+        },
+        "securitySchemes": {
+            "jwt": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
         }
     },
     "info": {
@@ -83,13 +90,6 @@
         "termsOfService": "",
         "contact": {
             "email": "your@email.com"
-        }
-    },
-    "securityDefinitions": {
-        "jwt": {
-            "type": "apiKey",
-            "name": "authorization",
-            "in": "header"
         }
     }
 }

@@ -5,6 +5,13 @@
       "url": "http:\/\/localhost"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "petstore_auth": {
+        "type": "oauth2"
+      }
+    }
+  },
   "paths": {
     "\/api\/users":
     {
@@ -79,12 +86,5 @@
     {
       "email": "your@email.com"
     }
-  },
-  "securityDefinitions": [
-    {
-      "type": "basic",
-      "in": "query",
-      "flow": "invalid"
-    }
-  ]
+  }
 }

@@ -6,7 +6,7 @@
 
 #### **Details:**
 
-Validation failed. Field &#039;securityDefinitions.0.in&#039; has an invalid value: invalid. Allowed values: query, header.
+Validation failed. Field &#039;components.securitySchemes.api_key.in&#039; has an invalid value: invalid. Allowed values: query, header, cookie.
 
 #### **Error place:**
 
@@ -14,4 +14,4 @@ file=/src/Validators/SwaggerSpecValidator.php<br />
 line=999<br />
 function=validateFieldValue<br />
 class=RonasIT\AutoDoc\Validators\SwaggerSpecValidator<br />
-args=[{"type":"basic","in":"invalid","flow":"password"},"in",["query","header"],"securityDefinitions.0"]
+args=[{"type":"apiKey","name":"query","in":"invalid"},"in",["query","header","cookie"],"components.securitySchemes.api_key"]

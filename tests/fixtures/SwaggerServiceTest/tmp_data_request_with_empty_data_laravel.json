@@ -7,7 +7,14 @@
     ],
     "paths": [],
     "components": {
-        "schemas": []
+        "schemas": [],
+        "securitySchemes": {
+            "laravel": {
+                "type": "apiKey",
+                "name": "laravel",
+                "in": "cookie"
+            }
+        }
     },
     "info": {
         "description": "This is automatically collected documentation",
@@ -20,13 +27,6 @@
         "license": {
             "name": "",
             "url": ""
-        }
-    },
-    "securityDefinitions": {
-        "laravel": {
-            "type": "apiKey",
-            "name": "laravel",
-            "in": "cookie"
         }
     }
 }

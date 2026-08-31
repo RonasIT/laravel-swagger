@@ -7,7 +7,14 @@
     ],
     "paths": [],
     "components": {
-        "schemas": []
+        "schemas": [],
+        "securitySchemes": {
+            "query": {
+                "type": "apiKey",
+                "name": "api_key",
+                "in": "query"
+            }
+        }
     },
     "info": {
         "description": "This is automatically collected documentation",
@@ -20,13 +27,6 @@
         "license": {
             "name": "",
             "url": ""
-        }
-    },
-    "securityDefinitions": {
-        "query": {
-            "type": "apiKey",
-            "name": "api_key",
-            "in": "query"
         }
     }
 }

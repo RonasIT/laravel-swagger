@@ -7,10 +7,17 @@
   ],
   "components": {
     "securitySchemes": {
-      "api_key": {
-        "type": "invalid",
-        "name": "query",
-        "in": "header"
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "invalid": {
+            "authorizationUrl": "https://example.com/api/oauth/dialog",
+            "scopes": {
+              "write:pets": "modify pets in your account",
+              "read:pets": "read your pets"
+            }
+          }
+        }
       }
     }
   },
@@ -22,18 +29,17 @@
         "tags": ["api"],
         "consumes": ["application\/x-www-form-urlencoded"],
         "produces": ["application\/json"],
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/definitions/apiusersObject"
-              }
-            }
-          },
-          "required": true,
-          "description": ""
-        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+           "schema": {
+             "$ref": "#/definitions/apiusersObject"
+           }
+          }
+        ],
         "responses":
         {
           "403":

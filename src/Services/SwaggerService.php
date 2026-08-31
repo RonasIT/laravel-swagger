@@ -155,10 +155,10 @@ class SwaggerService
             'info' => $this->prepareInfo($view, $viewData, $license),
         ];
 
-        $securityDefinitions = $this->generateSecurityDefinition();
+        $securitySchemes = $this->generateSecuritySchemes();
 
-        if (!empty($securityDefinitions)) {
-            $data['securityDefinitions'] = $securityDefinitions;
+        if (!empty($securitySchemes)) {
+            $data['components']['securitySchemes'] = $securitySchemes;
         }
 
         return $data;
@@ -171,23 +171,14 @@ class SwaggerService
         }
     }
 
-    protected function generateSecurityDefinition(): ?array
+    protected function generateSecuritySchemes(): ?array
     {
         if (empty($this->security)) {
             return null;
         }
 
         return [
-            $this->security => $this->generateSecurityDefinitionObject($this->security),
-        ];
-    }
-
-    protected function generateSecurityDefinitionObject($type): array
-    {
-        return [
-            'type' => $this->config['security_drivers'][$type]['type'],
-            'name' => $this->config['security_drivers'][$type]['name'],
-            'in' => $this->config['security_drivers'][$type]['in'],
+            $this->security => $this->config['security_drivers'][$this->security],
         ];
     }
 
@@ -770,26 +761,34 @@ class SwaggerService
     protected function requestSupportAuth(): bool
     {
         $security = Arr::get($this->config, 'security');
-        $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
 
-        switch (Arr::get($securityDriver, 'in')) {
-            case 'header':
-                // TODO Change this logic after migration on Swagger 3.0
-                // Swagger 2.0 does not support cookie authorization.
-                $securityToken = $this->request->hasHeader($securityDriver['name'])
-                    ? $this->request->header($securityDriver['name'])
-                    : $this->request->cookie($securityDriver['name']);
-
-                break;
-            case 'query':
-                $securityToken = $this->request->query($securityDriver['name']);
-
-                break;
-            default:
-                $securityToken = null;
+        if (empty($security)) {
+            return false;
         }
 
-        return !empty($securityToken);
+        $securityDriver = Arr::get($this->config, "security_drivers.{$security}");
+
+        return match (Arr::get($securityDriver, 'type')) {
+            'apiKey' => (!empty($this->getApiKeyToken($securityDriver))),
+            'mutualTLS' => false,
+            default => (!empty($this->request->header('authorization'))),
+        };
+    }
+
+    protected function getApiKeyToken(array $securityDriver): mixed
+    {
+        $name = Arr::get($securityDriver, 'name');
+
+        if (empty($name)) {
+            return null;
+        }
+
+        return match (Arr::get($securityDriver, 'in')) {
+            'header' => $this->request->header($name),
+            'query' => $this->request->query($name),
+            'cookie' => $this->request->cookie($name),
+            default => null,
+        };
     }
 
     protected function parseRequestName($request)

@@ -57,8 +57,15 @@ class SwaggerSpecValidator
         'parameter' => ['in', 'name'],
         'requestBody' => ['content'],
         'response' => ['description'],
-        'security_definition' => ['type'],
+        'securitySchemes' => ['type'],
         'tag' => ['name'],
+    ];
+
+    public const SECURITY_SCHEMES_REQUIRED_FIELDS_BY_TYPE = [
+        'apiKey' => ['name', 'in'],
+        'http' => ['scheme'],
+        'oauth2' => ['flows'],
+        'openIdConnect' => ['openIdConnectUrl'],
     ];
 
     public const ALLOWED_VALUES = [
@@ -67,9 +74,9 @@ class SwaggerSpecValidator
         'header_collection_format' => ['csv', 'ssv', 'tsv', 'pipes'],
         'parameter_in' => ['body', 'formData', 'query', 'path', 'header'],
         'schemes' => ['http', 'https', 'ws', 'wss'],
-        'security_definition_flow' => ['implicit', 'password', 'application', 'accessCode'],
-        'security_definition_in' => ['query', 'header'],
-        'security_definition_type' => ['basic', 'apiKey', 'oauth2'],
+        'security_schemes_flows' => ['implicit', 'password', 'clientCredentials', 'authorizationCode'],
+        'security_schemes_in' => ['query', 'header', 'cookie'],
+        'security_schemes_type' => ['apiKey', 'http', 'mutualTLS', 'oauth2', 'openIdConnect'],
     ];
 
     public const ALLOWED_TYPES = [
@@ -97,7 +104,7 @@ class SwaggerSpecValidator
         $this->validateSchemes();
         $this->validatePaths();
         $this->validateDefinitions();
-        $this->validateSecurityDefinitions();
+        $this->validateSecuritySchemes();
         $this->validateTags();
         $this->validateRefs();
     }
@@ -159,18 +166,20 @@ class SwaggerSpecValidator
         }
     }
 
-    protected function validateSecurityDefinitions(): void
+    protected function validateSecuritySchemes(): void
     {
-        $securityDefinitions = Arr::get($this->doc, 'securityDefinitions', []);
+        $securitySchemes = Arr::get($this->doc, 'components.securitySchemes', []);
 
-        foreach ($securityDefinitions as $index => $securityDefinition) {
-            $parentId = "securityDefinitions.{$index}";
+        foreach ($securitySchemes as $index => $securityScheme) {
+            $schemeId = "components.securitySchemes.{$index}";
 
-            $this->validateFieldsPresent($securityDefinition, self::REQUIRED_FIELDS['security_definition'], $parentId);
+            $this->validateFieldsPresent($securityScheme, self::REQUIRED_FIELDS['securitySchemes'], $schemeId);
 
-            $this->validateFieldValue($securityDefinition, 'type', self::ALLOWED_VALUES['security_definition_type'], $parentId);
-            $this->validateFieldValue($securityDefinition, 'in', self::ALLOWED_VALUES['security_definition_in'], $parentId);
-            $this->validateFieldValue($securityDefinition, 'flow', self::ALLOWED_VALUES['security_definition_flow'], $parentId);
+            $this->validateFieldValue($securityScheme, 'type', self::ALLOWED_VALUES['security_schemes_type'], $schemeId);
+            $this->validateFieldsPresent($securityScheme, Arr::get(self::SECURITY_SCHEMES_REQUIRED_FIELDS_BY_TYPE, $securityScheme['type'], []), $schemeId);
+
+            $this->validateFieldValue($securityScheme, 'in', self::ALLOWED_VALUES['security_schemes_in'], $schemeId);
+            $this->validateFieldValue($securityScheme, 'flows', self::ALLOWED_VALUES['security_schemes_flows'], $schemeId, true);
         }
     }
 
@@ -400,13 +409,15 @@ class SwaggerSpecValidator
         }
     }
 
-    protected function validateFieldValue(array $data, string $field, array $allowedValues, ?string $path = null): void
+    protected function validateFieldValue(array $data, string $field, array $allowedValues, ?string $path = null, bool $useKeys = false): void
     {
         if (!Arr::has($data, $field)) {
             return;
         }
 
-        $invalidValues = array_diff(Arr::wrap($data[$field]), $allowedValues);
+        $fields = ($useKeys) ? array_keys(Arr::wrap($data[$field])) : Arr::wrap($data[$field]);
+
+        $invalidValues = array_diff($fields, $allowedValues);
 
         if (!empty($invalidValues)) {
             $fullPath = (is_null($path)) ? $field : "{$path}.{$field}";
