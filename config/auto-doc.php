@@ -195,6 +195,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Target environments of the build
+    |--------------------------------------------------------------------------
+    |
+    | The comma-separated list of environments the build is deployed to.
+    | The documentation is saved after tests only if one of them is listed in `display_environments`
+    */
+    'target_environments' => array_filter(array_map('trim', explode(',', env('SWAGGER_TARGET_ENVIRONMENT', 'development')))),
+
+    /*
+    |--------------------------------------------------------------------------
     | Paratests
     |--------------------------------------------------------------------------
     |
@@ -220,5 +230,5 @@ return [
         ],
     ],
 
-    'config_version' => '3.0',
+    'config_version' => '3.1',
 ];

@@ -832,6 +832,10 @@ class SwaggerService
 
     public function saveProductionData()
     {
+        if (!$this->isTargetEnvironmentDisplayed()) {
+            return;
+        }
+
         if (ParallelTesting::token()) {
             $this->driver->appendProcessDataToTmpFile(function (?array $sharedTmpData) {
                 $resultDocContent = (empty($sharedTmpData))
@@ -845,6 +849,11 @@ class SwaggerService
         }
 
         $this->driver->saveData();
+    }
+
+    protected function isTargetEnvironmentDisplayed(): bool
+    {
+        return !empty(array_intersect($this->config['target_environments'], $this->config['display_environments']));
     }
 
     public function getDocFileContent()

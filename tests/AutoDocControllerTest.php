@@ -4,6 +4,7 @@ namespace RonasIT\AutoDoc\Tests;
 
 use Illuminate\Http\Response;
 use phpmock\phpunit\PHPMock;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AutoDocControllerTest extends TestCase
 {
@@ -21,7 +22,10 @@ class AutoDocControllerTest extends TestCase
 
         file_put_contents(self::$localDriverFilePath, json_encode(self::$documentation));
 
-        config(['auto-doc.drivers.local.production_path' => self::$localDriverFilePath]);
+        config([
+            'auto-doc.drivers.local.production_path' => self::$localDriverFilePath,
+            'auto-doc.display_environments' => ['testing'],
+        ]);
     }
 
     public function tearDown(): void
@@ -122,8 +126,6 @@ class AutoDocControllerTest extends TestCase
 
     public function testGetViewDocumentation()
     {
-        config(['auto-doc.display_environments' => ['testing']]);
-
         $response = $this->get('/');
 
         $response->assertStatus(Response::HTTP_OK);
@@ -134,7 +136,6 @@ class AutoDocControllerTest extends TestCase
     public function testGetViewElementsDocumentation()
     {
         config([
-            'auto-doc.display_environments' => ['testing'],
             'auto-doc.documentation_viewer' => 'elements',
         ]);
 
@@ -148,7 +149,6 @@ class AutoDocControllerTest extends TestCase
     public function testGetViewRapidocDocumentation()
     {
         config([
-            'auto-doc.display_environments' => ['testing'],
             'auto-doc.documentation_viewer' => 'rapidoc',
         ]);
 
@@ -162,7 +162,6 @@ class AutoDocControllerTest extends TestCase
     public function testGetViewScalarDocumentation()
     {
         config([
-            'auto-doc.display_environments' => ['testing'],
             'auto-doc.documentation_viewer' => 'scalar',
         ]);
 
@@ -173,20 +172,29 @@ class AutoDocControllerTest extends TestCase
         $this->assertEqualsFixture('rendered_scalar_documentation.html', $response->getContent());
     }
 
-    public function testGetViewDocumentationEnvironmentDisable()
+    public static function getPackageRoutes(): array
     {
-        $response = $this->get('/');
+        return [
+            ['uri' => '/'],
+            ['uri' => '/auto-doc/documentation'],
+            ['uri' => '/auto-doc/documentation/postman'],
+            ['uri' => '/auto-doc/swagger-ui.js'],
+        ];
+    }
 
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    #[DataProvider('getPackageRoutes')]
+    public function testGetRouteEnvironmentDisable(string $uri)
+    {
+        config(['auto-doc.display_environments' => ['local', 'development']]);
 
-        $response->assertSeeText('Forbidden.');
+        $response = $this->get($uri);
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
     public function testGetViewDocumentationWithGlobalPrefix()
     {
         $this->addGlobalPrefix();
-
-        config(['auto-doc.display_environments' => ['testing']]);
 
         $response = $this->get('/global');
 

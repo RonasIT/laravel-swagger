@@ -1108,6 +1108,24 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->saveProductionData();
     }
 
+    public function testSaveProductionDataSeveralTargetEnvironments()
+    {
+        config(['auto-doc.target_environments' => ['production', 'development']]);
+
+        $this->mockDriverSaveData();
+
+        app(SwaggerService::class)->saveProductionData();
+    }
+
+    public function testSaveProductionDataTargetEnvironmentNotDisplayed()
+    {
+        config(['auto-doc.target_environments' => ['production']]);
+
+        app(SwaggerService::class)->saveProductionData();
+
+        $this->assertFileDoesNotExist(storage_path('documentation.json'));
+    }
+
     public function testAddDataDescriptionForRouteConditionals()
     {
         $this->mockDriverGetEmptyAndSaveProcessTmpData($this->getJsonFixture('tmp_data_get_route_parameters_description'));
