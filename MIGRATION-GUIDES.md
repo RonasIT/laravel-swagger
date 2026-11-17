@@ -9,7 +9,8 @@ The config version had been increased, so you need to update your `auto-doc.php`
 
 - all package routes (the viewer page, `/auto-doc/documentation`, `/auto-doc/documentation/postman`,
   `/auto-doc/{file}`) return 404 outside of `display_environments`, the viewer page returned 403 before;
-- the documentation file is saved only if one of the build target environments is listed in `display_environments`.
+- the documentation is collected during tests and saved only if one of the build target environments
+  is listed in `display_environments`.
   Set the `SWAGGER_TARGET_ENVIRONMENT` env variable (comma-separated) in your CI/CD configuration
   of the build, it is `development` by default.
 

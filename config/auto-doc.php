@@ -199,7 +199,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | The comma-separated list of environments the build is deployed to.
-    | The documentation is saved after tests only if one of them is listed in `display_environments`
+    | The documentation is collected and saved only if one of them is listed in `display_environments`
     */
     'target_environments' => array_filter(array_map('trim', explode(',', env('SWAGGER_TARGET_ENVIRONMENT', 'development')))),
 

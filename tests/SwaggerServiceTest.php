@@ -1124,6 +1124,19 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->saveProductionData();
 
         $this->assertFileDoesNotExist(storage_path('documentation.json'));
+        $this->assertFileDoesNotExist(storage_path('temp_documentation.json'));
+    }
+
+    public function testSaveProductionDataParallelTargetEnvironmentNotDisplayed()
+    {
+        $this->mockParallelTestingToken('workerID');
+
+        config(['auto-doc.target_environments' => ['production']]);
+
+        app(SwaggerService::class)->saveProductionData();
+
+        $this->assertFileDoesNotExist(storage_path('documentation.json'));
+        $this->assertFileDoesNotExist(storage_path('temp_documentation_workerID.json'));
     }
 
     public function testAddDataDescriptionForRouteConditionals()

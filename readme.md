@@ -208,7 +208,7 @@ You can use the following annotations in your request classes to customize docum
 - `auto-doc.route` - route for generated documentation
 - `auto-doc.basePath` - root of your API
 - `auto-doc.display_environments` - environments where the documentation exists;
-  outside of them all package routes return 404 and the documentation file is not saved
+  outside of them all package routes return 404 and the documentation is not collected or saved
 - `auto-doc.target_environments` - comma-separated list of environments the build is deployed to,
   set by the `SWAGGER_TARGET_ENVIRONMENT` env variable (`development` by default)
 
@@ -217,7 +217,8 @@ You can use the following annotations in your request classes to customize docum
 The documentation is generated in the `testing` environment, so the package can not know
 the environment the build is deployed to. Set the `SWAGGER_TARGET_ENVIRONMENT` env variable
 in your CI/CD configuration of the build, e.g. `SWAGGER_TARGET_ENVIRONMENT=production`.
-The documentation file is saved only if one of the target environments is listed in `display_environments`.
+The documentation is collected during tests and saved only if one of the target environments
+is listed in `display_environments`.
 
 ### Custom driver
 

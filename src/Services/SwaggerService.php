@@ -73,7 +73,7 @@ class SwaggerService
 
         $this->setDriver();
 
-        if (config('app.env') === 'testing') {
+        if ((config('app.env') === 'testing') && $this->isTargetEnvironmentDisplayed()) {
             // client must enter at least `contact.email` to generate a default `info` block
             // otherwise an exception will be called
             $this->checkEmail();
@@ -184,6 +184,10 @@ class SwaggerService
 
     public function addData(Request $request, $response)
     {
+        if (!$this->isTargetEnvironmentDisplayed()) {
+            return;
+        }
+
         $this->request = $request;
 
         $this->prepareItem();
