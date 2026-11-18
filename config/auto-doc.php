@@ -198,10 +198,11 @@ return [
     | Target environments of the build
     |--------------------------------------------------------------------------
     |
-    | The comma-separated list of environments the build is deployed to.
-    | The documentation is collected and saved only if one of them is listed in `display_environments`
+    | Environments the build is deployed to, set by the comma-separated `SWAGGER_TARGET_ENVIRONMENT` env variable.
+    | If set, the documentation is collected and saved only if one of them is listed in `display_environments`,
+    | otherwise the documentation is always collected and saved
     */
-    'target_environments' => array_filter(array_map('trim', explode(',', env('SWAGGER_TARGET_ENVIRONMENT', 'development')))),
+    'target_environments' => array_filter(array_map('trim', explode(',', (string) env('SWAGGER_TARGET_ENVIRONMENT')))),
 
     /*
     |--------------------------------------------------------------------------
@@ -230,5 +231,5 @@ return [
         ],
     ],
 
-    'config_version' => '3.1',
+    'config_version' => '3.0',
 ];

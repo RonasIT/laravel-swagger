@@ -9,25 +9,23 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AutoDocController extends BaseController
 {
-    protected $service;
     protected $documentationViewer;
 
     public function __construct()
     {
-        $this->service = app(SwaggerService::class);
         $this->documentationViewer = config('auto-doc.documentation_viewer');
     }
 
     public function documentationForPostman()
     {
-        $documentation = $this->service->getDocFileContent();
+        $documentation = app(SwaggerService::class)->getDocFileContent();
 
         return response()->json($documentation);
     }
 
     public function documentation()
     {
-        $documentation = $this->service->getPrettyDocFileContent();
+        $documentation = app(SwaggerService::class)->getPrettyDocFileContent();
 
         return response()->json($documentation);
     }

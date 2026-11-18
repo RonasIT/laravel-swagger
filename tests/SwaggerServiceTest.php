@@ -1117,6 +1117,18 @@ class SwaggerServiceTest extends TestCase
         app(SwaggerService::class)->saveProductionData();
     }
 
+    public function testSaveProductionDataWithoutTargetEnvironments()
+    {
+        config([
+            'auto-doc.target_environments' => [],
+            'auto-doc.display_environments' => ['local'],
+        ]);
+
+        $this->mockDriverSaveData();
+
+        app(SwaggerService::class)->saveProductionData();
+    }
+
     public function testSaveProductionDataTargetEnvironmentNotDisplayed()
     {
         config(['auto-doc.target_environments' => ['production']]);

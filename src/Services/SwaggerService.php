@@ -857,7 +857,9 @@ class SwaggerService
 
     protected function isTargetEnvironmentDisplayed(): bool
     {
-        return !empty(array_intersect($this->config['target_environments'], $this->config['display_environments']));
+        $targetEnvironments = $this->config['target_environments'];
+
+        return empty($targetEnvironments) || !empty(array_intersect($targetEnvironments, $this->config['display_environments']));
     }
 
     public function getDocFileContent()

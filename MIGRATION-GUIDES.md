@@ -1,18 +1,20 @@
 # 3.4
 
-The config version had been increased, so you need to update your `auto-doc.php` config file:
-
-- add the `target_environments` key from the package config;
-- set `config_version` to `3.1`.
-
 `display_environments` now controls where the documentation exists at all:
 
 - all package routes (the viewer page, `/auto-doc/documentation`, `/auto-doc/documentation/postman`,
-  `/auto-doc/{file}`) return 404 outside of `display_environments`, the viewer page returned 403 before;
-- the documentation is collected during tests and saved only if one of the build target environments
-  is listed in `display_environments`.
+  `/auto-doc/{file}`) return 404 outside of `display_environments`, the viewer page returned 403 before.
+  If your project tests request these routes, add `testing` to `display_environments` in the tests;
+- `AutoDocController` no longer has the `$service` property, resolve `SwaggerService` via `app()`
+  if you extend the controller;
+- the new `target_environments` config key restricts collecting and saving the documentation during tests
+  to builds whose target environment is listed in `display_environments`.
   Set the `SWAGGER_TARGET_ENVIRONMENT` env variable (comma-separated) in your CI/CD configuration
-  of the build, it is `development` by default.
+  of the build to enable it. Without the variable the documentation is collected and saved as before.
+  The key is merged from the package config, so you don't need to republish your `auto-doc.php` config;
+- the documentation saved before the update stays in place: remove `documentation.json` saved by the `storage`
+  driver (e.g. on the `public` disk) or pushed by the `remote` driver for the environments
+  that are not listed in `display_environments`.
 
 # 3.0.1-beta
 

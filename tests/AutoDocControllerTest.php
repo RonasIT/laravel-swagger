@@ -192,6 +192,19 @@ class AutoDocControllerTest extends TestCase
         $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
+    #[DataProvider('getPackageRoutes')]
+    public function testGetRouteEnvironmentDisableWithLegacyConfig(string $uri)
+    {
+        config([
+            'auto-doc.display_environments' => ['local', 'development'],
+            'auto-doc.config_version' => null,
+        ]);
+
+        $response = $this->get($uri);
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
     public function testGetViewDocumentationWithGlobalPrefix()
     {
         $this->addGlobalPrefix();
