@@ -73,7 +73,7 @@ class SwaggerService
 
         $this->setDriver();
 
-        if (config('app.env') === 'testing') {
+        if ((config('app.env') === 'testing') && $this->isTargetEnvironmentDisplayed()) {
             // client must enter at least `contact.email` to generate a default `info` block
             // otherwise an exception will be called
             $this->checkEmail();
@@ -184,6 +184,10 @@ class SwaggerService
 
     public function addData(Request $request, $response)
     {
+        if (!$this->isTargetEnvironmentDisplayed()) {
+            return;
+        }
+
         $this->request = $request;
 
         $this->prepareItem();
@@ -832,6 +836,10 @@ class SwaggerService
 
     public function saveProductionData()
     {
+        if (!$this->isTargetEnvironmentDisplayed()) {
+            return;
+        }
+
         if (ParallelTesting::token()) {
             $this->driver->appendProcessDataToTmpFile(function (?array $sharedTmpData) {
                 $resultDocContent = (empty($sharedTmpData))
@@ -845,6 +853,13 @@ class SwaggerService
         }
 
         $this->driver->saveData();
+    }
+
+    protected function isTargetEnvironmentDisplayed(): bool
+    {
+        $targetEnvironments = Arr::get($this->config, 'target_environments', []);
+
+        return empty($targetEnvironments) || !empty(array_intersect($targetEnvironments, $this->config['display_environments']));
     }
 
     public function getDocFileContent()

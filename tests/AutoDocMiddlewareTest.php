@@ -21,4 +21,19 @@ class AutoDocMiddlewareTest extends TestCase
             return $this->generateResponse('example_success_search_roles_response.json');
         });
     }
+
+    public function testHandleTargetEnvironmentNotDisplayed()
+    {
+        config(['auto-doc.target_environments' => ['production']]);
+
+        $request = $this->generateGetRolesRequest();
+
+        $middleware = new AutoDocMiddleware();
+
+        $middleware->handle($request, function () {
+            return $this->generateResponse('example_success_search_roles_response.json');
+        });
+
+        $this->assertFileDoesNotExist(storage_path('temp_documentation.json'));
+    }
 }
