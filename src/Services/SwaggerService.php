@@ -857,7 +857,7 @@ class SwaggerService
 
     protected function isTargetEnvironmentDisplayed(): bool
     {
-        $targetEnvironments = $this->config['target_environments'];
+        $targetEnvironments = Arr::get($this->config, 'target_environments', []);
 
         return empty($targetEnvironments) || !empty(array_intersect($targetEnvironments, $this->config['display_environments']));
     }
